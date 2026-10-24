@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.util
+package org.jetbrains.plugins.scala.language.util
 
 /**
  * Note, this class is similar to `com.intellij.psi.CommonClassNames`, but we don't reuse it

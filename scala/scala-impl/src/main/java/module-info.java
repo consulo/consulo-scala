@@ -16,5 +16,10 @@ module org.intellij.scala {
 
     requires scala.library;
 
+    requires org.intellij.scala.utils.language.rt;
+    requires org.intellij.scala.utils.language;
+    requires org.intellij.scala.tasty.reader;
+    requires org.intellij.scala.decompiler;
+
     exports org.jetbrains.plugins.scala;
 }

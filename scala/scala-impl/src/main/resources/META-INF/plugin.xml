@@ -21,6 +21,8 @@
     <category>Custom Languages</category>
     <vendor>JetBrains</vendor>
 
+    <depends>consulo.java</depends>
+
     <tags>
         <tag>custom.language</tag>
     </tags>

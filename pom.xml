@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>consulo</groupId>
-        <artifactId>arch.managment</artifactId>
+        <artifactId>arch.bind.java</artifactId>
         <version>3-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -41,7 +41,68 @@
     <version>3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <!-- must be same as scala version of compiler.apt.scala (scalac plugin is linked against compiler internals) -->
+        <scala.version>3.9.0</scala.version>
+        <scala2.version>2.13.18</scala2.version>
+    </properties>
+
     <modules>
-        <module>scala-impl</module>
+        <module>scala/scala-utils-language-rt</module>
+        <module>scala/scala-utils-language</module>
+        <module>scala/tasty-reader</module>
+        <module>scala/decompiler</module>
+        <module>scala/scala-impl</module>
     </modules>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- scala (and mixed java) sources from src/main/scala are compiled before javac (module-info.java) -->
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>4.10.0</version>
+                    <configuration>
+                        <scalaVersion>${scala.version}</scalaVersion>
+                        <!-- scalac java parser does not support module declarations - module-info.java is compiled by javac -->
+                        <excludes>
+                            <exclude>**/module-info.java</exclude>
+                        </excludes>
+                        <args>
+                            <arg>-deprecation</arg>
+                            <arg>-feature</arg>
+                            <arg>-java-output-version</arg>
+                            <arg>${default.java.level}</arg>
+                            <arg>-P:consulo-binding:sources:${project.build.directory}/generated-sources/consulo-binding</arg>
+                        </args>
+                        <compilerPlugins>
+                            <compilerPlugin>
+                                <groupId>consulo.internal</groupId>
+                                <artifactId>compiler.apt.scala</artifactId>
+                                <version>${compiler.apt.version}</version>
+                            </compilerPlugin>
+                        </compilerPlugins>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>scala-compile-first</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>scala-test-compile</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

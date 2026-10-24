@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.util
+package org.jetbrains.plugins.scala.rt.util
 
 import java.nio.file.Path
 

@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.project
+package org.jetbrains.plugins.scala.rt.project
 
 import org.jetbrains.annotations.NonNls
 

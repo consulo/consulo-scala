@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.util
+package org.jetbrains.plugins.scala.rt.util
 
 /**
  * Contains constants representing internal JVM representation of scala entities

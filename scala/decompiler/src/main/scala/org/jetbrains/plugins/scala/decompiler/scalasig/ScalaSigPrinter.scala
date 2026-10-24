@@ -12,7 +12,7 @@ import java.lang.StringBuilder
 import java.util.regex.Pattern
 import org.apache.commons.lang3.Strings
 import org.apache.commons.text.StringEscapeUtils
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
 import scala.annotation.{switch, tailrec}
 import scala.collection.mutable

@@ -1,6 +1,4 @@
-package org.jetbrains.plugins.scala.util
-
-import org.jetbrains.annotations.ApiStatus
+package org.jetbrains.plugins.scala.rt.util
 
 import java.io.BufferedInputStream
 import java.nio.file.{FileSystems, Files, Path}
@@ -32,7 +30,7 @@ object JarManifestUtils {
    */
   @deprecated(message = "Use readClaspath(java.nio.file.Path)", since = "2026.2")
   @Deprecated
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   //noinspection SSBasedInspection
   def readClassPath(jarFile: java.io.File): Option[Seq[java.io.File]] =
     readClassPath(jarFile.toPath).map(_.map(_.toFile))

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 package decompiler
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.text.StringUtil
-import org.jetbrains.org.objectweb.asm.ClassReader
+import consulo.internal.org.objectweb.asm.ClassReader
+import consulo.logging.Logger
+import consulo.util.lang.StringUtil
 
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.reflect.internal.pickling.ByteCodecs

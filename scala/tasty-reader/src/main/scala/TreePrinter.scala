@@ -5,7 +5,8 @@ import TreePrinter.Keywords
 
 import dotty.tools.tasty.TastyBuffer.Addr
 import dotty.tools.tasty.TastyFormat.*
-import org.jetbrains.plugins.scala.util.{CommonQualifiedNames, ScalaBytecodeConstants}
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 
 import java.lang.Double.longBitsToDouble
 import java.lang.Float.intBitsToFloat

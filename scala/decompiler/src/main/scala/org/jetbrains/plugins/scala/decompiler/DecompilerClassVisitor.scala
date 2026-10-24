@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.decompiler
 
-import org.jetbrains.org.objectweb.asm.{AnnotationVisitor, ClassVisitor, Opcodes}
+import consulo.internal.org.objectweb.asm.{AnnotationVisitor, ClassVisitor, Opcodes}
 
 import java.nio.charset.StandardCharsets
 

@@ -19,84 +19,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>consulo</groupId>
-        <artifactId>arch.bind.java</artifactId>
+        <groupId>consulo.plugin</groupId>
+        <artifactId>org.intellij.scala.parent</artifactId>
         <version>3-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>consulo</id>
-            <url>https://maven.consulo.dev/repository/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>interval:60</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <groupId>consulo.plugin</groupId>
     <artifactId>org.intellij.scala</artifactId>
-    <version>3-SNAPSHOT</version>
     <packaging>jar</packaging>
-
-    <properties>
-        <!-- must be same as scala version of compiler.apt.scala (scalac plugin) -->
-        <scala.version>3.9.0</scala.version>
-    </properties>
 
     <build>
         <plugins>
-            <!-- scala sources are compiled before javac (module-info.java and java sources) -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>4.10.0</version>
-                <configuration>
-                    <scalaVersion>${scala.version}</scalaVersion>
-                    <!-- scalac java parser does not support module declarations - module-info.java is compiled by javac -->
-                    <excludes>
-                        <exclude>**/module-info.java</exclude>
-                    </excludes>
-                    <args>
-                        <arg>-deprecation</arg>
-                        <arg>-feature</arg>
-                        <arg>-java-output-version</arg>
-                        <arg>${default.java.level}</arg>
-                        <arg>-P:consulo-binding:sources:${project.build.directory}/generated-sources/consulo-binding</arg>
-                    </args>
-                    <compilerPlugins>
-                        <compilerPlugin>
-                            <groupId>consulo.internal</groupId>
-                            <artifactId>compiler.apt.scala</artifactId>
-                            <version>${compiler.apt.version}</version>
-                        </compilerPlugin>
-                    </compilerPlugins>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>scala-compile-first</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>scala-test-compile</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>consulo.maven</groupId>
                 <artifactId>maven-consulo-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <dependencies>
+                        <dependency>consulo.java</dependency>
+                    </dependencies>
                     <packaging>
                         <skip>${dev.mode}</skip>
                         <version>${build.number}</version>
@@ -116,11 +61,43 @@
     </build>
 
     <dependencies>
-        <!-- since 3.8 standard library is fully inside scala-library (scala3-library_3 is empty), packaging takes only direct dependencies -->
+        <!-- packaging takes only direct dependencies - all runtime libraries must be listed here -->
+        <!-- since 3.8 standard library is fully inside scala-library (scala3-library_3 is empty) -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+            <version>${scala2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scala.utils.language.rt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scala.utils.language</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-tasty.reader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-decompiler</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
