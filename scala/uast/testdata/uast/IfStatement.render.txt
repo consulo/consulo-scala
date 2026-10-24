@@ -1,5 +1,0 @@
-public final class Test$ {
-    public static fun foo() : void {
-        final var x: int = if ("abc" != "def") 1 else 0
-    }
-}

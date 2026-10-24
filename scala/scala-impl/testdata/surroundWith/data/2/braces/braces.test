@@ -1,9 +1,0 @@
-class a {
-  <start>if (a) abc<braces>
-}
------
-class a {
-  {
-    if (a) abc
-  }
-}

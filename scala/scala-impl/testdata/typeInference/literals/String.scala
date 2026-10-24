@@ -1,2 +1,0 @@
-/*start*/"""string"""/*end*/
-//String

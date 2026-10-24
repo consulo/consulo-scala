@@ -1,9 +1,0 @@
-class a {
-  <start>s<else>.startsWith("t")
-}
-------
-class a {
-  (if () {
-    s
-  } else {}).startsWith("t")
-}

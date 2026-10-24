@@ -1,6 +1,0 @@
-new {val a = 0; val b = 0} with C
------
-new {
-  val a = 0;
-  val b = 0
-} with C

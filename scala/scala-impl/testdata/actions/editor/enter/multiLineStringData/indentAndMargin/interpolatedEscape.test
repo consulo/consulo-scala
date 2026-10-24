@@ -1,9 +1,0 @@
-class A {
-  val x = s"""abc $<caret>$ def"""
-}
------
-class A {
-  val x =
-    s"""abc $$
-        | <caret>def""".stripMargin
-}

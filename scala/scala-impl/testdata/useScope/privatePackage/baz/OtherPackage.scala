@@ -1,3 +1,0 @@
-package baz
-
-class OtherPackage

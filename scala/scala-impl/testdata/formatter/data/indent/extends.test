@@ -1,9 +1,0 @@
-class a
-extends B {
-  val t = 4
-}
-------
-class a
-  extends B {
-  val t = 4
-}

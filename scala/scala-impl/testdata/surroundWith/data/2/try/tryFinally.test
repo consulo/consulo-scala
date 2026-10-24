@@ -1,9 +1,0 @@
-class a {
-  <start>tt<finally>
-}
------
-class a {
-  try {
-    tt
-  } finally <preserve-trailing-spaces>
-}

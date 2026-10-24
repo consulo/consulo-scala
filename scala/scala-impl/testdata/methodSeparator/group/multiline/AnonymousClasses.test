@@ -1,7 +1,0 @@
-new Runnable {
-  def run = {}
-}
-
-new Runnable { // -
-  def run = {}
-}

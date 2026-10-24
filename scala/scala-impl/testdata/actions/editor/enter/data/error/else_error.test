@@ -1,8 +1,0 @@
-if (true)
-  3
-else<caret>
--------
-if (true)
-  3
-else
-  <caret>

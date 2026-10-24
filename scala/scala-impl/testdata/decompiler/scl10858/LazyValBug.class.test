@@ -1,5 +1,0 @@
-package scala.tools.scalap
-
-class LazyValBug {
-  lazy val lzy: scala.Int = ???
-}

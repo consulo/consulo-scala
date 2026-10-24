@@ -1,7 +1,0 @@
-class a {
-  call ()
-}
------
-class a {
-  call()
-}

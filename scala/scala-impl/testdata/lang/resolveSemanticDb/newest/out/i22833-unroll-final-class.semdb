@@ -1,9 +1,0 @@
-Document tests/pos/i22833-unroll-final-class.scala
-(2:8..2:13) scala/
-(2:14..2:24) scala/annotation/
-(2:25..2:31) scala/annotation/unroll#
-(5:12..5:18) scala/annotation/unroll#
-(5:22..5:25) scala/Int#
-(5:33..5:34) _empty_/Foo#bar().(x) -> 5:19
-(5:35..5:36) scala/Int#`+`(+4).
-

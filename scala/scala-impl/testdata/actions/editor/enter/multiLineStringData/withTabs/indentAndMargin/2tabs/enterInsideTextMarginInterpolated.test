@@ -1,9 +1,0 @@
-object A {
-	val a = foo"""blah<caret> blah"""
-}
------
-object A {
-	val a =
-		foo"""blah
-				 | <caret>blah""".stripMargin
-}

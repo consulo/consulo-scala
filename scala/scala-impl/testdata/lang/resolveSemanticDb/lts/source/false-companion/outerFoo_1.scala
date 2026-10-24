@@ -1,2 +1,0 @@
-package outer
-class Foo

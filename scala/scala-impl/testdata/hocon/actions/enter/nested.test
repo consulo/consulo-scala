@@ -1,8 +1,0 @@
-some.key {
-  # hash<caret>comment
-}
------
-some.key {
-  # hash
-  # <caret>comment
-}

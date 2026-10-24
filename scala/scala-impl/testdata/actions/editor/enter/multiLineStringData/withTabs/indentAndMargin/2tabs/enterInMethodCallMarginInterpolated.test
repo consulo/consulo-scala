@@ -1,6 +1,0 @@
-val a = foo"""blah blah<caret>""".replace("\r", "")
------
-val a =
-	foo"""blah blah
-			 |<caret>
-			 |""".stripMargin.replace("\r", "")

@@ -1,5 +1,0 @@
-package myPack {<caret>}
------
-package myPack {
-  <caret>
-}

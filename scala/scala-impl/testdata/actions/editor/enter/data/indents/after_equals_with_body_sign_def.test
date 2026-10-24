@@ -1,6 +1,0 @@
-def foo(arg: Type) =<caret>
-  42
------
-def foo(arg: Type) =
-  <caret>
-  42

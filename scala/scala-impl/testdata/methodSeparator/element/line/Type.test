@@ -1,4 +1,0 @@
-def f1 = {
-}
-
-type t = Int // -

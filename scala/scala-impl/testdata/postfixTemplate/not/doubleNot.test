@@ -1,9 +1,0 @@
-class Test {
-  var a = false
-  <start>!a<not>
-}
------
-class Test {
-  var a = false
-  a
-}

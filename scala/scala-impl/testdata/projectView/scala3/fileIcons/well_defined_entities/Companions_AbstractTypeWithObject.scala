@@ -1,5 +1,0 @@
-package well_defined_entities
-
-type Companions_AbstractTypeWithObject
-
-object Companions_AbstractTypeWithObject

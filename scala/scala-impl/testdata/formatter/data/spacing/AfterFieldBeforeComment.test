@@ -1,7 +1,0 @@
-class a {
-  val x = 2 //two
-}
--------
-class a {
-  val x = 2 //two
-}

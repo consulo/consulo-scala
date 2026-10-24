@@ -1,6 +1,0 @@
-//### replaceAll=true
-//I
-object My{
-  val t:<selection>Int</selection> = 34
-}
-------

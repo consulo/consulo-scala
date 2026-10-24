@@ -1,7 +1,0 @@
-class a {
-  if()
-}
-------
-class a {
-  if ()
-}

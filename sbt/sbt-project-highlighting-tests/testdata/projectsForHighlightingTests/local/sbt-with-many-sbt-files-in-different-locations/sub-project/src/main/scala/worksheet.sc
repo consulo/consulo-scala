@@ -1,1 +1,0 @@
-scala.util.Try(42)

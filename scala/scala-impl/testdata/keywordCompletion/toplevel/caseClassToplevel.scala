@@ -1,4 +1,0 @@
-case cl<caret>
-/*
-class
-*/

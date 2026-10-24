@@ -1,7 +1,0 @@
-class a {
-  def foo(x : Type  *) = 0
-}
------
-class a {
-  def foo(x: Type*) = 0
-}

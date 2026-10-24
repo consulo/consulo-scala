@@ -1,9 +1,0 @@
-# a doc
-<caret>include "a"
-# b doc
-b = c
------
-# b doc
-b = c
-# a doc
-<caret>include "a"

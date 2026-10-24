@@ -1,9 +1,0 @@
-class Test {
-  val a: Boolean = true
-  <start>a<not> toString
-}
-------
-class Test {
-  val a: Boolean = true
-  !a toString
-}

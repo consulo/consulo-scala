@@ -1,3 +1,0 @@
-object O
-
-println(/* */ O)

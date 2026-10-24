@@ -1,8 +1,0 @@
-object A {
-  def foo {123<caret>}
-}
------
-object A {
-  def foo {123
-  <caret>}
-}

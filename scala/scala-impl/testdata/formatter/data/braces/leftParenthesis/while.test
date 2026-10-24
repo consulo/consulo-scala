@@ -1,7 +1,0 @@
-class a {
-  while   (true) false
-}
-------
-class a {
-  while (true) false
-}

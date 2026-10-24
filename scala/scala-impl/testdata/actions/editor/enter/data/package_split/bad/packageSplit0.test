@@ -1,6 +1,0 @@
-package o<caret>ne.two.three
-package four
------
-package o
-<caret>ne.two.three
-package four

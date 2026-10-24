@@ -1,3 +1,0 @@
-package typeDefinition
-
-class Class

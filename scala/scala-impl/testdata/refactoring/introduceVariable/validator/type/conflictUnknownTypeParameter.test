@@ -1,6 +1,0 @@
-//T
-class Super[T] {
-  val t:<selection>T</selection> = 435
-}
-------
-Introduced type alias conflicts with type name: T

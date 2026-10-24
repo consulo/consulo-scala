@@ -1,4 +1,0 @@
-// used to give an assertion exception
-printf(s"blub %d", 1)
-System.out.printf(s"%d", 1)
------

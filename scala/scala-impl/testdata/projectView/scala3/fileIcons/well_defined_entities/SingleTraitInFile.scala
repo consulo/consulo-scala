@@ -1,3 +1,0 @@
-package well_defined_entities
-
-trait SingleTraitInFile

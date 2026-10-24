@@ -1,8 +1,0 @@
-class a {
-  val x = <selection>1</selection>
-}
-------
-class a {
-  private val value: Int = 1
-  val x = value
-}

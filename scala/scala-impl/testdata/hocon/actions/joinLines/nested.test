@@ -1,8 +1,0 @@
-some.key {
-  # something<caret>
-  # else
-}
------
-some.key {
-  # something<caret> else
-}

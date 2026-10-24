@@ -1,9 +1,0 @@
-object A {
-
-  def isRightIgnoring() = {
-    p match {
-      case Star(Ident(nme)) => true
-    }
-  }
-
-}

@@ -1,9 +1,0 @@
-class a {
-  (x: Int,
- y: Int) => Expr
-}
------
-class a {
-  (x: Int,
-   y: Int) => Expr
-}

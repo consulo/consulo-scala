@@ -1,3 +1,0 @@
-"hello" slice  (1, 2) intern  ()
-------
-"hello" slice(1, 2) intern()

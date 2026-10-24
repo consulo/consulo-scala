@@ -1,3 +1,0 @@
-import scala.collection.immutable.List
-
-type T = Int

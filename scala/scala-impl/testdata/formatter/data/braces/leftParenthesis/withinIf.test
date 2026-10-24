@@ -1,7 +1,0 @@
-class a {
-  if ( true   ) false
-}
------
-class a {
-  if (true) false
-}

@@ -1,2 +1,0 @@
-@23
-class Test

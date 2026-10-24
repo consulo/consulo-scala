@@ -1,9 +1,0 @@
-object A {
-  def boobar[T](i: Int)(s: String)(t: T) {<caret>}
-}
------
-object A {
-  def boobar[T](i: Int)(s: String)(t: T): Unit = {
-    <caret>
-  }
-}

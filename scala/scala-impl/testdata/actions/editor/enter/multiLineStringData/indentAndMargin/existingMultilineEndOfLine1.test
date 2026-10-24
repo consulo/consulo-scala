@@ -1,8 +1,0 @@
-val _ =
-  """hello<caret>
-    |""".stripMargin
------
-val _ =
-  """hello
-    |<caret>
-    |""".stripMargin

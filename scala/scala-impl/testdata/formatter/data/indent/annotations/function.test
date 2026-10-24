@@ -1,9 +1,0 @@
-class A {
-  @annot
-   def foo
-}
------
-class A {
-  @annot
-  def foo
-}

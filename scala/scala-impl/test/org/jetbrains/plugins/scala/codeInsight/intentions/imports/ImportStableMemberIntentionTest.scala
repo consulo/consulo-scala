@@ -1,4 +1,0 @@
-package org.jetbrains.plugins.scala
-package codeInsight.intentions.imports
-
-class ImportStableMemberIntentionTest extends ImportStableMemberIntentionBaseTest

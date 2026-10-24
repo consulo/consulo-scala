@@ -1,6 +1,0 @@
-type X =<caret>
-  String
------
-type X =
-  <caret>
-  String

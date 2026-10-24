@@ -1,7 +1,0 @@
-new Runnable {
-  def run = {
-  }
-
-  def f1 = {
-  }
-}

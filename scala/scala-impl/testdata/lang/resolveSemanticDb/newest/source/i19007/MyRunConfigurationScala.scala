@@ -1,2 +1,0 @@
-
-class MyRunConfigurationScala extends RunConfigurationBase

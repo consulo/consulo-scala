@@ -1,5 +1,0 @@
-package well_defined_entities
-
-type Companions_TypeAliasWithObject = Int
-
-object Companions_TypeAliasWithObject

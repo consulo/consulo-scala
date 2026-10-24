@@ -1,9 +1,0 @@
-class a {
-  <start>abc<while>
-}
------
-class a {
-  while (true) {
-    abc
-  }
-}

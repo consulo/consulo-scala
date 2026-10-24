@@ -1,7 +1,0 @@
-object O {
-  def f1 = {
-  }
-
-  def f2 = { // -
-  }
-}

@@ -1,7 +1,0 @@
-class a {
-  new b (a)
-}
--------
-class a {
-  new b(a)
-}

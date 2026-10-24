@@ -1,6 +1,0 @@
-def f = {
-  import scala.collection.immutable.List
-
-  def a = {
-  }
-}

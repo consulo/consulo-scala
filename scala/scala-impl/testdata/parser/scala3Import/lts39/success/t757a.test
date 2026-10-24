@@ -1,8 +1,0 @@
-package foo
------
-ScalaFile
-  ScPackaging
-    PsiElement(package)('package')
-    PsiWhiteSpace(' ')
-    CodeReferenceElement: foo
-      PsiElement(identifier)('foo')

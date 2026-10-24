@@ -1,4 +1,0 @@
-def f1 = {
-}
-
-import scala.collection.immutable.List // -

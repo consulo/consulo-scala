@@ -1,3 +1,0 @@
-class a private () {}
------
-class a private() {}

@@ -1,5 +1,0 @@
-@annot
-class a{}
------
-@annot
-class a {}

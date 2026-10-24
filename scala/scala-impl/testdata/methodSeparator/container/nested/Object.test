@@ -1,9 +1,0 @@
-object O1 {
-  object O2 {
-    def f1 = {
-    }
-
-    def f2 = { // -
-    }
-  }
-}

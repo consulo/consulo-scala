@@ -1,5 +1,0 @@
-package well_defined_entities
-
-opaque type Companions_OpaqueTypeWithObject = Int
-
-object Companions_OpaqueTypeWithObject

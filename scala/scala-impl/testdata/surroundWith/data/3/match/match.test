@@ -1,8 +1,0 @@
-class a:
-  <start>true<match>
-end a
------
-class a:
-  true match
-    case  =>
-end a

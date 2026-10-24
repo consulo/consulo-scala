@@ -1,8 +1,0 @@
-val a = s"""blah blah blah
-            |  blah blah<caret>${1}
-         """
------
-val a = s"""blah blah blah
-            |  blah blah
-            |  <caret>${1}
-         """

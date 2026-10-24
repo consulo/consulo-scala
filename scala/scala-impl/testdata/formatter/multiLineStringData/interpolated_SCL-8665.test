@@ -1,7 +1,0 @@
-val a =
-  s"""|someText"${interp}"
-                                   |otherText"""
------
-val a =
-  s"""|someText"${interp}"
-      |otherText"""

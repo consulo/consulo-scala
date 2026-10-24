@@ -1,9 +1,0 @@
-class a:
-  <start>2<else> + 2
-end a
-------
-class a:
-  (if  then
-    2
-  else {}) + 2
-end a

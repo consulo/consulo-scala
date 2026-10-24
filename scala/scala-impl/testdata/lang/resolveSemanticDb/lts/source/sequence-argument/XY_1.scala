@@ -1,2 +1,0 @@
-class X
-class Y

@@ -1,6 +1,0 @@
-k = "<caret>simple"
------
-[multi
-line]
------
-k = "multi\nline"

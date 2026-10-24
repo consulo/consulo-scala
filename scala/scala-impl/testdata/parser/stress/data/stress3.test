@@ -1,3 +1,0 @@
-trait SetWrapper {
-  var underlying: java.Set
-}

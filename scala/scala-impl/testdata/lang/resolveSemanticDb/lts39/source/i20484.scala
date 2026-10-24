@@ -1,3 +1,0 @@
-given Int = ???
-given Char = ???
-val a = summon[Int]

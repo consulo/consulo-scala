@@ -1,9 +1,0 @@
-def foo () {
-  val a = foo"""blah<caret>${1}blah"""
-}
------
-def foo () {
-  val a =
-    foo"""blah
-          <caret>${1}blah"""
-}

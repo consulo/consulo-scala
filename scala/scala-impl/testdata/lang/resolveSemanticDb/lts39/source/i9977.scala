@@ -1,1 +1,0 @@
-val pf1: PartialFunction[AnyVal, Int] = { case n: Int => n }

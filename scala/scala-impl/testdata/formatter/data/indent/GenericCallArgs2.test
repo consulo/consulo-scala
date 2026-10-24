@@ -1,9 +1,0 @@
-val a = scala.collection.immutable.List
-  [String](
-  "1", "2"
-)
-------
-val a = scala.collection.immutable.List
-  [String](
-    "1", "2"
-  )

@@ -1,7 +1,0 @@
-for {
-  i <- range
-}                yield
------
-for {
-  i <- range
-} yield

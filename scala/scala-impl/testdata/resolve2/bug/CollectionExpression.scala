@@ -1,1 +1,0 @@
-val a = /* */ collection.mutable.HashMap(Tuple(1, 2))
