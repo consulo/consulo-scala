@@ -9,16 +9,26 @@ DISPLAY_NUM=${1:-81}
 MODULE=$REPO/scala/scala-impl
 PLATFORM=${PLATFORM_VERSION:-$(curl -s "https://api.consulo.io/repository/info?id=consulo.dist.linux64&platformVersion=SNAPSHOT&version=SNAPSHOT&channel=nightly" | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')}
 
-# consulo.java for exactly that platform build (the workspace goal asks the hub for the version of the compile classpath)
+# required plugins (and their required dependencies) for exactly that platform build
 DEPS=$MODULE/target/consulo-plugin-dependencies
 mkdir -p "$DEPS"
-if [ "$(cat "$DEPS/consulo.java.platform" 2>/dev/null)" != "$PLATFORM" ]; then
-  rm -rf "$DEPS/consulo.java"
-  curl -sL -o "$DEPS/consulo.java.zip" "https://api.consulo.io/repository/download?id=consulo.java&platformVersion=$PLATFORM&version=SNAPSHOT&channel=nightly&platformBuildSelect=true"
-  unzip -q -o "$DEPS/consulo.java.zip" -d "$DEPS" && rm "$DEPS/consulo.java.zip"
-  echo "$PLATFORM" > "$DEPS/consulo.java.platform"
-  echo "$PLATFORM" > "$DEPS/consulo.java.version"
-fi
+fetch_plugin() {
+  local id=$1
+  if [ "$(cat "$DEPS/$id.platform" 2>/dev/null)" != "$PLATFORM" ]; then
+    rm -rf "${DEPS:?}/$id"
+    curl -sfL -o "$DEPS/$id.zip" "https://api.consulo.io/repository/download?id=$id&platformVersion=$PLATFORM&version=SNAPSHOT&channel=nightly&platformBuildSelect=true" || { echo "no build of $id for $PLATFORM"; exit 1; }
+    unzip -q -o "$DEPS/$id.zip" -d "$DEPS" && rm "$DEPS/$id.zip"
+    echo "$PLATFORM" > "$DEPS/$id.platform"
+    echo "$PLATFORM" > "$DEPS/$id.version"
+  fi
+  local dep
+  for dep in $(for jar in "$DEPS/$id"/lib/*.jar; do unzip -p "$jar" META-INF/plugin.xml 2>/dev/null; done | grep -v 'optional="true"' | sed -nE 's#.*<depends>([^<]+)</depends>.*#\1#p' | sort -u); do
+    if [ ! -d "$DEPS/$dep" ] || [ "$(cat "$DEPS/$dep.platform" 2>/dev/null)" != "$PLATFORM" ]; then
+      fetch_plugin "$dep"
+    fi
+  done
+}
+fetch_plugin consulo.java
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
 for module in java.language.api; do

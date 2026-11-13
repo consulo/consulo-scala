@@ -28,7 +28,6 @@ module org.intellij.scala {
     requires consulo.component.api;
     requires consulo.configurable.api;
     requires consulo.datacontext.api;
-    requires consulo.desktop.awt.ui.impl;
     requires consulo.diff.api;
     requires consulo.disposer.api;
     requires consulo.document.api;
