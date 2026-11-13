@@ -1,20 +1,16 @@
 package org.jetbrains.plugins.scala.project.external
 
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
 import consulo.module.Module
 import consulo.project.Project
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import consulo.content.library.Library
+import consulo.content.library.{Library, LibraryTable}
+import consulo.module.content.layer.ModifiableRootModel
 import consulo.platform.Platform
-import com.intellij.platform.workspace.jps.entities.{LibraryEntity, ModuleEntity}
-import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
 import org.jetbrains.plugins.scala.EelAwareDependencyManager
-import org.jetbrains.plugins.scala.project.{LibraryBase, LibraryEntityExt, LibraryExt, ModuleEntityExt, MutableEntityStorageExt, ReplClasspath, ScalaLibraryProperties, ScalaLibraryType}
+import org.jetbrains.plugins.scala.project.{LibraryBase, LibraryExt, ReplClasspath, ScalaLibraryProperties, ScalaLibraryType}
 import org.jetbrains.plugins.scala.rt.project.Version
 
 import java.nio.file.Path
-import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 //noinspection ApiStatus,UnstableApiUsage
 object ScalaSdkUtils {
@@ -27,98 +23,22 @@ object ScalaSdkUtils {
     compilerBridgeBinaryJar: Option[Path],
     replClasspath: ReplClasspath,
     sdkPrefix: String,
-    modelsProvider: IdeModifiableModelsProvider
+    projectLibrariesModel: LibraryTable.ModifiableModel,
+    rootModel: ModifiableRootModel
   ): Unit = {
     val scalaSDKLibraryName = scalaSdkLibraryName(sdkPrefix, compilerVersion)
-    val projectLibrariesModel = modelsProvider.getModifiableProjectLibrariesModel
     doConfigureScalaSdk(
       libraries = projectLibrariesModel.getLibraries.toSeq,
       isApplicable = (library: Library) => isApplicableScalaSdk(library, scalaSDKLibraryName),
       createLibrary = projectLibrariesModel.createLibrary(scalaSDKLibraryName),
       ensureConvertedToScalaSdk = (library: Library) => ScalaSdkUtils.ensureScalaLibraryIsConvertedToScalaSdk(
-        modelsProvider,
         library,
         scalacClasspath,
         scaladocExtraClasspath,
         compilerBridgeBinaryJar,
         replClasspath
       ),
-      addToModule = (library: Library) => modelsProvider.getModifiableRootModel(module).addLibraryEntry(library)
-    )
-  }
-
-  def configureScalaSdk(
-    module: ModuleEntity,
-    compilerVersion: String,
-    scalacClasspath: Seq[Path],
-    scaladocExtraClasspath: Seq[Path],
-    compilerBridgeBinaryJar: Option[Path],
-    replClasspath: ReplClasspath,
-    sdkPrefix: String,
-    storage: MutableEntityStorage,
-    project: Project,
-    scalaSdkSourceId: String
-  ): Unit =
-    configureScalaSdkForModuleEntity(
-      module = module,
-      compilerVersion = compilerVersion,
-      scalacClasspath = scalacClasspath,
-      scaladocExtraClasspath = scaladocExtraClasspath,
-      compilerBridgeBinaryJar = compilerBridgeBinaryJar,
-      replClasspath = replClasspath,
-      sdkPrefix = sdkPrefix,
-      storage = storage,
-      createLibrary = name => storage.addLibraryEntity(name, project, scalaSdkSourceId)
-    )
-
-  def configureScalaSdk(
-    module: ModuleEntity,
-    compilerVersion: String,
-    scalacClasspath: Seq[Path],
-    scaladocExtraClasspath: Seq[Path],
-    compilerBridgeBinaryJar: Option[Path],
-    replClasspath: ReplClasspath,
-    sdkPrefix: String,
-    storage: MutableEntityStorage,
-    entitySource: EntitySource
-  ): Unit =
-    configureScalaSdkForModuleEntity(
-      module = module,
-      compilerVersion = compilerVersion,
-      scalacClasspath = scalacClasspath,
-      scaladocExtraClasspath = scaladocExtraClasspath,
-      compilerBridgeBinaryJar = compilerBridgeBinaryJar,
-      replClasspath = replClasspath,
-      sdkPrefix = sdkPrefix,
-      storage = storage,
-      createLibrary = name => storage.addLibraryEntity(name, Seq.empty, entitySource)
-    )
-
-  private def configureScalaSdkForModuleEntity(
-    module: ModuleEntity,
-    compilerVersion: String,
-    scalacClasspath: Seq[Path],
-    scaladocExtraClasspath: Seq[Path],
-    compilerBridgeBinaryJar: Option[Path],
-    replClasspath: ReplClasspath,
-    sdkPrefix: String,
-    storage: MutableEntityStorage,
-    createLibrary: String => LibraryEntity
-  ): Unit = {
-    val scalaSDKLibraryName = scalaSdkLibraryName(sdkPrefix, compilerVersion)
-    doConfigureScalaSdk(
-      libraries = storage.entities(classOf[LibraryEntity]).iterator().asScala.toSeq,
-      isApplicable = (library: LibraryEntity) => isApplicableScalaSdk(library, scalaSDKLibraryName),
-      createLibrary = createLibrary(scalaSDKLibraryName),
-      ensureConvertedToScalaSdk = (library: LibraryEntity) => ScalaSdkUtils.ensureScalaLibraryIsConvertedToScalaSdk(
-        library,
-        storage,
-        scalacClasspath,
-        scaladocExtraClasspath,
-        compilerBridgeBinaryJar,
-        replClasspath
-      ),
-      addToModule = (library: LibraryEntity) => module.addLibraryDependency(storage, library)
+      addToModule = (library: Library) => rootModel.addLibraryEntry(library)
     )
   }
 
@@ -143,14 +63,13 @@ object ScalaSdkUtils {
   }
 
   private def ensureScalaLibraryIsConvertedToScalaSdk(
-    modelsProvider: IdeModifiableModelsProvider,
     library: Library,
     compilerClasspath: Seq[Path],
     scaladocExtraClasspath: Seq[Path],
     compilerBridgeBinaryJar: Option[Path],
     replClasspath: ReplClasspath
   ): Unit = {
-    val modifiableModel = modelsProvider.getModifiableLibraryModel(library).asInstanceOf[LibraryEx.ModifiableModelEx]
+    val modifiableModel = library.getModifiableModel
     doEnsureScalaLibraryIsConvertedToScalaSdk(
       library,
       modifiableModel.setKind(ScalaLibraryType.Kind),
@@ -160,25 +79,8 @@ object ScalaSdkUtils {
       compilerBridgeBinaryJar,
       replClasspath
     )
+    modifiableModel.commit()
   }
-
-  private def ensureScalaLibraryIsConvertedToScalaSdk(
-    library: LibraryEntity,
-    storage: MutableEntityStorage,
-    compilerClasspath: Seq[Path],
-    scaladocExtraClasspath: Seq[Path],
-    compilerBridgeBinaryJar: Option[Path],
-    replClasspath: ReplClasspath
-  ): Unit =
-    doEnsureScalaLibraryIsConvertedToScalaSdk(
-      library,
-      library.setScalaKind(storage),
-      library.setScalaProperties(_, storage),
-      compilerClasspath,
-      scaladocExtraClasspath,
-      compilerBridgeBinaryJar,
-      replClasspath
-    )
 
   private def doEnsureScalaLibraryIsConvertedToScalaSdk(
     library: LibraryBase,
@@ -248,19 +150,24 @@ object ScalaSdkUtils {
    * Revert the Scala SDK kind from all existing Scala libraries that shouldn't currently be SDKs.
    * For a detailed explanation of why this method is needed, see `org.jetbrains.sbt.project.data.service.SbtProjectDataService#revertScalaSdkFromLibraries`.
    */
-  def revertScalaSdkFromLibraries(modelsProvider: IdeModifiableModelsProvider, externalSystemName: String): Unit = {
+  def revertScalaSdkFromLibraries(
+    projectLibrariesModel: LibraryTable.ModifiableModel,
+    rootModels: Seq[ModifiableRootModel],
+    externalSystemName: String
+  ): Unit = {
     def isFromExternalSource(library: Library): Boolean =
       Option(library.getExternalSource).map(_.getDisplayName).contains(externalSystemName)
 
-    val projectLibraries = modelsProvider.getModifiableProjectLibrariesModel.getLibraries.toSeq
-    val moduleLibraries = modelsProvider.getModules.flatMap(modelsProvider.getModifiableRootModel(_).getModuleLibraryTable.getLibraries.toSeq)
+    val projectLibraries = projectLibrariesModel.getLibraries.toSeq
+    val moduleLibraries = rootModels.flatMap(_.getModuleLibraryTable.getLibraries.toSeq)
     val scalaRuntimeLibraries = (projectLibraries ++ moduleLibraries).filter(_.hasRuntimeLibrary)
 
     scalaRuntimeLibraries
       .filter { library => library.isScalaSdk && isFromExternalSource(library) && !library.getName.contains("scala-sdk") }
       .foreach { library =>
-        val model = modelsProvider.getModifiableLibraryModel(library).asInstanceOf[LibraryEx.ModifiableModelEx]
+        val model = library.getModifiableModel
         model.setKind(null)
+        model.commit()
       }
   }
 

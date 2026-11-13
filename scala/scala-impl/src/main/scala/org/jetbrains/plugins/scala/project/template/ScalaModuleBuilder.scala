@@ -20,7 +20,7 @@ class ScalaModuleBuilder extends JavaModuleBuilder {
     addModuleConfigurationUpdater((_: Module, rootModel: ModifiableRootModel) => {
       val mutableEmptyList = new ju.ArrayList[Library]()
       libraryCompositionSettings.addLibraries(rootModel, mutableEmptyList, null)
-      packagePrefix.foreach(prefix => rootModel.getContentEntries.foreach(_.getSourceFolders.foreach(_.setPackagePrefix(prefix))))
+      // upstream: sets `packagePrefix` to the source roots, Consulo source roots have no package prefixes
     })
   }
 

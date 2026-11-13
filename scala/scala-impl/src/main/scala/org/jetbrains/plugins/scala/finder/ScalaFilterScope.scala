@@ -12,7 +12,6 @@ import com.intellij.java.indexing.search.searches.MethodReferencesSearch
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
 import consulo.content.scope.SearchScope
-import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.compiled.SigFileType
@@ -26,7 +25,7 @@ sealed abstract class FilterScope(private val delegate: GlobalSearchScope)(impli
     ProjectRootManager.getInstance(project).getFileIndex
 
   protected final def isInSourceContent(file: VirtualFile): Boolean =
-    fileIndex.isUnderSourceRootOfType(file, JavaModuleSourceRootTypes.SOURCES)
+    fileIndex.isInSourceContent(file)
 
   protected final def isInLibraryClasses(file: VirtualFile): Boolean =
     fileIndex.isInLibraryClasses(file)

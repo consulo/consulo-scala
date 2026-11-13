@@ -5,7 +5,6 @@ import consulo.application.WriteAction
 import consulo.module.ModuleManager
 import consulo.application.progress.ProgressIndicator
 import consulo.project.ProjectManager
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import consulo.content.library.{Library, LibraryProperties, LibraryTable, LibraryTablesRegistrar, LibraryType, NewLibraryConfiguration}
 import com.intellij.openapi.roots.ui.configuration.libraries.LibraryEditingUtil
 import com.intellij.openapi.roots.ui.configuration.libraryEditor.NewLibraryEditor
@@ -59,7 +58,7 @@ private[backend] object ScalaSdkUtilImpl {
 
       val libraryName = LibraryEditingUtil.suggestNewLibraryName(libraryTableModel, libraryConfiguration.getDefaultLibraryName)
       val library: Library = projectLibraryTable.createLibrary(libraryName)
-      val libraryModel = library.getModifiableModel.asInstanceOf[LibraryEx.ModifiableModelEx]
+      val libraryModel = library.getModifiableModel.asInstanceOf[Library.ModifiableModel]
 
       try {
         //NOTE: the red code comes from SCL-23078

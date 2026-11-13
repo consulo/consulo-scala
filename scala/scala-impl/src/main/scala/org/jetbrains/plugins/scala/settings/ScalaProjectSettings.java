@@ -475,12 +475,8 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
 
   public String getBasePackageFor(Module module) {
     if (INHERIT_BASE_PACKAGES) {
-      return Arrays.stream(ModuleRootManager.getInstance(module).getContentEntries())
-              .flatMap(it -> Arrays.stream(it.getSourceFolders()))
-              .map(SourceFolder::getPackagePrefix)
-              .filter(it -> !it.isEmpty())
-              .findFirst()
-              .orElse("");
+      // upstream: the first non-empty package prefix of the module source roots, Consulo source roots have no package prefixes
+      return "";
     } else {
       return CUSTOM_BASE_PACKAGES.getOrDefault(module.getName(), "");
     }

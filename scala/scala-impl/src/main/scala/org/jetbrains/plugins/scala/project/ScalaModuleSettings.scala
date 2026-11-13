@@ -6,7 +6,6 @@ import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
 import consulo.module.Module
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import consulo.content.library.Library
 import consulo.module.content.layer.OrderEnumerator
 import consulo.content.OrderRootType
@@ -36,7 +35,7 @@ private class ScalaModuleSettings private(
 ) {
   import ScalaModuleSettings._
 
-  val scalaSdk: Option[LibraryEx] = scalaVersionProvider match {
+  val scalaSdk: Option[Library] = scalaVersionProvider match {
     case ScalaVersionProvider.FromScalaSdk(library) => Some(library)
     case _ => None
   }
@@ -226,7 +225,7 @@ object ScalaModuleSettings {
     def compilerVersion: Option[String]
   }
   object ScalaVersionProvider {
-    case class FromScalaSdk(library: LibraryEx) extends ScalaVersionProvider {
+    case class FromScalaSdk(library: Library) extends ScalaVersionProvider {
       override def languageLevel: ScalaLanguageLevel = library.properties.languageLevel
       override def compilerVersion: Option[String] = library.libraryVersion
     }
@@ -249,7 +248,7 @@ object ScalaModuleSettings {
       OrderEnumerator.orderEntries(module)
         .librariesOnly
         .forEachLibrary(processor)
-      val scalaSdk = processor.getFoundValue.asInstanceOf[LibraryEx]
+      val scalaSdk = processor.getFoundValue.asInstanceOf[Library]
 
       val scalaVersionProviderFromScalaSdk = Option(scalaSdk).map(ScalaVersionProvider.FromScalaSdk.apply)
       val scalaVersionProvider: Option[ScalaVersionProvider] = scalaVersionProviderFromScalaSdk.orElse {

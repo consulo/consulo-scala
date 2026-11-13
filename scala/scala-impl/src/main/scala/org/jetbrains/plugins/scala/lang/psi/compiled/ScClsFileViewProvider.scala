@@ -7,7 +7,6 @@ import consulo.project.Project
 import consulo.language.psi.scope.LibraryScopeCache
 import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.platform.workspace.storage.WorkspaceEntityWithSymbolicId
 import consulo.language.psi.search.FilenameIndex
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.language.psi.PsiClassOwner
@@ -152,11 +151,11 @@ object ScClsFileViewProvider {
 
     private def hasSameRelativePathInSources(sourceFile: VirtualFile,
                                              relPath: String,
-                                             classFileEntries: Iterable[WorkspaceEntityWithSymbolicId]): Boolean =
+                                             classFileEntries: Iterable[AnyRef]): Boolean =
       sourceFile.getPath.endsWith(relPath) && haveSameEntity(findAssociatedEntities(sourceFile, projectFileIndex), classFileEntries)
 
     //noinspection ExistsEquals
-    private def haveSameEntity(firstEntities: Iterable[WorkspaceEntityWithSymbolicId], secondEntities: Iterable[WorkspaceEntityWithSymbolicId]): Boolean = {
+    private def haveSameEntity(firstEntities: Iterable[AnyRef], secondEntities: Iterable[AnyRef]): Boolean = {
       firstEntities.exists { e1 =>
         secondEntities.exists { e2 =>
           e1 == e2

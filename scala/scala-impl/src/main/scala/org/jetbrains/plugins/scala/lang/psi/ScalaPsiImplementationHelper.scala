@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi
 
+import consulo.content.bundle.Sdk
+import consulo.content.library.Library
+import consulo.module.content.layer.orderEntry.{LibraryOrderEntry, ModuleExtensionWithSdkOrderEntry}
 import consulo.module.Module
 import consulo.project.Project
 import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.platform.workspace.storage.WorkspaceEntityWithSymbolicId
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiFile
@@ -50,19 +52,19 @@ object ScalaPsiImplementationHelper {
   }
 
   /**
-   * Searches for corresponding [[WorkspaceModel]] entities for a given file.
+   * Searches for libraries or SDKs associated with a given file (upstream: workspace model entities).
    *
-   *
-   * First, it searches for [[LibraryEntity]]s associated with the file. If no [[LibraryEntity]]s found,
-   * it searches for [[SdkEntity]]s associated with the file.
+   * First, it searches for [[Library]]s associated with the file. If no libraries are found,
+   * it searches for [[Sdk]]s associated with the file.
    */
-  def findAssociatedEntities(file: VirtualFile, idx: ProjectFileIndex): Iterable[WorkspaceEntityWithSymbolicId] = {
-    val elements = idx.findContainingLibraries(file).asScala
+  def findAssociatedEntities(file: VirtualFile, idx: ProjectFileIndex): Iterable[AnyRef] = {
+    val orderEntries = idx.getOrderEntriesForFile(file).asScala
+    val libraries = orderEntries.collect { case entry: LibraryOrderEntry if entry.getLibrary != null => entry.getLibrary }
 
-    if (elements.nonEmpty) {
-      elements
+    if (libraries.nonEmpty) {
+      libraries
     } else {
-      idx.findContainingSdks(file).asScala
+      orderEntries.collect { case entry: ModuleExtensionWithSdkOrderEntry if entry.getSdk != null => entry.getSdk }
     }
   }
 }

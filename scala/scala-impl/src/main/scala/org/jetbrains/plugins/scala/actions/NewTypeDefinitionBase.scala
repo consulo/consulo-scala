@@ -10,14 +10,13 @@ import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiFileFactory}
 import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 
 import java.util.Properties
 import javax.swing.Icon
 
 abstract class NewTypeDefinitionBase[T <: ScTemplateDefinition](@Nls txt: String, @Nls description: String, icon: Icon)
-  extends CreateTemplateInPackageAction[T](txt, description, icon, JavaModuleSourceRootTypes.SOURCES) {
+  extends CreateTemplateInPackageAction[T](txt, description, icon, true) {
 
   override def checkPackageExists(psiDirectory: PsiDirectory): Boolean = JavaDirectoryService.getInstance.getPackage(psiDirectory) != null
 

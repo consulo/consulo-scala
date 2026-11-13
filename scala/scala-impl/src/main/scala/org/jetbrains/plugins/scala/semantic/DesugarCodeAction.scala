@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.semantic
 
+import consulo.language.content.{ProductionContentFolderTypeProvider, TestContentFolderTypeProvider}
+import consulo.compiler.ModuleCompilerPathsManager
 import consulo.project.Project
 import consulo.diff.request.SimpleDiffRequest
 import consulo.diff.{DiffContentFactory, DiffManager}
@@ -9,7 +11,6 @@ import consulo.codeEditor.Editor
 import consulo.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import consulo.module.Module
-import com.intellij.openapi.roots.CompilerModuleExtension
 import consulo.module.content.layer.orderEntry.LibraryOrderEntry
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex}
 import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
@@ -53,8 +54,8 @@ object DesugarCodeAction {
     val (tastyFileName, tastyFileContents, upToDate, classpath) = if (!isScala3) ("", Array.emptyByteArray, true, Seq.empty[String]) else if (fileIndex.isInSourceContent(virtualFile)) {
       val module = psiFile.module.getOrElse(throw new RuntimeException(s"No module for $psiFile"))
       val outputDir =
-        if (fileIndex.isInTestSourceContent(virtualFile)) CompilerModuleExtension.getInstance(module).getCompilerOutputPathForTests.toNioPath
-        else CompilerModuleExtension.getInstance(module).getCompilerOutputPath.toNioPath
+        if (fileIndex.isInTestSourceContent(virtualFile)) ModuleCompilerPathsManager.getInstance(module).getCompilerOutputPath(TestContentFolderTypeProvider.getInstance())
+        else ModuleCompilerPathsManager.getInstance(module).getCompilerOutputPath(ProductionContentFolderTypeProvider.getInstance())
       val tastyFile = {
         val elements = (cls: PsiClass).getQualifiedName.split('.').toSeq.dropRight(1) :+ (cls: PsiClass).getName.stripSuffix("$") + ".tasty"
         elements.foldLeft(outputDir)((acc, x) => acc.resolve(x))

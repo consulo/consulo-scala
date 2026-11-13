@@ -19,7 +19,6 @@ import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiFileFactory}
 import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
-import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
@@ -44,7 +43,7 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
   ScalaBundle.message("newclassorfile.menu.action.text"),
   ScalaBundle.message("newclassorfile.menu.action.description"),
   Icons.CLASS,
-  JavaModuleSourceRootTypes.SOURCES
+  true
 ) with DumbAware {
 
   override def getActionName(directory: PsiDirectory, newName: String, templateName: String): String =

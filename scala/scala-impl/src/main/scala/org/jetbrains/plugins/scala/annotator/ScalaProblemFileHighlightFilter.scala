@@ -7,7 +7,6 @@ import consulo.module.content.ProjectRootManager
 import consulo.util.lang.function.Condition
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiManager
-import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.annotator.ScalaProblemFileHighlightFilter._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.settings.{ScalaHighlightingMode, ScalaProjectSettings}
@@ -35,7 +34,7 @@ private object ScalaProblemFileHighlightFilter {
   private def isScalaSourceFile(project: Project, file: VirtualFile): Boolean = {
     if (!file.isDirectory && !FileTypeManager.getInstance.isFileIgnored(file)) {
       val fileIndex = ProjectRootManager.getInstance(project).getFileIndex
-      fileIndex.isUnderSourceRootOfType(file, JavaModuleSourceRootTypes.SOURCES) || fileIndex.isInLibrarySource(file)
+      fileIndex.isInSourceContent(file) || fileIndex.isInLibrarySource(file)
     } else {
       false
     }

@@ -24,7 +24,8 @@ import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 import consulo.language.psi.{PsiFile, PsiManager}
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.jps.model.java.{JavaResourceRootType, JavaSourceRootType}
+import consulo.content.base.ExcludedContentFolderTypeProvider
+import consulo.language.content.{ProductionContentFolderTypeProvider, ProductionResourceContentFolderTypeProvider, TestContentFolderTypeProvider, TestResourceContentFolderTypeProvider}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
 
@@ -202,11 +203,11 @@ object ModuleBuilderUtil {
     def url(relativePath: String): String =
       vContentRootDir.toString + java.io.File.separator + relativePath
 
-    folders.sources.map(url).foreach(entry.addSourceFolder(_, JavaSourceRootType.SOURCE))
-    folders.testSources.map(url).foreach(entry.addSourceFolder(_, JavaSourceRootType.TEST_SOURCE))
-    folders.resources.map(url).foreach(entry.addSourceFolder(_, JavaResourceRootType.RESOURCE))
-    folders.testResources.map(url).foreach(entry.addSourceFolder(_, JavaResourceRootType.TEST_RESOURCE))
-    folders.excluded.map(url).foreach(entry.addExcludeFolder)
+    folders.sources.map(url).foreach(entry.addFolder(_, ProductionContentFolderTypeProvider.getInstance))
+    folders.testSources.map(url).foreach(entry.addFolder(_, TestContentFolderTypeProvider.getInstance))
+    folders.resources.map(url).foreach(entry.addFolder(_, ProductionResourceContentFolderTypeProvider.getInstance))
+    folders.testResources.map(url).foreach(entry.addFolder(_, TestResourceContentFolderTypeProvider.getInstance))
+    folders.excluded.map(url).foreach(entry.addFolder(_, ExcludedContentFolderTypeProvider.getInstance))
   }
 
   private def getOrCreateDir(dirPath: String): Option[Path] =

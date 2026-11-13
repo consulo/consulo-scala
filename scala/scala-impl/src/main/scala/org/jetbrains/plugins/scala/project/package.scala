@@ -18,22 +18,18 @@ import consulo.language.util.ModuleUtilCore
 import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
 import consulo.project.util.ProjectUtil
-import com.intellij.openapi.roots.ExternalProjectSystemRegistry
 import consulo.module.content.layer.{ModifiableRootModel, OrderEnumerator}
 import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex, ProjectRootManager}
 import consulo.content.OrderRootType
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
+import com.intellij.openapi.roots.impl.libraries.Library
 import consulo.content.library.{Library, LibraryTablesRegistrar}
 import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
 import consulo.virtualFileSystem.VirtualFile
 import consulo.module.content.layer.orderEntry.DependencyScope
-import com.intellij.platform.workspace.jps.entities.*
-import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
 import consulo.language.psi.{LanguageSubstitutors, PsiElement, PsiFile}
 import consulo.virtualFileSystem.util.PathsList
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.jps.model.serialization.library.JpsLibraryTableSerializer
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
 import org.jetbrains.plugins.scala.extensions.*
@@ -46,8 +42,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScStubElementType
 import org.jetbrains.plugins.scala.lang.resolve.processor.precedence.PrecedenceTypes
 import org.jetbrains.plugins.scala.project.LibraryExt.{guessLibraryVersionFromName, runtimeVersion}
 import org.jetbrains.plugins.scala.project.ScalaFeatures.SerializableScalaFeatures
-import org.jetbrains.plugins.scala.project.external.CompanionProxyUtils
-import org.jetbrains.plugins.scala.project.external.CompanionProxyUtils.LegacyBridgeModifiableBaseCompanion
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerConfiguration, ScalaCompilerSettings}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.tasty.reader.CompilerOptions
@@ -59,7 +53,6 @@ import org.jetbrains.sbt.{Sbt, WorkspaceModelUtil}
 
 import java.net.{URI, URL}
 import java.nio.file.Path
-import kotlin.Unit.INSTANCE as KUnit
 import scala.annotation.unused
 import scala.jdk.CollectionConverters.*
 import scala.ref.Reference
@@ -83,9 +76,11 @@ package object project {
 
     import LibraryExt.*
 
-    override def isScalaSdk: Boolean = library match {
-      case libraryEx: LibraryEx => libraryEx.isScalaSdk
-      case _ => false
+    override def isScalaSdk: Boolean = library.getKind == ScalaLibraryType.Kind
+
+    def properties: ScalaLibraryProperties = library.getProperties match {
+      case properties: ScalaLibraryProperties => properties
+      case _ => throw new IllegalStateException("Library is not a Scala SDK: " + library.getName)
     }
 
     override def name: Option[String] = Option(library.getName)
@@ -122,90 +117,6 @@ package object project {
     def isRuntimeLibrary(name: String): Boolean = RuntimeLibrary.findFirstIn(name).isDefined
 
     def runtimeVersion(input: String): Option[String] = JarVersion.findFirstIn(input)
-  }
-
-  implicit class LibraryExExt(private val library: LibraryEx) extends AnyVal {
-
-    def isScalaSdk: Boolean = library.getKind == ScalaLibraryType.Kind
-
-    def properties: ScalaLibraryProperties = library.getProperties match {
-      case properties: ScalaLibraryProperties => properties
-      case _ => throw new IllegalStateException("Library is not a Scala SDK: " + library.getName)
-    }
-  }
-
-  implicit class MutableEntityStorageExt(private val storage: MutableEntityStorage) extends AnyVal {
-    /**
-     * Adds a project-level [[LibraryEntity]] using a JPS-backed entity source.
-     * Use this only for build tools whose entities can be serialized with JPS.
-     */
-    def addLibraryEntity(libraryName: String, project: Project, sourceId: String, roots: Seq[LibraryRoot] = Seq.empty): LibraryEntity =
-      addLibraryEntity(
-        libraryName,
-        roots,
-        entitySource = {
-          val externalSource = ExternalProjectSystemRegistry.getInstance().getSourceById(sourceId)
-          val legacyBridgeModifiableBase = CompanionProxyUtils.LegacyBridgeJpsEntitySourceFactoryCompanion.getInstance(project)
-          legacyBridgeModifiableBase.createEntitySourceForProjectLibrary(externalSource)
-        }
-      )
-
-    def addLibraryEntity(libraryName: String, roots: Seq[LibraryRoot], entitySource: => EntitySource): LibraryEntity = {
-      val libraryId = new LibraryId(libraryName, LibraryTableId.ProjectLibraryTableId.INSTANCE)
-      val existingLibrary = storage.resolve(libraryId)
-      if (existingLibrary != null) existingLibrary
-      else {
-        val libraryEntity = LibraryEntityModifications.createLibraryEntity(libraryName, LibraryTableId.ProjectLibraryTableId.INSTANCE, roots.asJava, entitySource)
-        storage.addEntity[LibraryEntityBuilder, LibraryEntity](libraryEntity)
-      }
-    }
-  }
-
-  implicit class LibraryEntityExt(private val libraryEntity: LibraryEntity) extends AnyVal with LibraryBase {
-    override def isScalaSdk: Boolean = {
-      val typeId = libraryEntity.getTypeId
-      typeId != null && typeId.getName == ScalaLibraryType.Kind.getKindId
-    }
-
-    override def name: Option[String] = Option(libraryEntity.getName)
-
-    /**
-     * Written based on [[com.intellij.workspaceModel.ide.impl.legacyBridge.library.LibraryModifiableModelBridgeImpl#setProperties(com.intellij.openapi.roots.libraries.LibraryProperties)]] and
-     * [[com.intellij.workspaceModel.ide.impl.legacyBridge.library.LibraryModifiableModelBridgeImpl#updateProperties(java.lang.String, java.lang.String)]].
-     * At the moment, there is no equivalent of these methods in the Workspace model.
-     * Remove it when it's implemented on the platform side.
-     */
-    def setScalaProperties(
-      scalaLibraryProperties: ScalaLibraryProperties,
-      storage: MutableEntityStorage
-    ): Unit = {
-      val kind = libraryEntity.getTypeId
-      if (kind == null) return
-
-      val scalaLibraryPropertiesXmlTag = LegacyBridgeModifiableBaseCompanion.serializeComponentAsString(JpsLibraryTableSerializer.PROPERTIES_TAG, scalaLibraryProperties)
-      val libraryProperties = Library_extensionsKt.getLibraryProperties(libraryEntity)
-
-      if (libraryProperties == null) {
-        LibraryEntityModifications.modifyLibraryEntity(storage, libraryEntity, builder => {
-          val entity = LibraryPropertiesEntityModifications.createLibraryPropertiesEntity(libraryEntity.getEntitySource)
-          entity.setPropertiesXmlTag(scalaLibraryPropertiesXmlTag)
-          LibraryEntityModifications.setLibraryProperties(builder, entity)
-          KUnit
-        })
-      } else {
-        LibraryPropertiesEntityModifications.modifyLibraryPropertiesEntity(storage, libraryProperties, builder => {
-          builder.setPropertiesXmlTag(scalaLibraryPropertiesXmlTag)
-          KUnit
-        })
-      }
-    }
-
-    def setScalaKind(storage: MutableEntityStorage): Unit =
-      storage.modifyEntity[LibraryEntityBuilder, LibraryEntity](classOf[LibraryEntityBuilder], libraryEntity, { builder =>
-        val libraryTypeId = new LibraryTypeId(ScalaLibraryType.Kind.getKindId)
-        builder.setTypeId(libraryTypeId)
-        KUnit
-      })
   }
 
   trait LibraryBase extends Any {
@@ -275,7 +186,7 @@ package object project {
     def isIdBindingEnabled: Boolean =
       scalaModuleSettings.exists(_.isIdBindingEnabled)
 
-    def scalaSdk: Option[LibraryEx] =
+    def scalaSdk: Option[Library] =
       scalaModuleSettings.flatMap(_.scalaSdk)
 
     def isSharedSourceModule: Boolean = ModuleType.get(module).getId == "SHARED_SOURCES_MODULE"
@@ -494,34 +405,6 @@ package object project {
 
     def externalSystemId: Option[String] =
       scalaModuleSettings.flatMap(_.externalSystemId)
-  }
-
-  implicit class ModuleEntityExt(private val moduleEntity: ModuleEntity) extends AnyVal {
-    def configureScalaCompilerSettingsFrom(
-      project: Project,
-      source: String,
-      options: collection.Seq[String],
-      compileOrder: CompileOrder = CompileOrder.Mixed
-    ): Unit = {
-      val moduleOptions = ModuleExtensions.getExModuleOptions(moduleEntity)
-      val baseDirectory =
-        if (moduleOptions != null && moduleOptions.getRootProjectPath != null) {
-          moduleOptions.getRootProjectPath
-        } else {
-          project.getBasePath
-        }
-      val compilerSettings = ScalaCompilerSettings.fromOptions(withPathsRelativeTo(baseDirectory, options.toSeq, project), compileOrder)
-      val compilerConfiguration = ScalaCompilerConfiguration.instanceIn(project)
-      compilerConfiguration.configureSettingsForModule(moduleEntity.getName, source, compilerSettings)
-    }
-
-    def addLibraryDependency(storage: MutableEntityStorage, libraryEntity: LibraryEntity): Unit =
-      ModuleEntityModifications.modifyModuleEntity(storage, moduleEntity, builder => {
-        val libraryId = new LibraryId(libraryEntity.getName, libraryEntity.getTableId)
-        val libraryDependency = new LibraryDependency(libraryId, false, DependencyScope.COMPILE)
-        builder.getDependencies.add(libraryDependency)
-        KUnit
-      })
   }
 
   class ScalaSdkNotConfiguredException(module: Module) extends IllegalArgumentException(s"No Scala SDK configured for module: ${module.getName}")

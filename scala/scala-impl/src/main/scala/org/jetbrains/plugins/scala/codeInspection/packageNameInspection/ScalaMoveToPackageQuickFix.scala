@@ -22,18 +22,8 @@ final class ScalaMoveToPackageQuickFix(_file: ScalaFile, packageName: String)
   override protected def doApplyFix(file: ScalaFile)
                                    (implicit project: Project): Unit = {
     val directory = try {
-      // TODO Support multiple source roots (more complicated because chooseDestinationPackage throws an exception instead of returning a directory in such a case.)
-      // Specifically make sure that the package name is compatible with an existing package prefix.
-      for (module <- file.module;
-           sourceFolder <- sourceFolderIn(module);
-           packagePrefix = sourceFolder.getPackagePrefix if packagePrefix.nonEmpty
-           if !(packageName + ".").startsWith(packagePrefix + ".")) {
-        Messages.showMessageDialog(project,
-          ScalaInspectionBundle.message("move.file.to.package.package.prefix.error", packageName, sourceFolder.getFile.getName, packagePrefix),
-          CommonBundle.getErrorTitle, Messages.getErrorIcon)
-        return
-      }
-
+      // upstream: checks that the package name is compatible with the package prefix of the source root,
+      // Consulo source roots have no package prefixes
       val directory = CommonMoveClassesOrPackagesUtil.chooseDestinationPackage(
         project,
         packageName.replace("`", ""), // ugly hack to support most escaped package names... if they contain a dot... well, good night!
@@ -70,9 +60,4 @@ private object ScalaMoveToPackageQuickFix {
     else ScalaInspectionBundle.message("move.file.to.package.with.packagename", s"'$packageName'")
   }
 
-  def sourceFolderIn(module: Module): Option[SourceFolder] =
-    ModuleRootManager.getInstance(module).getContentEntries.flatMap(_.getSourceFolders).distinctBy(_.getPackagePrefix) match {
-      case Array(sourceFolder) => Some(sourceFolder)
-      case _ => None
-    }
 }
