@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType, ScTypeExt}
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait GenericTypeNamesProvider {
 
   def names(`type`: ScParameterizedType): Seq[String]

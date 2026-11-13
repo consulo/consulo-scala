@@ -20,6 +20,12 @@ if [ "$(cat "$DEPS/consulo.java.platform" 2>/dev/null)" != "$PLATFORM" ]; then
   echo "$PLATFORM" > "$DEPS/consulo.java.version"
 fi
 
+# overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
+for module in java.language.api; do
+  local_jar=$(ls ~/.m2/repository/consulo/plugin/consulo.java-$module/3-SNAPSHOT/consulo.java-$module-3-SNAPSHOT.jar)
+  cp "$local_jar" "$DEPS/consulo.java/lib/consulo.java-$module-3-SNAPSHOT.jar"
+done
+
 (cd "$REPO" && mvn -o -q install -pl scala/scala-impl -am -DskipTests)
 
 if ! pgrep -f "Xvfb :$DISPLAY_NUM" >/dev/null; then
