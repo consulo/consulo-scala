@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
 import consulo.application.ApplicationManager
 import consulo.project.Project
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicService.{ResolveResult, ScalafmtResolveError}
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtNotifications.FmtVerbosity

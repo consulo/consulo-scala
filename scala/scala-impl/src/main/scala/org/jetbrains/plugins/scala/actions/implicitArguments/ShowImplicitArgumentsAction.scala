@@ -18,7 +18,7 @@ import consulo.ui.ex.awt.tree.{AsyncTreeModel, StructureTreeModel}
 import consulo.ui.ex.awt.tree.Tree
 import consulo.ui.ex.awt.{ClickListener, ScrollPaneFactory}
 import consulo.util.collection.ArrayUtil
-import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
+import consulo.ui.annotation.RequiredUIAccess
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.actions.utils.TaskRunnerWithLoadingProgress
@@ -103,7 +103,7 @@ class ShowImplicitArgumentsAction extends AnAction(
     }
   }
 
-  @RequiresBackgroundThread // Can involve heavy resolution in complex code bases
+  // Can involve heavy resolution in complex code bases
   private def findAllTargets(file: PsiFile)(implicit editor: Editor, project: Project): Seq[ImplicitArgumentsTarget] = {
     if (editor.getSelectionModel.hasSelection)
       getSelectedExpression(file).toSeq.flatMap(allTargets)

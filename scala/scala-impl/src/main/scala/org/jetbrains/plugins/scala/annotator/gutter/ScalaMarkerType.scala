@@ -251,6 +251,6 @@ object ScalaMarkerType {
 }
 
 case class ScalaMarkerType(
-  tooltipProvider:   com.intellij.util.Function[PsiElement, String],
+  tooltipProvider:   java.util.function.Function[PsiElement, String],
   navigationHandler: GutterIconNavigationHandler[PsiElement]
 )

@@ -6,7 +6,7 @@ import consulo.language.psi.scope.LocalSearchScope
 import consulo.content.scope.SearchScope
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.findUsages.factory.{ScalaFindUsagesConfiguration, ScalaFindUsagesHandler}
 import org.jetbrains.plugins.scala.incremental

@@ -7,7 +7,7 @@ import consulo.java.impl.util.JavaProjectRootsUtil
 import consulo.module.content.ProjectRootManager
 import consulo.document.util.TextRange
 import consulo.util.io.FileUtil
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore}
 import consulo.language.psi.{PsiDirectory, PsiFile}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._

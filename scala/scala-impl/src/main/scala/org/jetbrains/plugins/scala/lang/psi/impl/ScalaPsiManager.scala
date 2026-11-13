@@ -15,7 +15,7 @@ import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScop
 import com.intellij.java.language.psi.search.PsiShortNamesCache
 import com.intellij.java.language.psi.util.PsiClassUtil
 import com.intellij.util.ObjectUtils
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.{Nullable, TestOnly}
 import org.jetbrains.plugins.scala.api.ScalaLowerCase

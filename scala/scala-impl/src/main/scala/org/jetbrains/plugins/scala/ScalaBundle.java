@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala;
 
-import com.intellij.DynamicBundle;
+import consulo.component.util.localize.AbstractBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.PropertyKey;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.PropertyKey;
 public final class ScalaBundle {
     @NonNls
     private static final String BUNDLE = "messages.ScalaBundle";
-    private static final DynamicBundle INSTANCE = new DynamicBundle(ScalaBundle.class, BUNDLE);
+    private static final AbstractBundle INSTANCE = new AbstractBundle(ScalaBundle.class, BUNDLE);
 
     private ScalaBundle() {
     }

@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.annotator.gutter
 
 import consulo.language.editor.gutter.GutterIconNavigationHandler
 import com.intellij.codeInsight.navigation.GotoImplementationHandler
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -17,7 +16,7 @@ private class ScalaInheritorsLineMarkerNavigator extends GutterIconNavigationHan
   override def navigate(event: MouseEvent, element: PsiElement): Unit = {
     val parent = element.getParent
 
-    @NlsContexts.PopupContent
+    // upstream: @NlsContexts.PopupContent
     val dumbModeMessage= parent match {
       case _: PsiClass =>
         ScalaBundle.message("notification.navigation.to.overriding.classes")

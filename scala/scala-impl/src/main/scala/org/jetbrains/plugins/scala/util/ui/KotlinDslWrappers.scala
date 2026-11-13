@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.util.ui
 
 import com.intellij.ide.wizard.{NewProjectWizardChainStep, NewProjectWizardStep}
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.dsl.builder.{ButtonsGroup, MutableProperty, Panel, RightGap, Row, RowsRange}
 import consulo.ui.ex.Cell
 import kotlin.Unit.{INSTANCE => KUnit}
@@ -38,7 +37,7 @@ object KotlinDslWrappers {
         KUnit
       })
 
-    def checkBoxCellWithTooltip(@Nls text: String, @NlsContexts.Tooltip tooltip: String,
+    def checkBoxCellWithTooltip(@Nls text: String, tooltip: String,
                                 getter: => Boolean, setter: Boolean => Unit): Row = {
       panel.row(null: JLabel, (row: Row) => {
         row.checkBox(text)
@@ -49,13 +48,13 @@ object KotlinDslWrappers {
       })
     }
 
-    def buttonsGroup(@NlsContexts.Label title: String, indent: Boolean = true)(init: Panel => Unit): ButtonsGroup =
+    def buttonsGroup(title: String, indent: Boolean = true)(init: Panel => Unit): ButtonsGroup =
       panel.buttonsGroup(title, indent, (groupPanel: Panel) => {
         init(groupPanel)
         KUnit
       })
 
-    def groupRowsRange(@NlsContexts.BorderTitle title: String, indent: Boolean = true)(init: Panel => Unit): RowsRange =
+    def groupRowsRange(title: String, indent: Boolean = true)(init: Panel => Unit): RowsRange =
       panel.groupRowsRange(title, indent, false, false, (groupPanel: Panel) => {
         init(groupPanel)
         KUnit

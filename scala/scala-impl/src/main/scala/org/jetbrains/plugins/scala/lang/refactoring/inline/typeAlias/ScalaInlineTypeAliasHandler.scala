@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias
 
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import com.intellij.openapi.util.NlsContexts
 import consulo.language.psi.PsiReference
 import com.intellij.java.impl.refactoring.HelpID
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -42,7 +41,7 @@ final class ScalaInlineTypeAliasHandler extends ScalaInlineActionHandler {
 object ScalaInlineTypeAliasHandler {
   val HelpId: String = HelpID.INLINE_VARIABLE // TODO: more appropriate id?
 
-  @NlsContexts.DialogTitle
+  // upstream: @NlsContexts.DialogTitle
   val RefactoringName: String = ScalaBundle.message("inline.type.alias.title")
 
   private def isSimpleTypeAlias(typeAlias: ScTypeAliasDefinition): Boolean =

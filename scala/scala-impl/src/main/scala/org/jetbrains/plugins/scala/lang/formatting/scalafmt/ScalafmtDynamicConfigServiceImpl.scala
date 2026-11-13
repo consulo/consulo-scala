@@ -10,7 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import consulo.project.Project
 import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 import consulo.language.psi.PsiFile
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import com.typesafe.config._
 import org.apache.commons.text.StringEscapeUtils
 import org.jetbrains.plugins.scala.ScalaBundle

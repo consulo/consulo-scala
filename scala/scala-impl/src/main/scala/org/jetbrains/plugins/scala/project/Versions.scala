@@ -6,7 +6,6 @@ import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import consulo.application.util.concurrent.AppExecutorUtil
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.extensions.withProgressSynchronously
 import org.jetbrains.plugins.scala.{LatestScalaVersions, ScalaBundle, ScalaVersion}
@@ -39,7 +38,7 @@ object Versions {
       loaded.sorted.reverse
     }
 
-    @RequiresBackgroundThread
+    // upstream: @RequiresBackgroundThread
     @throws[ExecutionException]
     @throws[InterruptedException]
     @throws[ProcessCanceledException]
@@ -112,7 +111,7 @@ object Versions {
     }
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   @throws[ExecutionException]
   @throws[InterruptedException]
   @throws[ProcessCanceledException]
@@ -234,14 +233,14 @@ object Versions {
       case _ => None
     }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   @throws[ExecutionException]
   @throws[InterruptedException]
   @throws[ProcessCanceledException]
   def loadScala2Versions(canBeCanceled: Boolean, indicator: ProgressIndicator): Seq[Version] = loadVersionsSorted(Seq(ScalaEntity), canBeCanceled, indicator, propagateDownloadExceptions = true)
   lazy val scala2HardcodedVersions: List[String] = ScalaEntity.hardcodedVersions
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   @throws[ExecutionException]
   @throws[InterruptedException]
   @throws[ProcessCanceledException]

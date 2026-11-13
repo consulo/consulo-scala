@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala
 
 
-import org.jetbrains.plugins.scala.api.api
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.application.ApplicationManager
 import consulo.util.lang.ControlFlowException

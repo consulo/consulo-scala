@@ -5,7 +5,7 @@ import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
 import consulo.application.dumb.IndexNotReadyException
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore}
 import com.intellij.java.language.psi.javadoc.PsiDocComment
 import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner, PsiMethod}
 import consulo.language.psi.PsiElement

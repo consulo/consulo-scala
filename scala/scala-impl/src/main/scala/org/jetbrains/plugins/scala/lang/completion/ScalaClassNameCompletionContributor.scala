@@ -8,7 +8,7 @@ import consulo.language.pattern.PlatformPatterns.psiElement
 import com.intellij.java.language.psi.{PsiClass, PsiMember}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.language.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem

@@ -4,7 +4,7 @@ import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.highlight.usage.HighlightUsagesHandlerBase
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import org.jetbrains.plugins.scala.extensions.Parent
 import org.jetbrains.plugins.scala.lang.psi.api.ScBegin
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression

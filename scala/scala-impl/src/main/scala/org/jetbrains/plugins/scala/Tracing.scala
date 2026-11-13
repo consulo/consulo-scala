@@ -1,7 +1,5 @@
 package org.jetbrains.plugins.scala
 
-
-import org.jetbrains.plugins.scala.api.api
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
 import consulo.language.ast.ASTNode

@@ -14,10 +14,9 @@ import com.intellij.openapi.module.ModuleGrouper
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
 import consulo.module.content.{ModuleRootManager, ProjectRootManager}
-import com.intellij.openapi.util.NlsSafe
 import consulo.util.io.FileUtil
 import consulo.util.lang.StringUtil
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiDirectory
 import consulo.ui.ex.SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
@@ -432,7 +431,7 @@ private case class ScalaModuleDirectoryNode(
   project: Project,
   psiDirectory: PsiDirectory,
   settings: ViewSettings,
-  @NlsSafe moduleShortName: String,
+  moduleShortName: String,
   @Nullable filter: PsiFileSystemItemFilter,
   module: Module,
 ) extends PsiDirectoryNode(project, psiDirectory, settings, filter) {

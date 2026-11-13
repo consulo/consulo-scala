@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
 import consulo.language.impl.psi.stub.StubBasedPsiElementBase
 import consulo.navigation.ItemPresentation
-import com.intellij.openapi.util.NlsSafe
 import consulo.util.lang.StringUtil
 import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNameIdentifierOwner, PsiNamedElement}
 import com.intellij.java.language.psi.PsiIdentifier
@@ -41,7 +40,7 @@ trait ScNamedElement extends ScalaPsiElement
   with PsiNamedElementWithCustomPresentation
 {
 
-  @NlsSafe
+  // upstream: @NlsSafe
   def name: String = _name()
 
   private val _name = cached("name", ModTracker.anyScalaPsiChange, () => {

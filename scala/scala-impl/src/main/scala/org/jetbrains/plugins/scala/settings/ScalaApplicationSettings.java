@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.settings;
 import consulo.language.editor.CodeInsightSettings;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
-import com.intellij.openapi.components.ReportValue;
 import com.intellij.openapi.components.SettingsCategory;
 import consulo.component.persist.Storage;
 import consulo.util.xml.serializer.XmlSerializerUtil;
@@ -49,7 +48,7 @@ public class ScalaApplicationSettings implements PersistentStateComponent<ScalaA
   public boolean RENAME_PARAMETER_IN_HIERARCHY = true;
   public boolean RENAME_VARIABLES = true;
 
-  @ReportValue
+  // upstream: @ReportValue
   public int ADD_IMPORTS_ON_PASTE = CodeInsightSettings.ASK;
   public boolean RENAME_SEARCH_IN_COMMENTS_AND_STRINGS = false;
   public boolean RENAME_SEARCH_IN_NON_CODE_FILES = false;

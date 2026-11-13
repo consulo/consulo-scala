@@ -8,7 +8,7 @@ import consulo.execution.CantRunException
 import consulo.process.ExecutionException
 import com.intellij.java.execution.impl.RunConfigurationExtension
 import consulo.project.Project
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, inReadAction, invokeLater}
 import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMethodParameters

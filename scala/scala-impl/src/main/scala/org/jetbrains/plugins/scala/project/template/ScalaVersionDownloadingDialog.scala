@@ -5,7 +5,6 @@ import consulo.application.progress.ProgressIndicator
 import consulo.ui.ex.awt.Messages
 import scala.annotation.nowarn
 import org.apache.ivy.util.MessageLogger
-import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.scala.components.libextensions.ProgressIndicatorLogger
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, withProgressSynchronouslyTry}
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
@@ -104,7 +103,7 @@ object ScalaVersionDownloadingDialog {
     }
   }
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   def createScalaVersionResolveResult(scalaVersion: ScalaVersion, dependencyManager: DependencyManagerBase): ScalaVersionResolveResult = {
     import org.jetbrains.plugins.scala.DependencyManagerBase._
 

@@ -11,7 +11,7 @@ import consulo.module.Module
 import com.intellij.openapi.roots.CompilerModuleExtension
 import consulo.module.content.layer.orderEntry.LibraryOrderEntry
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex}
-import com.intellij.openapi.vfs.VfsUtil
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import consulo.language.file.light.LightVirtualFile

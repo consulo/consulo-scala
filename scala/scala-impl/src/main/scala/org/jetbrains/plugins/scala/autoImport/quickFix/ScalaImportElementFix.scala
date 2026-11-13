@@ -21,7 +21,6 @@ import consulo.component.util.ModificationTracker
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiFile}
 import consulo.application.util.concurrent.AppExecutorUtil
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.autoImport.quickFix.Presentation.htmlWithBody
 import org.jetbrains.plugins.scala.autoImport.quickFix.ScalaImportElementFix._
@@ -170,7 +169,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
    * Must be called from the background thread as it is a potentially long-running task.
    */
   // upstream: @ApiStatus.Internal
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   final def preComputeElements(): Unit = if (place.isValid && isComputationScheduled.compareAndSet(false, true)) {
     val elementsToImport = findElementsToImport()
     computedElements.set(elementsToImport)

@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.inline.variable
 
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import com.intellij.openapi.util.NlsContexts
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.impl.refactoring.HelpID
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -40,6 +39,6 @@ final class ScalaInlineVariableHandler extends ScalaInlineActionHandler {
 object ScalaInlineVariableHandler {
   val HelpId: String = HelpID.INLINE_VARIABLE
 
-  @NlsContexts.DialogTitle
+  // upstream: @NlsContexts.DialogTitle
   val RefactoringName: String = ScalaBundle.message("inline.variable.title")
 }

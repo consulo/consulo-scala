@@ -7,7 +7,7 @@ import consulo.document.util.TextRange
 import consulo.language.pattern.{ElementPattern, PlatformPatterns}
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.{CaptureExt, DelegatingCompletionProvider, ScalaCompletionContributor, ScalaKeyword, aot, positionFromParameters}

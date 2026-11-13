@@ -117,6 +117,12 @@
             <artifactId>coursier-paths</artifactId>
             <version>2.1.26</version>
         </dependency>
+        <dependency>
+            <groupId>consulo.internal</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- no valid JPMS module names - bundled into this module (see maven-dependency-plugin) -->
         <dependency>
             <groupId>org.scala-lang.modules</groupId>

@@ -13,6 +13,7 @@ module org.intellij.scala {
     requires scala.collection.compat;
     requires org.apache.ivy;
     requires coursier.paths;
+    requires forms.rt;
     requires jakarta.inject;
 
     requires com.intellij.xml;

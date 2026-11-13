@@ -8,9 +8,8 @@ import consulo.content.library.{LibraryType, NewLibraryConfiguration, Persistent
 import com.intellij.openapi.roots.ui.configuration._
 import com.intellij.openapi.roots.JavadocOrderRootType
 import consulo.content.OrderRootType
-import com.intellij.openapi.vfs.VfsUtil
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
-import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
@@ -95,7 +94,7 @@ object ScalaLibraryType {
 
     override def getDefaultLevel = projectRoot.LibrariesContainer.LibraryLevel.GLOBAL
 
-    @VisibleForTesting
+    // upstream: @VisibleForTesting
     private[scala] def createNewScalaLibrary(descriptor: ScalaSdkDescriptor) = {
       val ScalaSdkDescriptor(version, _, compilerClasspath, scaladocExtraClasspath, libraryFiles, sourceFiles, docFiles, compilerBridgeJar, optReplClasspath, _) = descriptor
 

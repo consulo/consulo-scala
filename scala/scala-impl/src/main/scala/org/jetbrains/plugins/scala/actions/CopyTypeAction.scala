@@ -7,7 +7,6 @@ import consulo.ui.ex.CopyPasteManager
 import consulo.project.Project
 import consulo.language.editor.util.PsiUtilBase
 import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.utils.TaskRunnerWithLoadingProgress
@@ -76,7 +75,7 @@ final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type
     }
   }
 
-  @RequiresBackgroundThread // can involve heavy resolution in complex code bases
+  // can involve heavy resolution in complex code bases
   private def getElementTypePresentation(element: ScalaPsiElement & Typeable): Option[String] = {
     val typeResult = element match {
       case expr: ScExpression =>

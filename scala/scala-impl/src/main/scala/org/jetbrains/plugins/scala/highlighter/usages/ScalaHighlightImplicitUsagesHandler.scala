@@ -7,7 +7,7 @@ import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, ReferenceRange}
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightImplicitUsagesHandler.TargetKind
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt

@@ -7,7 +7,8 @@ import consulo.codeEditor.Editor
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
 import consulo.language.psi.PsiElement
-import com.intellij.util.{Consumer, EmptyConsumer}
+import java.util.function.Consumer
+import com.intellij.util.EmptyConsumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

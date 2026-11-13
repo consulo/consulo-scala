@@ -4,7 +4,8 @@ import consulo.language.editor.completion.lookup.{Lookup, LookupActionProvider, 
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiNamedElement
 import consulo.ui.ex.awt.EmptyIcon
-import com.intellij.util.{Consumer, PlatformIcons}
+import java.util.function.Consumer
+import com.intellij.util.PlatformIcons
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaImportingInsertHandler

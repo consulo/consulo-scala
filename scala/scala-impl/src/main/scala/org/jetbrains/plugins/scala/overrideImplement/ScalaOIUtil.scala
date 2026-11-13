@@ -13,8 +13,7 @@ import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiWhiteSpace
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.PsiUtilCore
 import consulo.util.lang.function.ThrowableRunnable
-import com.intellij.util.concurrency.annotations.RequiresEdt
-import org.jetbrains.annotations.{ApiStatus, VisibleForTesting}
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -77,7 +76,7 @@ object ScalaOIUtil {
                              (implicit project: Project, editor: Editor): Unit =
     invokeOverrideImplement(file, isImplement, None)
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   def invokeOverrideImplement(
     file: PsiFile,
     isImplement: Boolean,
@@ -89,7 +88,7 @@ object ScalaOIUtil {
     }
   }
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   // upstream: @ApiStatus.Internal
   def getTemplateDefinitionForOverrideImplementAction(
     file: PsiFile,

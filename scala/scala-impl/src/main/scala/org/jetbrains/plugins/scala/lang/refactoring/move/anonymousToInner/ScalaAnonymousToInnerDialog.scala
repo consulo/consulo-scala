@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.move.anonymousToInner
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.project.Project
 import consulo.ui.ex.awt.DialogWrapper
-import com.intellij.openapi.util.NlsContexts.DialogMessage
 import consulo.language.psi.PsiManager
 import com.intellij.java.language.psi.PsiNameHelper
 import com.intellij.java.impl.refactoring.HelpID

@@ -16,7 +16,7 @@ import consulo.language.editor.refactoring.ui.{CodeFragmentTableCellEditorBase, 
 import consulo.ui.ex.awt.table.{JBTable, TableView}
 import consulo.ui.ex.awt.tree.Tree
 import com.intellij.ui.{util => _, _}
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import consulo.ui.ex.awt.table.{JBListTable, JBTableRowEditor}
 import com.intellij.util.ui.table.JBTableRowRenderer
 import com.intellij.util.ui.StartupUiUtil

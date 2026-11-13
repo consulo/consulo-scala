@@ -13,7 +13,7 @@ import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
 import consulo.language.psi.{PsiElement, PsiReference}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import consulo.util.collection.ContainerUtil
 import consulo.language.psi.stub.FileBasedIndex
 import consulo.application.util.function.{CommonProcessors, Processor}

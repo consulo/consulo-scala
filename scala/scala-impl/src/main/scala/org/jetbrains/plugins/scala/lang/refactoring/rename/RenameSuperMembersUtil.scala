@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala
 package lang.refactoring.rename
 
 
-import org.jetbrains.plugins.scala.api.api
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.language.editor.ui.navigation.PsiTargetNavigator
 import com.intellij.ide.util.PsiClassRenderingInfo

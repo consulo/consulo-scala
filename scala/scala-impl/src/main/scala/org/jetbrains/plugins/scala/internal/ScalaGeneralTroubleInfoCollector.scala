@@ -4,7 +4,6 @@ import consulo.logging.Logger
 import com.intellij.openapi.module
 import consulo.project.Project
 import com.intellij.troubleshooting.GeneralTroubleInfoCollector
-import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.internal.ScalaGeneralTroubleInfoCollector.Log
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
@@ -52,7 +51,7 @@ object ScalaGeneralTroubleInfoCollector {
 
   private val Log = Logger.getInstance(classOf[ScalaGeneralTroubleInfoCollector])
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   def buildText(
     scalaVersionToModules: Map[ScalaVersion, Seq[?]],
     sbtVersionToModules: Map[Version, Seq[?]]

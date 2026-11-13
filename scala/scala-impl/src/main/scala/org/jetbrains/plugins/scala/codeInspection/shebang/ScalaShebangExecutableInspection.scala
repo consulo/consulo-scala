@@ -9,10 +9,10 @@ import consulo.codeEditor.Editor
 import consulo.fileEditor.FileEditorManager
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore}
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

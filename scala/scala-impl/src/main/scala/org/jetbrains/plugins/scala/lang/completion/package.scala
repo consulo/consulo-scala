@@ -18,7 +18,7 @@ import com.intellij.java.language.psi.{PsiClass, PsiMember}
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
 import consulo.language.ast.IElementType
 import consulo.language.psi.util.PsiTreeUtil.{getContextOfType, getParentOfType}
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker.hasStableType
 import org.jetbrains.plugins.scala.caches.{CachesUtil, cachedInUserData}

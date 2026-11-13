@@ -489,7 +489,7 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
         try {
             Class<?> thisClass = this.getClass();
             if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
                 $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
             }
             bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);

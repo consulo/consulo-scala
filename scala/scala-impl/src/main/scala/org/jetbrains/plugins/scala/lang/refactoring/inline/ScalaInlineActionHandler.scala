@@ -7,7 +7,6 @@ import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.ui.ex.awt.DialogWrapper
 import consulo.util.lang.function.Condition
-import com.intellij.openapi.util.NlsContexts
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiReference}
@@ -32,7 +31,7 @@ import scala.util.chaining.scalaUtilChainingOps
 abstract class ScalaInlineActionHandler extends InlineActionHandler {
   protected def helpId: String
 
-  @NlsContexts.DialogTitle
+  // upstream: @NlsContexts.DialogTitle
   protected def refactoringName: String
 
   protected def canInlineScalaElement(scalaElement: ScalaPsiElement): Boolean
@@ -70,7 +69,7 @@ abstract class ScalaInlineActionHandler extends InlineActionHandler {
     }
   }
 
-  final protected def showErrorHint(@NlsContexts.DialogMessage message: String)(implicit project: Project, editor: Editor): Unit =
+  final protected def showErrorHint(message: String)(implicit project: Project, editor: Editor): Unit =
     CommonRefactoringUtil.showErrorHint(project, editor, message, refactoringName, helpId)
 
   final protected def showDialog(dialog: ScalaInlineDialog): Unit =

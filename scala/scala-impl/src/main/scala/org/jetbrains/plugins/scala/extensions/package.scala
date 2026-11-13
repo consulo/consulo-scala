@@ -4,7 +4,6 @@ package org.jetbrains.plugins.scala
 import org.jetbrains.plugins.scala.api.NotImplementedError
 import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
-import org.jetbrains.plugins.scala.api.api
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.impl.psi.stub.StubBasedPsiElementBase
@@ -26,7 +25,7 @@ import consulo.component.ProcessCanceledException
 import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
 import consulo.application.util.function.{Computable, ThrowableComputable}
-import com.intellij.openapi.util.{DialogTitle, NlsContexts, NlsSafe}
+import com.intellij.openapi.util.DialogTitle
 import consulo.disposer.Disposer
 import consulo.util.lang.ref.Ref
 import consulo.document.util.TextRange
@@ -49,7 +48,7 @@ import consulo.language.ast.{IElementType, TokenSet}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.application.util.function.CommonProcessors.CollectUniquesProcessor
 import consulo.application.util.concurrent.AppExecutorUtil
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import consulo.util.lang.CharArrayUtil
 import consulo.util.collection.ArrayFactory
 import consulo.application.util.function.Processor
@@ -1357,7 +1356,7 @@ package object extensions {
     /**
       * Second match branch is for Java only.
       */
-    @NlsSafe
+    // upstream: @NlsSafe
     @Nullable
     def name: String = {
       named match {
@@ -1528,7 +1527,7 @@ package object extensions {
 
   //TODO: remove these shit implicit conversions?
   // but need to be safe, first let's check the usages
-  implicit def toIdeaFunction[A, B](f: Function[A, B]): com.intellij.util.Function[A, B] = (param: A) => f(param)
+  implicit def toIdeaFunction[A, B](f: Function[A, B]): java.util.function.Function[A, B] = (param: A) => f(param)
 
   implicit def toProcessor[T](action: T => Boolean): Processor[T] = (t: T) => action(t)
 
@@ -1633,7 +1632,7 @@ package object extensions {
    * If canBeCanceled is true, remember to call [[com.intellij.openapi.progress.ProgressManager.checkCanceled]]
    * or directly [[com.intellij.openapi.progress.ProgressIndicator.checkCanceled]] in order to prevent UI from freezing
    */
-  def withProgressSynchronously[T](@NlsContexts.DialogTitle title: String, canBeCanceled: Boolean = false)(body: => T): T = {
+  def withProgressSynchronously[T](title: String, canBeCanceled: Boolean = false)(body: => T): T = {
     withProgressSynchronouslyTry[T](title, canBeCanceled)(_ => body) match {
       case Success(result) => result
       case Failure(exception) => throw exception
@@ -1644,7 +1643,7 @@ package object extensions {
    * If canBeCanceled is true, remember to call [[com.intellij.openapi.progress.ProgressManager.checkCanceled]]
    * or directly [[com.intellij.openapi.progress.ProgressIndicator.checkCanceled]] in order to prevent UI from freezing
    */
-  def withProgressSynchronouslyTry[T](@NlsContexts.DialogTitle title: String, canBeCanceled: Boolean = false)(body: ProgressManager => T): Try[T] = {
+  def withProgressSynchronouslyTry[T](title: String, canBeCanceled: Boolean = false)(body: ProgressManager => T): Try[T] = {
     val manager = ProgressManager.getInstance
     catching(classOf[Exception]).withTry {
       manager.runProcessWithProgressSynchronously(new ThrowableComputable[T, Exception] {

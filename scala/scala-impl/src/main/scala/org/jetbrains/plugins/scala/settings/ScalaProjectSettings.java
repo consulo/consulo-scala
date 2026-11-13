@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.settings;
 import com.intellij.java.language.JavaLanguage;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
-import com.intellij.openapi.components.ReportValue;
 import consulo.component.persist.Storage;
 import consulo.component.persist.StoragePathMacros;
 import consulo.module.Module;
@@ -34,7 +33,7 @@ import java.util.Map;
 public class ScalaProjectSettings implements PersistentStateComponent<ScalaProjectSettings> { // TODO ScalaProjectSettings.State
   private transient final Project myProject;
 
-  @ReportValue
+  // upstream: @ReportValue
   private int IMPLICIT_PARAMETERS_SEARCH_DEPTH = -1;
 
   public boolean INHERIT_BASE_PACKAGES = true;
@@ -216,7 +215,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
     IMPLICIT_PARAMETERS_SEARCH_DEPTH = value;
   }
 
-  @ReportValue
+  // upstream: @ReportValue
   public int getOutputLimit() {
     return  OUTPUT_LIMIT;
   }
@@ -540,7 +539,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
     this.USE_ECLIPSE_COMPATIBILITY = USE_ECLIPSE_COMPATIBILITY;
   }
 
-  @ReportValue
+  // upstream: @ReportValue
   public int getAutoRunDelay() {
     return AUTORUN_DELAY;
   }

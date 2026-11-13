@@ -7,7 +7,7 @@ import consulo.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.roots.libraries.ui
 import com.intellij.openapi.roots.ui.distribution.DistributionComboBox
 import consulo.ui.ex.awt.{ComboBox, ComponentValidator}
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore}
 import consulo.ui.ex.awt.IdeBorderFactory
 import consulo.ui.ex.awt.JBLabel
 import com.intellij.uiDesigner.core.{GridLayoutManager, Spacer}

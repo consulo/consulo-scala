@@ -2,13 +2,13 @@ package org.jetbrains.plugins.scala.project.settings;
 
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.util.lang.Pair;
-import com.intellij.openapi.vfs.VfsUtil;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.ui.ex.awt.IdeBorderFactory;
 import consulo.execution.ui.awt.RawCommandLineEditor;
 import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.util.Function;
+import java.util.function.Function;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder;
@@ -115,7 +115,7 @@ public class ScalaCompilerSettingsPanel {
         String[] result = new String[urls.length];
         int i = 0;
         for (String url : urls) {
-            result[i] = VfsUtil.urlToPath(url);
+            result[i] = VirtualFileUtil.urlToPath(url);
             i++;
         }
         return result;
@@ -154,7 +154,7 @@ public class ScalaCompilerSettingsPanel {
         String[] result = new String[paths.length];
         int i = 0;
         for (String path : paths) {
-            result[i] = VfsUtil.pathToUrl(path);
+            result[i] = VirtualFileUtil.pathToUrl(path);
             i++;
         }
         return result;
@@ -285,7 +285,7 @@ public class ScalaCompilerSettingsPanel {
         try {
             Class<?> thisClass = this.getClass();
             if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
                 $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
             }
             bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);

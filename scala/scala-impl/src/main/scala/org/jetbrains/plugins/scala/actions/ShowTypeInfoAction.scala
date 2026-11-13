@@ -9,7 +9,6 @@ import consulo.project.Project
 import consulo.util.lang.StringUtil
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.editor.util.PsiUtilBase
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.plugins.scala.actions.ShowTypeInfoAction.typeTextOf
 import org.jetbrains.plugins.scala.actions.utils.TaskRunnerWithLoadingProgress
 import org.jetbrains.plugins.scala.extensions._
@@ -66,7 +65,7 @@ class ShowTypeInfoAction extends AnAction(
   private def invokeAction(editor: Editor, file: PsiFile, project: Project): Unit = {
     val selectionModel = editor.getSelectionModel
 
-    @RequiresBackgroundThread
+    // upstream: @RequiresBackgroundThread
     def calculateTypeInfo(): Option[String] = {
       if (selectionModel.hasSelection) {
         getTypeInfoHintForSelection(editor, file, project, selectionModel)

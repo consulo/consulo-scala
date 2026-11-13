@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicConfigService.ConfigResolveResult
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicService.ScalafmtResolveError

@@ -4,7 +4,6 @@ import consulo.language.editor.documentation.DocumentationMarkup
 import consulo.language.editor.documentation.DocumentationMarkup.BOTTOM_ELEMENT
 import consulo.colorScheme.EditorColorsManager
 import consulo.colorScheme.TextAttributes
-import com.intellij.openapi.util.NlsSafe
 import consulo.application.util.HtmlChunk
 import consulo.language.psi.PsiElement
 import consulo.language.impl.psi.LeafPsiElement
@@ -117,7 +116,7 @@ private class ScalaDocDefinitionGenerator private(
       generateContainerInfoSection(iconFqn, psiLink)
     }
 
-  private def generateContainerInfoSection(containerIconFqn: String, @NlsSafe containerLink: String): HtmlChunk.Element =
+  private def generateContainerInfoSection(containerIconFqn: String, containerLink: String): HtmlChunk.Element =
     BOTTOM_ELEMENT.children(
       HtmlChunk.tag("icon").attr("src", containerIconFqn),
       HtmlChunk.nbsp,

@@ -6,7 +6,7 @@ import consulo.codeEditor.markup.GutterIconRenderer
 import consulo.document.util.TextRange
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiWhiteSpace}
-import com.intellij.util.Function
+import java.util.function.Function
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt

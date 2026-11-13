@@ -11,7 +11,7 @@ import consulo.util.dataholder.Key
 import consulo.document.util.{Segment, TextRange}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.editor.copy.Scala3IndentationBasedSyntaxCopyPastePreProcessor.AfterIndentOffsetAdjuster

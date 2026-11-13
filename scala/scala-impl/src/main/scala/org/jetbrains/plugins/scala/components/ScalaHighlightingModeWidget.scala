@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.components
 import consulo.project.Project
 import consulo.project.ui.wm.StatusBarWidget
 import consulo.project.ui.wm.StatusBarWidget.WidgetPresentation
-import com.intellij.util.Consumer
+import java.util.function.Consumer
 import org.jetbrains.plugins.scala.ScalaBundle.message
 import org.jetbrains.plugins.scala.actions.ScalaHighlightingModeAction
 import org.jetbrains.plugins.scala.icons.Icons

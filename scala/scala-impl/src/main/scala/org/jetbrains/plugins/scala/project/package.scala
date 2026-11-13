@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala
 
 import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
-import org.jetbrains.plugins.scala.api.api
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.process.ExecutionException
 import consulo.disposer.Disposable
@@ -36,7 +35,7 @@ import com.intellij.platform.workspace.jps.entities.*
 import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
 import consulo.language.psi.{LanguageSubstitutors, PsiElement, PsiFile}
 import consulo.virtualFileSystem.util.PathsList
-import org.jetbrains.annotations.{ApiStatus, TestOnly}
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.jps.model.serialization.library.JpsLibraryTableSerializer
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder

@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.completion.aot
 import consulo.language.editor.completion.{CompletionParameters, CompletionResult, CompletionResultSet}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer}
 import consulo.util.lang.StringUtil.{capitalize, decapitalize}
-import com.intellij.util.{Consumer => IJConsumer}
+import java.util.function.{Consumer => IJConsumer}
 
 import scala.collection.mutable
 

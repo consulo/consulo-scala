@@ -7,7 +7,6 @@ import com.intellij.openapi.progress.util.ProgressIndicatorUtils
 import consulo.language.psi.PsiElement
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.apache.maven.artifact.versioning.ComparableVersion
-import org.jetbrains.annotations.{ApiStatus, VisibleForTesting}
 import org.jetbrains.plugins.scala.extensions.{NonNullObjectExt, SeqExt}
 import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersionInspection.{ArtifactIdSuffix, DependencyDescriptor}
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.BaseDependencyCompletionParameters
@@ -25,7 +24,7 @@ object DependencyUtil {
   private val versionCompletion = VersionCompletion.instance()
 
   // upstream: @ApiStatus.Internal
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[jetbrains] def updateMockVersionCompletionCache(newCache: ((String, String), Seq[String])*): Unit =
     VersionCompletion.MockVersionCompletion.cache.set(Map(newCache*))
 

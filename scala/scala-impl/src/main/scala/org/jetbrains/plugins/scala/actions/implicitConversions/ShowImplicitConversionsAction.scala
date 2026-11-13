@@ -13,7 +13,7 @@ import consulo.language.editor.util.PsiUtilBase
 import consulo.ui.ex.JBColor
 import consulo.ui.ex.awt.JBList
 import consulo.ui.ex.awt.util.Alarm
-import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
+import consulo.ui.annotation.RequiredUIAccess
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.utils.TaskRunnerWithLoadingProgress
@@ -116,7 +116,7 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
     )
   }
 
-  @RequiresBackgroundThread // Can involve heavy resolution in complex code bases
+  // Can involve heavy resolution in complex code bases
   private def findTargetExpressions(editor: Editor, file: PsiFile, project: Project): Seq[ScExpression] = {
     implicit val p: Project = project
     implicit val e: Editor = editor
@@ -144,7 +144,7 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
     }
   }
 
-  @RequiresBackgroundThread // Can involve heavy resolution in complex code bases
+  // Can involve heavy resolution in complex code bases
   private def getExpressions(element: PsiElement, guard: Boolean): Seq[ScExpression] = {
     val res = Seq.newBuilder[ScExpression]
     var parent = element
@@ -170,7 +170,7 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
     res.result()
   }
 
-  @RequiresBackgroundThread // Can involve heavy resolution in complex code bases
+  // Can involve heavy resolution in complex code bases
   private def calculateConversionsData(expr: ScExpression): (Option[PsiNamedElement], Seq[PsiNamedElement]) = {
     val (implicitElement: Option[PsiNamedElement], fromUnderscore: Boolean) = {
       def additionalImplicitElement: Option[PsiNamedElement] = expr.getAdditionalExpression.flatMap {

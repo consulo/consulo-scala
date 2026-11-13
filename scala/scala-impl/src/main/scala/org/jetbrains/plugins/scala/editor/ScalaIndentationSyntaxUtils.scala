@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.editor
 import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiWhiteSpace}
 import consulo.language.codeStyle.CommonCodeStyleSettings.IndentOptions
 import consulo.language.psi.util.PsiTreeUtil
-import org.jetbrains.annotations.{ApiStatus, NotNull}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.editor.enterHandler.Scala3IndentationBasedSyntaxEnterHandler._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.ScalaBlock

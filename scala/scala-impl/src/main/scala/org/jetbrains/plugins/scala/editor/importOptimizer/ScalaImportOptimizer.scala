@@ -21,7 +21,7 @@ import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.file.light.LightVirtualFile
-import com.intellij.util.concurrency.annotations.RequiresWriteLock
+import consulo.annotation.access.{RequiredWriteAction => RequiresWriteLock}
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.annotator.usageTracker.RedundantImportUtils

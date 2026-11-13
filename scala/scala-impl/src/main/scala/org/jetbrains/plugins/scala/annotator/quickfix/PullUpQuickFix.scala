@@ -11,7 +11,7 @@ import consulo.project.{DumbService, Project}
 import consulo.language.psi.PsiFile
 import consulo.language.psi.resolve.PsiElementProcessor
 import consulo.util.lang.function.ThrowableRunnable
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier.{ABSTRACT, OVERRIDE}
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster

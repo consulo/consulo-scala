@@ -4,7 +4,6 @@ import consulo.language.editor.TargetElementUtil
 import consulo.ui.ex.action.util.ActionUtil
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import com.intellij.openapi.util.NlsContexts
 import consulo.language.psi.PsiReference
 import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import consulo.language.editor.refactoring.inline.InlineOptionsDialog
@@ -16,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 
-abstract class ScalaInlineDialog(element: ScNamedElement, @NlsContexts.DialogTitle title: String, helpId: String)
+abstract class ScalaInlineDialog(element: ScNamedElement, title: String, helpId: String)
                                 (implicit project: Project, editor: Editor) extends InlineOptionsDialog(project, true, element) {
   protected val occurrencesNumber: Int =
     ActionUtil.underModalProgress(project, ScalaBundle.message("inline.occurrences.calculate.progress.title"),

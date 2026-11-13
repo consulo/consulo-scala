@@ -8,7 +8,6 @@ import consulo.language.editor.annotation.ProblemGroup
 import consulo.colorScheme.TextAttributesKey
 import consulo.codeEditor.markup.GutterIconRenderer
 import consulo.colorScheme.TextAttributes
-import com.intellij.openapi.util.NlsContexts
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 
@@ -132,7 +131,7 @@ trait ScalaAnnotationBuilder {
    * Specify tooltip for the annotation to popup on mouse hover.
    * This is an intermediate method in the creating new annotation pipeline.
    */
-  def tooltip(@NlsContexts.Tooltip tooltip: String): this.type
+  def tooltip(tooltip: String): this.type
 
   /**
    * Optimization method specifying whether the annotation should be re-calculated when the user types in it.

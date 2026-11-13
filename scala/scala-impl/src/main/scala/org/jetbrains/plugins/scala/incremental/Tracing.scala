@@ -1,8 +1,6 @@
 package org.jetbrains.plugins.scala
 package incremental
 
-
-import org.jetbrains.plugins.scala.api.api
 import extensions.{&, FirstChild, PsiElementExt}
 import lang.psi.api.expr.{ScArgumentExprList, ScBlock, ScParenthesisedExpr}
 import project.ProjectExt

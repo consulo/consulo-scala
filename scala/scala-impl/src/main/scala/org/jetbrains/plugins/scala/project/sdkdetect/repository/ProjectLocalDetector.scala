@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project.sdkdetect.repository
 
 import consulo.application.progress.ProgressIndicator
-import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PathExt}

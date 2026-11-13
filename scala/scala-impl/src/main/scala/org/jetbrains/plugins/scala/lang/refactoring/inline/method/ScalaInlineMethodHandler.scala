@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.util.lang.function.Condition
-import com.intellij.openapi.util.NlsContexts
 import consulo.language.psi.PsiReference
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.search.ReferencesSearch
@@ -56,7 +55,7 @@ final class ScalaInlineMethodHandler extends ScalaInlineActionHandler {
 object ScalaInlineMethodHandler {
   val HelpId: String = HelpID.INLINE_METHOD
 
-  @NlsContexts.DialogTitle
+  // upstream: @NlsContexts.DialogTitle
   val RefactoringName: String = ScalaBundle.message("inline.method.title")
 
   private def hasNoCallUsages(fun: ScFunctionDefinition): Boolean = {

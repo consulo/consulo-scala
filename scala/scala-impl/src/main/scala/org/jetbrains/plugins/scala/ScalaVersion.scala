@@ -1,7 +1,5 @@
 package org.jetbrains.plugins.scala
 
-
-import org.jetbrains.plugins.scala.api.api
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.util.HashBuilder._

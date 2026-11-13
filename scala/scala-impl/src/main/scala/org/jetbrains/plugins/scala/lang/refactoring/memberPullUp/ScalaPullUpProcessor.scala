@@ -5,7 +5,7 @@ import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import consulo.language.editor.refactoring.{BaseRefactoringProcessor, RefactoringBundle}
 import consulo.usage.{UsageInfo, UsageViewDescriptor}
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

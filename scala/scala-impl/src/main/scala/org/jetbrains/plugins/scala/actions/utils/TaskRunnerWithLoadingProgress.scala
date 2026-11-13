@@ -10,14 +10,13 @@ import consulo.project.Project
 import consulo.ui.ex.awt.LoadingDecorator
 import consulo.ui.ex.popup.JBPopupFactory
 import consulo.disposer.Disposer
-import com.intellij.openapi.util.NlsContexts
 import consulo.ui.ex.awt.NonOpaquePanel
 import consulo.ui.ex.awt.{JBLabel, JBLoadingPanel}
 import consulo.application.util.concurrent.AppExecutorUtil
 import com.intellij.util.concurrency.EdtScheduler
 import consulo.desktop.awt.ui.impl.image.AnimatedIcon
 import consulo.ui.ex.awt.{AsyncProcessIcon, EmptyIcon, UIUtil}
-import org.jetbrains.annotations.{ApiStatus, Nullable}
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.concurrency.CancellablePromise
 
 import java.awt.FlowLayout
@@ -55,8 +54,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
     project: Project,
     backgroundDataSupplier: () => T,
     uiDataConsumer: T => Unit,
-    @Nullable @NlsContexts.ProgressTitle
-    progressTitle: String,
+    @Nullable progressTitle: String,
     editor: Editor,
     cancelOnScrolling: Boolean,
     originalAction: AnAction
@@ -102,8 +100,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
     project: Project,
     backgroundAction: NonBlockingReadAction[T],
     uiDataConsumer: Consumer[? >: T],
-    @Nullable @NlsContexts.ProgressTitle
-    progressTitle: String,
+    @Nullable progressTitle: String,
     editor: Editor,
     cancelOnScrolling: Boolean
   ): CancellablePromise[T] = {
@@ -151,8 +148,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
    */
   private def startProgressAndCreateStopAction(
     project: Project,
-    @Nullable @NlsContexts.ProgressTitle
-    progressTitle: String,
+    @Nullable progressTitle: String,
     promiseRef: AtomicReference[? <: CancellablePromise[?]],
     editor: Editor,
     editorOrProjectDisposable: Disposable

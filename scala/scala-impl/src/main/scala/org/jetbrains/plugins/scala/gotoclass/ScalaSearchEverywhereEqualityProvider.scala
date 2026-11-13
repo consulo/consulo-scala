@@ -4,7 +4,7 @@ import consulo.searchEverywhere.SEResultsEqualityProvider.SEEqualElementsActionT
 import com.intellij.ide.actions.searcheverywhere.PSIPresentationBgRendererWrapper
 import consulo.searchEverywhere.{SEResultsEqualityProvider, SearchEverywhereFoundElementInfo}
 import consulo.language.psi.PsiElement
-import org.jetbrains.annotations.{ApiStatus, Nullable}
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 
 import java.util

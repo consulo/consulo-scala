@@ -23,7 +23,7 @@ import consulo.util.dataholder.Key
 import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 import consulo.language.psi.{PsiFile, PsiManager}
 import consulo.application.util.concurrent.AppExecutorUtil
-import org.jetbrains.annotations.{ApiStatus, Nullable}
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.jps.model.java.{JavaResourceRootType, JavaSourceRootType}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.settings.SbtProjectSettings

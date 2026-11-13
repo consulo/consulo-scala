@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.project;
 
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.ide.ui.PathEditor;
-import com.intellij.openapi.vfs.VfsUtil;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.virtualFileSystem.VirtualFile;
 
 import java.nio.file.Path;
@@ -31,8 +31,8 @@ public class MyPathEditor extends PathEditor {
   }
 
   static VirtualFile pathToVirtualFile(String url) {
-    String path = VfsUtil.urlToPath(url);
-    VirtualFile file = VfsUtil.findFile(Path.of(path), true);
+    String path = VirtualFileUtil.urlToPath(url);
+    VirtualFile file = VirtualFileUtil.findFile(Path.of(path), true);
     return file == null ? new AbsentLocalFile(url, path) : file;
   }
 

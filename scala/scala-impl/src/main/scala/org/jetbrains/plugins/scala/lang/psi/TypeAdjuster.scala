@@ -7,7 +7,7 @@ import com.intellij.java.language.psi.{PsiClass, PsiLiteral}
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiNamedElement, SmartPsiElementPointer}
 import consulo.language.psi.resolve.ResolveState
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.measure
 import org.jetbrains.plugins.scala.extensions._

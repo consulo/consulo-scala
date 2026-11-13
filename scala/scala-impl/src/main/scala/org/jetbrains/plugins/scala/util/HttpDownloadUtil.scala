@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.net.HttpConnectionUtils
 import org.jetbrains.plugins.scala.ScalaBundle
 
@@ -12,7 +11,7 @@ import scala.util.Try
 
 object HttpDownloadUtil {
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def downloadString(url: String, canBeCanceled: Boolean, indicatorOpt: Option[ProgressIndicator]): Try[String] =
     loadLinesFrom(url, canBeCanceled, indicatorOpt).map(_.mkString)
 

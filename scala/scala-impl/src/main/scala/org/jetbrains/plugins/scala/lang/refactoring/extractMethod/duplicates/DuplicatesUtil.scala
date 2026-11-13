@@ -16,7 +16,7 @@ import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import consulo.language.editor.refactoring.RefactoringBundle
 import consulo.ui.ex.awt.ReplacePromptDialog
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

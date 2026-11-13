@@ -8,7 +8,7 @@ import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
 import consulo.ui.ex.awt.hint.LightweightHint
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import com.intellij.util.ui.StartupUiUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.ObjectExt

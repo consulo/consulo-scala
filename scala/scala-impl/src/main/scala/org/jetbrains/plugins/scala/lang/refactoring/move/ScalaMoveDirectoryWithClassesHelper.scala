@@ -10,7 +10,7 @@ import consulo.language.editor.refactoring.event.RefactoringElementListener
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.{CommonMoveUtil, MoveDirectoryWithClassesHelper}
 import consulo.usage.MoveRenameUsageInfo
 import consulo.usage.UsageInfo
-import com.intellij.util.Function
+import java.util.function.Function
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.{NotNull, Unmodifiable}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

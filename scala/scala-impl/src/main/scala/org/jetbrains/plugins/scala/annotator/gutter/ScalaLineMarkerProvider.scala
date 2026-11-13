@@ -17,7 +17,7 @@ import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.util.{Function => IJFunction}
+import java.util.function.{Function => IJFunction}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
