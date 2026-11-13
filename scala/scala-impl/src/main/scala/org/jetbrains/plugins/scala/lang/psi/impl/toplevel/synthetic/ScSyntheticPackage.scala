@@ -104,9 +104,9 @@ object ScSyntheticPackage {
 
             override def getParentPackage: ScPackageImpl = ScPackageImpl.findPackage(project, parentName).orNull
 
-          override def getSubPackages: Array[PsiPackage] = Array.empty
+          override def getSubPackages: Array[PsiJavaPackage] = Array.empty
 
-          override def getSubPackages(scope: GlobalSearchScope): Array[PsiPackage] = Array.empty
+          override def getSubPackages(scope: GlobalSearchScope): Array[PsiJavaPackage] = Array.empty
 
           override def findClassByShortName(name: String, scope: GlobalSearchScope): Array[PsiClass] = Array.empty
         }
@@ -152,8 +152,8 @@ object ScSyntheticPackage {
 
             override def getParentPackage: ScPackageImpl = ScPackageImpl.findPackage(project, parentName).orNull
 
-            override def getSubPackages: Array[PsiPackage] = {
-              val buff = new mutable.HashSet[PsiPackage]
+            override def getSubPackages: Array[PsiJavaPackage] = {
+              val buff = new mutable.HashSet[PsiJavaPackage]
               filtered.foreach{
                 p =>
                   def addPackage(tail : String): Unit = {
@@ -184,7 +184,7 @@ object ScSyntheticPackage {
               }
               buff.toArray
             }
-            override def getSubPackages(scope: GlobalSearchScope): Array[PsiPackage] = getSubPackages
+            override def getSubPackages(scope: GlobalSearchScope): Array[PsiJavaPackage] = getSubPackages
 
             override def endMarkers: Seq[ScEnd] = filtered.flatMap(_.end).toSeq
           }

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
+import consulo.component.util.Iconable
 import consulo.ui.image.Image
 import consulo.navigation.ItemPresentation
 import consulo.util.lang.StringUtil
@@ -39,7 +40,8 @@ class PsiClassWrapper(
   private var qualName:   String,
   private var name:       String
 ) extends LightElement(definition.getManager, definition.getLanguage)
-  with PsiClassAdapter /*with SyntheticElement*/ {
+  with PsiClassAdapter /*with SyntheticElement*/
+  with Iconable {
 
   override def hashCode(): Int = definition.hashCode()
 

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.component.util.Iconable
 import consulo.ui.image.Image
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
@@ -249,7 +250,8 @@ sealed class ScSyntheticFunction(
   makeParamClauses: Seq[ScSyntheticTypeParameter] => Seq[Seq[Parameter]],
 )(implicit projectContext: ProjectContext)
   extends SyntheticNamedElement(name)
-    with ScTypeParametersOwner {
+    with ScTypeParametersOwner
+    with Iconable {
 
   private var containingSyntheticClass: Option[ScSyntheticClass] = None
 

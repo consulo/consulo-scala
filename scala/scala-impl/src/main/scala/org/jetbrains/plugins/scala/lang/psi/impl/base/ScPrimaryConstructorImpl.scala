@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
+import consulo.component.util.Iconable
 import consulo.ui.image.Image
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{PsiClass, PsiCodeBlock, PsiIdentifier, PsiMethod, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList}
@@ -19,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.PsiTypeConstants
 import java.util
 
 class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: ASTNode)
-  extends ScalaStubBasedElementImpl(stub, ScalaElementType.PRIMARY_CONSTRUCTOR, node) with ScPrimaryConstructor {
+  extends ScalaStubBasedElementImpl(stub, ScalaElementType.PRIMARY_CONSTRUCTOR, node) with ScPrimaryConstructor with Iconable {
 
   def this(node: ASTNode) = this(null, node)
 
