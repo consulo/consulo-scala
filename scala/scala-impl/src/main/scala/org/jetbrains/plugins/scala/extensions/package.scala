@@ -1768,7 +1768,7 @@ package object extensions {
   }
 
   implicit class StubBasedExt(val element: PsiElement) extends AnyVal {
-    def stubOrPsiChildren[Psi <: PsiElement, Stub <: StubElement[Psi]](elementType: IScalaElementType, f: ArrayFactory[Psi]): Array[Psi] = {
+    def stubOrPsiChildren[Psi <: PsiElement, Stub <: StubElement[Psi]](elementType: IElementType, f: ArrayFactory[Psi]): Array[Psi] = {
       def findWithNode(): Array[Psi] = {
         val nodes = SharedImplUtil.getChildrenOfType(element.getNode, elementType)
         val length = nodes.length

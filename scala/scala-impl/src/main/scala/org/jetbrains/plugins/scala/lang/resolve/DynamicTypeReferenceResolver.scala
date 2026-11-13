@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
 import consulo.language.psi.ResolveResult
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 abstract class DynamicTypeReferenceResolver {
 
   def resolve(expression: ScReferenceExpression): Array[ResolveResult]
