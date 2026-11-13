@@ -272,11 +272,14 @@ object ScalaOverrideContributor {
 
       val title = ScalaBundle.message("overriding.member.title")
 
-      WriteActionWithProgress.run(project, title) { indicator =>
+      val performUnderProgress: java.util.function.Consumer[ProgressIndicator] = { indicator =>
         indicator.setIndeterminate(false)
         indicator.setFraction(0)
         performInsertRunnable.run()
       }
+
+      //noinspection ApiStatus
+      WriteActionWithProgress.runInCommand(performUnderProgress)
     }
 
     private def doHandleInsert(context: InsertionContext, item: LookupElement): Unit = {
