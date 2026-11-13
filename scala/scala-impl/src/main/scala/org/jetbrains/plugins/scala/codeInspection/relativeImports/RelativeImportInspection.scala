@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.relativeImports
 
+import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
 import consulo.project.Project
@@ -56,9 +57,9 @@ object RelativeImportInspection {
 }
 
 private final class EnableFullQualifiedImports extends LocalQuickFix {
-  override def getName: String = getFamilyName
+  override def getName: LocalizeValue = LocalizeValue.of(getFamilyName)
 
-  override def getFamilyName: String = ScalaInspectionBundle.message("family.name.enable.full.qualified.imports")
+  def getFamilyName: String = ScalaInspectionBundle.message("family.name.enable.full.qualified.imports")
 
   override def applyFix(project: Project, descriptor: ProblemDescriptor): Unit = {
     ScalaCodeStyleSettings.getInstance(project).setAddFullQualifiedImports(true)

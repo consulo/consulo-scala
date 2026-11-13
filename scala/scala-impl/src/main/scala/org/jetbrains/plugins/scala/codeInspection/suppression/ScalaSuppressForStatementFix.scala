@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.suppression
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import consulo.language.editor.inspection.SuppressByCommentFix
 import consulo.language.editor.inspection.{InspectionsBundle, SuppressionUtil}
@@ -74,7 +75,7 @@ abstract class ScalaSuppressByLineCommentFix(key: HighlightDisplayKey) extends S
 
 class ScalaSuppressForStatementFix(key: HighlightDisplayKey) extends ScalaSuppressByLineCommentFix(key) {
 
-  override def getText: String = InspectionsBundle.message("suppress.inspection.statement")
+  override def getText: LocalizeValue = LocalizeValue.of(InspectionsBundle.message("suppress.inspection.statement"))
 
   override def getContainer(context: PsiElement): PsiElement = ScalaRefactoringUtil.findEnclosingBlockStatement(context) match {
     case None => null
@@ -86,13 +87,13 @@ class ScalaSuppressForStatementFix(key: HighlightDisplayKey) extends ScalaSuppre
 abstract class ScalaSuppressForDefinitionFix(key: HighlightDisplayKey, @Nls text: String, defClasses: Class[? <: PsiElement]*)
   extends ScalaSuppressByLineCommentFix(key) {
 
-  override def getText: String = text
+  override def getText: LocalizeValue = LocalizeValue.of(text)
 
   override def getContainer(context: PsiElement): PsiElement = PsiTreeUtil.getParentOfType(context, defClasses*)
 }
 
 final class ScalaSuppressForFileFix(key: HighlightDisplayKey) extends ScalaSuppressByLineCommentFix(key) {
-  override def getText: String = ScalaInspectionBundle.message("suppress.inspection.file")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("suppress.inspection.file"))
 
   override def getContainer(context: PsiElement): PsiElement = context.containingScalaFile.orNull
 

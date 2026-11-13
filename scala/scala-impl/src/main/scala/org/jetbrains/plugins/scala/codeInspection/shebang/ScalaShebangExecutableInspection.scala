@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.shebang
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.hint.HintManager
 import consulo.language.editor.inspection.scheme.InspectionManager
@@ -171,10 +172,10 @@ object ScalaShebangExecutableInspection {
     script: File
   ) extends LocalQuickFixAndIntentionActionOnPsiElement(shebang) {
 
-    override def getText: String =
-      ScalaInspectionBundle.message("shebang.make.executable")
+    override def getText: LocalizeValue =
+      LocalizeValue.of(ScalaInspectionBundle.message("shebang.make.executable"))
 
-    override def getFamilyName: String =
+    def getFamilyName: String =
       ScalaInspectionBundle.message("shebang.make.executable")
 
     override def invoke(

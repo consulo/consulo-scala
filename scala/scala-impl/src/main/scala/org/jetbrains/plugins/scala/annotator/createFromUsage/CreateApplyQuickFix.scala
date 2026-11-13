@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.createFromUsage.CreateFromUsageUtil._
@@ -14,7 +15,7 @@ class CreateApplyQuickFix(td: ScTypeDefinition, call: ScMethodCall)
 
   override def getFamilyName: String = ScalaBundle.message("family.name.create.apply.method")
 
-  override def getText: String = ScalaBundle.message("create.apply.method.in", td.shortDefinition)
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.apply.method.in", td.shortDefinition))
 
   override val methodType: Option[String] = call.expectedType().map(_.canonicalText)
 

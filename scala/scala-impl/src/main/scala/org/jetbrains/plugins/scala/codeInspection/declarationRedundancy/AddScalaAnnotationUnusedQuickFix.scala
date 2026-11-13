@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
 import consulo.codeEditor.Editor
@@ -30,9 +31,9 @@ private final class AddScalaAnnotationUnusedQuickFix(named: ScNamedElement)
       case _ => ()
     }
 
-  override def getText: String = ScalaInspectionBundle.message("annotate.declaration.with.unused")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("annotate.declaration.with.unused"))
 
-  override def getFamilyName: String = getText
+  def getFamilyName: String = getText.get
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =
     new AddScalaAnnotationUnusedQuickFix(PsiTreeUtil.findSameElementInCopy(named, target))

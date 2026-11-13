@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.relativeImports
 
+import consulo.localize.LocalizeValue
 import consulo.java.analysis.impl.localize.JavaQuickFixLocalize
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder}
@@ -31,7 +32,7 @@ class AbsoluteImportInspection extends LocalInspectionTool {
 
 private object AbsoluteImportInspection {
   private class OptimizeImportsQuickFix extends LocalQuickFix {
-    override def getFamilyName: String = JavaQuickFixLocalize.optimizeImportsFix().get
+    override def getName: LocalizeValue = JavaQuickFixLocalize.optimizeImportsFix()
 
     override def applyFix(project: Project, descriptor: ProblemDescriptor): Unit = {
       descriptor.getPsiElement.getContainingFile.asOptionOf[ScalaFile].foreach { file =>

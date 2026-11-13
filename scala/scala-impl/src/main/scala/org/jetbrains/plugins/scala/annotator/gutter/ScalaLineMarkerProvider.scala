@@ -282,7 +282,7 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
     markers.foreach(result.add)
   }
 
-  override def getName: String = ScalaBundle.message("scala.line.markers")
+  override def getName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("scala.line.markers"))
 
   override def getOptions: Array[GutterIconDescriptor.Option] = Options
 }

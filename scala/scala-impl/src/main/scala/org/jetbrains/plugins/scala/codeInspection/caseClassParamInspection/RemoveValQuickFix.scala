@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.caseClassParamInspection
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -27,7 +28,7 @@ final class RemoveValQuickFix(param: ScClassParameter)
 }
 
 final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) extends IntentionAction with DumbAware {
-  override def getText: String = ScalaInspectionBundle.message("remove.unnecessary.val")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("remove.unnecessary.val"))
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 
@@ -38,7 +39,7 @@ final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) ext
 
   override def startInWriteAction(): Boolean = true
 
-  override def getFamilyName: String = ScalaInspectionBundle.message("remove.val.from.definition")
+  def getFamilyName: String = ScalaInspectionBundle.message("remove.val.from.definition")
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =
     new RemoveValFromForBindingIntentionAction(PsiTreeUtil.findSameElementInCopy(forBinding, target))
@@ -46,7 +47,7 @@ final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) ext
 
 final class RemoveValFromGeneratorIntentionAction(generator: ScGenerator) extends IntentionAction {
 
-  override def getText: String = ScalaInspectionBundle.message("remove.unnecessary.val")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("remove.unnecessary.val"))
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 
@@ -57,7 +58,7 @@ final class RemoveValFromGeneratorIntentionAction(generator: ScGenerator) extend
 
   override def startInWriteAction() = true
 
-  override def getFamilyName: String = ScalaInspectionBundle.message("remove.val.from.definition")
+  def getFamilyName: String = ScalaInspectionBundle.message("remove.val.from.definition")
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =
     new RemoveValFromGeneratorIntentionAction(PsiTreeUtil.findSameElementInCopy(generator, target))

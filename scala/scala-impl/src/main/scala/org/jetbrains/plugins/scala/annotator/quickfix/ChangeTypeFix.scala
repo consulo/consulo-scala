@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.util.LanguageUndoUtil
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.FileModifier
@@ -29,7 +30,7 @@ final class ChangeTypeFix(
     if (widenNewType) newTypeOriginal.widen
     else newTypeOriginal
 
-  override val getText: String = {
+  override val getText: LocalizeValue = LocalizeValue.of {
     implicit val tpc: TypePresentationContext = TypePresentationContext(typeElement)
     val (oldTypeDescription, newTypeDescription) = typeElement.`type`() match {
       case Right(oldType) => TypePresentation.different(oldType, newType)
@@ -38,7 +39,7 @@ final class ChangeTypeFix(
     ScalaBundle.message("change.type.to", oldTypeDescription, newTypeDescription)
   }
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.change.type")
+  def getFamilyName: String = ScalaBundle.message("family.name.change.type")
 
   override def startInWriteAction: Boolean = true
 

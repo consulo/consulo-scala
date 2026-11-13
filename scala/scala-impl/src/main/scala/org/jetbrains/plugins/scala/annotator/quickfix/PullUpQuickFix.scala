@@ -26,7 +26,9 @@ import org.jetbrains.plugins.scala.api.isUnitTestMode
 import java.util.function.Supplier
 import java.{util => ju}
 
-final class PullUpQuickFix private(member: ScMember, override val getText: String) extends AbstractIntentionAction {
+final class PullUpQuickFix private(member: ScMember, text: String) extends AbstractIntentionAction {
+
+  override def getText: LocalizeValue = LocalizeValue.of(text)
 
   import PullUpQuickFix._
 

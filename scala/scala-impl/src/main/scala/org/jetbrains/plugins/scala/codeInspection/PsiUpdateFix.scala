@@ -33,7 +33,7 @@ abstract class PsiUpdateFix[T <: PsiElement](element: T)
  * Same as [[PsiUpdateFix]], but for a pair of elements (end element may be absent if it was invalidated)
  */
 abstract class PsiUpdateFixOnTwoPsiElements[T <: PsiElement, U <: PsiElement](
-  override val getFamilyName: String,
+  val getFamilyName: String,
   startElement: T,
   endElement: U,
 ) extends LocalQuickFixAndIntentionActionOnPsiElement(startElement, endElement) {

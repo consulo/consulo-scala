@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -26,7 +27,7 @@ object ScEnumeratorsAnnotator extends ElementAnnotator[ScEnumerators] with DumbA
   private final class RemoveErrorSemicolonIntentionAction(enumerators: ScEnumerators)
     extends IntentionAction
       with DumbAware {
-    override def getText: String = ScalaBundle.message("remove.all.erroneous.semicolons.from.forexpression")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("remove.all.erroneous.semicolons.from.forexpression"))
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 
@@ -35,7 +36,7 @@ object ScEnumeratorsAnnotator extends ElementAnnotator[ScEnumerators] with DumbA
 
     override def startInWriteAction(): Boolean = true
 
-    override def getFamilyName: String = ScalaBundle.message("remove.all.erroneous.semicolons.from.forexpression")
+    def getFamilyName: String = ScalaBundle.message("remove.all.erroneous.semicolons.from.forexpression")
 
     override def getFileModifierForPreview(target: PsiFile): FileModifier =
       new RemoveErrorSemicolonIntentionAction(PsiTreeUtil.findSameElementInCopy(enumerators, target))

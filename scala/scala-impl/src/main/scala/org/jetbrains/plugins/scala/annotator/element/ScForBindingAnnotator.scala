@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.inspection.ProblemHighlightType
@@ -42,9 +43,9 @@ object ScForBindingAnnotator extends ElementAnnotator[ScForBinding] with DumbAwa
   final class RemoveCaseFromPatternedEnumeratorFix(enumerator: ScPatternedEnumerator)
     extends IntentionAction
       with DumbAware {
-    override def getFamilyName: String = ScalaBundle.message("family.name.remove.case.from.enumerator")
+    def getFamilyName: String = ScalaBundle.message("family.name.remove.case.from.enumerator")
 
-    override def getText: String = ScalaBundle.message("remove.case")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("remove.case"))
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 

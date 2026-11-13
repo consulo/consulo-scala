@@ -250,7 +250,7 @@ abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
 class CreateObjectQuickFix(ref: ScReference)
   extends CreateTypeDefinitionQuickFix(ref, Object) {
 
-  override val getText: String = ScalaBundle.message("create.object.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.object.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.object")
 }
 
@@ -258,7 +258,7 @@ class CreateObjectQuickFix(ref: ScReference)
 class CreateTraitQuickFix(ref: ScReference)
   extends CreateTypeDefinitionQuickFix(ref, Trait) {
 
-  override val getText: String = ScalaBundle.message("create.trait.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.trait.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.trait")
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = {
@@ -269,14 +269,14 @@ class CreateTraitQuickFix(ref: ScReference)
 class CreateClassQuickFix(ref: ScReference)
   extends CreateTypeDefinitionQuickFix(ref, Class) {
 
-  override val getText: String = ScalaBundle.message("create.class.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.class")
 }
 
 class CreateCaseClassQuickFix(ref: ScReference)
   extends CreateTypeDefinitionQuickFix(ref, Class) {
 
-  override val getText: String = ScalaBundle.message("create.case.class.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.case.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.case.class")
 
   override protected def afterCreationWork(clazz: ScTypeDefinition)(editor: Editor): Unit = {
@@ -288,7 +288,7 @@ class CreateCaseClassQuickFix(ref: ScReference)
 final class CreateAnnotationClassQuickFix(ref: ScReference)
   extends CreateTypeDefinitionQuickFix(ref, Class) {
 
-  override val getText: String = ScalaBundle.message("create.annotation.class.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.annotation.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.annotation.class")
 
   override protected def afterCreationWork(td: ScTypeDefinition)(editor: Editor): Unit = {

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -22,9 +23,9 @@ final class ValToVarQuickFix(value: ScValue) extends IntentionAction {
     value.replace(replacement)
   }
 
-  override def getText: String = ScalaInspectionBundle.message("convert.val.to.var")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("convert.val.to.var"))
 
-  override def getFamilyName: String = getText
+  def getFamilyName: String = getText.get
 
   override def startInWriteAction: Boolean = true
 

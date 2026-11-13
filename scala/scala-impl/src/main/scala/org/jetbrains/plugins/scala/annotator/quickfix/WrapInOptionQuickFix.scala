@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -16,9 +17,9 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
 
 final class WrapInOptionQuickFix(expr: ScExpression, expectedType: TypeResult, exprType: TypeResult) extends IntentionAction {
 
-  override def getText: String = ScalaBundle.message("wrap.in.option.hint")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("wrap.in.option.hint"))
 
-  override def getFamilyName: String = ScalaBundle.message("wrap.in.option.name")
+  def getFamilyName: String = ScalaBundle.message("wrap.in.option.name")
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = {
     implicit val context: Context = Context(expr)

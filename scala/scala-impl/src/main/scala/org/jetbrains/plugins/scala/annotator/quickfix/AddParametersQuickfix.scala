@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
@@ -46,9 +47,9 @@ final class AddParametersQuickfix(argExprList: SmartPsiElementPointer[ScArgument
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     file.isValid && _isAvailable
 
-  override def getFamilyName: String = ScalaBundle.message("add.parameters.to.method")
+  def getFamilyName: String = ScalaBundle.message("add.parameters.to.method")
 
-  override def getText: String = text
+  override def getText: LocalizeValue = LocalizeValue.of(text)
 
   override def invoke(project: Project, editor: Editor, psiFile: PsiFile): Unit = {
     for ((argList, clause, _) <- getInfo if psiFile.isValid) {

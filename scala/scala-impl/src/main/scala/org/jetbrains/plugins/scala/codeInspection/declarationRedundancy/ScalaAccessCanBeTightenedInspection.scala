@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.editor.inspection.PriorityAction.Priority
@@ -91,9 +92,9 @@ private object ScalaAccessCanBeTightenedInspection {
 
     override val getPriority: PriorityAction.Priority = quickFixPriority(element)
 
-    override def getText: String = ScalaInspectionBundle.message("make.private")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("make.private"))
 
-    override def getFamilyName: String = ScalaInspectionBundle.message("change.modifier")
+    def getFamilyName: String = ScalaInspectionBundle.message("change.modifier")
 
     override def invoke(project: Project, file: PsiFile, editor: Editor, startElement: PsiElement, endElement: PsiElement): Unit = {
       if (editor != null && !editor.isInstanceOf[ImaginaryEditor]) { // Batch || Preview

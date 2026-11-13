@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.FileModificationService
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
 import consulo.codeEditor.Editor
@@ -19,9 +20,11 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.{createWildcardNode, createWildcardPattern}
 import org.jetbrains.plugins.scala.util.SideEffectsUtil.hasNoSideEffects
 
-private class DeleteUnusedElementFix(e: ScNamedElement, override val getText: String, val removeBindingOnly: Boolean) extends LocalQuickFixAndIntentionActionOnPsiElement(e) with Comparable[AnyRef] {
+private class DeleteUnusedElementFix(e: ScNamedElement, text: String, val removeBindingOnly: Boolean) extends LocalQuickFixAndIntentionActionOnPsiElement(e) with Comparable[AnyRef] {
 
-  override def getFamilyName: String = getText
+  override def getText: LocalizeValue = LocalizeValue.of(text)
+
+  def getFamilyName: String = text
 
   override def startInWriteAction(): Boolean = false
 

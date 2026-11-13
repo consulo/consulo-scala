@@ -16,6 +16,8 @@ abstract class CreateFromUsageQuickFixBase(ref: ScReference)
 
   override implicit val projectContext: ProjectContext = ref
 
+  def getFamilyName: String
+
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     if (file.is[ScalaCodeFragment]) false
     else if (!file.is[ScalaFile]) false

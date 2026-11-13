@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.typeAnnotation
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
@@ -76,7 +77,7 @@ object TypeAnnotationInspection {
   }
 
   private class ModifyCodeStyleQuickFix extends LocalQuickFix {
-    override def getFamilyName: String = ScalaInspectionBundle.message("quickfix.modify.code.style")
+    override def getName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("quickfix.modify.code.style"))
 
     override def applyFix(project: Project, problemDescriptor: ProblemDescriptor): Unit =
       TypeAnnotationUtil.showTypeAnnotationsSettings(project)

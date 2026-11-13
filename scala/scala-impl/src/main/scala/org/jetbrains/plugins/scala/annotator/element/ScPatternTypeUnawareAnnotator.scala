@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.inspection.ProblemHighlightType
@@ -75,9 +76,9 @@ object ScPatternTypeUnawareAnnotator extends ElementAnnotator[ScPattern] with Du
     }
 
   private final class ReplaceNamingPatternBindingElementInScala2Fix(binder: PsiElement) extends IntentionAction with DumbAware {
-    override def getText: String = ScalaBundle.message("replace.with.type", "@")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.type", "@"))
 
-    override def getFamilyName: String = ScalaBundle.message("family.name.replace.type.with.type.in.vararg.pattern")
+    def getFamilyName: String = ScalaBundle.message("family.name.replace.type.with.type.in.vararg.pattern")
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 
@@ -95,9 +96,9 @@ object ScPatternTypeUnawareAnnotator extends ElementAnnotator[ScPattern] with Du
   }
 
   private final class ReplaceNamingPatternBindingElementInScala3Fix(namingPattern: ScNamingPattern) extends IntentionAction with DumbAware {
-    override def getText: String = ScalaBundle.message("replace.with.type", namingPattern.name + "*")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.type", namingPattern.name + "*"))
 
-    override def getFamilyName: String = ScalaBundle.message("family.name.replace.with.scala3.vararg.pattern")
+    def getFamilyName: String = ScalaBundle.message("family.name.replace.with.scala3.vararg.pattern")
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
 
@@ -115,7 +116,7 @@ object ScPatternTypeUnawareAnnotator extends ElementAnnotator[ScPattern] with Du
   }
 
   /*private class ReplaceWithScala3WildcardVarargFix(varargShort: ScSeqWildcard) extends IntentionAction with DumbAware {
-    override def getText: String = ScalaBundle.message("replace.with.scala3.wildcard.varargs")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.scala3.wildcard.varargs"))
 
     override def getFamilyName: String = ScalaBundle.message("family.name.replace.old.varags.with.scala3.varargs.pattern")
 

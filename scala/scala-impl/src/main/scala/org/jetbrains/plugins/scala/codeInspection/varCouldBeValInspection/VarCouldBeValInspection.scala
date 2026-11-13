@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
+import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
 import consulo.codeEditor.Editor
@@ -52,9 +53,9 @@ object VarCouldBeValInspection {
         case _ =>
       }
 
-    override def getText: String = ScalaInspectionBundle.message("convert.var.to.val")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("convert.var.to.val"))
 
-    override def getFamilyName: String = getText
+    def getFamilyName: String = getText.get
   }
 
   private def hasNoWriteUsagesOnTheFly(element: ScBindingPattern): Boolean = {

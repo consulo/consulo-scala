@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -126,9 +127,9 @@ object FunctionAnnotator {
     }
 
   private final class RemoveAnnotationQuickFix(annotation: ScAnnotation) extends IntentionAction {
-    override def getFamilyName: String = ScalaBundle.message("family.name.remove.tailrec.annotation")
+    def getFamilyName: String = ScalaBundle.message("family.name.remove.tailrec.annotation")
 
-    override def getText: String = getFamilyName
+    override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
       annotation.isValid

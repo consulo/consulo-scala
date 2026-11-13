@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -13,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createMe
 class CreateExtractorObjectQuickFix(ref: ScReference, p: ScPattern)
   extends CreateTypeDefinitionQuickFix(ref, Object) {
 
-  override val getText: String = ScalaBundle.message("create.extractor.object.named", ref.nameId.getText)
+  override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.extractor.object.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.extractor.object")
 
   override protected def afterCreationWork(clazz: ScTypeDefinition)(editor: Editor): Unit = {

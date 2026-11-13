@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -12,9 +13,9 @@ import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 private[annotator] object EnableTypeMismatchHints extends IntentionAction {
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.enable.type.mismatch.hints")
+  def getFamilyName: String = ScalaBundle.message("family.name.enable.type.mismatch.hints")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def startInWriteAction = false
 

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -16,9 +17,9 @@ final class ConvertToExplicitSymbolQuickFix(symbolLiteral: ScSymbolLiteral)
     with DumbAware {
   private val symbolText = symbolLiteral.contentText
 
-  override def getText: String = ScalaBundle.message("convert.to.explicit.symbol", symbolText)
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.to.explicit.symbol", symbolText))
 
-  override def getFamilyName: String = ScalaBundle.message("convert.to.explicit.symbol.family")
+  def getFamilyName: String = ScalaBundle.message("convert.to.explicit.symbol.family")
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     symbolLiteral.isValid

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.inspection.{IntentionAndQuickFixAction, ProblemHighlightType}
@@ -239,9 +240,9 @@ object ScStringLiteralAnnotator extends ElementAnnotator[ScStringLiteral] {
     isInterpolated: Boolean,
   ) extends IntentionAndQuickFixAction with DumbAware {
 
-    override def getName: String = ScalaBundle.message("replace.with.literal.character", unicodeSequenceChar)
+    override def getName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.literal.character", unicodeSequenceChar))
 
-    override def getFamilyName: String = getName
+    def getFamilyName: String = getName.get
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
       findDocument(project, file, editor) != null

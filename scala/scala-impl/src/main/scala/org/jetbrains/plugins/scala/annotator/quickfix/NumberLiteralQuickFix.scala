@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.codeEditor.Editor
@@ -20,7 +21,7 @@ sealed abstract class NumberLiteralQuickFix[L <: Numeric](private val literal: L
     with DumbAware {
   protected def transformText(text: String): String
 
-  override final def getFamilyName: String = ScalaBundle.message("numeric.literal.family")
+  final def getFamilyName: String = ScalaBundle.message("numeric.literal.family")
 
   override final def isAvailable(project: Project,
                                  editor: Editor,
@@ -51,7 +52,7 @@ object NumberLiteralQuickFix {
 
   final class ConvertToLong(literal: ScIntegerLiteral) extends NumberLiteralQuickFix(literal) {
 
-    override def getText: String = ScalaBundle.message("convert.to.long.fix")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.to.long.fix"))
 
     override protected def transformText(text: String): String =
       ConvertToLong.transformText(text)
@@ -80,7 +81,7 @@ object NumberLiteralQuickFix {
   final class ConvertOctToHex(literal: Numeric,
                               isLong: Boolean) extends NumberLiteralQuickFix(literal) {
 
-    override def getText: String = ScalaBundle.message("convert.octal.to.hex.fix")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.octal.to.hex.fix"))
 
     override protected def transformText(text: String): String =
       Oct.to(Hex)(text, isLong) match {
@@ -92,7 +93,7 @@ object NumberLiteralQuickFix {
   final class ConvertBinaryToHex(literal: Numeric,
                                  isLong: Boolean) extends NumberLiteralQuickFix(literal) {
 
-    override def getText: String = ScalaBundle.message("convert.binary.to.hex.fix")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.binary.to.hex.fix"))
 
     override protected def transformText(text: String): String =
       Bin.to(Hex)(text, isLong) match {
@@ -103,7 +104,7 @@ object NumberLiteralQuickFix {
 
   final class ConvertMarker(literal: ScLongLiteral) extends NumberLiteralQuickFix(literal) {
 
-    override def getText: String = ScalaBundle.message("lowercase.long.marker.fix")
+    override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("lowercase.long.marker.fix"))
 
     override protected def transformText(text: String): String =
       ConvertToLong.transformText(text.dropRight(1))

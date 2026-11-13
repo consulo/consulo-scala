@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -9,7 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefin
 import org.jetbrains.plugins.scala.overrideImplement.ScalaOIUtil
 
 final class ImplementMembersQuickFix(clazz: ScTemplateDefinition) extends IntentionAction {
-  override def getText: String = ScalaBundle.message("implement.members.fix")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("implement.members.fix"))
   override def startInWriteAction: Boolean = false
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
@@ -18,5 +19,5 @@ final class ImplementMembersQuickFix(clazz: ScTemplateDefinition) extends Intent
   override def invoke(project: Project, editor: Editor, file: PsiFile): Unit =
     ScalaOIUtil.invokeOverrideImplement(clazz, isImplement = true, methodName = None)(using project, editor)
 
-  override def getFamilyName: String = ScalaBundle.message("implement.members.fix")
+  def getFamilyName: String = ScalaBundle.message("implement.members.fix")
 }

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection
 
+import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement
 import consulo.project.Project
@@ -15,9 +16,9 @@ import org.jetbrains.plugins.scala.extensions.ValidSmartPointer
 abstract class AbstractFixOnPsiElement[T <: PsiElement](@Nls name: String, element: T)
   extends LocalQuickFixOnPsiElement(element) {
 
-  override def getText: String = name
+  override def getText: LocalizeValue = LocalizeValue.of(name)
 
-  override def getFamilyName: String = getText
+  def getFamilyName: String = name
 
   override final def invoke(
     @NotNull project: Project,
@@ -43,9 +44,9 @@ abstract class AbstractFixOnTwoPsiElements[T <: PsiElement, S <: PsiElement](@Nl
                                                                              endElement: S)
   extends LocalQuickFixOnPsiElement(startElement, endElement) {
 
-  override def getText: String = name
+  override def getText: LocalizeValue = LocalizeValue.of(name)
 
-  override def getFamilyName: String = getText
+  def getFamilyName: String = name
 
   override final def invoke(project: Project, file: PsiFile, startElement: PsiElement, endElement: PsiElement): Unit = {
     if (!IntentionPreviewUtils.prepareElementForWrite(file)) return
