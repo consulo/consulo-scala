@@ -1,22 +1,21 @@
-package org.jetbrains.sbt.project
-
-import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
+package org.jetbrains.sbt.api.project
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.application.Application
+import consulo.module.Module
 
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
-@ApiStatus.Internal
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Internal
+// upstream: @ApiStatus.Experimental
+// upstream: <extensionPoint qualifiedName="org.intellij.sbt.sbtVersionProvider"/> in sbt-api.xml
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait SbtVersionProvider {
   def getSbtVersion(module: Module): Option[String]
 }
 
 object SbtVersionProvider {
-  private val EP = ExtensionPointName.create[SbtVersionProvider]("org.intellij.sbt.sbtVersionProvider")
-
   def getSbtVersion(module: Module): Option[String] = {
-    val implementations = EP.getExtensionList.iterator()
+    val implementations = Application.get.getExtensionList(classOf[SbtVersionProvider]).iterator()
     implementations.asScala.flatMap(_.getSbtVersion(module)).nextOption()
   }
 }

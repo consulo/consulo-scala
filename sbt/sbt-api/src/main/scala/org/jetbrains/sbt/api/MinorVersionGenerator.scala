@@ -1,6 +1,5 @@
-package org.jetbrains.sbt
-
-import org.jetbrains.plugins.scala.project.Version
+package org.jetbrains.sbt.api
+import org.jetbrains.plugins.scala.rt.project.Version
 
 trait MinorVersionGenerator[T <: Ordered[T]] {
   def minor: String

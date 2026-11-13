@@ -1,5 +1,4 @@
-package org.jetbrains.sbt
-
+package org.jetbrains.sbt.api
 import org.jetbrains.annotations.NonNls
 
 import scala.util.matching.Regex

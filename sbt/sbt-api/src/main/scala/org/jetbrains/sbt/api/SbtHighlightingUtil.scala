@@ -1,7 +1,6 @@
-package org.jetbrains.sbt
-
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
+package org.jetbrains.sbt.api
+import consulo.project.Project
+import consulo.util.dataholder.Key
 import org.jetbrains.annotations.TestOnly
 
 object SbtHighlightingUtil {

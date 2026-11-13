@@ -1,15 +1,16 @@
-package org.jetbrains.sbt.project
-
-import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
+package org.jetbrains.sbt.api.project
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.application.Application
+import consulo.module.Module
 
 import java.net.URI
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
-@ApiStatus.Internal
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Internal
+// upstream: @ApiStatus.Experimental
+// upstream: <extensionPoint qualifiedName="org.intellij.sbt.buildModuleUriProvider"/> in sbt-api.xml
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait SbtBuildModuleUriProvider {
   /**
    * For a given `module` this method returns URI of it's corresponding build module.<br>
@@ -35,15 +36,13 @@ trait SbtBuildModuleUriProvider {
 
 object SbtBuildModuleUriProvider {
 
-  private val EP = ExtensionPointName.create[SbtBuildModuleUriProvider]("org.intellij.sbt.buildModuleUriProvider")
-
   def getBuildModuleUri(module: Module): Option[URI] = {
-    val implementations = EP.getExtensionList.iterator()
+    val implementations = Application.get.getExtensionList(classOf[SbtBuildModuleUriProvider]).iterator()
     implementations.asScala.flatMap(_.getBuildModuleUri(module)).nextOption()
   }
 
   def getBuildModuleBaseDirectory(module: Module): Option[Path] = {
-    val implementations = EP.getExtensionList.iterator()
+    val implementations = Application.get.getExtensionList(classOf[SbtBuildModuleUriProvider]).iterator()
     implementations.asScala.flatMap(_.getBuildModuleBaseDirectory(module)).nextOption()
   }
 }

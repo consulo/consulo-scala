@@ -1,10 +1,8 @@
-package org.jetbrains.sbt.language
-
-import org.jetbrains.plugins.scala.LanguageFileTypeBase
-import org.jetbrains.sbt.icons.Icons
-
-import javax.swing.Icon
+package org.jetbrains.sbt.api.language
+import org.jetbrains.plugins.scala.api.LanguageFileTypeBase
+import consulo.ui.image.Image
+import org.jetbrains.sbt.api.icons.Icons
 
 object SbtFileType extends LanguageFileTypeBase(SbtLanguage.INSTANCE) {
-  override def getIcon: Icon = Icons.SBT_FILE
+  override def getIcon: Image = Icons.SBT_FILE
 }

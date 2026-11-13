@@ -1,7 +1,7 @@
-package org.jetbrains.sbt.language;
+package org.jetbrains.sbt.api.language;
 
-import com.intellij.lang.Language;
-import org.jetbrains.plugins.scala.ScalaLanguage;
+import consulo.language.Language;
+import org.jetbrains.plugins.scala.api.ScalaLanguage;
 
 public final class SbtLanguage extends Language {
 

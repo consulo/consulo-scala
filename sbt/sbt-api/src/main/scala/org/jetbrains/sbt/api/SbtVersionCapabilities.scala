@@ -1,5 +1,4 @@
-package org.jetbrains.sbt
-
+package org.jetbrains.sbt.api
 object SbtVersionCapabilities {
   /**
    * Scala3 is only supported since sbt 1.5.0

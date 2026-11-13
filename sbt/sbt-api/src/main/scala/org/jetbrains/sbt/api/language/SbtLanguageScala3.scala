@@ -1,7 +1,6 @@
-package org.jetbrains.sbt.language
-
-import com.intellij.lang.{DependentLanguage, Language}
-import com.intellij.openapi.fileTypes.LanguageFileType
+package org.jetbrains.sbt.api.language
+import consulo.language.{DependentLanguage, Language}
+import consulo.language.file.LanguageFileType
 
 final class SbtLanguageScala3 private
   extends Language(SbtLanguage.INSTANCE, "sbt Scala 3")

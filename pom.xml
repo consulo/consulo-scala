@@ -58,6 +58,7 @@
         <module>scala/test-integration/scalatest-finders</module>
         <module>scala/compiler-settings-definition</module>
         <module>scala/compiler-shared</module>
+        <module>sbt/sbt-api</module>
         <module>scala/scala-impl</module>
     </modules>
 

@@ -1,11 +1,12 @@
-package org.jetbrains
+package org.jetbrains.sbt
 
 import _root_.org.jetbrains.annotations.{NonNls, NotNull}
-import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.util.{Pair => IdeaPair}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.{PathUtil, Function => IdeaFunction}
+import consulo.container.plugin.{PluginId, PluginManager}
+import consulo.util.lang.{Pair => IdeaPair}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.util.io.ClassPathUtil
+// upstream: com.intellij.util.Function (Consulo uses java.util.function.Function)
+import _root_.java.util.function.{Function => IdeaFunction}
 
 import _root_.java.lang.{Boolean => JavaBoolean}
 import _root_.java.nio.file.{Files, Path}
@@ -15,7 +16,8 @@ import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
-package object sbt {
+// upstream: package object org.jetbrains.sbt (split package, see PACKAGE_RENAMES.tsv)
+package object api {
   implicit def toIdeaFunction1[A, B](f: A => B): IdeaFunction[A, B] =
     (a: A) => f(a)
 
@@ -81,7 +83,7 @@ package object sbt {
   def jarWith[T: ClassTag]: Path = {
     val tClass = implicitly[ClassTag[T]].runtimeClass
 
-    Option(PathUtil.getJarPathForClass(tClass)).map(Path.of(_)).getOrElse {
+    Option(ClassPathUtil.getJarPathForClass(tClass)).map(Path.of(_)).getOrElse {
       throw new RuntimeException("Jar file not found for class " + tClass.getName)
     }
   }
@@ -97,6 +99,7 @@ package object sbt {
 
   def isIdeaPluginEnabled(@NonNls @NotNull id: String): Boolean = {
     val pluginId = PluginId.getId(id)
-    PluginManagerCore.isLoaded(pluginId)
+    // upstream: PluginManagerCore.isLoaded(pluginId)
+    Option(PluginManager.findPlugin(pluginId)).exists(_.isLoaded)
   }
 }
