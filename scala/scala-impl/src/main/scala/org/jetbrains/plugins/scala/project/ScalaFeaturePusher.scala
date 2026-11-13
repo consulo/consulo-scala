@@ -9,7 +9,7 @@ import consulo.project.Project
 import consulo.index.io.data.DataInputOutputUtil
 import consulo.module.content.{FilePropertyPusher, ProjectFileIndex, PushedFilePropertiesUpdater}
 import consulo.util.dataholder.Key
-import consulo.virtualFileSystem.{FileAttribute, VirtualFile}
+import consulo.virtualFileSystem.{FileAttribute, VirtualFile, VirtualFileWithId}
 import consulo.language.psi.PsiFile
 import consulo.language.psi.stub.IndexingDataKeys
 import org.jetbrains.annotations.TestOnly
@@ -146,8 +146,10 @@ object ScalaFeaturePusher {
 
   private val persistence = new FileAttribute("scala_pushed_feature_persistence", ScalaFeatures.version, true)
 
+  // file attributes exist only for files of the persistent VFS (not for LightVirtualFile etc.)
   private def readPersistentValue(fileOrDir: VirtualFile): Option[Int] =
-    try {
+    if (!fileOrDir.isInstanceOf[VirtualFileWithId]) None
+    else try {
       Option(persistence.readAttribute(fileOrDir)).flatMap { stream =>
         Using.resource(stream)(s => Some(DataInputOutputUtil.readINT(s)))
       }
@@ -156,5 +158,6 @@ object ScalaFeaturePusher {
     }
 
   private def writePersistentValue(fileOrDir: VirtualFile, value: Int): Unit =
-    Using.resource(persistence.writeAttribute(fileOrDir))(DataInputOutputUtil.writeINT(_, value))
+    if (fileOrDir.isInstanceOf[VirtualFileWithId])
+      Using.resource(persistence.writeAttribute(fileOrDir))(DataInputOutputUtil.writeINT(_, value))
 }
