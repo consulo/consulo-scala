@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks
 
+import consulo.language.version.LanguageVersion
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 
@@ -21,17 +23,17 @@ import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.impl.{ScDocRefQuer
 class ScalaDocRefLinkParserDefinition extends ParserDefinition {
   override def getLanguage: Language = ScalaDocRefLinkLanguage.INSTANCE
 
-  override def createLexer(project: Project): Lexer = new ScalaDocRefLinkLexer
+  override def createLexer(languageVersion: LanguageVersion): Lexer = new ScalaDocRefLinkLexer
 
-  override def createParser(project: Project): PsiParser = new ScalaDocRefLinkParser
+  override def createParser(languageVersion: LanguageVersion): PsiParser = new ScalaDocRefLinkParser
 
   override def getFileNodeType: IFileElementType = ScalaDocRefLinkParserDefinition.FileNodeType
 
   @NotNull
-  override def getCommentTokens: TokenSet = TokenSet.EMPTY
+  override def getCommentTokens(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
 
   @NotNull
-  override def getStringLiteralElements: TokenSet = TokenSet.EMPTY
+  override def getStringLiteralElements(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
 
   @NotNull
   override def createElement(node: ASTNode): PsiElement =

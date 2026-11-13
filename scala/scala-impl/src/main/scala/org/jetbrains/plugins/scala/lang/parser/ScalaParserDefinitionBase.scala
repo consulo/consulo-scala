@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser
 
+import consulo.language.version.LanguageVersion
+
 import consulo.language.ast.ASTNode
 import consulo.language.parser.ParserDefinition
 import consulo.language.file.FileViewProvider
@@ -16,11 +18,11 @@ abstract class ScalaParserDefinitionBase protected() extends ParserDefinition {
 
   import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 
-  override def getCommentTokens = COMMENTS_TOKEN_SET
+  override def getCommentTokens(languageVersion: LanguageVersion) = COMMENTS_TOKEN_SET
 
-  override def getStringLiteralElements = STRING_LITERAL_TOKEN_SET
+  override def getStringLiteralElements(languageVersion: LanguageVersion) = STRING_LITERAL_TOKEN_SET
 
-  override def getWhitespaceTokens = WHITES_SPACES_TOKEN_SET
+  override def getWhitespaceTokens(languageVersion: LanguageVersion) = WHITES_SPACES_TOKEN_SET
 
   override def spaceExistenceTypeBetweenTokens(leftNode: ASTNode, rightNode: ASTNode): ParserDefinition.SpaceRequirements = {
     val isNeighbour = ScalaPsiUtil.getParentImportStatement(leftNode.getPsi) match {

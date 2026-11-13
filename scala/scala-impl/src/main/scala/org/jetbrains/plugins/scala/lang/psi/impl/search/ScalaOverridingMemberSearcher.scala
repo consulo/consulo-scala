@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.progress.ProgressManager
@@ -28,13 +29,13 @@ import scala.collection.mutable
  */
 @ExtensionImpl
 class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] {
-  override def execute(sourceElement: PsiElement, consumer: Processor[? >: PsiElement]): Boolean = {
+  override def execute(sourceElement: PsiElement, consumer: Predicate[? >: PsiElement]): Boolean = {
     sourceElement match {
       case namedElement: ScNamedElement =>
         for (implementation <- ScalaOverridingMemberSearcher.getOverridingMethodsForNavigation(namedElement)
              //to avoid duplicates with ScalaOverridingMemberSearcher
              if !namedElement.isInstanceOf[PsiMethod] || !implementation.is[PsiMethod]) {
-          if (!consumer.process(implementation)) {
+          if (!consumer.test(implementation)) {
             return false
           }
         }
@@ -52,7 +53,7 @@ class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] 
  */
 @ExtensionImpl(order = "first")
 class ScalaOverridingMemberSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
-  override def execute(queryParameters: SearchParameters, consumer: Processor[? >: PsiMethod]): Boolean = {
+  override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = queryParameters.getMethod
     method match {
       case namedElement: ScNamedElement =>
@@ -62,7 +63,7 @@ class ScalaOverridingMemberSearcher extends QueryExecutor[PsiMethod, OverridingM
           implementation = overridingMember.semantic
           if implementation.is[PsiMethod] && (overridingMember.navigation eq implementation)
         } {
-          if (!consumer.process(implementation.asInstanceOf[PsiMethod])) {
+          if (!consumer.test(implementation.asInstanceOf[PsiMethod])) {
             return false
           }
         }

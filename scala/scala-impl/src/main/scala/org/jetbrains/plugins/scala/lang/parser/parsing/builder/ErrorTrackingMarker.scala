@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.builder
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.parser.{PsiBuilder, WhitespacesAndCommentsBinder}
 import consulo.language.ast.IElementType
 
@@ -29,19 +31,19 @@ class ErrorTrackingMarker(inner: PsiBuilder.Marker, builder: ScalaPsiBuilderImpl
     builder.finishErrorTrackingMarker(this)
   }
 
-  override def doneBefore(`type`: IElementType, before: PsiBuilder.Marker, errorMessage: String): Unit = {
+  override def doneBefore(`type`: IElementType, before: PsiBuilder.Marker, errorMessage: LocalizeValue): Unit = {
     inner.doneBefore(`type`, before, errorMessage)
     builder.finishErrorTrackingMarker(this)
   }
 
-  override def error(message: String): Unit = {
+  override def error(message: LocalizeValue): Unit = {
     wasFinishedWithError = true
     inner.error(message)
     // We do not finish this tracker here because it can still be dropped afterward
     //builder.finishErrorTrackingMarker(this)
   }
 
-  override def errorBefore(message: String, before: PsiBuilder.Marker): Unit = {
+  override def errorBefore(message: LocalizeValue, before: PsiBuilder.Marker): Unit = {
     errors += 1
     inner.errorBefore(message, before)
     builder.finishErrorTrackingMarker(this)

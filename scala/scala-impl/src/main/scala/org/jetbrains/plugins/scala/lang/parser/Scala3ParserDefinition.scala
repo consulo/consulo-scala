@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser
 
+import consulo.language.version.LanguageVersion
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 
@@ -21,9 +23,9 @@ final class Scala3ParserDefinition extends ScalaParserDefinitionBase {
   //noinspection TypeAnnotation
   override def getFileNodeType: ScStubFileElementType = Scala3ParserDefinition.FileNodeType
 
-  override def createLexer(project: Project): ScalaLexer = new ScalaLexer(true, project)
+  override def createLexer(languageVersion: LanguageVersion): ScalaLexer = new ScalaLexer(true, null)
 
-  override def createParser(project: Project): ScalaParser = new ScalaParser(isScala3 = true)
+  override def createParser(languageVersion: LanguageVersion): ScalaParser = new ScalaParser(isScala3 = true)
 
   override def createFile(viewProvider: FileViewProvider): org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl = new ScalaFileImpl(viewProvider)
 }

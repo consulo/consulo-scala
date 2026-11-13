@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.util.lang.Pair
@@ -72,7 +73,7 @@ import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
  */
 @ExtensionImpl(order = "last")
 class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
-  override def execute(searchParams: OverridingMethodsSearch.SearchParameters, consumer: Processor[? >: PsiMethod]): Boolean = {
+  override def execute(searchParams: OverridingMethodsSearch.SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = searchParams.getMethod
     method match {
       // Handles Java raw parameters such as `List`, whose Scala overrides use existential types such as `List[_]`.
@@ -86,7 +87,7 @@ class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, Overridi
         val newParams = new OverridingMethodsSearch.SearchParameters(wrapper, scalaScope, searchParams.isCheckDeep)
         val newProcessor = new Processor[PsiMethod] {
           override def process(t: PsiMethod): Boolean = {
-            if (isSuperMethodForScala(m, t)) consumer.process(t)
+            if (isSuperMethodForScala(m, t)) consumer.test(t)
             else true
           }
         }
@@ -119,7 +120,7 @@ class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, 
 
   override def execute(
     seachParameters: AllOverridingMethodsSearch.SearchParameters,
-    consumer: Processor[? >: Pair[PsiMethod, PsiMethod]]
+    consumer: Predicate[? >: Pair[PsiMethod, PsiMethod]]
   ): Boolean = {
     val clazz = seachParameters.getPsiClass
     val candidates = inReadAction {
@@ -159,7 +160,7 @@ class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, 
     kind: CandidateKind,
     clazz: PsiClass,
     searchParameters: AllOverridingMethodsSearch.SearchParameters,
-    consumer: Processor[? >: Pair[PsiMethod, PsiMethod]]
+    consumer: Predicate[? >: Pair[PsiMethod, PsiMethod]]
   ): Boolean = kind match {
     case CandidateKind.RawParameter => inReadAction {
       val wrapper = rawMethodWrapper(superMethod, clazz)
@@ -169,7 +170,7 @@ class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, 
       val processor = new Processor[PsiMethod] {
         override def process(t: PsiMethod): Boolean = {
           if (isSuperMethodForScala(superMethod, t))
-            consumer.process(new Pair(superMethod, t))
+            consumer.test(new Pair(superMethod, t))
           else
             true
         }
@@ -181,7 +182,7 @@ class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, 
       val scalaScope = ScalaFilterScope(searchParameters.getScope)(using superMethod.getProject)
       val processor = new Processor[PsiMethod] {
         override def process(t: PsiMethod): Boolean =
-          consumer.process(new Pair(superMethod, t))
+          consumer.test(new Pair(superMethod, t))
       }
       processScalaPrimitiveSpecializationOverriders(superMethod, scalaScope, processAllExactOverriders = true, processor)
   }
@@ -334,7 +335,7 @@ private object ScalaAwareJavaOverridingSearcherUtils {
     superMethod: PsiMethod,
     scope: SearchScope,
     processAllExactOverriders: Boolean,
-    consumer: Processor[? >: PsiMethod]
+    consumer: Predicate[? >: PsiMethod]
   ): Boolean = {
     val superClass = inReadAction(superMethod.containingClass)
     if (superClass == null)
@@ -357,7 +358,7 @@ private object ScalaAwareJavaOverridingSearcherUtils {
       val shouldContinueProcessing = primitiveSpecializationCandidates.iterator
         .filter(isExactSuperMethodForScala(superMethod, _))
         .forall { method =>
-          val continueFromConsumer = consumer.process(method)
+          val continueFromConsumer = consumer.test(method)
           // Existence-only callers stop after the first exact override.
           continueFromConsumer && processAllExactOverriders
         }

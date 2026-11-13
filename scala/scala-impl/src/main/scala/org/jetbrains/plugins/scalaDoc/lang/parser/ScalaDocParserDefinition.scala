@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scalaDoc
 package lang
 package parser
 
+import consulo.language.version.LanguageVersion
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scalaDoc.ScalaDocLanguage
@@ -37,21 +39,21 @@ class ScalaDocParserDefinition extends ParserDefinition {
   override val getFileNodeType = new IFileElementType(ScalaDocLanguage.INSTANCE)
 
   //noinspection TypeAnnotation
-  override val getCommentTokens = TokenSet.create(SCALA_DOC_COMMENT)
+  override def getCommentTokens(languageVersion: LanguageVersion) = TokenSet.create(SCALA_DOC_COMMENT)
 
   //noinspection TypeAnnotation
-  override val getStringLiteralElements = TokenSet.create()
+  override def getStringLiteralElements(languageVersion: LanguageVersion) = TokenSet.create()
 
   def createLexerWithFlavour(project: Project, isMarkdown: Boolean): Lexer = if (isMarkdown) new ScalaDocMarkdownLexer else new ScalaDocLexer
 
-  override def createLexer(project: Project): Lexer = createLexerWithFlavour(project, isMarkdown = false /* fallback is no Markdown */)
+  override def createLexer(languageVersion: LanguageVersion): Lexer = createLexerWithFlavour(null, isMarkdown = false /* fallback is no Markdown */)
 
   def createParserWithFlavour(project: Project, isMarkdown: Boolean): PsiParser = {
-    val tabSize = CodeStyle.getSettings(project).getLanguageIndentOptions(ScalaLanguage.INSTANCE).TAB_SIZE
+    val tabSize = CodeStyle.getProjectOrDefaultSettings(project).getLanguageIndentOptions(ScalaLanguage.INSTANCE).TAB_SIZE
     new ScalaDocParser(tabSize, isMarkdown)
   }
 
-  override def createParser(project: Project): PsiParser = createParserWithFlavour(project, isMarkdown = false /* fallback is no Markdown */)
+  override def createParser(languageVersion: LanguageVersion): PsiParser = createParserWithFlavour(null, isMarkdown = false /* fallback is no Markdown */)
 
   /**
    * see also [[org.jetbrains.plugins.scala.lang.parser.ScalaASTFactory.createLeaf]]

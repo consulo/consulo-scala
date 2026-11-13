@@ -9,6 +9,8 @@ import scala.annotation.tailrec
 
 package object parser {
 
+import consulo.localize.LocalizeValue
+
   implicit final class PsiBuilderExt[B <: PsiBuilder](private val repr: B) extends AnyVal {
 
     def build(elementType: IElementType)
@@ -224,9 +226,9 @@ package object parser {
     override def precede(): PsiBuilder.Marker = inner.precede()
     override def doneBefore(`type`: IElementType, before: PsiBuilder.Marker): Unit =
       inner.doneBefore(`type`, before)
-    override def doneBefore(`type`: IElementType, before: PsiBuilder.Marker, errorMessage: String): Unit =
+    override def doneBefore(`type`: IElementType, before: PsiBuilder.Marker, errorMessage: LocalizeValue): Unit =
       inner.doneBefore(`type`, before, errorMessage)
-    override def errorBefore(message: String, before: PsiBuilder.Marker): Unit =
+    override def errorBefore(message: LocalizeValue, before: PsiBuilder.Marker): Unit =
       inner.errorBefore(message, before)
     override def drop(): Unit = inner.drop()
     override def rollbackTo(): Unit = {
@@ -237,7 +239,7 @@ package object parser {
       inner.done(`type`)
     override def collapse(`type`: IElementType): Unit =
       inner.collapse(`type`)
-    override def error(message: String): Unit =
+    override def error(message: LocalizeValue): Unit =
       inner.error(message)
     override def setCustomEdgeTokenBinders(left: WhitespacesAndCommentsBinder, right: WhitespacesAndCommentsBinder): Unit =
       inner.setCustomEdgeTokenBinders(left, right)

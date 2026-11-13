@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.progress.ProgressManager
@@ -25,7 +26,7 @@ import scala.collection.mutable.ArrayBuffer
 @ExtensionImpl
 class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectClassInheritorsSearch.SearchParameters] {
 
-  override def execute(queryParameters: DirectClassInheritorsSearch.SearchParameters, consumer: Processor[? >: PsiClass]): Boolean = {
+  override def execute(queryParameters: DirectClassInheritorsSearch.SearchParameters, consumer: Predicate[? >: PsiClass]): Boolean = {
     val clazz = queryParameters.getClassToProcess
 
     val scope: SearchScope = inReadAction {
@@ -78,11 +79,11 @@ class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectC
         }
         found match {
           case Some(inheritor) =>
-            if (!consumer.process(inheritor))
+            if (!consumer.test(inheritor))
               return false
           case _ if clazzJar == null => //this is possible during completion
             for (inheritor <- sameNameInheritors) {
-              if (!consumer.process(inheritor))
+              if (!consumer.test(inheritor))
                 return false
             }
           case _ =>
@@ -91,7 +92,7 @@ class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectC
               if (jarFile == null) 0
               else StringUtil.commonPrefixLength(jarFile.getCanonicalPath, clazzJar.getCanonicalPath)
             }
-            if (!consumer.process(closestClass))
+            if (!consumer.test(closestClass))
               return false
         }
       }
@@ -99,7 +100,7 @@ class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectC
 
     if (anonymousClasses.nonEmpty && queryParameters.includeAnonymous()) {
       for (clazz <- anonymousClasses) {
-        if (!consumer.process(clazz))
+        if (!consumer.test(clazz))
           return false
       }
     }

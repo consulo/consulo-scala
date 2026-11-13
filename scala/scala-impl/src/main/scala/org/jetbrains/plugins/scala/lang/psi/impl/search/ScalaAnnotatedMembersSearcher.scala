@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.ReadAction
@@ -50,7 +51,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
       )
     }
 
-  override def execute(p: AnnotatedElementsSearch.Parameters, consumer: Processor[? >: PsiMember]): Boolean = {
+  override def execute(p: AnnotatedElementsSearch.Parameters, consumer: Predicate[? >: PsiMember]): Boolean = {
     val annotationFQN = getAnnotationName(p)
     assert(annotationFQN != null, "Annotation qualifier can't be null")
 
@@ -74,7 +75,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
 
   private def executeInner(
     parameters: AnnotatedElementsSearch.Parameters,
-    consumer: Processor[? >: PsiMember],
+    consumer: Predicate[? >: PsiMember],
     annotationFQN: String,
   ): Boolean = {
     val scope = parameters.getScope match {
@@ -101,7 +102,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
             }
 
           //noinspection ConvertibleToMethodValue
-          val continue = memberOpt.forall(consumer.process(_))
+          val continue = memberOpt.forall(consumer.test(_))
           if (!continue)
             return false
         case _ =>

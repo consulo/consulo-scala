@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.project.util.query.QueryExecutorBase
@@ -23,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefi
 @ExtensionImpl
 class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInheritorsSearch.SearchParameters] {
 
-  override def processQuery(params: SearchParameters, consumer: Processor[? >: PsiClass]): Unit = {
+  override def processQuery(params: SearchParameters, consumer: Predicate[? >: PsiClass]): Unit = {
     val clazz = params.getClassToProcess
 
     val scope = params.getScope
@@ -51,7 +52,7 @@ class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInhe
               case ntd: ScNewTemplateDefinition if ntd.extendsBlock.templateBody.isEmpty =>
               case td: ScTemplateDefinition if continue =>
                 if (td.isInheritor(clazz, true) && checkCandidate(td, params, scope))
-                  continue = consumer.process(td)
+                  continue = consumer.test(td)
               case _ =>
             }
           }
