@@ -35,10 +35,7 @@ class ScalaPsiBuilderImpl(
 
   private var inQuotedPattern: Int = 0
 
-  private lazy val containingFile = Option {
-    // upstream: FileContextUtil.CONTAINING_FILE_KEY set by the platform PsiBuilderImpl (absent in Consulo)
-    myDelegate.getUserData(ScalaPsiBuilderImpl.ContainingFileKey)
-  }
+  private lazy val containingFile = Option(myDelegate.getContainingFile)
 
   override def skipExternalToken(): Boolean = false
 
@@ -337,9 +334,6 @@ class ScalaPsiBuilderImpl(
 }
 
 object ScalaPsiBuilderImpl {
-  /** Containing file of the parsed text, set on the platform builder by [[org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScStubFileElementType]] */
-  val ContainingFileKey: Key[PsiFile] = Key.create("scala.parser.containing.file")
-
   private class IndentationRegionHolder(val region: IndentationRegion, val start: Int, private var cachedPrevIndents: Set[IndentationWidth]) {
     private var saves: List[(Int, Set[IndentationWidth])] = List(start -> cachedPrevIndents)
 

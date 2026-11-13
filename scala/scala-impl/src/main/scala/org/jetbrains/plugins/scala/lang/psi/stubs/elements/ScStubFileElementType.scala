@@ -33,17 +33,6 @@ class ScStubFileElementType(debugName: String, language: Language)
 
   override def getBuilder = new ScFileStubBuilderImpl
 
-  // upstream: the platform PsiBuilderImpl stores the containing file under FileContextUtil.CONTAINING_FILE_KEY
-  override protected def doParseContents(chameleon: ASTNode, psi: PsiElement): ASTNode = {
-    val project = psi.getProject
-    val languageForParser = getLanguageForParser(psi)
-    val languageVersion = Option(chameleon.getUserData(LanguageVersion.KEY)).getOrElse(psi.getLanguageVersion)
-    val builder = PsiBuilderFactory.getInstance.createBuilder(project, chameleon, null, languageForParser, languageVersion, chameleon.getChars)
-    builder.putUserData(ScalaPsiBuilderImpl.ContainingFileKey, psi.getContainingFile)
-    val parser = ParserDefinition.forLanguage(languageForParser).createParser(languageVersion)
-    parser.parse(this, builder, languageVersion).getFirstChildNode
-  }
-
   override final def serialize(stub: ScFileStub, dataStream: StubOutputStream): Unit = {}
 
   override final def deserialize(dataStream: StubInputStream, parentStub: StubElement[?]): ScFileStub =
