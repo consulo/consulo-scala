@@ -12,9 +12,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScValue, ScVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiTypedDefinitionWrapper, StaticPsiTypedDefinitionWrapper}
+import java.util.function.Predicate
 
 class JavaValsUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)
     val element = queryParameters.getElementToSearch
     element match {
@@ -29,11 +30,11 @@ class JavaValsUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearc
                   case refElement: PsiReferenceExpression if ref.getRangeInElement.contains(offsetInElement) =>
                     refElement.resolve match {
                       case FakePsiMethod(`vals`) =>
-                        if (!consumer.process(refElement)) return false
+                        if (!consumer.test(refElement)) return false
                       case StaticPsiTypedDefinitionWrapper(`vals`) =>
-                        if (!consumer.process(refElement)) return false
+                        if (!consumer.test(refElement)) return false
                       case PsiTypedDefinitionWrapper(`vals`) =>
-                        if (!consumer.process(refElement)) return false
+                        if (!consumer.test(refElement)) return false
                       case _ =>
                     }
                   case _ =>
@@ -57,9 +58,9 @@ class JavaValsUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearc
                   case refElement: PsiReferenceExpression if ref.getRangeInElement.contains(offsetInElement) =>
                     refElement.resolve match {
                       case otherWrapper@PsiTypedDefinitionWrapper(`delegate`) if otherWrapper.getName == name =>
-                        if (!consumer.process(refElement)) return false
+                        if (!consumer.test(refElement)) return false
                       case otherWrapper@StaticPsiTypedDefinitionWrapper(`delegate`) if otherWrapper.getName == name =>
-                        if (!consumer.process(refElement)) return false
+                        if (!consumer.test(refElement)) return false
                       case _ =>
                     }
                   case _ =>

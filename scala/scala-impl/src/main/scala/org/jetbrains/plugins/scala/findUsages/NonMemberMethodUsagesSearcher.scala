@@ -10,20 +10,21 @@ import consulo.application.util.function.Processor
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
+import java.util.function.Predicate
 
 /**
  * Searches for scala methods defined inside of local scopes, ie methods for which .getContainingClass == null.
  * These are not considered by [[com.intellij.psi.impl.search.MethodUsagesSearcher]]
  */
 class NonMemberMethodUsagesSearcher extends QueryExecutorBase[PsiReference, MethodReferencesSearch.SearchParameters] {
-  override def processQuery(@NotNull p: MethodReferencesSearch.SearchParameters, @NotNull consumer: Processor[? >: PsiReference]): Unit = {
+  override def processQuery(@NotNull p: MethodReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {
     inReadAction {
       val method: PsiMethod = p.getMethod
       val collector: SearchRequestCollector = p.getOptimizer
       val newConsumer = new Processor[PsiReference] {
         override def process(t: PsiReference): Boolean = {
           if (method.isConstructor) return true
-          consumer.process(t)
+          consumer.test(t)
         }
       }
       ReferencesSearch.searchOptimized(method, ScalaFilterScope(p), false, collector, newConsumer)

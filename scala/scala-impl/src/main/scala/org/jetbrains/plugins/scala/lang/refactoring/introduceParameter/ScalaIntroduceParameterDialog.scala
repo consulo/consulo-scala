@@ -4,6 +4,7 @@ import consulo.document.event.{DocumentEvent, DocumentListener}
 import consulo.project.Project
 import consulo.ui.ex.awt.{ComboBox, ValidationInfo}
 import consulo.language.editor.refactoring.BaseRefactoringProcessor
+import consulo.language.editor.refactoring.ui.JBListTableWitEditors
 import consulo.ui.ex.awt.table.{JBTable, TableView}
 import consulo.language.editor.ui.awt.EditorTextField
 import consulo.ui.ex.awt.ToolbarDecorator
@@ -84,9 +85,9 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
     table.setSelection(util.Collections.emptyList())
   }
 
-  override protected def createParametersListTable: ParametersListTable = {
+  override protected def createParametersListTable: JBListTableWitEditors = {
     new ScalaParametersListTable() {
-      override def isRowEditable(row: Int): Boolean = false
+      override protected def isRowEditable(row: Int): Boolean = false
 
       override protected def defaultText(item: ScalaParameterTableModelItem): String = ""
     }
@@ -110,7 +111,7 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
               .disableRemoveAction()
               .addExtraActions(createAddClauseButton(), createRemoveClauseButton())
               .createPanel
-    myParametersTableModel.addTableModelListener(mySignatureUpdater)
+    myParametersTableModel.addTableModelListener(getSignatureUpdater: javax.swing.event.TableModelListener)
     buttonsPanel
   }
 

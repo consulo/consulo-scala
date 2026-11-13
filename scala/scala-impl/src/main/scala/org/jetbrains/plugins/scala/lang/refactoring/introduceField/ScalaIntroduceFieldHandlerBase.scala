@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField
 
-import consulo.language.editor.ui.navigation.PsiTargetNavigator
-import com.intellij.ide.util.PsiClassRenderingInfo
+import consulo.application.Application
+import consulo.language.editor.ui.navigation.PsiTargetNavigationService
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.document.util.TextRange
@@ -11,7 +12,6 @@ import consulo.language.psi.resolve.PsiElementProcessor
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
-import org.jetbrains.plugins.scala.codeInsight.navigation.DelegatingPsiTargetPresentationRenderer
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScExpression}
@@ -46,11 +46,13 @@ abstract class ScalaIntroduceFieldHandlerBase extends ScalaRefactoringActionHand
             false
           }
 
-          new PsiTargetNavigator(classes)
+          val targets: java.util.function.Supplier[java.util.Collection[PsiClass]] = () => java.util.List.of(classes*)
+          Application.get().getInstance(classOf[PsiTargetNavigationService])
+            .newNavigator[PsiClass](targets)
             .selection(selection)
-            .presentationProvider(new DelegatingPsiTargetPresentationRenderer(PsiClassRenderingInfo.INSTANCE))
-            .createPopup(project, title, processor)
-            .showInBestPositionFor(editor)
+            .title(LocalizeValue.of(title))
+            .processor(processor)
+            .navigate(editor, project)
       }
     }
     catch {

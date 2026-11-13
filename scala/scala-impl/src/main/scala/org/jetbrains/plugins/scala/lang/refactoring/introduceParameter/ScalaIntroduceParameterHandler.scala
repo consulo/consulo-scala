@@ -159,7 +159,7 @@ class ScalaIntroduceParameterHandler extends ScalaRefactoringActionHandler with 
 
     val superMethod = (methodLike.findDeepestSuperMethod(): @nowarn("cat=deprecation")) match {
       case null => methodLike
-      case _: ScMethodLike => SuperMethodWarningUtil.checkSuperMethod(methodLike)
+      case _: ScMethodLike => SuperMethodWarningUtil.checkSuperMethod(methodLike, consulo.language.editor.refactoring.localize.RefactoringLocalize.toRefactor())
       case _ => methodLike
     }
     val methodToSearchFor: ScMethodLike = superMethod match {

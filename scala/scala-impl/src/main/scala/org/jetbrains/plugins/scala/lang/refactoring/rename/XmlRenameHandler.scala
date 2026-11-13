@@ -5,7 +5,7 @@ import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.template.EmptyExpression
 import consulo.language.editor.highlight.HighlightManager
-import consulo.language.editor.template.{ExpressionContext, Template, TemplateManager, TextResult}
+import consulo.language.editor.template.{ExpressionContext, Result, Template, TemplateManager, TextResult}
 import consulo.language.editor.template.event.TemplateEditingAdapter
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.DataContext

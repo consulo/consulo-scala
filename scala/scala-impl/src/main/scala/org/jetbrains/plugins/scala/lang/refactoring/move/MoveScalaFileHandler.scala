@@ -7,7 +7,7 @@ import consulo.language.editor.refactoring.move.MoveFileHandler
 import consulo.usage.MoveRenameUsageInfo
 import consulo.usage.UsageInfo
 import consulo.language.util.IncorrectOperationException
-import org.jetbrains.annotations.{NotNull, Unmodifiable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.editor.importOptimizer.ScalaImportOptimizer
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -47,7 +47,7 @@ class MoveScalaFileHandler extends MoveFileHandler {
       case _ => null
     }
 
-  override def retargetUsages(@NotNull @Unmodifiable usageInfos: util.List[? <: UsageInfo],
+  override def retargetUsages(@NotNull usageInfos: util.List[? <: UsageInfo],
                               @NotNull oldToNewMap: util.Map[PsiElement, PsiElement]): Unit = {
     for (usage <- usageInfos.asScala) {
       usage match {

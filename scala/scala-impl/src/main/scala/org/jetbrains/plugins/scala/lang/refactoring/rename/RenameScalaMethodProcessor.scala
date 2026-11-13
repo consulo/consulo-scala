@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import java.util.function.Consumer
 import consulo.application.CommonBundle
 import consulo.ide.IdeBundle
@@ -37,7 +38,7 @@ class RenameScalaMethodProcessor extends RenameJavaMethodProcessor with ScalaRen
     }
   }
 
-  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[? >: PsiElement]): Unit = {
+  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[PsiElement]): Unit = {
     val named = element match {case named: ScNamedElement => named; case _ => return}
     val guess = ScalaRenameUtil.findSubstituteElement(element)
 
@@ -153,7 +154,7 @@ class PrepareRenameScalaMethodProcessor extends RenamePsiElementProcessor {
       panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
       val icon = Messages.getWarningIcon
       if (icon != null) {
-        val iconLabel = new JLabel(Messages.getQuestionIcon)
+        val iconLabel = new JLabel(TargetAWT.to(Messages.getQuestionIcon))
         panel.add(iconLabel, BorderLayout.WEST)
       }
       val labelsPanel = new JPanel(new GridLayout(0, 1, 0, 0))

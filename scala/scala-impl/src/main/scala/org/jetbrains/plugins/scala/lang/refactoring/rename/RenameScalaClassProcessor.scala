@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.localize.LocalizeValue
+import consulo.ui.{CheckBox, Component}
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.content.scope.SearchScope
@@ -35,10 +37,9 @@ class RenameScalaClassProcessor extends RenameJavaClassProcessor with ScalaRenam
 
   override def findReferences(
     element: PsiElement,
-    searchScope: SearchScope,
     searchInCommentsAndStrings: Boolean
   ): util.Collection[PsiReference] = {
-    val references0 = super.findReferences(element, searchScope, searchInCommentsAndStrings)
+    val references0 = super.findReferences(element, searchInCommentsAndStrings)
     val references = ScalaRenameUtil.replaceImportClassReferences(references0)
     references
   }
@@ -120,29 +121,18 @@ class ScalaClassRenameDialog(
   editor,
 ) {
 
-  // must be lazy, because it is used by super's constructor
-  private lazy val chbRenameCompanion: JCheckBox = new JCheckBox("", true)
+  private var chbRenameCompanion: CheckBox = scala.compiletime.uninitialized
 
-  override def createCenterPanel(): JComponent = {
-    val companion = psiElement.asOptionOf[ScTypeDefinition].flatMap(_.baseCompanionTypeDefinition) match {
-      case Some(c) => c
-      case None =>
-        return null
+  override protected def createCheckboxes(options: util.List[Component]): Unit = {
+    super.createCheckboxes(options)
+    psiElement.asOptionOf[ScTypeDefinition].flatMap(_.baseCompanionTypeDefinition).foreach { companion =>
+      chbRenameCompanion = CheckBox.create(LocalizeValue.of(ScalaBundle.message("rename.companion.module", companion.keywordPrefix)), true)
+      options.add(chbRenameCompanion)
     }
-
-    val panel = Option(super.createCenterPanel()).getOrElse {
-      new JPanel(new BorderLayout())
-    }
-
-    chbRenameCompanion.setText(ScalaBundle.message("rename.companion.module", companion.keywordPrefix))
-    chbRenameCompanion.setSelected(true)
-    panel.add(chbRenameCompanion, BorderLayout.WEST)
-
-    panel
   }
 
   override def performRename(newName: String): Unit = {
-    ScalaApplicationSettings.getInstance().RENAME_COMPANION_MODULE = chbRenameCompanion.isSelected
+    ScalaApplicationSettings.getInstance().RENAME_COMPANION_MODULE = chbRenameCompanion == null || chbRenameCompanion.getValueOrError.booleanValue
     super.performRename(newName)
     ScalaApplicationSettings.getInstance().RENAME_COMPANION_MODULE = true
   }

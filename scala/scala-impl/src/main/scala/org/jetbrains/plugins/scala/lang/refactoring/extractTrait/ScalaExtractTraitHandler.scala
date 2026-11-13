@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.DataContext
 import consulo.codeEditor.{Editor, ScrollType}
@@ -108,7 +109,11 @@ class ScalaExtractTraitHandler extends ScalaRefactoringActionHandler {
     val extractInfo = new ExtractInfo(clazz, memberInfos)
     extractInfo.collect()
 
-    val isOk = ExtractSuperClassUtil.showConflicts(dialog, extractInfo.conflicts, clazz.getProject)
+    val localizedConflicts = new MultiMap[PsiElement, LocalizeValue]
+    extractInfo.conflicts.entrySet().forEach { entry =>
+      entry.getValue.forEach(message => localizedConflicts.putValue(entry.getKey, LocalizeValue.of(message)))
+    }
+    val isOk = ExtractSuperClassUtil.showConflicts(dialog, localizedConflicts, clazz.getProject)
     if (!isOk) return
 
     val name = dialog.getTraitName

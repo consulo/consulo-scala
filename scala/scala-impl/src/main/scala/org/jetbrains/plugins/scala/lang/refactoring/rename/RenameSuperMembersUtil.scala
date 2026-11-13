@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala
-import consulo.ui.image.Image
 package lang.refactoring.rename
 
+import consulo.ui.image.Image
 
 import org.jetbrains.plugins.scala.api.isUnitTestMode
-import consulo.language.editor.ui.navigation.PsiTargetNavigator
-import com.intellij.ide.util.PsiClassRenderingInfo
+import consulo.language.editor.ui.navigation.{PsiTargetNavigationService, PsiTargetPresentationFactory, TargetPresentationProvider}
+import consulo.localize.LocalizeValue
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
 import consulo.util.dataholder.Key
@@ -27,6 +27,7 @@ import org.jetbrains.plugins.scala.project.UserDataHolderExt
 
 import java.util
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 object RenameSuperMembersUtil {
 
@@ -128,7 +129,7 @@ object RenameSuperMembersUtil {
       }
       else ScalaBundle.message("rename.has.multiple.base.members", name)
 
-    val renderer = new DelegatingPsiTargetPresentationRenderer(PsiClassRenderingInfo.INSTANCE) {
+    val renderer = new DelegatingPsiTargetPresentationRenderer[PsiClass](RenameSuperMembersUtil.defaultPresentation) {
       override def getIcon(element: PsiClass): Image = {
         if (element == renameAllMarker(element) || oneSuperClass) null
         else super.getIcon(element)
@@ -151,14 +152,20 @@ object RenameSuperMembersUtil {
         else super.getContainerText(clazz)
     }
 
-    val popup = new PsiTargetNavigator(classesToNamed.keys.toArray)
+    val targets: java.util.function.Supplier[util.Collection[PsiClass]] = () => util.List.copyOf(classesToNamed.keys.toSeq.asJava)
+    val navigator = ApplicationManager.getApplication.getInstance(classOf[PsiTargetNavigationService])
+      .newNavigator[PsiClass](targets)
       .selection(selection)
       .presentationProvider(renderer)
-      .createPopup(element.getProject, title, processor)
+      .title(LocalizeValue.of(title))
+      .processor(processor)
 
-    if (editor != null) popup.showInBestPositionFor(editor)
-    else popup.showInFocusCenter()
+    if (editor != null) navigator.navigate(editor, element.getProject)
+    else navigator.createPopup(element.getProject, _.showInFocusCenter())
   }
+
+  private def defaultPresentation: TargetPresentationProvider[PsiClass] =
+    (element: PsiClass) => ApplicationManager.getApplication.getInstance(classOf[PsiTargetPresentationFactory]).presentation(element)
 
   @NotNull
   def allSuperMembers(named: ScNamedElement, withSelfType: Boolean): Seq[PsiNamedElement] = {

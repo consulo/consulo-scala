@@ -9,13 +9,12 @@ abstract class ScalaFindUsagesOptionsBase(project: Project, isSearchForTextOccur
   //NOTE: this is the field from base class
   isSearchForTextOccurrences = isSearchForTextOccurrencesDefault
 
-  override def storeDefaults(properties: PropertiesComponent, prefix: String): Unit = {
-    super.storeDefaults(properties, prefix)
+  // upstream: overrides of FindUsagesOptions.storeDefaults/setDefaults (no such methods in Consulo FindUsagesOptions)
+  def storeDefaults(properties: PropertiesComponent, prefix: String): Unit = {
     properties.setValue(prefix + "isSearchForTextOccurrences", isSearchForTextOccurrences, isSearchForTextOccurrencesDefault)
   }
 
-  override def setDefaults(properties: PropertiesComponent, prefix: String): Unit = {
-    super.setDefaults(properties, prefix)
+  def setDefaults(properties: PropertiesComponent, prefix: String): Unit = {
     isSearchForTextOccurrences = properties.getBoolean(prefix + "isSearchForTextOccurrences", isSearchForTextOccurrencesDefault)
   }
 }

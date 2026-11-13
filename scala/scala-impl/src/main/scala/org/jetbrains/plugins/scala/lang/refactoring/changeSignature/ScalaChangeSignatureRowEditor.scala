@@ -66,8 +66,7 @@ class ScalaChangeSignatureRowEditor(item: ScalaParameterTableModelItem, dialog: 
   }
 
   def getColumnWidth(letters: Int): Int = {
-    val editorFont: Font = EditorColorsManager.getInstance.getGlobalScheme.getFont(EditorFontType.PLAIN)
-    val font = new Font(editorFont.getFontName, editorFont.getStyle, 12)
+    val font = new Font(EditorColorsManager.getInstance.getGlobalScheme.getEditorFontName, Font.PLAIN, 12)
     letters * (Toolkit.getDefaultToolkit.getFontMetrics(font).stringWidth("W"): @nowarn("cat=deprecation"))
   }
 

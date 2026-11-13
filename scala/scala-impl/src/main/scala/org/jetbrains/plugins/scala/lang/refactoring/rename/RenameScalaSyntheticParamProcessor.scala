@@ -13,9 +13,8 @@ class RenameScalaSyntheticParamProcessor extends RenamePsiElementProcessor with 
   override def canProcessElement(element: PsiElement): Boolean = realParamForSyntheticParam(element).isDefined
 
   override def findReferences(element: PsiElement,
-                              searchScope: SearchScope,
                               searchInCommentsAndStrings: Boolean): util.Collection[PsiReference] =
-    super[RenamePsiElementProcessor].findReferences(element, searchScope, searchInCommentsAndStrings)
+    super[RenamePsiElementProcessor].findReferences(element, searchInCommentsAndStrings)
 
   override def substituteElementToRename(element: PsiElement, editor: Editor): PsiElement = realParamForSyntheticParam(element).orNull
 

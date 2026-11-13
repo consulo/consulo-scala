@@ -10,9 +10,10 @@ import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScSelfInvocation
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScConstructorOwner, ScTemplateDefinition}
+import java.util.function.Predicate
 
 class SelfInvocationSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     queryParameters.getElementToSearch match {
       case ml: ScMethodLike if inReadAction(ml.isConstructor) =>
         doExecute(ml, inReadAction(Option(ml.containingClass)))(queryParameters, consumer)
@@ -27,7 +28,7 @@ class SelfInvocationSearcher extends QueryExecutor[PsiReference, ReferencesSearc
   }
 
   private def doExecute(ml: ScMethodLike, containingClass: Option[ScTemplateDefinition])
-                       (queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+                       (queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val localScope = inReadAction {
       containingClass.map {
         new LocalSearchScope(_)
@@ -41,7 +42,7 @@ class SelfInvocationSearcher extends QueryExecutor[PsiReference, ReferencesSearc
         override def execute(element: PsiElement, offsetInElement: Int): Boolean = {
           inReadAction {
             element match {
-              case si: ScSelfInvocation if si.bind.contains(ml) => consumer.process(si)
+              case si: ScSelfInvocation if si.bind.contains(ml) => consumer.test(si)
               case _ => true
             }
           }

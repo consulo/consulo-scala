@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.util
 
 import consulo.language.editor.PsiEquivalenceUtil
 import consulo.language.editor.highlight.HighlightManager
-import consulo.language.editor.ui.navigation.PsiTargetNavigator
 import consulo.language.editor.refactoring.unwrap.ScopeHighlighter
 import consulo.application.ApplicationManager
 import consulo.codeEditor.EditorColors
@@ -17,7 +16,6 @@ import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
 import consulo.util.dataholder.Key
 import consulo.document.util.TextRange
 import consulo.virtualFileSystem.ReadonlyStatusHandler
-import consulo.navigation.TargetPresentation
 import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
 import com.intellij.java.language.psi.PsiMethod
 import consulo.language.psi.search.ReferencesSearch
@@ -554,31 +552,33 @@ object ScalaRefactoringUtil {
                                       selection: Option[T] = None)
                                      (implicit project: Project, editor: Editor): Unit =
     showChooserImpl(onChosen) { chooserModel =>
-      new PsiTargetNavigator(elements.asJava)
-        .selection(selection.orNull)
-        .presentationProvider((element: T) => TargetPresentation.builder(presentation(element)).presentation())
-        .builderConsumer { builder =>
-          builder
-            .setMovable(false)
-            .setResizable(false)
-            .setRequestFocus(true)
-            .addListener(chooserModel.highlighterPopupListener)
-            .setItemSelectedCallback { item =>
-              if (item != null) {
-                val element = item.dereference()
-                if (element != null) {
-                  val psiElement = toHighlight(element)
-                  if (psiElement != null) {
-                    chooserModel.highlightPsi.accept(psiElement)
-                  }
-                }
-              }
+      // upstream: PsiTargetNavigator with builderConsumer (not available in Consulo PsiTargetNavigator API)
+      val builder = JBPopupFactory.getInstance
+        .createPopupChooserBuilder(elements.asJava)
+        .setTitle(title)
+        .setMovable(false)
+        .setResizable(false)
+        .setRequestFocus(true)
+        .addListener(chooserModel.highlighterPopupListener)
+        .setItemChosenCallback(chooserModel.elementChosen)
+        .setItemSelectedCallback { item =>
+          if (item != null) {
+            val psiElement = toHighlight(item)
+            if (psiElement != null) {
+              chooserModel.highlightPsi.accept(psiElement)
             }
+          }
         }
-        .createPopup(project, title, (element: T) => {
-          chooserModel.elementChosen.accept(element)
-          true
-        })
+        .setRenderer(new DefaultListCellRenderer {
+          override def getListCellRendererComponent(list: JList[?], value: Object, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component = {
+            val rendererComponent: Component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
+            val element: T = value.asInstanceOf[T]
+            setText(presentation(element))
+            rendererComponent
+          }
+        }.asInstanceOf[ListCellRenderer[T]])
+      selection.foreach(builder.setSelectedValue(_, true))
+      builder.createPopup
     }
 
   /** See [[showChooserImpl]] */
@@ -636,7 +636,7 @@ object ScalaRefactoringUtil {
     )
 
     val popup = createPopup(chooserModel)
-    popup.showInBestPositionFor(editor)
+    editor.showPopupInBestPositionFor(popup)
   }
 
   def getShortText(expr: ScalaPsiElement): String = {
@@ -657,8 +657,8 @@ object ScalaRefactoringUtil {
         builder.append("for (...) ")
 
         val yieldOrDo = f.yieldOrDoKeyword
-        val yieldOrDoStr = yieldOrDo.map(_.elementType).map(_.getDebugName + " ")
-        yieldOrDoStr.foreach(builder.append)
+        val yieldOrDoStr = yieldOrDo.map(_.elementType).map(_.toString + " ")
+        yieldOrDoStr.foreach(builder.append(_))
 
         builder.append("{...}")
       case f: ScFunctionExpr =>

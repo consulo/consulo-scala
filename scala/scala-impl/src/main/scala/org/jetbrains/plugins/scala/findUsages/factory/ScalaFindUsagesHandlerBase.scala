@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import consulo.find.ui.AbstractFindUsagesDialog
+import consulo.find.ui.AbstractFindUsagesDialogDescriptor
 import consulo.find.{FindUsagesHandler, FindUsagesOptions}
 import consulo.dataContext.DataContext
 import consulo.language.psi.PsiElement
@@ -43,14 +43,17 @@ class ScalaFindUsagesHandlerBase(
     options.getOrElse(super.getFindUsagesOptions(dataContext))
   }
 
-  override def getFindUsagesDialog(
+  override def supportConsuloUI(): Boolean = true
+
+  override def createFindUsagesDialogDescriptor(
+    dataContext:      DataContext,
     isSingleFile:     Boolean,
     toShowInNewTab:   Boolean,
     mustOpenInNewTab: Boolean
-  ): AbstractFindUsagesDialog = {
+  ): AbstractFindUsagesDialogDescriptor = {
     config
       .getFindUsagesOptionsResolver(element)
       .getDialog(this, getProject, isSingleFile, toShowInNewTab, mustOpenInNewTab)
-      .getOrElse(super.getFindUsagesDialog(isSingleFile, toShowInNewTab, mustOpenInNewTab))
+      .getOrElse(super.createFindUsagesDialogDescriptor(dataContext, isSingleFile, toShowInNewTab, mustOpenInNewTab))
   }
 }

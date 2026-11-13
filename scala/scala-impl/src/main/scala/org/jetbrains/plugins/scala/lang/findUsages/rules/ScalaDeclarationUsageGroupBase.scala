@@ -5,6 +5,7 @@ import consulo.language.editor.util.NavigationItemFileStatus
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.{DataSink, UiDataProvider}
 import consulo.component.util.Iconable
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.virtualFileSystem.status.FileStatus
 import consulo.language.psi.{SmartPointerManager, SmartPsiElementPointer}
 import consulo.usage.UsageInfo
@@ -17,12 +18,18 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
  *               whole `val` definition is a member but without a name (example: `val (x, y) = (1, 2)`
  */
 private abstract class ScalaDeclarationUsageGroupBase(member: ScMember, private val myName: String) extends UsageGroup with UiDataProvider {
-  private val myIcon: Image = member.getIcon(Iconable.ICON_FLAG_VISIBILITY | Iconable.ICON_FLAG_READ_STATUS)
+  private val myIcon: Image = IconDescriptorUpdaters.getIcon(member, Iconable.ICON_FLAG_VISIBILITY | Iconable.ICON_FLAG_READ_STATUS)
 
   private val myClassPointer: SmartPsiElementPointer[ScMember] =
     SmartPointerManager.getInstance(member.getProject).createSmartPsiElementPointer(member)
 
   override def getIcon: Image = myIcon
+
+  def getPresentableGroupText: String
+
+  override def getText(view: UsageView): String = getPresentableGroupText
+
+  override def update(): Unit = {}
 
   private def getElementSafe: ScMember = myClassPointer.getElement
 
@@ -59,7 +66,7 @@ private abstract class ScalaDeclarationUsageGroupBase(member: ScMember, private 
   }
 
   override def compareTo(usageGroup: UsageGroup): Int =
-    getPresentableGroupText.compareToIgnoreCase(usageGroup.getPresentableGroupText)
+    getPresentableGroupText.compareToIgnoreCase(usageGroup.getText(null))
 
   override def getFileStatus: FileStatus =
     if (isValid) NavigationItemFileStatus.get(getElementSafe)

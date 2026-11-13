@@ -9,11 +9,12 @@ import consulo.application.util.function.Processor
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScPackageImpl
+import java.util.function.Predicate
 
 
 class ScalaPackageUsagesSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
 
-  override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Processor[? >: PsiReference]): Unit = {
+  override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {
     val data = inReadAction {
       parameters.getElementToSearch match {
         case pack: PsiPackage =>

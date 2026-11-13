@@ -5,11 +5,11 @@ import consulo.undoRedo.CommandProcessor
 import consulo.logging.Logger
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import com.intellij.openapi.util.NlsContexts.{DialogMessage, DialogTitle}
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.RefactoringBundle
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import consulo.language.util.IncorrectOperationException
+import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
@@ -32,12 +32,12 @@ object ScalaAnonymousToInnerHandler {
 
   private val helpId = "reafctoring.anonymousToInner"
 
-  @DialogTitle
+  @Nls
   def RefactoringTitle: String = ScalaBundle.message("move.anonymousToInner.name")
 
   //muted inspection because concatenation with "\n" is not handled by the inspection
   //noinspection ScalaExtractStringToBundle,ReferencePassedToNls
-  @DialogMessage
+  @Nls
   private def RefactoringErrorMessage(varNames: Seq[String]) =
     s"""${RefactoringBundle.message("cannot.perform.refactoring")}
        |${ScalaBundle.message("extraction.of.anonymous.class.with.vars.refs.unsupported")}

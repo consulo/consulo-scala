@@ -11,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
+import java.util.function.Predicate
 
 abstract class ApplyUnapplyMethodSearcherBase extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
 
@@ -18,7 +19,7 @@ abstract class ApplyUnapplyMethodSearcherBase extends QueryExecutor[PsiReference
 
   protected def checkAndTransform(ref: PsiReference): Option[ScReference]
 
-  override def execute(queryParameters: SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val element = queryParameters.getElementToSearch
     val ignoreAccess = queryParameters.isIgnoreAccessScope
 
@@ -36,7 +37,7 @@ abstract class ApplyUnapplyMethodSearcherBase extends QueryExecutor[PsiReference
           override def process(ref: PsiReference): Boolean = {
             inReadAction {
               checkAndTransform(ref).flatMap(_.bind()) match {
-                case Some(ScalaResolveResult(`fun`, _)) => consumer.process(ref)
+                case Some(ScalaResolveResult(`fun`, _)) => consumer.test(ref)
                 case _ => true
               }
             }

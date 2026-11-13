@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.delete
 
-import com.intellij.java.syntax.parser.JavaKeywords
+import com.intellij.java.language.psi.PsiKeyword
 import consulo.logging.Logger
 import consulo.util.lang.function.Condition
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiCodeBlock, PsiElementFactory, PsiExpressionStatement, PsiJavaCodeReferenceElement, PsiJavaFile, PsiMethod, PsiMethodCallExpression, PsiModifier, PsiModifierList, PsiParameter, PsiReferenceExpression, PsiReferenceList, PsiSuperExpression, PsiTypeElement, PsiTypeParameter, PsiTypeParameterListOwner}
@@ -436,7 +436,7 @@ object SafeDeleteProcessorUtil {
           element.getParent.getParent match {
             case call: PsiMethodCallExpression =>
               val methodExpression: PsiReferenceExpression = call.getMethodExpression
-              if (methodExpression.textMatches(JavaKeywords.SUPER)) {
+              if (methodExpression.textMatches(PsiKeyword.SUPER)) {
                 true
               } else if (methodExpression.getQualifierExpression.is[PsiSuperExpression]) {
                 owner match {

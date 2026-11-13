@@ -12,7 +12,7 @@ import consulo.usage.MoveRenameUsageInfo
 import consulo.usage.UsageInfo
 import java.util.function.Function
 import consulo.util.collection.ContainerUtil
-import org.jetbrains.annotations.{NotNull, Unmodifiable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
@@ -84,8 +84,7 @@ class ScalaMoveDirectoryWithClassesHelper extends MoveDirectoryWithClassesHelper
   }
 
   @NotNull
-  @Unmodifiable
-  override def retargetUsages(@NotNull @Unmodifiable usages: ju.List[UsageInfo],
+  override def retargetUsages(@NotNull usages: ju.List[UsageInfo],
                               @NotNull oldToNewMap: ju.Map[PsiElement, PsiElement]): ju.List[UsageInfo] = {
     val usageInfosToProcess = ContainerUtil.filter[UsageInfo](usages, (usage: UsageInfo) => usage match {
       case usageInfo: MoveRenameUsageInfo =>

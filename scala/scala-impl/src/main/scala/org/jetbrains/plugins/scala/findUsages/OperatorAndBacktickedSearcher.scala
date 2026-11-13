@@ -1,22 +1,20 @@
 package org.jetbrains.plugins.scala.findUsages
 
-import com.intellij.codeInsight.TargetElementUtilBase.TARGET_ELEMENT_EVALUATOR
-import consulo.application.util.ReadActionProcessor
+import consulo.application.Application
+import consulo.language.editor.TargetElementUtilExtender
 import consulo.application.dumb.IndexNotReadyException
 import consulo.project.Project
-import consulo.util.lang.function.Condition
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.psi.impl.cache.impl.id.IdIndex
+import consulo.index.io.ID
 import consulo.language.psi.stub.IdIndexEntry
-import com.intellij.psi.impl.search.PsiSearchHelperImpl
 import consulo.language.psi.search.ReferencesSearch
-import consulo.language.psi.scope.GlobalSearchScope
-import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
-import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.content.scope.SearchScope
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.{PsiElement, PsiManager, PsiReference}
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
-import consulo.util.collection.ContainerUtil
 import consulo.language.psi.stub.FileBasedIndex
-import consulo.application.util.function.{CommonProcessors, Processor}
+import consulo.application.util.function.CommonProcessors
 import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
@@ -25,12 +23,14 @@ import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil.BacktickedName.stripBackticks
 
 import java.{util => ju}
+import scala.jdk.CollectionConverters._
+import java.util.function.Predicate
 
 class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
 
   override def execute(
     queryParameters: ReferencesSearch.SearchParameters,
-    consumer: Processor[? >: PsiReference]
+    consumer: Predicate[? >: PsiReference]
   ): Boolean = {
     val elementToSearch = queryParameters.getElementToSearch
     val scalaElementToSearch: ScNamedElement = elementToSearch match {
@@ -55,8 +55,7 @@ class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, Referenc
     namesToProcess.foreach { name =>
       try {
         val processor = new MyTextOccurenceProcessor(scalaElementToSearch, consumer)
-        val searchHelper = new ScalaPsiSearchHelper(queryParameters.getProject)
-        searchHelper.processElementsWithWord(processor, scope, name, UsageSearchContext.IN_CODE, true)
+        processElementsWithWord(queryParameters.getProject, processor, scope, name, UsageSearchContext.IN_CODE, caseSensitively = true)
       } catch {
         case _: IndexNotReadyException =>
       }
@@ -77,7 +76,7 @@ class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, Referenc
 
   private class MyTextOccurenceProcessor(
     elementToSearch: PsiElement,
-    consumer: Processor[? >: PsiReference]
+    consumer: Predicate[? >: PsiReference]
   ) extends TextOccurenceProcessor {
 
     override def execute(element: PsiElement, offsetInElement: Int): Boolean = {
@@ -95,47 +94,55 @@ class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, Referenc
 
     private def processReference(reference: PsiReference): Boolean = {
       if (reference.isReferenceTo(elementToSearch)) {
-        return consumer.process(reference)
+        return consumer.test(reference)
       }
 
-      val targetElementEvaluator = TARGET_ELEMENT_EVALUATOR.forLanguage(reference.getElement.getLanguage)
-      val refResolvedElement = targetElementEvaluator.getElementByReference(reference, 0) match {
+      val refResolvedElement = TargetElementUtilExtender.EP.computeSafeIfAny(Application.get(),
+        (it: TargetElementUtilExtender) => it.getReferenceOrReferencedElement(reference, ju.Collections.emptySet[String]())) match {
         case null => reference.resolve()
         case e => e
       }
       if (refResolvedElement == elementToSearch) {
-        return consumer.process(reference)
+        return consumer.test(reference)
       }
 
       true
     }
   }
 
-  private class ScalaPsiSearchHelper(project: Project)
-    extends PsiSearchHelperImpl(project) {
+  // upstream: subclass of PsiSearchHelperImpl overriding processCandidateFilesForText (impl class is not public API in Consulo):
+  // candidate files are found by the whole text in the id index, then occurrences are searched in each file
+  private def processElementsWithWord(project: Project,
+                                      processor: TextOccurenceProcessor,
+                                      searchScope: SearchScope,
+                                      text: String,
+                                      searchContext: Short,
+                                      caseSensitively: Boolean): Boolean = {
+    val helper = PsiSearchHelper.getInstance(project)
+    val scope = searchScope match {
+      case global: GlobalSearchScope => global
+      case local => return helper.processElementsWithWord(processor, local, text, searchContext, caseSensitively)
+    }
+    if (!ScalaNamesValidator.isIdentifier(text)) return true
 
-    override def processCandidateFilesForText(scope: GlobalSearchScope,
-                                              searchContext: Short,
-                                              caseSensitively: Boolean,
-                                              text: String,
-                                              processor: Processor[? >: VirtualFile]): Boolean = {
-      if (!ScalaNamesValidator.isIdentifier(text)) return true
+    val idIndex = ID.findByName[IdIndexEntry, Integer]("IdIndex")
+    if (idIndex == null) return true
 
-      val entries = ju.Collections.singletonList(new IdIndexEntry(text, caseSensitively))
-      val collectProcessor = new CommonProcessors.CollectProcessor[VirtualFile]
-      val condition: Condition[Integer] = { (value: Integer) =>
-        (value.intValue & searchContext) != 0
+    val entries = ju.Collections.singletonList(new IdIndexEntry(text, caseSensitively))
+    val collectProcessor = new CommonProcessors.CollectProcessor[VirtualFile]
+    val condition: Predicate[Integer] = { (value: Integer) =>
+      (value.intValue & searchContext) != 0
+    }
+
+    inReadAction {
+      FileBasedIndex.getInstance.processFilesContainingAllKeys(idIndex, entries, scope, condition, collectProcessor)
+    }
+
+    val psiManager = PsiManager.getInstance(project)
+    collectProcessor.getResults.asScala.forall { virtualFile =>
+      inReadAction(Option(psiManager.findFile(virtualFile))).forall { psiFile =>
+        helper.processElementsWithWord(processor, new LocalSearchScope(psiFile), text, searchContext, caseSensitively)
       }
-
-      inReadAction {
-        FileBasedIndex.getInstance.processFilesContainingAllKeys(IdIndex.NAME, entries, scope, condition, collectProcessor)
-      }
-
-      val readActionProcessor: ReadActionProcessor[VirtualFile] = { (virtualFile: VirtualFile) =>
-        processor.process(virtualFile)
-      }
-      ContainerUtil.process(collectProcessor.getResults, readActionProcessor)
     }
   }
 }
-

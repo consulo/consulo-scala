@@ -1,21 +1,18 @@
 package org.jetbrains.plugins.scala.findUsages.factory.dialog
 
-import consulo.find.ui.CommonFindUsagesDialog
+import consulo.find.ui.CommonFindUsagesDialogDescriptor
 import consulo.find.{FindUsagesHandler, FindUsagesOptions}
+import consulo.find.ui.AbstractFindUsagesDialogDescriptor.{isSelected, isToChange}
 import com.intellij.java.language.jvm.JvmModifier
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import com.intellij.openapi.ui.panel.ComponentPanelBuilder
-import consulo.ui.ex.awt.StateRestoringCheckBox
+import consulo.ui.ex.StateRestoringCheckBoxWrapper
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaMemberFindUsagesOptions
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
-import java.awt.Component
-import javax.swing.{BoxLayout, JPanel}
-import scala.annotation.nowarn
-
 /**
- * Implementation of this class was originally inspired by [[com.intellij.find.findUsages.FindMethodUsagesDialog]]
+ * Implementation of this class was originally inspired by [[com.intellij.java.impl.find.findUsages.FindMethodUsagesDialogDescriptor]]
  */
 // upstream: @ApiStatus.Internal
 class ScalaOverridableMemberFindUsagesDialog(
@@ -26,7 +23,7 @@ class ScalaOverridableMemberFindUsagesDialog(
   mustOpenInNewTab: Boolean,
   isSingleFile: Boolean,
   handler: FindUsagesHandler
-) extends CommonFindUsagesDialog(
+) extends CommonFindUsagesDialogDescriptor(
   member,
   project,
   findUsagesOptions,
@@ -35,37 +32,25 @@ class ScalaOverridableMemberFindUsagesDialog(
   isSingleFile,
   handler
 ) {
-  private var myCbSearchForBase: StateRestoringCheckBox = scala.compiletime.uninitialized
+  private var myCbSearchForBase: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
 
   override def calcFindUsagesOptions(options: FindUsagesOptions): Unit = {
     super.calcFindUsagesOptions(options)
 
     options match {
       case mo: ScalaMemberFindUsagesOptions =>
-        if (myCbSearchForBase != null) {
-          mo.isSearchForBaseMember = myCbSearchForBase.isSelected
+        if (isToChange(myCbSearchForBase)) {
+          mo.isSearchForBaseMember = isSelected(myCbSearchForBase)
         }
       case _ =>
     }
   }
 
-  override def createFindWhatPanel(): JPanel = {
-    val findWhatPanel = new JPanel
-    findWhatPanel.setLayout(new BoxLayout(findWhatPanel, BoxLayout.Y_AXIS))
-
+  override protected def addFindWhatOptions(): Unit = {
     if (!member.hasModifier(JvmModifier.PRIVATE)) {
-      val title = ScalaBundle.message("search.for.base.member.usages")
-      myCbSearchForBase = createCheckbox(title, findUsagesOptions.isSearchForBaseMember, true)
-
-      @nowarn("cat=deprecation")
-      val decoratedCheckbox = new ComponentPanelBuilder(myCbSearchForBase)
-        .withComment(ScalaBundle.message("use.top.level.hierarchy.members.as.find.usage.targets.by.default"))
-        .createPanel
-
-      decoratedCheckbox.setAlignmentX(Component.LEFT_ALIGNMENT)
-      findWhatPanel.add(decoratedCheckbox)
+      // upstream: checkbox decorated with comment "use.top.level.hierarchy.members.as.find.usage.targets.by.default"
+      val title = LocalizeValue.of(ScalaBundle.message("search.for.base.member.usages"))
+      myCbSearchForBase = addFindWhatCheckbox(title, findUsagesOptions.isSearchForBaseMember, true)
     }
-
-    findWhatPanel
   }
 }

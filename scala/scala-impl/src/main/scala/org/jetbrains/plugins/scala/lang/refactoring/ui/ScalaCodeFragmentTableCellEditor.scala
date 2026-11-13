@@ -13,7 +13,7 @@ class ScalaCodeFragmentTableCellEditor(project: Project)
     val editor: Editor = myEditorTextField.getEditor
     if (editor != null) {
       val offset = editor.getCaretModel.getOffset
-      new JavaReferenceImporter().computeAutoImportAtOffset(editor, myCodeFragment, offset, true).getAsBoolean
+      new JavaReferenceImporter().autoImportReferenceAt(editor, myCodeFragment, offset)
     }
     super.stopCellEditing
   }

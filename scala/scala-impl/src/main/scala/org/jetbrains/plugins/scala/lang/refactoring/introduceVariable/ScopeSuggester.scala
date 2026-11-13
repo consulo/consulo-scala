@@ -4,6 +4,7 @@ import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.util.lang.StringUtil
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
+import com.intellij.java.language.psi.PsiJavaPackage
 import consulo.language.psi.scope.{GlobalSearchScope, GlobalSearchScopesCore}
 import consulo.language.psi.search.PsiSearchHelper
 import consulo.language.psi.util.PsiTreeUtil
@@ -152,7 +153,10 @@ object ScopeSuggester {
                                             result: mutable.ArrayBuffer[(PsiPackage, PsiDirectory)]): Array[(PsiPackage, PsiDirectory)] = {
       if (currentPackage != null && currentPackage.getName != null) {
         val subPackages = currentPackage.getSubPackages(scope)
-        val filesNoRecursive = currentPackage.getFiles(scope)
+        val filesNoRecursive = currentPackage match {
+          case javaPackage: PsiJavaPackage => javaPackage.getFiles(scope)
+          case _ => Array.empty[PsiFile]
+        }
 
         // don't choose package if there is only one subpackage
         if ((subPackages.length != 1) || filesNoRecursive.nonEmpty) {

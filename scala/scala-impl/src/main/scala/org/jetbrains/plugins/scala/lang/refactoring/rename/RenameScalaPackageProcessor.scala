@@ -32,9 +32,8 @@ class RenameScalaPackageProcessor extends RenamePsiPackageProcessor with ScalaRe
 
 
   override def findReferences(element: PsiElement,
-                              searchScope: SearchScope,
                               searchInCommentsAndStrings: Boolean): ju.Collection[PsiReference] = {
-    val references = super[RenamePsiPackageProcessor].findReferences(element, searchScope, searchInCommentsAndStrings)
+    val references = super[RenamePsiPackageProcessor].findReferences(element, searchInCommentsAndStrings)
     // also find end markers, which are normally omitted from being found
     for {
       pack <- element.asOptionOf[PsiPackage]

@@ -10,16 +10,17 @@ import consulo.language.file.LanguageFileType
 import consulo.project.Project
 import consulo.ui.ex.awt.ValidationInfo
 import consulo.util.lang.StringUtil
-import com.intellij.psi.{util => _, _}
+import consulo.language.psi.PsiCodeFragment
 import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import consulo.language.editor.refactoring.changeSignature.{CallerChooserBase, ChangeSignatureDialogBase, ParameterTableModelItemBase}
-import consulo.language.editor.refactoring.ui.{CodeFragmentTableCellEditorBase, StringTableCellEditor, VisibilityPanelBase}
+import consulo.language.editor.refactoring.ui.{CodeFragmentTableCellEditorBase, JBListTableWitEditors, StringTableCellEditor, VisibilityPanelBase}
 import consulo.ui.ex.awt.table.{JBTable, TableView}
 import consulo.ui.ex.awt.tree.Tree
-import com.intellij.ui.{util => _, _}
+import consulo.ui.ex.awt.{AnActionButton, AnActionButtonRunnable, HyperlinkLabel, ToolbarDecorator}
+import consulo.ui.ex.awt.util.TableUtil
+import consulo.language.editor.ui.awt.EditorTextField
 import java.util.function.Consumer
 import consulo.ui.ex.awt.table.{JBListTable, JBTableRowEditor}
-import com.intellij.util.ui.table.JBTableRowRenderer
 import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.icons.Icons
@@ -42,7 +43,7 @@ import java.awt.event.ActionEvent
 import java.util
 import javax.swing._
 import javax.swing.border.MatteBorder
-import javax.swing.event.{ChangeEvent, HyperlinkEvent}
+import javax.swing.event.{ChangeEvent, HyperlinkEvent, TableModelListener}
 import javax.swing.table.TableCellEditor
 import scala.annotation.nowarn
 import scala.collection.mutable
@@ -126,7 +127,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
   override protected def createParametersPanel(hasTabsInDialog: Boolean): JPanel = {
     myParametersTable = createParametersTable()
-    myParametersList = createParametersListTable()
+    myParametersList = createParametersListTable
     decorateParameterTable(myParametersList.getTable)
   }
 
@@ -192,7 +193,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
     fragment
   }
 
-  override protected def createParametersListTable: ParametersListTable = new ScalaParametersListTable()
+  protected def createParametersListTable: JBListTableWitEditors = new ScalaParametersListTable()
 
   protected override def getTableEditor(t: JTable, item: ParameterTableModelItemBase[ScalaParameterInfo]): JBTableRowEditor = {
     val scalaItem = item match {
@@ -316,7 +317,8 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
   override protected def postponeValidation: Boolean = false
 
-  def signatureUpdater: ChangeSignatureDialogBase[ScalaParameterInfo, ScFunction, String, ScalaMethodDescriptor, ScalaParameterTableModelItem, ScalaParameterTableModel]#UpdateSignatureListener = mySignatureUpdater
+  // upstream: typed as ChangeSignatureDialogBase#UpdateSignatureListener (package-private in Consulo)
+  def signatureUpdater: DocumentListener = getSignatureUpdater
 
   def getTypesMaxLength: Int =
     parameterItems.map(_.typeText.length).maxOption.getOrElse(0)
@@ -474,7 +476,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
               .setMoveDownAction(downAction)
               .addExtraActions(createAddClauseButton(), createRemoveClauseButton())
               .createPanel
-    myParametersTableModel.addTableModelListener(mySignatureUpdater)
+    myParametersTableModel.addTableModelListener(getSignatureUpdater: TableModelListener)
     buttonsPanel
   }
 
@@ -544,9 +546,8 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
     mySpecifyTypeChb.addActionListener((_: ActionEvent) => updateSignatureAlarmFired())
   }
   
-  class ScalaParametersListTable extends ParametersListTable {
-    override protected def getRowRenderer(row: Int): JBTableRowRenderer = {
-      (_: JTable, row: Int, selected: Boolean, focused: Boolean) => {
+  class ScalaParametersListTable extends JBListTableWitEditors(myParametersTable) {
+    override protected def getRowRenderer(t: JTable, row: Int, selected: Boolean, focused: Boolean): JComponent = {
         val item = getRowItem(row)
         val name = nameText(item)
         val typeTxt = typeText(item)
@@ -555,7 +556,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
           else ScalaExtractMethodUtils.typedName(name, typeTxt)
         val defText = defaultText(item)
         val text = s"$nameAndType $defText"
-        val comp = JBListTable.createEditorTextFieldPresentation(project, getFileType, " " + text, selected, focused)
+        val comp = JBListTableWitEditors.createEditorTextFieldPresentation(project, getFileType, " " + text, selected, focused)
 
         if (item.parameter.isIntroducedParameter) {
           val fields = UIUtil.findComponentsOfType(comp, classOf[EditorTextField]).asScala
@@ -570,7 +571,6 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
         comp.setBorder(new MatteBorder(2, 0, 0, 0, color))
         comp
-      }
     }
 
     protected def nameText(item: ScalaParameterTableModelItem): String = {
@@ -594,9 +594,9 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
     override protected def isRowEmpty(row: Int): Boolean = false
 
-    override def getRowItem(row: Int): ScalaParameterTableModelItem = myParametersTableModel.getRowValue(row)
+    def getRowItem(row: Int): ScalaParameterTableModelItem = myParametersTableModel.getRowValue(row)
 
-    override def getRowEditor(item: ParameterTableModelItemBase[ScalaParameterInfo]): JBTableRowEditor = getTableEditor(getTable, item)
+    override protected def getRowEditor(row: Int): JBTableRowEditor = getTableEditor(getTable, getRowItem(row))
   }
 
 }

@@ -1,38 +1,34 @@
 package org.jetbrains.plugins.scala.findUsages.factory.dialog
 
-import consulo.find.FindBundle
-import consulo.find.ui.AbstractFindUsagesDialog
+import com.intellij.java.impl.find.findUsages.JavaFindUsagesDialogDescriptor
+import consulo.find.localize.FindLocalize
 import consulo.find.{FindUsagesHandler, FindUsagesOptions}
-import com.intellij.find.findUsages.JavaFindUsagesDialog
+import consulo.find.ui.AbstractFindUsagesDialogDescriptor.{isSelected, isToChange}
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import consulo.ui.ex.awt.{IdeBorderFactory, StateRestoringCheckBox}
-import consulo.ui.ex.awt.JBUI.Borders
+import consulo.ui.Component
+import consulo.ui.ex.StateRestoringCheckBoxWrapper
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaTypeDefinitionFindUsagesOptions
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTypeDefinition}
 
-import javax.swing.{BoxLayout, JComponent, JPanel}
-
 private[findUsages]
 class ScalaTypeDefinitionUsagesDialog(element: ScTypeDefinition, project: Project, findUsagesOptions: FindUsagesOptions,
                                       toShowInNewTab: Boolean, mustOpenInNewTab: Boolean, isSingleFile: Boolean,
                                       handler: FindUsagesHandler)
-  extends JavaFindUsagesDialog[ScalaTypeDefinitionFindUsagesOptions](element, project, findUsagesOptions, toShowInNewTab,
+  extends JavaFindUsagesDialogDescriptor[ScalaTypeDefinitionFindUsagesOptions](element, project, findUsagesOptions, toShowInNewTab,
     mustOpenInNewTab, isSingleFile, handler) {
-  private var myCbUsages: StateRestoringCheckBox = scala.compiletime.uninitialized
+  private var myCbUsages: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
 
-  private var myCbOnlyNewInstances: StateRestoringCheckBox = scala.compiletime.uninitialized
+  private var myCbOnlyNewInstances: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
 
-  private var myCbMembersUsages: StateRestoringCheckBox = scala.compiletime.uninitialized
-  private var myCbImplementingTypeDefinitions: StateRestoringCheckBox = scala.compiletime.uninitialized
-  private var myCbCompanionModule: StateRestoringCheckBox = scala.compiletime.uninitialized
+  private var myCbMembersUsages: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
+  private var myCbImplementingTypeDefinitions: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
+  private var myCbCompanionModule: StateRestoringCheckBoxWrapper = scala.compiletime.uninitialized
 
-  override def getPreferredFocusedControl: JComponent = {
-    myCbUsages
-  }
-
-  import consulo.find.ui.AbstractFindUsagesDialog.{isSelected, isToChange}
+  override protected def getPreferredFocusedControl: Component =
+    if (myCbUsages == null) null else myCbUsages.getComponent
 
   override def calcFindUsagesOptions(options: ScalaTypeDefinitionFindUsagesOptions): Unit = {
     super.calcFindUsagesOptions(options)
@@ -56,36 +52,26 @@ class ScalaTypeDefinitionUsagesDialog(element: ScTypeDefinition, project: Projec
     options.isSkipImportStatements = false
   }
 
-  protected override def createFindWhatPanel: JPanel = {
-    val findWhatPanel: JPanel = new JPanel()
-    findWhatPanel.setBorder(IdeBorderFactory.createTitledBorder(FindBundle.message("find.what.group"), true))
-    findWhatPanel.setLayout(new BoxLayout(findWhatPanel, BoxLayout.Y_AXIS))
-
-    myCbUsages = addCheckboxToPanel(FindBundle.message("find.what.usages.checkbox"), getFindUsagesOptions.isUsages, findWhatPanel, true)
+  override protected def addFindWhatOptions(): Unit = {
+    val options = getFindUsagesOptions
+    myCbUsages = addFindWhatCheckbox(FindLocalize.findWhatUsagesCheckbox(), options.isUsages, true)
 
     if (element.is[ScClass]) {
-      val usageKindPanel = new JPanel()
-      usageKindPanel.setBorder(Borders.emptyLeft(20))
-      usageKindPanel.setLayout(new BoxLayout(usageKindPanel, BoxLayout.Y_AXIS))
-
-      myCbOnlyNewInstances = addCheckboxToPanel(ScalaBundle.message("find.what.new.instances.usages"), getFindUsagesOptions.isOnlyNewInstances, usageKindPanel, true)
+      myCbOnlyNewInstances = addFindWhatCheckbox(LocalizeValue.of(ScalaBundle.message("find.what.new.instances.usages")), options.isOnlyNewInstances, true)
 
       //this mode should be available only from dialog, so unselect it every time
-      myCbOnlyNewInstances.setSelected(false)
-
-      findWhatPanel.add(usageKindPanel)
+      myCbOnlyNewInstances.setValue(false)
     }
 
-    myCbMembersUsages = addCheckboxToPanel(ScalaBundle.message("find.what.members.usages.checkbox"), getFindUsagesOptions.isMembersUsages, findWhatPanel, true)
-    myCbImplementingTypeDefinitions = addCheckboxToPanel(ScalaBundle.message("find.what.implementing.type.definitions.checkbox"),
-      getFindUsagesOptions.isImplementingTypeDefinitions, findWhatPanel, true)
+    myCbMembersUsages = addFindWhatCheckbox(LocalizeValue.of(ScalaBundle.message("find.what.members.usages.checkbox")), options.isMembersUsages, true)
+    myCbImplementingTypeDefinitions = addFindWhatCheckbox(LocalizeValue.of(ScalaBundle.message("find.what.implementing.type.definitions.checkbox")),
+      options.isImplementingTypeDefinitions, true)
     element.baseCompanion.foreach { _ =>
-      myCbCompanionModule = addCheckboxToPanel(ScalaBundle.message("find.what.companion.module.checkbox"), getFindUsagesOptions.isSearchCompanionModule, findWhatPanel, true)
+      myCbCompanionModule = addFindWhatCheckbox(LocalizeValue.of(ScalaBundle.message("find.what.companion.module.checkbox")), options.isSearchCompanionModule, true)
     }
-    findWhatPanel
   }
 
-  protected override def update(): Unit = {
+  override protected def update(): Unit = {
     val dependentCbs = Seq(
       myCbToSearchForTextOccurrences,
       myCbCompanionModule,
@@ -96,20 +82,18 @@ class ScalaTypeDefinitionUsagesDialog(element: ScTypeDefinition, project: Projec
       dependentCbs.foreach(makeSelectable)
     else
       dependentCbs.foreach(makeUnselectable)
-
-    val hasSelected: Boolean =
-      isSelected(myCbUsages) ||
-        isSelected(myCbMembersUsages) ||
-        isSelected(myCbImplementingTypeDefinitions)
-
-    setOKActionEnabled(hasSelected)
   }
 
-  private def makeSelectable(cb: StateRestoringCheckBox): Unit = {
+  override protected def isOkActionEnabled: Boolean =
+    isSelected(myCbUsages) ||
+      isSelected(myCbMembersUsages) ||
+      isSelected(myCbImplementingTypeDefinitions)
+
+  private def makeSelectable(cb: StateRestoringCheckBoxWrapper): Unit = {
     if (cb != null) cb.makeSelectable()
   }
 
-  private def makeUnselectable(cb: StateRestoringCheckBox): Unit = {
+  private def makeUnselectable(cb: StateRestoringCheckBoxWrapper): Unit = {
     if (cb != null) cb.makeUnselectable(false)
   }
 }

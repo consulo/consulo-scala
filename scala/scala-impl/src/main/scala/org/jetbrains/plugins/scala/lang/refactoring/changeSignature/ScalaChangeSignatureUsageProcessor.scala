@@ -8,7 +8,8 @@ import consulo.content.scope.SearchScope
 import com.intellij.java.indexing.search.searches.OverridingMethodsSearch
 import consulo.language.psi.search.ReferencesSearch
 import com.intellij.java.impl.refactoring.changeSignature.{MethodCallUsageInfo => JavaCallUsageInfo}
-import com.intellij.refactoring.changeSignature._
+import consulo.language.editor.refactoring.changeSignature._
+import com.intellij.java.impl.refactoring.changeSignature.{ChangeSignatureParameterUsageInfo, JavaChangeInfo, JavaParameterInfo, OverriderUsageInfo}
 import consulo.language.editor.refactoring.ResolveSnapshotProvider
 import consulo.language.editor.refactoring.ResolveSnapshotProvider.ResolveSnapshot
 import consulo.usage.UsageInfo
@@ -251,7 +252,7 @@ class ScalaChangeSignatureUsageProcessor extends ChangeSignatureUsageProcessor w
         true
     }
 
-    ReferencesSearch.search(named, named.getUseScope).forEach(process)
+    ReferencesSearch.search(named, named.getUseScope).forEach(process(_))
   }
 
   @tailrec
@@ -297,6 +298,6 @@ class ScalaChangeSignatureUsageProcessor extends ChangeSignatureUsageProcessor w
       }
       true
     }
-    ReferencesSearch.search(param, scope, false).forEach(process)
+    ReferencesSearch.search(param, scope, false).forEach(process(_))
   }
 }

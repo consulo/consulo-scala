@@ -4,7 +4,7 @@ import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
-import consulo.find.ui.AbstractFindUsagesDialog
+import consulo.find.ui.AbstractFindUsagesDialogDescriptor
 import consulo.find.{FindUsagesHandler, FindUsagesOptions}
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -68,7 +68,7 @@ object ScalaFindUsagesConfiguration {
                   project: Project,
                   isSingleFile: Boolean,
                   toShowInNewTab: Boolean,
-                  mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialog] = None
+                  mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialogDescriptor] = None
   }
 
   object FindUsagesOptionsResolver {
@@ -78,7 +78,7 @@ object ScalaFindUsagesConfiguration {
                              project: Project,
                              isSingleFile: Boolean,
                              toShowInNewTab: Boolean,
-                             mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialog] =
+                             mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialogDescriptor] =
         Some(new ScalaTypeDefinitionUsagesDialog(
           typeDef,
           project,
@@ -96,7 +96,7 @@ object ScalaFindUsagesConfiguration {
                              project: Project,
                              isSingleFile: Boolean,
                              toShowInNewTab: Boolean,
-                             mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialog] = {
+                             mustOpenInNewTab: Boolean): Option[AbstractFindUsagesDialogDescriptor] = {
         Some(new ScalaOverridableMemberFindUsagesDialog(
           member,
           project,

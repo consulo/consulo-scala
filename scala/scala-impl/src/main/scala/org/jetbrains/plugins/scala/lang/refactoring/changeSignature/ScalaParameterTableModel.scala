@@ -5,8 +5,6 @@ import consulo.language.editor.highlight.HighlightLevelUtil
 import consulo.project.Project
 import com.intellij.java.language.psi.JavaCodeFragment
 import consulo.language.psi.PsiElement
-import com.intellij.psi.VisibilityChecker
-import com.intellij.refactoring.changeSignature.{DefaultValueColumn, NameColumn, TypeColumn}
 import consulo.language.editor.refactoring.changeSignature.ParameterTableModelBase
 import consulo.ui.ex.awt.ColumnInfo
 import org.jetbrains.plugins.scala.api.ScalaFileType

@@ -18,9 +18,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScMethodCall, ScNewTemplat
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction.CommonNames
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
+import java.util.function.Predicate
 
 class ApplyUnapplyForBindingSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val project = queryParameters.getProject
     val scope = inReadAction {
       ScalaFilterScope(queryParameters)
@@ -39,7 +40,7 @@ class ApplyUnapplyForBindingSearcher extends QueryExecutor[PsiReference, Referen
   }
 
 
-  private def createProcessor(consumer: Processor[? >: PsiReference], binding: ScBindingPattern, checkApply: Boolean, checkUnapply: Boolean): TextOccurenceProcessor =
+  private def createProcessor(consumer: Predicate[? >: PsiReference], binding: ScBindingPattern, checkApply: Boolean, checkUnapply: Boolean): TextOccurenceProcessor =
     new TextOccurenceProcessor {
       override def execute(element: PsiElement, offsetInElement: Int): Boolean = {
         val references = inReadAction(element.getReferences)
@@ -48,8 +49,8 @@ class ApplyUnapplyForBindingSearcher extends QueryExecutor[PsiReference, Referen
         for (ref <- references if ref.getRangeInElement.contains(offsetInElement)) {
           inReadAction {
             ref match {
-              case IsApply(reference) if checkApply => if (!consumer.process(reference)) return false
-              case IsUnapply(reference) if checkUnapply => if (!consumer.process(reference)) return false
+              case IsApply(reference) if checkApply => if (!consumer.test(reference)) return false
+              case IsUnapply(reference) if checkUnapply => if (!consumer.test(reference)) return false
               case _ =>
             }
           }

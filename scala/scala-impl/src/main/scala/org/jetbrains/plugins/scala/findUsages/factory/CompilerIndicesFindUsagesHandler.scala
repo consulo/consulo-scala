@@ -7,7 +7,7 @@ import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.usage.UsageInfo
-import consulo.application.util.function.Processor
+import java.util.function.Predicate
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.findUsages.ExternalReferenceSearcher
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
@@ -35,17 +35,17 @@ class CompilerIndicesFindUsagesHandler(
 
   private def searchInCompilerIndices(
     e:         PsiNamedElement,
-    processor: Processor[? >: UsageInfo]
+    processor: Predicate[UsageInfo]
   ): Boolean = {
     //noinspection ApiStatus
     ExternalReferenceSearcher
       .searchExternally(e)
-      .forEach(ref => processor.process(new UsageInfo(ref)))
+      .forEach(ref => processor.test(new UsageInfo(ref)))
   }
 
   override def processElementUsages(
     element:   PsiElement,
-    processor: Processor[? >: UsageInfo],
+    processor: Predicate[UsageInfo],
     options:   FindUsagesOptions
   ): Boolean = element match {
     case (named: PsiNamedElement) & ContainingClass(cls: ScTypeDefinition) if isInLibrary(element) =>
@@ -68,7 +68,7 @@ class CompilerIndicesFindUsagesHandler(
 
   override def processUsagesInText(
     element:     PsiElement,
-    processor:   Processor[? >: UsageInfo],
+    processor:   Predicate[UsageInfo],
     searchScope: GlobalSearchScope
   ): Boolean = true
 

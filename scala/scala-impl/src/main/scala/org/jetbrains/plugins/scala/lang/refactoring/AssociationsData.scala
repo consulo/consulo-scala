@@ -1,28 +1,28 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.codeInsight.editorActions.TextBlockTransferableData
 import consulo.document.util.TextRange
 
 import java.awt.datatransfer.DataFlavor
 
 abstract class AssociationsData(val associations: Array[Association],
-                                private val companion: AssociationsData.Companion[?]) extends TextBlockTransferableData {
+                                private val companion: AssociationsData.Companion[?]) {
+  // upstream: extends TextBlockTransferableData (copy/paste transferable API is not public in Consulo)
 
   import AssociationsData._
 
-  override final def getOffsetCount: Int = 2 * associations.length
+  final def getOffsetCount: Int = 2 * associations.length
 
-  override final def getOffsets(offsets: Array[Int], startIndex: Int): Int =
+  final def getOffsets(offsets: Array[Int], startIndex: Int): Int =
     this (offsets, startIndex) {
       case (array, index) => array(index) = associations(index).range
     }
 
-  override final def setOffsets(offsets: Array[Int], startIndex: Int): Int =
+  final def setOffsets(offsets: Array[Int], startIndex: Int): Int =
     this (offsets, startIndex) {
       case (array, index) => associations(index).range = array(index)
     }
 
-  override final def getFlavor: DataFlavor = companion.flavor
+  final def getFlavor: DataFlavor = companion.flavor
 
   private def apply(offsets: Array[Int], startIndex: Int)
                    (action: (OffsetsArray, Int) => Unit) = {

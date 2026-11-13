@@ -4,10 +4,8 @@ import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateState
 import consulo.application.ApplicationManager
 import consulo.language.editor.WriteCommandAction.writeCommandAction
-import com.intellij.openapi.command.impl.StartMarkAction
-import consulo.undoRedo.UndoManager
+import consulo.undoRedo.ProjectUndoManager
 import consulo.document.event.{DocumentEvent, DocumentListener}
-import com.intellij.openapi.editor.ex.DocumentEx
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, ScrollType}
 import consulo.project.Project
@@ -15,7 +13,6 @@ import consulo.ui.ex.awt.VerticalFlowLayout
 import consulo.document.util.TextRange
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement}
-import com.intellij.psi.Visibility
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.content.scope.SearchScope
 import consulo.language.psi.util.PsiTreeUtil
@@ -88,7 +85,7 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
     override def documentChanged(e: DocumentEvent): Unit = {
       commitDocument()
       val range = new TextRange(myCaretRangeMarker.getStartOffset, myCaretRangeMarker.getEndOffset)
-      if (range.getLength == 0 && UndoManager.getInstance(myProject).isUndoInProgress) {}
+      if (range.getLength == 0 && ProjectUndoManager.getInstance(myProject).isUndoInProgress) {}
       else {
         val input = myCaretRangeMarker.getDocument.getText(range)
         val numberOfSpaces = input.lastIndexOf(' ') + 1
@@ -302,10 +299,7 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
   }
 
   private def resetBalloonPanel(nameIsValid: Boolean): Unit = {
-    def isBulkUpdate = myEditor.getDocument match {
-      case docEx: DocumentEx => docEx.isInBulkUpdate
-      case _ => false
-    }
+    def isBulkUpdate = myEditor.getDocument.isInBulkUpdate
 
     if (myBalloon == null || myBalloon.isDisposed || isBulkUpdate) return
     if (!nameIsValid) {
@@ -336,7 +330,7 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
           getDeclaration.foreach { declaration =>
             myEditor.getCaretModel.moveToOffset(declaration.getTextRange.getEndOffset)
           }
-      } else if (getDeclaration.isDefined && !UndoManager.getInstance(myProject).isUndoInProgress) {
+      } else if (getDeclaration.isDefined && !ProjectUndoManager.getInstance(myProject).isUndoInProgress) {
         val revertInfo = myEditor.getUserData(ScalaIntroduceVariableHandler.REVERT_INFO)
         if (revertInfo != null) {
           inWriteAction {
@@ -365,9 +359,7 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
     PsiTreeUtil.findCommonParent(elements*)
   }
 
-  protected override def startRename: StartMarkAction = {
-    StartMarkAction.start(myEditor, myProject, getCommandName)
-  }
+  // upstream: startRename override starting StartMarkAction outside of a command (StartMarkAction is internal API in Consulo)
 
   override def finish(success: Boolean): Unit = {
     myCheckIdentifierListener.foreach {

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
-import consulo.logging.attachment.Attachment
+import consulo.logging.attachment.AttachmentFactory
 import consulo.logging.Logger
-import com.intellij.openapi.progress.util.AbstractProgressIndicatorBase
 import consulo.component.ProcessCanceledException
-import consulo.application.progress.{ProgressManager, StandardProgressIndicator}
+import consulo.application.progress.{ProgressIndicator => ProgressIndicatorApi, ProgressManager}
+import consulo.localize.LocalizeValue
+import consulo.ui.ModalityState
 import consulo.project.Project
 import consulo.util.dataholder.Key
 import consulo.document.util.{Segment, TextRange}
@@ -227,7 +228,7 @@ object Associations extends AssociationsData.Companion(classOf[Associations], "S
         )
       case e: Exception =>
         val attachments = ranges.zipWithIndex.map {
-          case (range, index) => new Attachment(s"Selection-${index + 1}.scala", subText(range))
+          case (range, index) => AttachmentFactory.get().create(s"Selection-${index + 1}.scala", subText(range))
         }
         logger.error(e.getMessage, e, attachments*)
     } finally {
@@ -237,17 +238,44 @@ object Associations extends AssociationsData.Companion(classOf[Associations], "S
     result
   }
 
-  private class ProgressIndicator extends AbstractProgressIndicatorBase with StandardProgressIndicator {
+  private class ProgressIndicator extends ProgressIndicatorApi {
 
     import System.currentTimeMillis
 
     private val timeBound = currentTimeMillis + ProgressIndicator.Timeout
 
-    override final def isCanceled: Boolean = currentTimeMillis > timeBound || super.isCanceled
+    @volatile private var canceled = false
+    @volatile private var running = false
+    private var text = LocalizeValue.empty()
+    private var text2 = LocalizeValue.empty()
+    private var fraction = 0.0
+    private var indeterminate = true
 
-    override final def cancel(): Unit = super.cancel()
+    override final def isCanceled: Boolean = currentTimeMillis > timeBound || canceled
 
-    override final def checkCanceled(): Unit = super.checkCanceled()
+    override final def cancel(): Unit = canceled = true
+
+    override final def checkCanceled(): Unit =
+      if (isCanceled) throw new ProcessCanceledException()
+
+    override def start(): Unit = running = true
+    override def stop(): Unit = running = false
+    override def isRunning: Boolean = running
+    override def setText(text: LocalizeValue): Unit = this.text = text
+    override def getText: LocalizeValue = text
+    override def setText2(text: LocalizeValue): Unit = text2 = text
+    override def getText2: LocalizeValue = text2
+    override def getFraction: Double = fraction
+    override def setFraction(fraction: Double): Unit = this.fraction = fraction
+    override def pushState(): Unit = ()
+    override def popState(): Unit = ()
+    override def isModal: Boolean = false
+    override def getModalityState: ModalityState = ModalityState.nonModal()
+    override def setModalityProgress(modalityProgress: ProgressIndicatorApi): Unit = ()
+    override def isIndeterminate: Boolean = indeterminate
+    override def setIndeterminate(indeterminate: Boolean): Unit = this.indeterminate = indeterminate
+    override def isPopupWasShown: Boolean = false
+    override def isShowing: Boolean = false
   }
 
   private object ProgressIndicator {

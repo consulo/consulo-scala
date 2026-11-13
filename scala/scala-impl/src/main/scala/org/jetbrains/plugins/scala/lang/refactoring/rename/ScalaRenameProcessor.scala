@@ -13,11 +13,11 @@ import scala.jdk.CollectionConverters._
 
 trait ScalaRenameProcessor { this: RenamePsiElementProcessor =>
 
+  // upstream: searchScope parameter (Consulo RenamePsiElementProcessor.findReferences has no scope, the use scope is searched)
   override def findReferences(element: PsiElement,
-                              searchScope: SearchScope,
                               searchInCommentsAndStrings: Boolean): util.Collection[PsiReference] = {
 
-    val allRefs = ReferencesSearch.search(element, searchScope.intersectWith(element.getUseScope)).findAll()
+    val allRefs = ReferencesSearch.search(element, element.getUseScope).findAll()
     val filtered = allRefs.asScala.filterNot(isAliased).filterNot(ScalaRenameProcessor.isIndirectReference(_, element))
     val references = new util.ArrayList[PsiReference](filtered.asJavaCollection)
     ScalaGivenRenameUtil.syntheticGivenNameReferences(element, references).foreach(references.add)

@@ -24,14 +24,14 @@ final class ScalaInlineMethodDialog(method: ScFunctionDefinition)(implicit proje
   override protected def inlineKeepGetter: ScalaApplicationSettings => Boolean = _.INLINE_METHOD_KEEP
   override protected def inlineKeepSetter: (ScalaApplicationSettings, Boolean) => Unit = _.INLINE_METHOD_KEEP = _
 
-  override def getNameLabelText: String =
+  override def nameLabelText: String =
     if (method.isLocal) ScalaBundle.message("inline.local.method.name.label", method.name)
     else ScalaBundle.message("inline.method.name.label", method.name)
 
   override def getInlineAllUsagesAndRemoveDefinitionText: String =
     ScalaBundle.message("inline.all.usages.and.remove.the.method")
 
-  override def getInlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.method")
+  override def inlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.method")
 
   override def getKeepTheDeclarationText: String =
     if (method.isWritable) ScalaBundle.message("inline.all.usages.and.keep.the.method")

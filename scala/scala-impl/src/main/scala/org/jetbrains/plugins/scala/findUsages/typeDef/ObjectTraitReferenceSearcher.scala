@@ -9,9 +9,10 @@ import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTrait}
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
+import java.util.function.Predicate
 
 class ObjectTraitReferenceSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)
     val element = queryParameters.getElementToSearch
 
@@ -30,7 +31,7 @@ class ObjectTraitReferenceSearcher extends QueryExecutor[PsiReference, Reference
           for (ref <- references if ref.getRangeInElement.contains(offsetInElement)) {
             inReadAction {
               if (ref.isReferenceTo(elem) || ref.resolve() == elem) {
-                if (!consumer.process(ref)) return false
+                if (!consumer.test(ref)) return false
               }
             }
           }

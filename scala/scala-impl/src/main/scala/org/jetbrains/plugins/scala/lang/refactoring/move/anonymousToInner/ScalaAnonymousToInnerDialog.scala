@@ -12,7 +12,7 @@ import com.intellij.java.impl.refactoring.util.{ParameterTablePanel, Refactoring
 import com.intellij.java.analysis.impl.refactoring.util.VariableData
 import consulo.ui.ex.awt.IdeBorderFactory
 import consulo.ui.ex.awt.FormBuilder
-import org.jetbrains.annotations.TestOnly
+import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScExtendsBlock
@@ -59,7 +59,7 @@ class ScalaAnonymousToInnerDialog(
     }
 
   override protected def doOKAction(): Unit = {
-    @DialogMessage var errorString: String = null
+    @Nls var errorString: String = null
     val innerClassName = getClassName
     val manager = PsiManager.getInstance(project)
     if (innerClassName.isEmpty) errorString = JavaRefactoringBundle.message("anonymousToInner.no.inner.class.name")

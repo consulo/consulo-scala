@@ -16,15 +16,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScVariab
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.light.PsiTypedDefinitionWrapper
+import java.util.function.Predicate
 
 
 class SetterMethodSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
   private val suffixScala = "_="
   private val suffixJava = "_$eq"
 
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, cons: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, cons: Predicate[? >: PsiReference]): Boolean = {
     implicit val scope: SearchScope = inReadAction(queryParameters.getEffectiveSearchScope)
-    implicit val consumer: Processor[? >: PsiReference] = cons
+    implicit val consumer: Predicate[? >: PsiReference] = cons
     val element = queryParameters.getElementToSearch
     val project = queryParameters.getProject
     val data: Option[(ScNamedElement, String)] = inReadAction {
@@ -48,7 +49,7 @@ class SetterMethodSearcher extends QueryExecutor[PsiReference, ReferencesSearch.
   }
 
   private def processAssignments(element: PsiElement, name: String, project: Project)
-                                (implicit consumer: Processor[? >: PsiReference], scope: SearchScope): Boolean = {
+                                (implicit consumer: Predicate[? >: PsiReference], scope: SearchScope): Boolean = {
     val processor = new TextOccurenceProcessor {
       override def execute(elem: PsiElement, offsetInElement: Int): Boolean = {
         inReadAction {
@@ -56,7 +57,7 @@ class SetterMethodSearcher extends QueryExecutor[PsiReference, ReferencesSearch.
             case Parent(Parent(assign: ScAssignment)) => assign.resolveAssignment match {
               case Some(res) if res.element.getNavigationElement == element =>
                 Option(assign.leftExpression).foreach {
-                  case ref: ScReference => if (!consumer.process(ref)) return false
+                  case ref: ScReference => if (!consumer.test(ref)) return false
                 }
               case _ =>
             }
@@ -71,14 +72,14 @@ class SetterMethodSearcher extends QueryExecutor[PsiReference, ReferencesSearch.
   }
 
   private def processSimpleUsages(element: PsiElement, name: String, project: Project)
-                                 (implicit consumer: Processor[? >: PsiReference], scope: SearchScope): Boolean = {
+                                 (implicit consumer: Predicate[? >: PsiReference], scope: SearchScope): Boolean = {
     val processor = new TextOccurenceProcessor {
       override def execute(elem: PsiElement, offsetInElement: Int): Boolean = {
         inReadAction {
           elem match {
             case ref: PsiReference => ref.resolve() match {
-              case FakePsiMethod(`element`) => if (!consumer.process(ref)) return false
-              case PsiTypedDefinitionWrapper(`element`) => if (!consumer.process(ref)) return false
+              case FakePsiMethod(`element`) => if (!consumer.test(ref)) return false
+              case PsiTypedDefinitionWrapper(`element`) => if (!consumer.test(ref)) return false
               case _ =>
             }
             case _ =>

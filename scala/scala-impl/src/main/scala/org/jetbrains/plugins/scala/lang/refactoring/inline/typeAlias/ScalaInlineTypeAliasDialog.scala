@@ -27,14 +27,14 @@ final class ScalaInlineTypeAliasDialog(typeAlias: ScTypeAliasDefinition)(implici
   override protected def inlineKeepGetter: ScalaApplicationSettings => Boolean = _.INLINE_TYPE_ALIAS_KEEP
   override protected def inlineKeepSetter: (ScalaApplicationSettings, Boolean) => Unit = _.INLINE_TYPE_ALIAS_KEEP = _
 
-  override def getNameLabelText: String =
+  override def nameLabelText: String =
     if (typeAlias.isLocal) ScalaBundle.message("inline.local.type.alias.name.label", typeAlias.name)
     else ScalaBundle.message("inline.type.alias.name.label", typeAlias.name)
 
   override def getInlineAllUsagesAndRemoveDefinitionText: String =
     ScalaBundle.message("inline.all.usages.and.remove.the.type.alias")
 
-  override def getInlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.type.alias")
+  override def inlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.type.alias")
 
   override def getKeepTheDeclarationText: String =
     if (typeAlias.isWritable) ScalaBundle.message("inline.all.usages.and.keep.the.type.alias")

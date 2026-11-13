@@ -17,7 +17,7 @@ class RenameScalaTypeAliasProcessor extends RenameJavaMemberProcessor with Scala
     RenameSuperMembersUtil.chooseSuper(element.asInstanceOf[ScNamedElement])
   }
 
-  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[? >: PsiElement]): Unit = {
+  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[PsiElement]): Unit = {
     val named = element match {
       case named: ScNamedElement => named
       case _ => return

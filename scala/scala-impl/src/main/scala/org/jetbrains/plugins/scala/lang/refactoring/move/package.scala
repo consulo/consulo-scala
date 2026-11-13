@@ -2,12 +2,12 @@ package org.jetbrains.plugins.scala.lang.refactoring
 
 import consulo.logging.Logger
 import consulo.project.DumbService
-import com.intellij.openapi.roots.PackageIndex
+import consulo.module.content.ProjectFileIndex
 import consulo.util.dataholder.Key
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.search.ReferencesSearch
 import com.intellij.java.language.psi.util.FileTypeUtils
-import com.intellij.java.language.psi.{JavaDirectoryService, PsiClass, PsiClassOwner}
+import com.intellij.java.language.psi.{JavaDirectoryService, PsiClass, PsiClassOwner, PsiJavaPackage}
 import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiNamedElement, PsiPackage, PsiReference}
 import consulo.language.editor.refactoring.event.RefactoringElementListener
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveClassHandler
@@ -16,7 +16,7 @@ import consulo.usage.MoveRenameUsageInfo
 import consulo.language.editor.refactoring.util.TextOccurrencesUtil
 import consulo.usage.UsageInfo
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt, ScalaFileExt}
+import org.jetbrains.plugins.scala.extensions.{&, PsiClassExt, PsiNamedElementExt, ScalaFileExt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScPackage, ScPackageLike, ScalaFile}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScPackageImpl
@@ -54,7 +54,7 @@ package object move {
     val classes = element match {
       case c: PsiClass => Seq(c)
       case f: ScalaFile => f.typeDefinitions
-      case p: ScPackage => p.getClasses.toSeq
+      case (_: ScPackage) & (jp: PsiJavaPackage) => jp.getClasses.toSeq
       case _ => Seq.empty
     }
 
@@ -114,7 +114,7 @@ package object move {
     def doMoveFile(scalaFile: ScalaFile): Unit = {
       val project = moveDestination.getProject
       val dstDir = moveDestination.getVirtualFile
-      val pkgName = PackageIndex.getInstance(project).getPackageNameByDirectory(dstDir)
+      val pkgName = ProjectFileIndex.getInstance(project).getPackageNameByDirectory(dstDir)
       val newPackage = ScPackageImpl.findPackage(project, pkgName)
       val oldNamedElements = scalaFile.namedElements
 
@@ -184,8 +184,9 @@ package object move {
                                 usages: ju.Collection[? >: UsageInfo]): Unit = {
     val stringToSearch = getStringToSearch(element)
     if (stringToSearch != null && stringToSearch.nonEmpty) {
-      TextOccurrencesUtil.findNonCodeUsages(element, searchScope, stringToSearch,
-        searchInStringsAndComments, searchInNonJavaFiles, newQName, usages)
+      // upstream: search scope argument (not in Consulo TextOccurrencesUtil.findNonCodeUsages)
+      TextOccurrencesUtil.findNonCodeUsages(element, stringToSearch,
+        searchInStringsAndComments, searchInNonJavaFiles, newQName, usages.asInstanceOf[ju.Collection[UsageInfo]])
     }
   }
 

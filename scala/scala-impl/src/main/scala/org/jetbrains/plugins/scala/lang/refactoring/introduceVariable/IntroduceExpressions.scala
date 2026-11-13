@@ -561,7 +561,7 @@ object IntroduceExpressions {
   // SCL-20916
   private def removeUnnecessaryParentheses(file: PsiFile, element: PsiElement)(implicit project: Project): Unit = {
     val isOnTheFly = false
-    val holder = new ProblemsHolder(InspectionManager.getInstance(project), file, isOnTheFly)
+    val holder = InspectionManager.getInstance(project).createProblemsHolder(file, isOnTheFly)
     val inspection = new ScalaUnnecessaryParenthesesInspection
     val visitor = inspection.buildVisitor(holder, isOnTheFly)
 

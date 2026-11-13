@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
-import com.intellij.codeInsight.hint.ShowParameterInfoHandler
+import consulo.language.editor.AutoPopupController
 import consulo.language.editor.{CodeInsightBundle, TargetElementUtil}
 import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoUIContext, UpdateParameterInfoContext}
 import com.intellij.java.language.psi.{PsiAnnotationMemberValue, PsiAnnotationMethod, PsiClass, PsiMember, PsiMethod, PsiParameter, PsiTypeParameterListOwner}
@@ -869,7 +869,7 @@ class ScalaFunctionParameterInfoHandler extends ScalaParameterInfoHandler[PsiEle
           context.removeHint()
 
           invokeLater {
-            ShowParameterInfoHandler.invoke(project, context.getEditor, context.getFile, context.getOffset, null, false)
+            AutoPopupController.getInstance(project).showParameterInfo(project, context.getEditor, context.getFile, context.getOffset, null, false)
           }
         }
       case _ =>

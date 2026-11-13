@@ -307,7 +307,7 @@ class ScalaExtractMethodHandler extends ScalaRefactoringActionHandler {
     if (project == null) return
     ReadAction
       .nonBlocking(() => ScalaExtractMethodUtils.createMethodFromSettings(settings))
-      .finishOnUiThread(ModalityState.defaultModalityState, doPerformRefactoring(_, settings, editor, duplicates))
+      .finishOnUiThread((app: consulo.application.Application) => app.getDefaultModalityState, doPerformRefactoring(_, settings, editor, duplicates))
       .expireWhen(() => project.isDisposed)
       .submit(AppExecutorUtil.getAppExecutorService)
   }

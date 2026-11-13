@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
+import consulo.localize.LocalizeValue
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.util.PsiTreeUtil.{getParentOfType, isAncestor}
@@ -189,7 +190,7 @@ object ScalaUsageTypeProvider {
     }
   }
 
-  implicit def stringToUsageType(@Nls name: String): UsageType = new UsageType(() => name)
+  implicit def stringToUsageType(@Nls name: String): UsageType = new UsageType(LocalizeValue.of(name))
   val Extractor: UsageType                 = ScalaBundle.message("usage.extractor")
   val Pattern: UsageType                   = ScalaBundle.message("usage.pattern")
   val TypedExpression: UsageType           = ScalaBundle.message("usage.typed.statement")

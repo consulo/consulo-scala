@@ -7,7 +7,6 @@ import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
 import consulo.language.editor.template.event.TemplateEditingAdapter
-import com.intellij.codeInsight.template.impl.{TemplateImpl}
 import consulo.language.editor.template.{TemplateState, TextExpression}
 import consulo.codeEditor.EditorColors
 import consulo.colorScheme.TextAttributesKey
@@ -72,13 +71,8 @@ class InplaceRenameHelper(@NotNull private val parent: PsiElement) {
     CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(parent)
     editor.getCaretModel.moveToOffset(parent.getTextRange.getStartOffset)
 
-    val template = builder.buildInlineTemplate().asInstanceOf[TemplateImpl]
-    val templateVariables = template.getVariables
-    val stopAtVariables = templateVariables.asScala.filter(_.isAlwaysStopAt)
-    val primarySortedVariables = primaries.flatMap(p => stopAtVariables.find(_.getName == primaryNames(p)))
-    for ((v, idx) <- primarySortedVariables.zipWithIndex) {
-      templateVariables.set(idx, v)
-    }
+    // upstream: template variables were reordered to follow `primaries` (TemplateImpl.getVariables is not public API in Consulo)
+    val template = builder.buildInlineTemplate()
     val myHighlighters = mutable.ArrayBuffer[RangeHighlighter]()
     val rangesToHighlight = mutable.HashMap[RangeMarker, TextAttributesKey]()
 

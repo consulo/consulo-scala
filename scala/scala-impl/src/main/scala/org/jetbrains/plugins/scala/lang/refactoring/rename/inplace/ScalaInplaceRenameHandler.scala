@@ -70,9 +70,8 @@ trait ScalaInplaceRenameHandler {
   protected final def afterElementSubstitution(elementToRename: PsiElement, editor: Editor)(inplaceRename: PsiElement => InplaceRefactoring): InplaceRefactoring = {
     def showSubstitutePopup(@Nls title: String, positive: String, subst: => PsiNamedElement): Unit = {
       val cancel = ScalaBundle.message("rename.cancel")
-      val list = new JBList[String](positive, cancel)
-      val callback: Runnable = () => invokeLaterInTransaction(editor.getProject.unloadAwareDisposable) {
-        list.getSelectedValue match {
+      val callback: java.util.function.Consumer[String] = (selected: String) => invokeLaterInTransaction(editor.getProject.unloadAwareDisposable) {
+        selected match {
           case s: String if s == positive =>
             val file = subst.getContainingFile.getVirtualFile
             if (FileDocumentManager.getInstance.getDocument(file) == editor.getDocument) {
@@ -84,13 +83,14 @@ trait ScalaInplaceRenameHandler {
           case s: String if s == cancel =>
         }
       }
-      JBPopupFactory.getInstance.createListPopupBuilder(list)
+      val popup = JBPopupFactory.getInstance.createPopupChooserBuilder(java.util.List.of(positive, cancel))
         .setTitle(title)
         .setMovable(false)
         .setResizable(false)
         .setRequestFocus(true)
         .setItemChosenCallback(callback)
-        .createPopup.showInBestPositionFor(editor): @nowarn("cat=deprecation")
+        .createPopup
+      editor.showPopupInBestPositionFor(popup)
     }
 
     def specialMethodPopup(fun: ScFunction): Unit = {

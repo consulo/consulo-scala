@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
 import consulo.util.dataholder.Key
 import consulo.dataContext.DataContext
-import com.intellij.openapi.command.impl.StartMarkAction
+import consulo.language.editor.refactoring.rename.inplace.InplaceRefactoring
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, SelectionModel}
 import consulo.project.Project
@@ -55,7 +55,7 @@ class ScalaIntroduceVariableHandler extends ScalaRefactoringActionHandler with D
     }
 
     //clear data on startRefactoring, if there is no marks, but there is some data
-    if (StartMarkAction.canStart(editor) == null) {
+    if (InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
       editor.putUserData(REVERT_TYPE_ALIAS_INFO, new IntroduceTypeAliasData())
     }
 
@@ -90,11 +90,7 @@ class ScalaIntroduceVariableHandler extends ScalaRefactoringActionHandler with D
     invokeLater {
       dialog.show()
       if (dialog.isOK) action(dialog) else {
-        if (multipleOccurrences) {
-          WindowManager.getInstance
-            .getStatusBar(project)
-            .setInfo(ScalaBundle.message("press.escape.to.remove.the.highlighting"))
-        }
+        // upstream: status bar info "press.escape.to.remove.the.highlighting" when multipleOccurrences (no StatusBar.setInfo in Consulo)
 
         occurrenceHighlighters.foreach(_.dispose())
         occurrenceHighlighters = Seq.empty

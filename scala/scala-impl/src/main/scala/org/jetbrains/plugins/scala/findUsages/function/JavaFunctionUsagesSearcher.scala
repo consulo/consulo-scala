@@ -11,9 +11,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.light.{ScFunctionWrapper, StaticPsiMethodWrapper}
 
 import scala.collection.mutable
+import java.util.function.Predicate
 
 class JavaFunctionUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)
     val element = queryParameters.getElementToSearch
     element match {
@@ -27,8 +28,8 @@ class JavaFunctionUsagesSearcher extends QueryExecutor[PsiReference, ReferencesS
                 ref match {
                   case refElement: PsiReferenceExpression =>
                     refElement.resolve match {
-                      case ScFunctionWrapper(delegate) if delegate == method && !consumer.process(refElement) => return false
-                      case t: StaticPsiMethodWrapper if t.getNavigationElement == method && !consumer.process(refElement) => return false
+                      case ScFunctionWrapper(delegate) if delegate == method && !consumer.test(refElement) => return false
+                      case t: StaticPsiMethodWrapper if t.getNavigationElement == method && !consumer.test(refElement) => return false
                       case _ =>
                     }
                   case _ =>

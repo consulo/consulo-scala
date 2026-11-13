@@ -13,9 +13,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScAssi
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 
 import scala.collection.mutable
+import java.util.function.Predicate
 
 class NamingParamsSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
-  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Boolean = {
+  override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val project = queryParameters.getProject
     val scope = inReadAction(ScalaFilterScope(queryParameters))
 
@@ -40,11 +41,11 @@ class NamingParamsSearcher extends QueryExecutor[PsiReference, ReferencesSearch.
                       case assign: ScAssignment if assign.leftExpression == refElement &&
                         assign.getParent.isInstanceOf[ScArgumentExprList] =>
                         Option(refElement.resolve()) match {
-                          case Some(`parameter`) => if (!consumer.process(ref)) return false
+                          case Some(`parameter`) => if (!consumer.test(ref)) return false
                           case Some(x: ScParameter) =>
                             ScalaPsiUtil.parameterForSyntheticParameter(x) match {
                               case Some(realParam) =>
-                                if (realParam == parameter && !consumer.process(ref)) return false
+                                if (realParam == parameter && !consumer.test(ref)) return false
                               case None =>
                             }
                           case _ =>

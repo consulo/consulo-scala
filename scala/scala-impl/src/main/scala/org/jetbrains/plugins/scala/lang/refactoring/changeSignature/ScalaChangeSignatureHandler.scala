@@ -78,7 +78,7 @@ class ScalaChangeSignatureHandler extends ChangeSignatureHandler with ScalaRefac
           case _ =>
         }
 
-        val newMethod = SuperMethodWarningUtil.checkSuperMethod(method)
+        val newMethod = SuperMethodWarningUtil.checkSuperMethod(method, consulo.language.editor.refactoring.localize.RefactoringLocalize.toRefactor())
         unwrapMethod(newMethod) match {
           case Some(fun: ScMethodLike) =>
             if (isSupportedFor(fun)) invokeWithDialog(fun)

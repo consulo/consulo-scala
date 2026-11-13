@@ -6,10 +6,11 @@ import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.content.scope.SearchScope
 import consulo.usage.UsageInfo
-import consulo.application.util.function.Processor
+import java.util.function.Predicate
 import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.findUsages.ExternalInheritorsSearcher
+import org.jetbrains.plugins.scala.findUsages.parameters.ExtractorParamsInExtractorPatternSearcher
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil._
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods._
@@ -64,22 +65,23 @@ class ScalaFindUsagesHandler(
     }
   }
 
-  override def processUsagesInText(element: PsiElement, processor: Processor[? >: UsageInfo], searchScope: GlobalSearchScope): Boolean = {
-    val nonScalaTextProcessor = new Processor[UsageInfo] {
-      override def process(t: UsageInfo): Boolean = {
-        if (t.getFile.getFileType == ScalaFileType.INSTANCE) true
-        else processor.process(t)
-      }
+  override def processUsagesInText(element: PsiElement, processor: Predicate[UsageInfo], searchScope: GlobalSearchScope): Boolean = {
+    val nonScalaTextProcessor: Predicate[UsageInfo] = (t: UsageInfo) => {
+      if (t.getFile.getFileType == ScalaFileType.INSTANCE) true
+      else processor.test(t)
     }
     super.processUsagesInText(element, nonScalaTextProcessor, searchScope)
   }
 
   override def processElementUsages(
     element:   PsiElement,
-    processor: Processor[? >: UsageInfo],
+    processor: Predicate[UsageInfo],
     options:   FindUsagesOptions
   ): Boolean = {
     if (!super.processElementUsages(element, processor, options))
+      return false
+
+    if (options.isUsages && !ExtractorParamsInExtractorPatternSearcher.processElementUsages(element, processor, options))
       return false
 
     options match {
@@ -107,32 +109,32 @@ class ScalaFindUsagesHandler(
   override def isSearchForTextOccurrencesAvailable(psiElement: PsiElement, isSingleFile: Boolean): Boolean = !isSingleFile
 
   private def processSamUsagesWithCompilerReferences(element: PsiElement,
-                                                     processor: Processor[? >: UsageInfo],
+                                                     processor: Predicate[UsageInfo],
                                                      options: ScalaTypeDefinitionFindUsagesOptions): Boolean = {
     element match {
       case definition: ScTypeDefinition if config.getCompilerIndicesOptions.isEnabledForSAMTypes && inReadAction(definition.isSAMable) =>
         //noinspection ApiStatus
         ExternalInheritorsSearcher.searchExternally(definition, options.searchScope, false)
-          .forEach((e: PsiElement) => processor.process(new UsageInfo(e)))
+          .forEach((e: PsiElement) => processor.test(new UsageInfo(e)))
       case _ => true
     }
   }
 
   private def processImplementingTypeDefinitionsUsages(element: PsiElement,
-                                                       processor: Processor[? >: UsageInfo],
+                                                       processor: Predicate[UsageInfo],
                                                        options: ScalaTypeDefinitionFindUsagesOptions): Boolean = {
     element match {
       case definition: ScTypeDefinition if options.isImplementingTypeDefinitions =>
         ClassInheritorsSearch.search(definition, true).forEach {
           case _: PsiClassWrapper => true
-          case aClass => processor.process(new UsageInfo(aClass))
+          case aClass => processor.test(new UsageInfo(aClass))
         }
       case _ => true
     }
   }
 
   private def processMemberUsages(element: PsiElement,
-                                  processor: Processor[? >: UsageInfo],
+                                  processor: Predicate[UsageInfo],
                                   options: ScalaTypeDefinitionFindUsagesOptions): Boolean = {
     element match {
       case definition: ScTypeDefinition if options.isMembersUsages =>
@@ -158,7 +160,7 @@ class ScalaFindUsagesHandler(
     }
   }
 
-  private def processLocalImplicitUsages(element: PsiElement, processor: Processor[? >: UsageInfo], options: ScalaLocalFindUsagesOptions): Boolean = {
+  private def processLocalImplicitUsages(element: PsiElement, processor: Predicate[UsageInfo], options: ScalaLocalFindUsagesOptions): Boolean = {
     import org.jetbrains.plugins.scala.util.ImplicitUtil.ImplicitTargetExt
 
     inReadAction {
@@ -172,13 +174,13 @@ class ScalaFindUsagesHandler(
         .forall { scope =>
             scope.depthFirst()
               .flatMap(element.refOrImplicitRefIn)
-              .forall(ref => processor.process(new UsageInfo(ref)))
+              .forall(ref => processor.test(new UsageInfo(ref)))
         }
     }
   }
 
   private def processCompanionUsages(element: PsiElement,
-                                     processor: Processor[? >: UsageInfo],
+                                     processor: Predicate[UsageInfo],
                                      options: ScalaTypeDefinitionFindUsagesOptions): Boolean =
     element match {
       case definition: ScTypeDefinition if options.isSearchCompanionModule =>
@@ -189,7 +191,7 @@ class ScalaFindUsagesHandler(
 
   private def processOverridingMembers(
     element: PsiElement,
-    processor: Processor[? >: UsageInfo],
+    processor: Predicate[UsageInfo],
     options: ScalaFindUsagesOptionsBase
   ): Boolean = {
     val overriding: Array[PsiNamedElement] = inReadAction {

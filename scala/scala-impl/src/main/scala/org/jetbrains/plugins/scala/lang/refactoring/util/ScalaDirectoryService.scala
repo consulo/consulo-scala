@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.ide.fileTemplates.impl.FileTemplateBase
 import consulo.ide.action.ui.CreateFromTemplateDialog
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager, FileTemplateUtil}
 import consulo.java.impl.JavaBundle
@@ -20,9 +19,8 @@ object ScalaDirectoryService {
 
   def createClassFromTemplate(@NotNull dir: PsiDirectory, name: String, templateName: String, askToDefineVariables: Boolean): PsiClass = {
     val templateManager = FileTemplateManager.getInstance(dir.getProject)
-    val template =
-      if (ApplicationManager.getApplication.isUnitTestMode) templateForUnitTest(templateName, name)
-      else templateManager.getInternalTemplate(templateName)
+    // upstream: in unit test mode a FileTemplateBase built by templateForUnitTest was used (impl class is not public API in Consulo)
+    val template = templateManager.getInternalTemplate(templateName)
     val defaultProperties = templateManager.getDefaultProperties
     val properties = new Properties(defaultProperties)
     properties.setProperty(FileTemplate.ATTRIBUTE_NAME, name)
@@ -51,29 +49,5 @@ object ScalaDirectoryService {
       FileTemplateManager.getDefaultInstance.internalTemplateToSubject(templateName),
       templateName
     )
-  }
-
-  private def templateForUnitTest(templateName: String, name: String): FileTemplate = {
-    val kind = templateName match {
-      case ScalaFileTemplateUtil.SCALA_CLASS => "class "
-      case ScalaFileTemplateUtil.SCALA_TRAIT => "trait "
-      case ScalaFileTemplateUtil.SCALA_OBJECT => "object "
-      case _ => ""
-    }
-    val packageLine = "#if ((${PACKAGE_NAME} && ${PACKAGE_NAME} != \"\"))package ${PACKAGE_NAME} #end"
-    val nameAndBraces = name + " {\n\n}"
-    val templateText = packageLine + "\n" + kind + nameAndBraces
-
-    val template = new FileTemplateBase {
-      override def setExtension(extension: String): Unit = {}
-      override def setName(name: String): Unit = {}
-      override def getName: String = templateName
-      override def isDefault: Boolean = true
-      override def getDescription: String = ""
-      override def getExtension: String = "scala"
-    }
-
-    template.setText(templateText)
-    template
   }
 }

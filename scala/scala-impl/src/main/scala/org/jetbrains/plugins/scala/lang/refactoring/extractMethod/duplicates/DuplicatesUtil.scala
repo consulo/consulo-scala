@@ -6,7 +6,7 @@ import consulo.language.editor.highlight.HighlightManager
 import consulo.find.FindManager
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.application.ApplicationManager
-import com.intellij.openapi.application.ApplicationNamesInfo
+import consulo.application.Application
 import consulo.codeEditor.EditorColors
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, FoldRegion, LogicalPosition, ScrollType}
@@ -122,7 +122,7 @@ object DuplicatesUtil {
                        (implicit project: Project, editor: Editor): Unit = {
     def showDuplicatesDialog(): Int = {
       val message = RefactoringBundle.message("0.has.detected.1.code.fragments.in.this.file.that.can.be.replaced.with.a.call.to.extracted.method",
-        ApplicationNamesInfo.getInstance.getProductName, Int.box(duplicates.size))
+        Application.get().getName.get(), Int.box(duplicates.size))
       Messages.showYesNoDialog(project, message, ScalaBundle.message("process.duplicates"), Messages.getQuestionIcon)
     }
 

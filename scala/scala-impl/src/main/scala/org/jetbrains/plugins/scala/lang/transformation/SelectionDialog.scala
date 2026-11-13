@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.transformation
 
-import com.intellij.openapi.client.ClientSystemInfo
+import consulo.platform.Platform
 import consulo.ui.ex.awt.DialogWrapper
-import com.intellij.profile.codeInspection.ui.table.ThreeStateCheckBoxRenderer
+import consulo.ui.ex.awt.ThreeStateCheckBox
 import consulo.ui.ex.awt.JBScrollPane
 import consulo.ui.ex.awt.tree.table.{ListTreeTableModel, TreeColumnInfo, TreeTable}
 import consulo.ui.ex.awt.ColumnInfo
@@ -18,7 +18,12 @@ import org.jetbrains.plugins.scala.lang.transformation.implicits.*
 import org.jetbrains.plugins.scala.lang.transformation.references.*
 import org.jetbrains.plugins.scala.lang.transformation.types.*
 
-import java.awt.Dimension
+import java.awt.{Component, Dimension}
+import java.awt.event.ItemEvent
+import java.util.EventObject
+import java.util.concurrent.CopyOnWriteArrayList
+import javax.swing.event.{CellEditorListener, ChangeEvent}
+import javax.swing.table.{TableCellEditor, TableCellRenderer}
 import java.lang
 import javax.swing.*
 import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeCellRenderer, TreeNode}
@@ -155,7 +160,59 @@ class SelectionDialog {
     }
   }
 
-  private def padding = if (ClientSystemInfo.isMac) 10 else 0
+  private def padding = if (Platform.current().os().isMac) 10 else 0
+}
+
+// upstream: com.intellij.profile.codeInspection.ui.table.ThreeStateCheckBoxRenderer (not public API in Consulo)
+private class ThreeStateCheckBoxRenderer extends ThreeStateCheckBox with TableCellRenderer with TableCellEditor {
+  private val myListeners = new CopyOnWriteArrayList[CellEditorListener]()
+
+  setThirdStateEnabled(false)
+  setHorizontalAlignment(SwingConstants.CENTER)
+  setVerticalAlignment(SwingConstants.CENTER)
+  addItemListener((_: ItemEvent) => stopCellEditing())
+
+  override def getTableCellEditorComponent(table: JTable, value: Any, isSelected: Boolean, row: Int, column: Int): Component = {
+    val checkBox = tune(value, isSelected, table)
+    checkBox.setOpaque(true)
+    checkBox
+  }
+
+  override def getTableCellRendererComponent(table: JTable, value: Any, isSelected: Boolean, hasFocus: Boolean, row: Int, column: Int): Component =
+    tune(value, isSelected, table)
+
+  private def tune(value: Any, isSelected: Boolean, table: JTable): JCheckBox = {
+    setForeground(if (isSelected) table.getSelectionForeground else table.getForeground)
+    setBackground(if (isSelected) table.getSelectionBackground else table.getBackground)
+    value match {
+      case null => setState(ThreeStateCheckBox.State.DONT_CARE)
+      case b: java.lang.Boolean => setSelected(b.booleanValue)
+      case _ =>
+    }
+    this
+  }
+
+  override def getCellEditorValue: AnyRef =
+    if (getState != ThreeStateCheckBox.State.DONT_CARE) java.lang.Boolean.valueOf(isSelected) else null
+
+  override def isCellEditable(anEvent: EventObject): Boolean = true
+
+  override def shouldSelectCell(anEvent: EventObject): Boolean = true
+
+  override def stopCellEditing(): Boolean = {
+    val e = new ChangeEvent(this)
+    myListeners.forEach(_.editingStopped(e))
+    true
+  }
+
+  override def cancelCellEditing(): Unit = {
+    val e = new ChangeEvent(this)
+    myListeners.forEach(_.editingCanceled(e))
+  }
+
+  override def addCellEditorListener(l: CellEditorListener): Unit = myListeners.add(l)
+
+  override def removeCellEditorListener(l: CellEditorListener): Unit = myListeners.remove(l)
 }
 
 private abstract class Node(@Nls name: String) extends DefaultMutableTreeNode(name) {

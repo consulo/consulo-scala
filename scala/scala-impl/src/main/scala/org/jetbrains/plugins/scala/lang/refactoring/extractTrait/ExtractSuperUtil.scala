@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
 import consulo.util.lang.Comparing
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiJavaPackage}
 import consulo.language.psi.{PsiDirectory, PsiPackage}
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.impl.refactoring.util.RefactoringMessageUtil
@@ -90,7 +90,7 @@ object ExtractSuperUtil {
     val dirs: Array[PsiDirectory] = pckg.getDirectories
     if (dirs.length == 0) return ScalaBundle.message("cannot.find.directory.for.package", targetPackageName)
 
-    if (pckg.containsClassNamed(targetClassName)) return ScalaBundle.message("class.already.exists.in.package", targetClassName, targetPackageName)
+    if (pckg.asInstanceOf[PsiJavaPackage].containsClassNamed(targetClassName)) return ScalaBundle.message("class.already.exists.in.package", targetClassName, targetPackageName)
 
     val dir: PsiDirectory = ExtractSuperUtil.getDirUnderSameSourceRoot(sourceClass, dirs)
     val cantCreateFile: String = RefactoringMessageUtil.checkCanCreateFile(dir, targetClassName + ".scala")

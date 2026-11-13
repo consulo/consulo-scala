@@ -12,6 +12,7 @@ import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScConstructorInvocation, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition
+import java.util.function.Predicate
 
 
 /**
@@ -32,7 +33,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition
  */
 class TypeAliasUsagesSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
 
-  override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Processor[? >: PsiReference]): Unit = {
+  override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {
     val data = inReadAction {
       parameters.getElementToSearch match {
         case target @ ScalaPsiUtil.inNameContext(ta: ScTypeAliasDefinition) =>
@@ -53,12 +54,12 @@ class TypeAliasUsagesSearcher extends QueryExecutorBase[PsiReference, References
   }
 
   private class MyProcessor(myTarget: PsiElement, @Nullable prefix: String) extends RequestResultProcessor(myTarget, prefix) {
-    override def processTextOccurrence(element: PsiElement, offsetInElement: Int, consumer: Processor[? >: PsiReference]): Boolean = inReadAction {
+    override def processTextOccurrence(element: PsiElement, offsetInElement: Int, consumer: Predicate[? >: PsiReference]): Boolean = inReadAction {
       element.parentOfType(classOf[ScConstructorInvocation], strict = false) match {
         case Some(cons) if PsiTreeUtil.isAncestor(cons.typeElement, element, false) =>
           element match {
             case resRef: ScReference => resRef.bind().flatMap(_.parentElement) match {
-              case Some(`myTarget`) => consumer.process(resRef)
+              case Some(`myTarget`) => consumer.test(resRef)
               case _ => true
             }
             case _ => true

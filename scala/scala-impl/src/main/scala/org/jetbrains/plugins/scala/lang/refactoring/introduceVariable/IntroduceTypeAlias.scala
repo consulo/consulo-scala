@@ -4,13 +4,13 @@ import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateState
 import consulo.dataContext.DataContext
 import consulo.application.ApplicationManager
-import com.intellij.openapi.command.impl.StartMarkAction
+import consulo.language.editor.refactoring.rename.inplace.InplaceRefactoring
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.util.dataholder.Key
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile, SmartPsiElementPointer}
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil
+import consulo.language.editor.inject.EditorWindow
 import consulo.language.psi.util.PsiTreeUtil.{findElementOfClassAtRange, getChildOfType, getParentOfType}
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -132,9 +132,9 @@ trait IntroduceTypeAlias {
         val currentScope = currentDataObject.currentScope
 
         //need open modal dialog in inplace mode
-        if ((StartMarkAction.canStart(editor) != null) && (currentScope != null)) {
+        if ((InplaceRefactoring.getActiveInplaceRenamer(editor) != null) && (currentScope != null)) {
           currentDataObject.isCallModalDialogInProgress = true
-          val templateState: TemplateState = TemplateManager.getInstance(InjectedLanguageEditorUtil.getTopLevelEditor(editor).getProject).getTemplateState(InjectedLanguageEditorUtil.getTopLevelEditor(editor))
+          val templateState: TemplateState = TemplateManager.getInstance(EditorWindow.getTopLevelEditor(editor).getProject).getTemplateState(EditorWindow.getTopLevelEditor(editor))
 
           if (templateState != null) {
             templateState.gotoEnd()

@@ -7,7 +7,7 @@ import consulo.language.psi.{PsiDirectory, PsiElement}
 import consulo.language.editor.refactoring.move.MoveCallback
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.{JavaMoveClassesOrPackagesHandler, MoveClassesOrPackagesDialog, MoveClassesOrPackagesImpl, MoveClassesOrPackagesProcessor, MoveClassesOrPackagesToNewDirectoryDialog}
 import consulo.language.editor.refactoring.util.{CommonRefactoringUtil, TextOccurrencesUtil}
-import com.intellij.java.impl.refactoring.{JavaRefactoringSettings, MoveDestination}
+import com.intellij.java.impl.refactoring.{HelpID, JavaRefactoringSettings, MoveDestination}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaLanguage
@@ -61,7 +61,7 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
     }
     val initialTargetPackageName: String = MoveClassesOrPackagesImpl.getInitialTargetPackageName(initialTargetElement, adjustedElements)
     val initialTargetDirectory: PsiDirectory = MoveClassesOrPackagesImpl.getInitialTargetDirectory(initialTargetElement, adjustedElements)
-    val searchTextOccurences: Boolean = adjustedElements.exists(TextOccurrencesUtil.isSearchTextOccurrencesEnabled)
+    val searchTextOccurences: Boolean = adjustedElements.exists(TextOccurrencesUtil.isSearchTextOccurencesEnabled)
     val searchInComments: Boolean = JavaRefactoringSettings.getInstance.MOVE_SEARCH_IN_COMMENTS
     val searchForTextOccurences: Boolean = JavaRefactoringSettings.getInstance.MOVE_SEARCH_FOR_TEXT
 
@@ -71,11 +71,7 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
         searchTextOccurences,
         adjustedElements,
         initialTargetElement,
-        moveCallback,
-        initialTargetPackageName,
-        initialTargetDirectory,
-        searchInComments,
-        searchForTextOccurences) {
+        moveCallback) {
 
         override def createCenterPanel(): JComponent = {
           addMoveCompanionChb(super.createCenterPanel(), adjustedElements)
@@ -88,6 +84,16 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
           new MoveClassesOrPackagesProcessor(project, elementsToMove, destination, isSearchInComments, searchTextOccurences, callback)
         }
       }
+
+    moveDialog.setData(
+      adjustedElements,
+      initialTargetPackageName,
+      initialTargetDirectory,
+      initialTargetDirectory == null,
+      initialTargetElement == null,
+      searchInComments,
+      searchForTextOccurences,
+      HelpID.getMoveHelpID(adjustedElements(0)))
 
     ScalaFileImpl.performMoveRefactoring {
       moveDialog.show()

@@ -1,17 +1,15 @@
 package org.jetbrains.plugins.scala.findUsages.parameters
 
-import com.intellij.find.findUsages.CustomUsageSearcher
 import consulo.find.FindUsagesOptions
 import consulo.language.psi.{PsiElement, PsiReference}
 import consulo.language.psi.search.ReferencesSearch
 import consulo.usage.UsageInfo
-import consulo.usage.{Usage, UsageInfoToUsageConverter}
-import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScExtractorPattern}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass
+import java.util.function.Predicate
 
 /**
  * {{{
@@ -20,29 +18,27 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass
  *     case A(x) => /*found*/x
  *   }
  * }}}
+ *
+ * upstream: CustomUsageSearcher extension (not public API in Consulo), called from ScalaFindUsagesHandler instead
  */
-class ExtractorParamsInExtractorPatternSearcher extends CustomUsageSearcher {
-  override def processElementUsages(element: PsiElement, processor0: Processor[? >: Usage], options: FindUsagesOptions): Unit = {
+object ExtractorParamsInExtractorPatternSearcher {
+  def processElementUsages(element: PsiElement, processor0: Predicate[? >: UsageInfo], options: FindUsagesOptions): Boolean = {
     element match {
       case parameterOfClassWithIndex(cls, index) =>
         val scope = inReadAction(element.getUseScope)
         val correspondingSubpatternWithBindings = new SubPatternWithIndexBindings(index)
 
-        val processor = new Processor[PsiReference] {
-          override def process(t: PsiReference): Boolean = t match {
-            case correspondingSubpatternWithBindings(Seq(only)) =>
-              ReferencesSearch.search(only, scope, false).forEach((t: PsiReference) => {
-                inReadAction {
-                  val descriptor = new UsageInfoToUsageConverter.TargetElementsDescriptor(Array(), Array(only))
-                  val usage = UsageInfoToUsageConverter.convert(descriptor, new UsageInfo(t))
-                  processor0.process(usage)
-                }
-              })
-            case _ => true
-          }
+        val processor: Predicate[PsiReference] = {
+          case correspondingSubpatternWithBindings(Seq(only)) =>
+            ReferencesSearch.search(only, scope, false).forEach((t: PsiReference) => {
+              inReadAction {
+                processor0.test(new UsageInfo(t))
+              }
+            })
+          case _ => true
         }
         ReferencesSearch.search(cls, scope, false).forEach(processor)
-      case _ =>
+      case _ => true
     }
   }
 

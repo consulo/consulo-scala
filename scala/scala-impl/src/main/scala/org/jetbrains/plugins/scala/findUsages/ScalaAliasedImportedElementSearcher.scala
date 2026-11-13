@@ -15,11 +15,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportSelector
 
 import scala.annotation.nowarn
+import java.util.function.Predicate
 
 
 class ScalaAliasedImportedElementSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
 
-  override def processQuery(parameters: ReferencesSearch.SearchParameters, consumer: Processor[? >: PsiReference]): Unit = {
+  override def processQuery(parameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Unit = {
     val data: Option[(PsiNamedElement, String, SearchScope)] = inReadAction {
       parameters.getElementToSearch match {
         case named: PsiNamedElement =>
@@ -52,7 +53,7 @@ class ScalaAliasedImportedElementSearcher extends QueryExecutorBase[PsiReference
       _.importedName
     }
 
-    override def processTextOccurrence(element: PsiElement, offsetInElement: Int, consumer: Processor[? >: PsiReference]): Boolean = inReadAction {
+    override def processTextOccurrence(element: PsiElement, offsetInElement: Int, consumer: Predicate[? >: PsiReference]): Boolean = inReadAction {
       getAlias(element) match {
         case Some(alias) =>
           val reference: PsiReference = element.getReference

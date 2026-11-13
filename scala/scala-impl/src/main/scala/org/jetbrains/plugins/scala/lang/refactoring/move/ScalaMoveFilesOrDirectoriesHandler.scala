@@ -13,10 +13,10 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 final class ScalaMoveFilesOrDirectoriesHandler extends MoveFilesOrDirectoriesHandler {
   private lazy val javaHandler: JavaMoveFilesOrDirectoriesHandler = new JavaMoveFilesOrDirectoriesHandler
 
-  override def canMove(elements: Array[PsiElement], targetContainer: PsiElement, reference: PsiReference): Boolean = {
+  override def canMove(elements: Array[PsiElement], targetContainer: PsiElement): Boolean = {
     // This handler should be called before a Java one, proceed only if there are Scala elements
     val hasScalaElements = elements.exists(_.getLanguage.isKindOf(ScalaLanguage.INSTANCE))
-    hasScalaElements && javaHandler.canMove(elements, targetContainer, reference)
+    hasScalaElements && javaHandler.canMove(elements, targetContainer)
   }
 
   override def adjustTargetForMove(dataContext: DataContext, targetContainer: PsiElement): PsiElement =

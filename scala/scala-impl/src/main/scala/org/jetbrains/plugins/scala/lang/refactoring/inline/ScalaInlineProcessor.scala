@@ -138,9 +138,7 @@ abstract class ScalaInlineProcessor(
     }
   }
 
-  override def computeUnloadedModulesFromUseScope(descriptor: UsageViewDescriptor): JSet[UnloadedModuleDescription] =
-    if (inlineThisOnly) JCollections.emptySet
-    else super.computeUnloadedModulesFromUseScope(descriptor)
+  // upstream: computeUnloadedModulesFromUseScope override (Consulo has no unloaded modules)
 
   final protected def removeElementWithNonSignificantSiblings(value: PsiElement): Unit = {
     val children = new ArrayBuffer[PsiElement]

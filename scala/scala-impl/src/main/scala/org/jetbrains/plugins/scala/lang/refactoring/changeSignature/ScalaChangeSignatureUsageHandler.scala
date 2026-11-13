@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
 import consulo.project.Project
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiElementFactory, PsiEllipsisType, PsiIdentifier, PsiModifier, PsiReferenceExpression}
-import com.intellij.psi.ModifierConstant
 import consulo.language.psi.{PsiElement, PsiManager}
 import consulo.language.editor.refactoring.changeSignature.{ChangeInfo, ParameterInfo}
 import com.intellij.java.impl.refactoring.changeSignature.{JavaChangeInfo, JavaParameterInfo}

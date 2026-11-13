@@ -26,14 +26,14 @@ final class ScalaInlineVariableDialog(pattern: ScBindingPattern, variable: ScVal
   override protected def inlineKeepGetter: ScalaApplicationSettings => Boolean = _.INLINE_VARIABLE_KEEP
   override protected def inlineKeepSetter: (ScalaApplicationSettings, Boolean) => Unit = _.INLINE_VARIABLE_KEEP = _
 
-  override def getNameLabelText: String =
+  override def nameLabelText: String =
     if (variable.isLocal) ScalaBundle.message("inline.local.variable.name.label", pattern.name)
     else ScalaBundle.message("inline.variable.name.label", pattern.name)
 
   override def getInlineAllUsagesAndRemoveDefinitionText: String =
     ScalaBundle.message("inline.all.usages.and.remove.the.variable")
 
-  override def getInlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.variable")
+  override def inlineThisText: String = ScalaBundle.message("inline.this.usage.only.and.keep.the.variable")
 
   override def getKeepTheDeclarationText: String =
     if (pattern.isWritable) ScalaBundle.message("inline.all.usages.and.keep.the.variable")
