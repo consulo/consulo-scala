@@ -11,7 +11,6 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiNamedElement;
 import consulo.language.psi.PsiReference;
-import consulo.language.psi.scope.LocalSearchScope;
 import consulo.content.scope.SearchScope;
 import consulo.language.editor.refactoring.action.RefactoringActionHandler;
 import consulo.language.editor.refactoring.rename.inplace.VariableInplaceRenamer;
@@ -45,15 +44,19 @@ public class ScalaLocalInplaceRenamer extends VariableInplaceRenamer {
     }
 
     @Override
-    public void collectAdditionalElementsToRename(List<? super Pair<PsiElement, TextRange>> stringUsages) {
+    public void collectAdditionalElementsToRename(List<Pair<PsiElement, TextRange>> stringUsages) {
         String stringToSearch = ScalaNamesUtil.scalaName(elementToRename);
         if (stringToSearch == null) return;
 
         PsiFile file = currentFile();
-        LocalSearchScope localScope = file == null ? LocalSearchScope.EMPTY : new LocalSearchScope(file);
-        processUsagesInStringsAndComments(elementToRename, localScope, stringToSearch, true,
+        if (file == null) return;
+        // upstream: searched in LocalSearchScope(file); Consulo's TextOccurrencesUtil has no scope overload,
+        // so results are filtered by the current file instead
+        processUsagesInStringsAndComments(elementToRename, stringToSearch, true,
                 (psiElement, textRange) -> {
-                    stringUsages.add(Pair.create(psiElement, textRange));
+                    if (psiElement.getContainingFile() == file) {
+                        stringUsages.add(Pair.create(psiElement, textRange));
+                    }
                     return true;
                 });
     }

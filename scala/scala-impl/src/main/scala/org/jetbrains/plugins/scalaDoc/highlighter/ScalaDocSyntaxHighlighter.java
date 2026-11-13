@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scalaDoc.highlighter;
 
-import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
 
 import consulo.language.parser.ParserDefinition;
@@ -15,12 +14,8 @@ import org.jetbrains.plugins.scalaDoc.ScalaDocLanguage;
 import java.util.Collections;
 import java.util.Map;
 
-@ExtensionImpl
+// upstream: lang.syntaxHighlighter EP; Consulo: registered through ScalaDocSyntaxHighlighterFactory
 public final class ScalaDocSyntaxHighlighter extends SyntaxHighlighterBase {
-    @Override
-    public Language getLanguage() {
-        return ScalaDocLanguage.INSTANCE;
-    }
 
 
     private static final Map<IElementType, TextAttributesKey> ATTRIBUTES =

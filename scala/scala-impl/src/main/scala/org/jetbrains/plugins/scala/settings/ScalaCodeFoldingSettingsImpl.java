@@ -36,7 +36,7 @@ public class ScalaCodeFoldingSettingsImpl extends ScalaCodeFoldingSettings imple
   private boolean ADD_FOLDING_FOR_ALL_BLOCKS = false;
 
   public static ScalaCodeFoldingSettingsImpl getInstance() {
-    return ApplicationManager.getApplication().getInstance(ScalaCodeFoldingSettingsImpl.class);
+    return (ScalaCodeFoldingSettingsImpl) ScalaCodeFoldingSettings.getInstance();
   }
 
   @Override

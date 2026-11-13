@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable;
 
 import consulo.application.WriteAction;
 import consulo.undoRedo.CommandProcessor;
-import consulo.undoRedo.UndoManager;
+import consulo.undoRedo.ProjectUndoManager;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.ScrollType;
 import consulo.language.psi.PsiDocumentManager;
@@ -64,7 +64,7 @@ public class ScalaInplaceTypeAliasIntroducer extends ScalaMemberInplaceRenamer {
 
     @Override
     protected void moveOffsetAfter(boolean success) {
-        if (!success && myInsertedName != null && !UndoManager.getInstance(myProject).isUndoInProgress()
+        if (!success && myInsertedName != null && !ProjectUndoManager.getInstance(myProject).isUndoInProgress()
                 && !editor.getUserData(IntroduceTypeAlias.REVERT_TYPE_ALIAS_INFO()).isCallModalDialogInProgress()) {
             var revertInfo = myEditor.getUserData(ScalaIntroduceVariableHandler.REVERT_INFO());
             if (revertInfo != null) {

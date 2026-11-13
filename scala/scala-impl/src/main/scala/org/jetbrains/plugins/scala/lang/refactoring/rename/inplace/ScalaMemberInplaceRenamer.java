@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace;
 
 import consulo.language.editor.refactoring.NamesValidator;
 import consulo.language.editor.TargetElementUtil;
+import consulo.language.editor.TargetElementUtilExtender;
+import java.util.Set;
 import consulo.language.Language;
 import consulo.application.WriteAction;
 import consulo.undoRedo.CommandProcessor;
@@ -116,7 +118,7 @@ public class ScalaMemberInplaceRenamer extends MemberInplaceRenamer {
                 PsiDocumentManager.getInstance(myEditor.getProject()).commitDocument(document);
                 Class<?> clazz = myElementToRename.getClass();
                 PsiElement element = TargetElementUtil.findTargetElement(myEditor,
-                        TargetElementUtil.REFERENCED_ELEMENT_ACCEPTED | TargetElementUtil.ELEMENT_NAME_ACCEPTED);
+                        Set.of(TargetElementUtilExtender.REFERENCED_ELEMENT_ACCEPTED, TargetElementUtilExtender.ELEMENT_NAME_ACCEPTED));
                 if (element == null) {
                     myElementToRename = null;
                 } else if (element instanceof PsiNamedElement named && named.getClass() == clazz) {

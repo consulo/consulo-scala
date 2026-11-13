@@ -5,7 +5,7 @@ import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.refactoring.RefactoringQuickFix;
-import consulo.dataContext.DataContext;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.application.util.HtmlChunk;
 import consulo.language.psi.PsiElement;
@@ -13,12 +13,9 @@ import consulo.language.psi.PsiFile;
 import consulo.language.editor.refactoring.action.RefactoringActionHandler;
 import consulo.language.editor.refactoring.action.RefactoringActionHandlerFactory;
 import consulo.language.editor.refactoring.RefactoringBundle;
-import consulo.language.editor.refactoring.rename.RenameHandlerRegistry;
 import consulo.usage.UsageViewUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement;
-
-import static java.util.Objects.requireNonNullElseGet;
 
 public class RenameElementQuickfix extends LocalQuickFixOnPsiElement implements RefactoringQuickFix {
     private final @Nls String name;
@@ -29,13 +26,8 @@ public class RenameElementQuickfix extends LocalQuickFixOnPsiElement implements 
     }
 
     @Override
-    public String getText() {
-        return name;
-    }
-
-    @Override
-    public String getFamilyName() {
-        return getText();
+    public LocalizeValue getText() {
+        return LocalizeValue.of(name);
     }
 
     @Override
@@ -49,15 +41,10 @@ public class RenameElementQuickfix extends LocalQuickFixOnPsiElement implements 
         return RefactoringActionHandlerFactory.getInstance().createRenameHandler();
     }
 
-    @Override
-    public RefactoringActionHandler getHandler(DataContext context) {
-        return requireNonNullElseGet(
-                RenameHandlerRegistry.getInstance().getRenameHandler(context),
-                this::getHandler
-        );
-    }
+    // upstream: getHandler(DataContext) picked a context specific rename handler; Consulo's RefactoringQuickFix
+    // has no such hook - the rename handler created by RefactoringActionHandlerFactory dispatches by data context itself
 
-    @Override
+    // upstream: override of LocalQuickFix.generatePreview (no intention preview in Consulo)
     public IntentionPreviewInfo generatePreview(Project project, ProblemDescriptor previewDescriptor) {
         PsiElement element = getElementToRefactor(previewDescriptor.getPsiElement());
         if (element instanceof ScNamedElement namedElement) {

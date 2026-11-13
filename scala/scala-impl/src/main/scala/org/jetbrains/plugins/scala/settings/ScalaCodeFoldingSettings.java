@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.settings;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
 import consulo.application.ApplicationManager;
 
+@ServiceAPI(ComponentScope.APPLICATION)
 public abstract class ScalaCodeFoldingSettings {
 
   public static ScalaCodeFoldingSettings getInstance() {

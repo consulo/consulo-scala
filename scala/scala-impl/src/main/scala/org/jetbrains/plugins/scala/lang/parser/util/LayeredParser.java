@@ -9,6 +9,8 @@ import consulo.language.parser.PsiParser;
 import consulo.language.parser.WhitespaceSkippedCallback;
 import consulo.language.parser.WhitespacesAndCommentsBinder;
 import consulo.language.parser.PsiBuilderAdapter;
+import consulo.language.version.LanguageVersion;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.util.lang.Couple;
 import consulo.util.lang.Pair;
@@ -36,11 +38,13 @@ public abstract class LayeredParser implements PsiParser {
   
   private TokenSet myEofExtendedElements = TokenSet.EMPTY;
   private boolean isDebug = false;
+  private LanguageVersion myLanguageVersion;
   private ConflictResolver myResolver = new DefaultConflictResolver();
 
 
   @Override
-  public ASTNode parse(IElementType root, PsiBuilder builder) { //WARNING: DON'T ADD NotNull ANNOTATION TO 'root' PARAMETER
+  public ASTNode parse(IElementType root, PsiBuilder builder, LanguageVersion languageVersion) {
+    myLanguageVersion = languageVersion; //WARNING: DON'T ADD NotNull ANNOTATION TO 'root' PARAMETER
     LayeredParserPsiBuilder delegateBuilder = new LayeredParserPsiBuilder(builder);
     if (isDebug) delegateBuilder.setDebugMode(true);
     
@@ -283,7 +287,7 @@ public abstract class LayeredParser implements PsiParser {
 
         BufferedTokenInfo token = getValidTokenInfo(index);
         IElementType tokenType = token.getTokenType();
-        if (this.isWhitespaceOrComment(tokenType))
+        if (this.isWhitespaceOrCommentType(tokenType))
           currentSteps += 1;
         else {
           resultTokenType = tokenType;
@@ -341,6 +345,12 @@ public abstract class LayeredParser implements PsiParser {
 
       advanceMarker(marker);
       return marker;
+    }
+
+    // Consulo: PsiBuilderAdapter forwards error(LocalizeValue) to the delegate, route it through the layered error(String)
+    @Override
+    public void error(LocalizeValue messageText) {
+      error(messageText.get());
     }
 
     @Override
@@ -906,6 +916,22 @@ public abstract class LayeredParser implements PsiParser {
         throw new UnsupportedOperationException();
       }
 
+      // Consulo: LocalizeValue overloads are the abstract ones, String overloads above/in subclasses do the work
+      @Override
+      public final void doneBefore(IElementType type, PsiBuilder.Marker before, LocalizeValue errorMessage) {
+        doneBefore(type, before, errorMessage.get());
+      }
+
+      @Override
+      public final void error(LocalizeValue message) {
+        error(message.get());
+      }
+
+      @Override
+      public final void errorBefore(LocalizeValue message, PsiBuilder.Marker before) {
+        errorBefore(message.get(), before);
+      }
+
       public int getStartOffset() {
         throw new UnsupportedOperationException();
       }
@@ -1248,7 +1274,7 @@ public abstract class LayeredParser implements PsiParser {
 
     @Override
     void parse(PsiBuilder builder) {
-      getMyParser().parse(getMyReferenceElement(), builder);
+      getMyParser().parse(getMyReferenceElement(), builder, myLanguageVersion);
     }
   }
   

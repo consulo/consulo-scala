@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter;
 
 import consulo.language.editor.rawHighlight.HighlightInfoType;
+import consulo.language.editor.rawHighlight.HighlightInfoTypeImpl;
 import consulo.codeEditor.DefaultLanguageHighlighterColors;
 import consulo.colorScheme.TextAttributesKey;
 
@@ -94,6 +95,6 @@ public class ScalaHighlightInfoTypes {
     public static final HighlightInfoType SCALA_DIRECTIVE_VALUE = createType(DefaultHighlighter.SCALA_DIRECTIVE_VALUE);
 
     private static HighlightInfoType createType(TextAttributesKey key) {
-        return new HighlightInfoType.HighlightInfoTypeImpl(HighlightInfoType.SYMBOL_TYPE_SEVERITY, key);
+        return new HighlightInfoTypeImpl(HighlightInfoType.SYMBOL_TYPE_SEVERITY, key);
     }
 }

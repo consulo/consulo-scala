@@ -5,7 +5,7 @@ import consulo.language.cacheBuilder.WordOccurrence;
 import consulo.language.lexer.Lexer;
 import consulo.language.ast.IElementType;
 import consulo.language.ast.TokenSet;
-import consulo.application.util.function.Processor;
+import java.util.function.Predicate;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes;
 
@@ -32,7 +32,7 @@ public class ScalaWordsScanner extends DefaultWordsScanner {
 
   @Override
   public void processWords(CharSequence fileText,
-                           Processor<? super WordOccurrence> processor) {
+                           Predicate<WordOccurrence> processor) {
     myLexer.start(fileText);
     WordOccurrence occurrence = new WordOccurrence(fileText, 0, 0, null); // shared occurrence
 
@@ -40,7 +40,7 @@ public class ScalaWordsScanner extends DefaultWordsScanner {
     while ((type = myLexer.getTokenType()) != null) {
       if (myIdentifierTokenSet.contains(type)) {
         occurrence.init(fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE);
-        if (!processor.process(occurrence)) return;
+        if (!processor.test(occurrence)) return;
         if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE, occurrence, false)) return;      }
       else if (myCommentTokenSet.contains(type)) {
         if (!stripWords(processor, fileText,myLexer.getTokenStart(),myLexer.getTokenEnd(), WordOccurrence.Kind.COMMENTS,occurrence, false)) return;
@@ -56,7 +56,7 @@ public class ScalaWordsScanner extends DefaultWordsScanner {
     }
   }
 
-  @Override
+  // upstream: WordsScanner.getVersion (no such method in Consulo)
   public int getVersion() {
     return 3;
   }

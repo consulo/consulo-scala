@@ -1,10 +1,8 @@
-import org.jspecify.annotations.NullMarked;
-
 /**
  * @author VISTALL
  * @since 2026-10-24
  */
-@NullMarked
+// Consulo port: not @NullMarked - the Java sources are ported upstream code without nullness annotations (NullAway)
 module org.intellij.scala {
     requires transitive scala.library;
     requires scala.reflect;
@@ -70,6 +68,7 @@ module org.intellij.scala {
     requires maven.artifact;
     requires consulo.module.api;
     requires consulo.module.content.api;
+    requires consulo.module.ui.api;
     requires consulo.navigation.api;
     requires consulo.process.api;
     requires consulo.project.api;
@@ -131,7 +130,6 @@ module org.intellij.scala {
     exports org.jetbrains.plugins.scala.codeInsight.intention.comprehension;
     exports org.jetbrains.plugins.scala.codeInsight.intention.expression;
     exports org.jetbrains.plugins.scala.codeInsight.intention.imports;
-    exports org.jetbrains.plugins.scala.codeInsight.intention.lists;
     exports org.jetbrains.plugins.scala.codeInsight.intention.matcher;
     exports org.jetbrains.plugins.scala.codeInsight.intention.preview;
     exports org.jetbrains.plugins.scala.codeInsight.intention.types;
@@ -249,7 +247,6 @@ module org.intellij.scala {
     exports org.jetbrains.plugins.scala.incremental;
     exports org.jetbrains.plugins.scala.internal;
     exports org.jetbrains.plugins.scala.lang;
-    exports org.jetbrains.plugins.scala.lang.breadcrumbs;
     exports org.jetbrains.plugins.scala.lang.completion;
     exports org.jetbrains.plugins.scala.lang.completion.aot;
     exports org.jetbrains.plugins.scala.lang.completion.clauses;
@@ -401,7 +398,6 @@ module org.intellij.scala {
     exports org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes;
     exports org.jetbrains.plugins.scala.lang.refactoring.rename;
     exports org.jetbrains.plugins.scala.lang.refactoring.rename.inplace;
-    exports org.jetbrains.plugins.scala.lang.refactoring.suggested;
     exports org.jetbrains.plugins.scala.lang.refactoring.ui;
     exports org.jetbrains.plugins.scala.lang.refactoring.util;
     exports org.jetbrains.plugins.scala.lang.references;

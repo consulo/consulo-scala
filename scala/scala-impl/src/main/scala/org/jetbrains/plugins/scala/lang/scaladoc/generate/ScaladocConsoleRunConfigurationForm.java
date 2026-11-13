@@ -102,7 +102,7 @@ public class ScaladocConsoleRunConfigurationForm {
     final var fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false)
             .withTitle(title)
             .withFileFilter(VirtualFile::isDirectory);
-    textField.addBrowseFolderListener(project, fileChooserDescriptor);
+    textField.addBrowseFolderListener(title, null, project, fileChooserDescriptor);
   }
 
   {

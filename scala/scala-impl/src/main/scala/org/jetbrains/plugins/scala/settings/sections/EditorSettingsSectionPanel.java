@@ -129,7 +129,7 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
                 DataManager.getInstance().getDataContextFromFocusAsync().onSuccess(context -> {
                     Settings settings = context.getData(Settings.KEY);
                     if (settings != null) {
-                        settings.select(settings.find(PerformanceSettingsSectionConfigurable.class));
+                        settings.select(PerformanceSettingsSectionConfigurable.class);
                     }
                 });
             }

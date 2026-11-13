@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser;
 
+import consulo.language.version.LanguageVersion;
+import consulo.language.version.LanguageVersionUtil;
 import consulo.language.ast.ASTNode;
 import consulo.language.Language;
 import consulo.language.parser.ParserDefinition;
@@ -35,11 +37,12 @@ public interface ScalaDocElementTypes {
 
             Project project = psi.getProject();
             Language language = getLanguage();
+            LanguageVersion languageVersion = LanguageVersionUtil.findDefaultVersion(language);
             ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
-            Lexer lexer = parserDefinition.createLexer(project);
-            PsiParser parser = parserDefinition.createParser(project);
+            Lexer lexer = parserDefinition.createLexer(languageVersion);
+            PsiParser parser = parserDefinition.createParser(languageVersion);
             PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(project, lazyNode, lexer, language, lazyNode.getChars());
-            parser.parse(ScalaDocElementTypes.SCALA_DOC_REFERENCE_LINK, builder);
+            parser.parse(ScalaDocElementTypes.SCALA_DOC_REFERENCE_LINK, builder, languageVersion);
             return builder.getTreeBuilt().getFirstChildNode();
         }
 
@@ -66,6 +69,7 @@ public interface ScalaDocElementTypes {
             Project project = JavaPsiFacade.getInstance(lazyNode.getTreeParent().getPsi().getProject()).getProject();
 
             Language language = getLanguage();
+            LanguageVersion languageVersion = LanguageVersionUtil.findDefaultVersion(language);
             ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
 
             if (parserDefinition instanceof ScalaDocParserDefinition) {
@@ -82,7 +86,7 @@ public interface ScalaDocElementTypes {
 
                 ASTNode node = ((ScalaDocParserDefinition) parserDefinition)
                         .createParserWithFlavour(project, isMarkdown)
-                        .parse(this, builder)
+                        .parse(this, builder, languageVersion)
                         .getFirstChildNode();
 
                 // Hand Markdown text over to the first child node
@@ -94,14 +98,14 @@ public interface ScalaDocElementTypes {
                         .createBuilder(
                                 project,
                                 lazyNode,
-                                parserDefinition.createLexer(project),
+                                parserDefinition.createLexer(languageVersion),
                                 language,
                                 lazyNode.getText()
                         );
 
                 return parserDefinition
-                        .createParser(project)
-                        .parse(this, builder)
+                        .createParser(languageVersion)
+                        .parse(this, builder, languageVersion)
                         .getFirstChildNode();
             }
         }

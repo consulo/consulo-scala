@@ -16,8 +16,5 @@ public interface PsiModifierListOwnerAdapter extends PsiJvmModifiersOwner, PsiAn
         return PsiJvmModifiersOwner.super.hasAnnotation(fqn);
     }
 
-    @Override
-    default boolean hasAnnotations() {
-        return PsiJvmModifiersOwner.super.hasAnnotations();
-    }
+    // upstream: hasAnnotations() disambiguated JvmAnnotatedElement/PsiAnnotationOwner; in Consulo only PsiAnnotationOwner declares it
 }

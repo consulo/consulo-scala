@@ -13,7 +13,7 @@ public class ScalaTokenBinders {
 
   public static final WhitespacesAndCommentsBinder PRECEDING_COMMENTS_TOKEN = new WhitespacesAndCommentsBinder() {
     @Override
-    public int getEdgePosition(final List<? extends IElementType> tokens, final boolean atStreamEdge, final TokenTextGetter getter) {
+    public int getEdgePosition(final List<IElementType> tokens, final boolean atStreamEdge, final TokenTextGetter getter) {
       if (tokens.isEmpty()) return 0;
 
       int tokensSize = tokens.size();
@@ -86,7 +86,7 @@ public class ScalaTokenBinders {
 
   public static final WhitespacesAndCommentsBinder PRECEDING_WS_AND_COMMENT_TOKENS = new WhitespacesAndCommentsBinder() {
     @Override
-    public int getEdgePosition(final List<? extends IElementType> tokens, final boolean atStreamEdge, final TokenTextGetter getter) {
+    public int getEdgePosition(final List<IElementType> tokens, final boolean atStreamEdge, final TokenTextGetter getter) {
       if (tokens.isEmpty()) return 0;
 
       int tokensSize = tokens.size();

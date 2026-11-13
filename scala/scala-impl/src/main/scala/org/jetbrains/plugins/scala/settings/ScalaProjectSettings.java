@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.settings;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import com.intellij.java.language.JavaLanguage;
@@ -140,6 +141,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
   }
 
   // For service
+  @Inject
   public ScalaProjectSettings(Project project) {
     myProject = project;
   }
