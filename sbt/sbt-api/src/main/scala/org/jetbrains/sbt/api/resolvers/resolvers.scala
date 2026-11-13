@@ -1,9 +1,8 @@
-package org.jetbrains.sbt.resolvers
+package org.jetbrains.sbt.api.resolvers
 
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.serialization.PropertyMapping
+import consulo.util.io.FileUtil
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.plugins.scala.api.NlsString
 
 sealed trait SbtResolver extends Serializable {
   def name: String
@@ -14,8 +13,8 @@ sealed trait SbtResolver extends Serializable {
   override def equals(o: scala.Any): Boolean = toString == o.toString
 }
 
-final class SbtMavenResolver @PropertyMapping(Array("name", "root", "presentableName"))
-(
+// upstream: @PropertyMapping(Array("name", "root", "presentableName")) (com.intellij.serialization, not in Consulo)
+final class SbtMavenResolver(
   override val name: String,
   override val root: String,
   @Nls _presentableName: String = null
@@ -33,8 +32,8 @@ final class SbtMavenResolver @PropertyMapping(Array("name", "root", "presentable
   def normalizedRoot: String = normalizePathOrUrl(root)
 }
 
-final class SbtIvyResolver @PropertyMapping(Array("name", "root", "isLocal", "presentableName"))
-(
+// upstream: @PropertyMapping(Array("name", "root", "isLocal", "presentableName"))
+final class SbtIvyResolver(
   override val name: String,
   override val root: String,
   val isLocal: Boolean,

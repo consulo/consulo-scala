@@ -14,7 +14,7 @@ import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, IvyResolver, MavenResolver}
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager._
 import org.jetbrains.plugins.scala.{ScalaBundle, extensions}
-import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
+import org.jetbrains.sbt.api.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
 
 import java.io.{IOException, InputStreamReader}
 import java.nio.file.{Files, Path}

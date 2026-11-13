@@ -4,8 +4,7 @@ import consulo.module.ModuleManager
 import consulo.project.Project
 import org.jetbrains.plugins.scala.DependencyManagerBase
 import org.jetbrains.plugins.scala.DependencyManagerBase.{IvyResolver, MavenResolver}
-import org.jetbrains.sbt.project.module.SbtModule
-import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver}
+import org.jetbrains.sbt.api.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
 
 package object scalafmt {
 
@@ -20,7 +19,7 @@ package object scalafmt {
 
   private def resolversFromSbt(project: Project): Seq[DependencyManagerBase.Resolver] = {
     val modules = ModuleManager.getInstance(project).getModules.toSet
-    val moduleSbtResolvers = modules.flatMap(SbtModule.Resolvers.apply)
+    val moduleSbtResolvers = modules.flatMap(_ => Set.empty[SbtResolver]) // upstream: SbtModule.Resolvers (resolvers stored by the sbt importer, not ported yet)
     moduleSbtResolvers.toSeq.collect {
       case r: SbtMavenResolver => MavenResolver(r.name, ensureIsURL(r.root))
       case r: SbtIvyResolver if !r.isLocal => IvyResolver(r.name, ensureIsURL(r.root))

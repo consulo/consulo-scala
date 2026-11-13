@@ -42,7 +42,9 @@ class ScalaClassFinder(project: Project) extends PsiElementFinder {
         FileTypeRegistry.getInstance.isFileOfType(file, TastyFileType) &&
         ProjectRootManager.getInstance(project).getFileIndex.isInLibraryClasses(file)
     }
-    StubIndex.getElements(JavaStubIndexKeys.CLASS_FQN, fqn, project, tastySourceFilterScope, classOf[PsiClass]).asScala.toArray
+    // Consulo java.class.fqn index is keyed by the hash of the qualified name
+    StubIndex.getElements(JavaStubIndexKeys.CLASS_FQN, Integer.valueOf(fqn.hashCode), project, tastySourceFilterScope, classOf[PsiClass]).asScala
+      .filter(_.getQualifiedName == fqn).toArray
   }
 
   private def doFindClasses(qualifiedName0: String, scope: GlobalSearchScope): Array[PsiClass] = {

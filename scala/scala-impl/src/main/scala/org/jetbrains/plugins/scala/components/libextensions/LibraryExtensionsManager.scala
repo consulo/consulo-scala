@@ -25,8 +25,7 @@ import org.jetbrains.plugins.scala.components.libextensions.ui._
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
-import org.jetbrains.sbt.project.module.SbtModule
-import org.jetbrains.sbt.resolvers.SbtResolver
+import org.jetbrains.sbt.api.resolvers.SbtResolver
 
 import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicBoolean
@@ -83,7 +82,7 @@ final class LibraryExtensionsManager(project: Project) {
           val allProjectResolvers = ModuleManager.getInstance(project)
             .getModules
             .toSet
-            .flatMap(SbtModule.Resolvers.apply)
+            .flatMap(_ => Set.empty[SbtResolver]) // upstream: SbtModule.Resolvers (resolvers stored by the sbt importer, not ported yet)
 
           LibraryExtensionsManager.getInstance(project)
             .searchExtensions(allProjectResolvers)

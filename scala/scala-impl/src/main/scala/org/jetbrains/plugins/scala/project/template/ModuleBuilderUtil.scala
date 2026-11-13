@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable
 import consulo.content.base.ExcludedContentFolderTypeProvider
 import consulo.language.content.{ProductionContentFolderTypeProvider, ProductionResourceContentFolderTypeProvider, TestContentFolderTypeProvider, TestResourceContentFolderTypeProvider}
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.sbt.project.settings.SbtProjectSettings
 
 import java.nio.file.{Files, Path}
 
@@ -32,10 +31,6 @@ import java.nio.file.{Files, Path}
 object ModuleBuilderUtil {
   private val Log = Logger.getInstance(this.getClass)
 
-  @deprecated
-  def doSetupModule(module: Module, externalProjectSettings: SbtProjectSettings, @Nullable contentEntryPath: String, projectSystemId: ProjectSystemId): Unit = {
-    Option(contentEntryPath).foreach(tryToSetupModule(module, externalProjectSettings, _, projectSystemId))
-  }
 
   def tryToSetupModule[T <: ExternalProjectSettings](
     module: Module,

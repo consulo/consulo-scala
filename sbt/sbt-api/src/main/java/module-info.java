@@ -27,6 +27,7 @@ module org.intellij.scala.sbt.api {
     exports org.jetbrains.sbt.api;
     exports org.jetbrains.sbt.api.icons;
     exports org.jetbrains.sbt.api.language;
+    exports org.jetbrains.sbt.api.resolvers;
     exports org.jetbrains.sbt.api.project;
     exports org.jetbrains.sbt.api.project.template;
 }
