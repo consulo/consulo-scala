@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
+
+import consulo.localize.LocalizeValue
 import consulo.ui.image.Image
 
 import consulo.language.ast.ASTNode
@@ -354,7 +356,7 @@ abstract class ScTypeDefinitionImpl[T <: ScTemplateDefinition](stub: ScTemplateD
     }
 
     new ItemPresentation() {
-      override def getPresentableText: String = presentableName
+      override def getPresentableText: LocalizeValue = LocalizeValue.of(presentableName)
 
       override def getLocationString: String = getPath match {
         case "" => ScTypeDefinitionImpl.DefaultLocationString

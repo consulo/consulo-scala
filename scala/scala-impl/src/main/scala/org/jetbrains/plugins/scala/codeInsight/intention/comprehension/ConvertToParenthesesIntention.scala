@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.comprehension
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -25,9 +27,9 @@ object ConvertToParenthesesIntention {
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertToParenthesesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "for comprehension"))
 class ConvertToParenthesesIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = FamilyName
+  def getFamilyName: String = FamilyName
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     element match {

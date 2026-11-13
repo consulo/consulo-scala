@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -34,9 +36,9 @@ import scala.jdk.CollectionConverters._
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertImplicitBoundsToImplicitParameter", fileExtensions = Array("scala"), categories = Array("Scala"))
 class ConvertImplicitBoundsToImplicitParameter extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = ScalaBundle.message("family.name.convert.implicit.bounds")
+  def getFamilyName: String = ScalaBundle.message("family.name.convert.implicit.bounds")
 
-  override def getText: String = ScalaBundle.message("convert.view.and.context.bounds.to.implicit.parameters")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.view.and.context.bounds.to.implicit.parameters"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     canBeConverted(element)

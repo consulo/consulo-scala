@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -10,9 +12,9 @@ abstract class AbstractIntention(@Nls text: String, @Nls familyName: String)
                                 (f: (Project, Editor) => PartialFunction[PsiElement, Unit])
   extends PsiElementBaseIntentionAction {
 
-  override def getText: String = text
+  def getText: LocalizeValue = LocalizeValue.of(text)
 
-  override def getFamilyName: String = familyName
+  def getFamilyName: String = familyName
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     f(project, editor).isDefinedAt(element)

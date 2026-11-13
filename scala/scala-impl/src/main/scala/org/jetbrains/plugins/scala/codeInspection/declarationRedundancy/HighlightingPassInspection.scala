@@ -33,7 +33,7 @@ trait HighlightingPassInspection extends LocalInspectionTool {
 
   def shouldProcessElement(elem: PsiElement): Boolean
 
-  override def getDescriptionAddendum: HtmlChunk =
+  def getDescriptionAddendum: HtmlChunk =
     if (ProjectManager.getInstance.getOpenProjects.exists(incremental.Highlighting.enabledIn))
       HtmlChunk.text(ScalaInspectionBundle.message("suppressed.in.incremental.highlighting.mode")).wrapWith("sup").wrapWith("p")
     else

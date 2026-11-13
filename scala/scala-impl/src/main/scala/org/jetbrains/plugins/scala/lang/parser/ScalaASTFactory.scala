@@ -20,7 +20,6 @@ import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveElementType
  */
 @ExtensionImpl
 final class ScalaASTFactory extends ASTLeafFactory {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
   override def createLeaf(typ: IElementType, languageVersion: LanguageVersion, text: CharSequence): LeafElement =

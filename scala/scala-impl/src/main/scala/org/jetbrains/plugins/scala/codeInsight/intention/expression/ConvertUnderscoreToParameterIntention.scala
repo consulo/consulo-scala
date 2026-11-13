@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -42,9 +44,9 @@ import scala.jdk.CollectionConverters._
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertUnderscoreToParameterIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class ConvertUnderscoreToParameterIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.convert.underscore.section.to.parameter")
+  def getFamilyName: String = ScalaBundle.message("family.name.convert.underscore.section.to.parameter")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     findExpression(element, editor).isDefined

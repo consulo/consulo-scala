@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -32,9 +34,9 @@ class ConvertJavaToScalaCollectionIntention extends BaseJavaConvertersIntention(
   @SafeFieldForPreview
   override val alreadyConvertedPrefixes: Set[String] = Set("scala.collection")
 
-  override def getText: String = ScalaBundle.message("convert.java.to.scala.collection.hint")
+  def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.java.to.scala.collection.hint"))
 
-  override def getFamilyName: String = ConvertJavaToScalaCollectionIntention.getFamilyName
+  def getFamilyName: String = ConvertJavaToScalaCollectionIntention.getFamilyName
 }
 
 object ConvertJavaToScalaCollectionIntention {

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.codeStyle.ui.setting.OptionTreeWithPreviewPanel
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.ui.ex.awt.OnePixelDivider
@@ -26,7 +28,7 @@ class ScalaDocFormattingPanel(val settings: CodeStyleSettings) extends OptionTre
 
   override def getPanel: JPanel = myScaladocPanel
 
-  override protected def getTabTitle: String = ScalaBundle.message("scaladoc.panel.title")
+  override protected def getTabTitle: LocalizeValue = LocalizeValue.of(ScalaBundle.message("scaladoc.panel.title"))
 
   override protected def getFileType: FileType = ScalaFileType.INSTANCE
 

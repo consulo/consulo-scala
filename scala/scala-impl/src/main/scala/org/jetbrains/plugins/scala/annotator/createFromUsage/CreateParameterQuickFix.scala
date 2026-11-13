@@ -37,6 +37,6 @@ final class CreateParameterQuickFix(ref: ScReferenceExpression) extends CreateFr
   }
 
   // TODO: Add preview (SCL-20398)
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
 }

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -17,9 +19,9 @@ import org.jetbrains.plugins.scala.lang.psi.{ScalaPsiUtil, TypeAdjuster}
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.AdjustTypesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class AdjustTypesIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.adjust.types")
+  def getFamilyName: String = ScalaBundle.message("family.name.adjust.types")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     findMaxReference(element).isDefined

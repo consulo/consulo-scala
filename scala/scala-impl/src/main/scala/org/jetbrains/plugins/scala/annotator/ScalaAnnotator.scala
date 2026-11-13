@@ -43,7 +43,6 @@ class ScalaAnnotator extends Annotator
   with FunctionAnnotator
   with OverridingAnnotator
   with DumbAware {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
   override def annotate(element: PsiElement, holder: AnnotationHolder): Unit = {

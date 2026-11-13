@@ -73,8 +73,8 @@ final class ScalaDocAsteriskAlignStyleIndexer extends FileBasedIndexExtension[As
   }
 
   override def getKeyDescriptor: KeyDescriptor[AsteriskAlignStyle] = new KeyDescriptor[AsteriskAlignStyle] {
-    override def getHashCode(value: AsteriskAlignStyle): Int = value.hashCode()
-    override def isEqual(val1: AsteriskAlignStyle, val2: AsteriskAlignStyle): Boolean = val1 == val2
+    def getHashCode(value: AsteriskAlignStyle): Int = value.hashCode()
+    def isEqual(val1: AsteriskAlignStyle, val2: AsteriskAlignStyle): Boolean = val1 == val2
     override def save(out: DataOutput, value: AsteriskAlignStyle): Unit = out.writeInt(value.id)
     override def read(in: DataInput): AsteriskAlignStyle = in.readInt() match {
       case AsteriskAlignStyle.AlignByColumnTwo.id => AlignByColumnTwo

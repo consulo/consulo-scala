@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -28,9 +30,9 @@ final class RemoveBracesIntention extends PsiElementBaseIntentionAction with Dum
 
   import RemoveBracesIntention._
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.remove.braces")
+  def getFamilyName: String = ScalaBundle.message("family.name.remove.braces")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     check(element).isDefined && IntentionAvailabilityChecker.checkIntention(this, element)

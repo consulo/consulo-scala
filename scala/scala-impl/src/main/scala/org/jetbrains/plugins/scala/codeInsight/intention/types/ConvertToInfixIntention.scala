@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -20,9 +22,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createTy
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertToInfixIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class ConvertToInfixIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = ScalaBundle.message("family.name.use.infix.type.syntax")
+  def getFamilyName: String = ScalaBundle.message("family.name.use.infix.type.syntax")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     element match {

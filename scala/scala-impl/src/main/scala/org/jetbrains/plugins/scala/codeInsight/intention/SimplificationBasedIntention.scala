@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.localize.LocalizeValue
+
 import org.jetbrains.plugins.scala.codeInspection.PsiUpdateFix
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
@@ -15,9 +17,9 @@ abstract class SimplificationBasedIntention(
   simplificationType: SimplificationType,
   quickFix: Simplification => PsiUpdateFix[?]
 ) extends PsiElementBaseIntentionAction {
-  override def getText: String = familyName
+  def getText: LocalizeValue = LocalizeValue.of(familyName)
 
-  override def getFamilyName: String = familyName
+  def getFamilyName: String = familyName
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     simplification(element).isDefined

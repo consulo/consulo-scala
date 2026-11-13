@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.imports
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -23,9 +25,9 @@ import scala.annotation.tailrec
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ImportAdditionalIdentifiersIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Import"))
 class ImportAdditionalIdentifiersIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.import.additional.identifiers")
+  def getFamilyName: String = ScalaBundle.message("family.name.import.additional.identifiers")
 
-  override def getText: String = ScalaBundle.message("import.additional.identifiers.from.qualifier")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("import.additional.identifiers.from.qualifier"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     check(project, editor, element).isDefined
@@ -33,9 +35,9 @@ class ImportAdditionalIdentifiersIntention extends PsiElementBaseIntentionAction
   override def invoke(project: Project, editor: Editor, element: PsiElement): Unit =
     if (element.isValid) check(project, editor, element).foreach(_.apply())
 
-  override def startInWriteAction(): Boolean = false
+  def startInWriteAction(): Boolean = false
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     val element = file.findElementAt(editor.getCaretModel.getOffset)
     check(project, editor, element) match {
       case Some(action) =>

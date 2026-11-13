@@ -12,7 +12,7 @@ class ScalaLanguageFormattingRestriction extends LanguageFormattingRestriction {
 
   override def isFormatterAllowed(context: PsiElement): Boolean = true
 
-  override def isAutoFormatAllowed(context: PsiElement): Boolean = {
+  def isAutoFormatAllowed(context: PsiElement): Boolean = {
     context.getContainingFile match {
       case file: ScFile if !file.isCompiled =>
         val vFile = file.getVirtualFile

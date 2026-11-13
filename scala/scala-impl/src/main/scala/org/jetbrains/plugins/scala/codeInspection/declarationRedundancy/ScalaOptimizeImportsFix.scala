@@ -51,7 +51,7 @@ final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with Hig
 
   override def getText: LocalizeValue = JavaQuickFixLocalize.optimizeImportsFix()
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
 }
 
@@ -68,7 +68,7 @@ final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFi
     super.invoke(project, editor, file)
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
 }
 
@@ -88,7 +88,7 @@ final class MarkImportAsAlwaysUsed(importText: String) extends IntentionAction w
     FileContentUtil.reparseFiles(project, Seq(file.getVirtualFile).asJava, true)
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     val settings = ScalaCodeStyleSettings.getInstance(project)
     val updatedList: java.util.List[String] = (settings.getAlwaysUsedImports ++ Array(importText)).sorted.toList.asJava
     IntentionPreviewInfo.addListOption(updatedList, importText,

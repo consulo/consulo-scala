@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.psi.PsiElement
 
 /*
@@ -10,5 +12,5 @@ class ScalaWithForYieldSurrounder extends ScalaWithForSurrounderBase {
     "for (a <- as) yield {" + super.getTemplateAsString(elements) + "}"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription = "for / yield"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("for / yield")
 }

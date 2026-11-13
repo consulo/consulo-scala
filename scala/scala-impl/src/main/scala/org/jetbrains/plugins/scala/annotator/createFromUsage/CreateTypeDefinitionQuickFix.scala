@@ -65,7 +65,7 @@ abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
     }
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     // TODO(SCL-21523, SCL-21524): Fix preview
     IntentionPreviewInfo.EMPTY
 

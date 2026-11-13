@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ImportStableMemberIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Import"))
 class ImportStableMemberIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.import.member.with.stable.path")
+  def getFamilyName: String = ScalaBundle.message("family.name.import.member.with.stable.path")
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = element.getParent match {
     case refAtCaret: ScReference =>

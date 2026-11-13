@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -18,9 +20,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 class OptionWithLiteralToSomeIntention extends PsiElementBaseIntentionAction  {
   import OptionWithLiteralToSomeIntention._
 
-  override def getFamilyName: String = familyName
+  def getFamilyName: String = familyName
 
-  override def getText: String = ScalaInspectionBundle.message("replace.with.some")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("replace.with.some"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = element match {
     case OptionLiteral(_, _) => true

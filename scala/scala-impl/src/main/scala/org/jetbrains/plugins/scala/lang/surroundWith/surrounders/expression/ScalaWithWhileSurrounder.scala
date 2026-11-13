@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
@@ -13,7 +15,7 @@ class ScalaWithWhileSurrounder extends ScalaExpressionSurrounder {
     "while (true) {" + super.getTemplateAsString(elements) + "}"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription = "while"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("while")
 
   override protected val isApplicableToMultipleElements: Boolean = true
 

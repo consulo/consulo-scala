@@ -44,7 +44,7 @@ sealed abstract class FilterScope(private val delegate: GlobalSearchScope)(impli
   override def isSearchInLibraries: Boolean =
     delegate.isSearchInLibraries
 
-  override def calcHashCode(): Int =
+  def calcHashCode(): Int =
     this.getClass.hashCode() #+ delegate.hashCode()
 
   override def equals(other: Any): Boolean = other match {

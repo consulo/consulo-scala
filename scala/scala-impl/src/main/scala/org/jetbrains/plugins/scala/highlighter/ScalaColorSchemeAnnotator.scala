@@ -41,7 +41,6 @@ import org.jetbrains.plugins.scala.statistics.ScalaAnnotatorUsagesCollector
  */
 @ExtensionImpl
 final class ScalaColorSchemeAnnotator extends Annotator {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   import ScalaColorSchemeAnnotator._
 

@@ -87,7 +87,7 @@ abstract class CreateApplyOrUnapplyQuickFix(td: ScTypeDefinition)
     }
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     createAndAdjustEntity(PsiTreeUtil.findSameElementInCopy(td, file))
     IntentionPreviewInfo.DIFF
   }

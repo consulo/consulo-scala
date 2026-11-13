@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.components
 
+import consulo.localize.LocalizeValue
+
 import consulo.ui.image.Image
 import consulo.project.Project
 import consulo.project.ui.wm.StatusBarWidget
@@ -22,7 +24,7 @@ private final class ScalaHighlightingModeWidget(project: Project)
 
   override def getIcon: Image = Icons.HIGHLIGHTING_MODE
 
-  override def getTooltipText: String = {
+  override def getTooltipText: LocalizeValue = LocalizeValue.of {
     type Mode = Boolean
 
     val settings = ScalaProjectSettings.in(project)
@@ -70,6 +72,6 @@ private final class ScalaHighlightingModeWidget(project: Project)
       s"</div></body></html>"
   }
 
-  override def getClickConsumer: Consumer[MouseEvent] =
+  def getClickConsumer: Consumer[MouseEvent] =
     _ => ScalaHighlightingModeAction.perform(project)
 }

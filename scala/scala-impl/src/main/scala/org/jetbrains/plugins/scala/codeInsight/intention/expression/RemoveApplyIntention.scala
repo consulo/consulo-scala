@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -28,9 +30,9 @@ import scala.collection.mutable
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.RemoveApplyIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class RemoveApplyIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.remove.unnecessary.apply")
+  def getFamilyName: String = ScalaBundle.message("family.name.remove.unnecessary.apply")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     val methodCallExpr: ScMethodCall = PsiTreeUtil.getParentOfType(element, classOf[ScMethodCall], false)

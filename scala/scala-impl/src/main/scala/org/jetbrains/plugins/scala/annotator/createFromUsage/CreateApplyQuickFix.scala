@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 class CreateApplyQuickFix(td: ScTypeDefinition, call: ScMethodCall)
   extends CreateApplyOrUnapplyQuickFix(td) {
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.create.apply.method")
+  def getFamilyName: String = ScalaBundle.message("family.name.create.apply.method")
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.apply.method.in", td.shortDefinition))
 

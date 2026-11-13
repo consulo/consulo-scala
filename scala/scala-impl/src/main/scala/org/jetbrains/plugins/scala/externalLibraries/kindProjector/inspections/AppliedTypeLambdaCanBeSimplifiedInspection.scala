@@ -53,7 +53,7 @@ class AppliedTypeLambdaCanBeSimplifiedInspection extends LocalInspectionTool {
 
   override def isEnabledByDefault: Boolean = true
   override def getID: String               = inspectionId
-  override def getDisplayName: String      = inspectionName
+  override def getDisplayName: LocalizeValue      = LocalizeValue.of(inspectionName)
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = {
     def inspectTypeProjection(
@@ -66,7 +66,7 @@ class AppliedTypeLambdaCanBeSimplifiedInspection extends LocalInspectionTool {
         val fix = new SimplifyAppliedTypeLambdaQuickFix(parameterized, simplifyTypeProjection(alias, typeArgs)(using parameterized))
         val problem = holder.getManager.createProblemDescriptor(
           parameterized,
-          getDisplayName,
+          getDisplayName.get,
           isOnTheFly,
           Array[LocalQuickFix](fix),
           ProblemHighlightType.GENERIC_ERROR_OR_WARNING

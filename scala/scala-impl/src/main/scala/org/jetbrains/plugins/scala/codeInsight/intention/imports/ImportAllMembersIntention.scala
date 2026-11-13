@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ImportAllMembersIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Import"))
 class ImportAllMembersIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.import.all.members")
+  def getFamilyName: String = ScalaBundle.message("family.name.import.all.members")
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = element.getParent match {
     case qualAtCaret: ScReference =>

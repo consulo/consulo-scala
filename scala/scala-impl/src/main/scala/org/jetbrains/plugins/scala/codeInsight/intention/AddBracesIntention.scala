@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -25,9 +27,9 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.AddBracesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class AddBracesIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = ScalaBundle.message("family.name.add.braces")
+  def getFamilyName: String = ScalaBundle.message("family.name.add.braces")
 
-  override def getText: String = ScalaBundle.message("add.braces.around.single.line.expression")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("add.braces.around.single.line.expression"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     check(project, editor, element).isDefined && IntentionAvailabilityChecker.checkIntention(this, element)

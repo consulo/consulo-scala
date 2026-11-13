@@ -35,7 +35,7 @@ sealed abstract class NumberLiteralQuickFix[L <: Numeric](private val literal: L
 
   override final def startInWriteAction: Boolean = true
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     replaceLiteral(PsiTreeUtil.findSameElementInCopy(literal, file))
     IntentionPreviewInfo.DIFF
   }

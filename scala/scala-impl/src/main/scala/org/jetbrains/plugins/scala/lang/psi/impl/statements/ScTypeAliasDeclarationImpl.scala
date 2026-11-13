@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.localize.LocalizeValue
+
 import consulo.ui.image.Image
 import consulo.language.psi.util.EditSourceUtil
 import consulo.language.ast.ASTNode
@@ -78,7 +80,7 @@ final class ScTypeAliasDeclarationImpl private(stub: ScTypeAliasStub, node: ASTN
 
   override def getPresentation: ItemPresentation = {
     new ItemPresentation() {
-      override def getPresentableText: String = name
+      override def getPresentableText: LocalizeValue = LocalizeValue.of(name)
       override def getLocationString: String = {
         val containingClass = ScTypeAliasDeclarationImpl.this.containingClass
         val qname = if (containingClass != null) containingClass.qualifiedName else ""

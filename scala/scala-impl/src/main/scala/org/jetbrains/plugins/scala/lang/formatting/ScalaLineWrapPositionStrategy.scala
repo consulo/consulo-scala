@@ -9,7 +9,6 @@ import consulo.document.Document
 
 @ExtensionImpl
 class ScalaLineWrapPositionStrategy extends DefaultLineWrapPositionStrategy {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def canUseOffset(document: Document, offset: Int, virtual: Boolean): Boolean = {
     val chars = document.getCharsSequence

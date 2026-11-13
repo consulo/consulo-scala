@@ -110,7 +110,7 @@ abstract class CreateEntityQuickFix(ref: ScReferenceExpression, keyword: String)
     }
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     // TODO: SCL-20799
     IntentionPreviewInfo.EMPTY
   }

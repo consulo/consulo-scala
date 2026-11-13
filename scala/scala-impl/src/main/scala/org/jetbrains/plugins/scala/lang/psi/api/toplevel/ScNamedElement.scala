@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
+import consulo.localize.LocalizeValue
+
 import consulo.ui.image.Image
 import consulo.language.impl.psi.stub.StubBasedPsiElementBase
 import consulo.navigation.ItemPresentation
@@ -153,8 +155,9 @@ trait ScNamedElement extends ScalaPsiElement
     }
     val parentMember = Option(PsiTreeUtil.getParentOfType(this, classOf[ScMember], false))
     new ItemPresentation {
-      override def getPresentableText: String =
+      override def getPresentableText: LocalizeValue = LocalizeValue.of {
         extensionFunction.map(extensionMethodPresentableText).getOrElse(name)
+      }
 
       override def getLocationString: String =
         extensionFunction.flatMap(extensionMethodContainerText).getOrElse {

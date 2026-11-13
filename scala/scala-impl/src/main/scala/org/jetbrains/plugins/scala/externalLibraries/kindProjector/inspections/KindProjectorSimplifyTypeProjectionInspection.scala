@@ -65,7 +65,7 @@ class KindProjectorSimplifyTypeProjectionInspection extends LocalInspectionTool 
       case _ => PsiElementVisitor.EMPTY_VISITOR
     }
 
-  override def getDisplayName: String = inspectionName
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(inspectionName)
   override def getID: String          = inspectionId
 }
 

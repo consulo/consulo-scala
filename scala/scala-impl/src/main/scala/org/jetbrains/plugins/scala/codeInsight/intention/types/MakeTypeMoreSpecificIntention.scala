@@ -25,7 +25,7 @@ class MakeTypeMoreSpecificIntention extends AbstractTypeAnnotationIntention {
 
   import MakeTypeMoreSpecificIntention._
 
-  override def getFamilyName: String = FamilyName
+  def getFamilyName: String = FamilyName
 
   override protected def descriptionStrategy: Strategy = new Strategy {
 

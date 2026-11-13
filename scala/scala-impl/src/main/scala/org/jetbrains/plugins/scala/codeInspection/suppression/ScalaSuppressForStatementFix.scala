@@ -22,7 +22,7 @@ import scala.jdk.CollectionConverters._
 
 abstract class ScalaSuppressByLineCommentFix(key: HighlightDisplayKey) extends SuppressByCommentFix(key, classOf[ScalaPsiElement]) {
 
-  override def getPriority: Int = {
+  def getPriority: Int = {
     // I chose a random "large enough" number as a baseline
     val DefaultPriority = 1000
 

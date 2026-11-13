@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiWhiteSpace}
@@ -19,7 +21,7 @@ class ScalaWithParenthesisSurrounder extends ScalaExpressionSurrounder {
   override def getTemplateAsString(elements: Array[PsiElement]): String = "(" + super.getTemplateAsString(elements) + ")"
 
   //noinspection ScalaExtractStringToBundle
-  override def getTemplateDescription = "(  )"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("(  )")
 
   override def getSurroundSelectionRange(expr: ASTNode): Option[TextRange] = {
     val offset = expr.getTextRange.getEndOffset

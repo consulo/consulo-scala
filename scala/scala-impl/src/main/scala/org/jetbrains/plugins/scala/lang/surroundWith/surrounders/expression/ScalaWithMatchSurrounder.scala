@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.project.Project
 import consulo.document.util.TextRange
@@ -44,7 +46,7 @@ object ScalaWithMatchSurrounder extends ScalaExpressionSurrounder {
   }
 
   //noinspection ReferencePassedToNls
-  override def getTemplateDescription: String = ScalaKeyword.MATCH
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of(ScalaKeyword.MATCH)
 
   override protected val isApplicableToUnitExpressions: Boolean = true
 

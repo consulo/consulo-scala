@@ -43,7 +43,7 @@ class AddUnitTypeAnnotationIntention extends PsiElementBaseIntentionAction {
     case _ => false
   }
 
-  override def getFamilyName: String = FamilyName
+  def getFamilyName: String = FamilyName
 }
 
 object AddUnitTypeAnnotationIntention {

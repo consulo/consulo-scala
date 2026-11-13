@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
@@ -12,7 +14,7 @@ class ScalaWithUnaryNotSurrounder extends ScalaExpressionSurrounder {
     "!" + super.getTemplateAsString(elements).parenthesize()
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription: String = "!(expr)"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("!(expr)")
 
   override def isApplicable(element: PsiElement): Boolean = isBooleanExpression(element)
 

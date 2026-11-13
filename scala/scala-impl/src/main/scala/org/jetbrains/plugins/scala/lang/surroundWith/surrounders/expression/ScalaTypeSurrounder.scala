@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
@@ -18,7 +20,7 @@ class ScalaTypeSurrounder extends ScalaExpressionSurrounder {
   }
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription: String = "(expr: Type)"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("(expr: Type)")
 
   override def getSurroundSelectionRange(withType: ASTNode): Option[TextRange] = {
     lazy val defaultRange = {

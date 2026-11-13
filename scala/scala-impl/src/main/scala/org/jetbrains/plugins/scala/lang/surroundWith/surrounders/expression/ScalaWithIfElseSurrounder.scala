@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.psi.PsiElement
 
 /*
@@ -10,7 +12,7 @@ class ScalaWithIfElseSurrounder extends ScalaWithIfSurrounderBase {
     "if (a) { " + super.getTemplateAsString(elements) + "} else {  }"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription = "if / else"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("if / else")
 
   override protected val isApplicableToMultipleElements: Boolean = true
 }

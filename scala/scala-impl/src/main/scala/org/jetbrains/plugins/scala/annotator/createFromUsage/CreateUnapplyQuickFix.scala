@@ -9,7 +9,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 class CreateUnapplyQuickFix(clazz: ScTypeDefinition, pattern: ScPattern) extends CreateApplyOrUnapplyQuickFix(clazz) {
-  override def getFamilyName: String = ScalaBundle.message("family.name.create.unapply.method")
+  def getFamilyName: String = ScalaBundle.message("family.name.create.unapply.method")
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.unapply.method.in", clazz.shortDefinition))
 

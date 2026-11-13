@@ -64,17 +64,18 @@ final class KindProjectorUseCorrectLambdaKeywordQuickFix(e: PsiElement, @SafeFie
 }
 
 final class ChangeLambdaCodeStyleSetting(useGreekLambda: Boolean) extends LocalQuickFix {
-  override def getFamilyName: String = getName
+  def getFamilyName: String = getName.get
 
-  override def getName: String =
+  override def getName: LocalizeValue = LocalizeValue.of {
     if (useGreekLambda) codeStyleSettingUseGreekLambda
     else codeStyleSettingUseWordLambda
+  }
 
   override def applyFix(project: Project, d: ProblemDescriptor): Unit = {
     ScalaCodeStyleSettings.getInstance(project).REPLACE_LAMBDA_WITH_GREEK_LETTER = useGreekLambda
   }
 
-  override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
+  def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
 }
 

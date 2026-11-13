@@ -31,7 +31,6 @@ import scala.annotation.tailrec
 
 @ExtensionImpl(id = "ScalaDocumentationProvider")
 class ScalaDocumentationProvider extends CodeDocumentationProvider {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
   override def getDocumentationElementForLookupItem(

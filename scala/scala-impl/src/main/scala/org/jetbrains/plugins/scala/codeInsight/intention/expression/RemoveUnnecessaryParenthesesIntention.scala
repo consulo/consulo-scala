@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -18,9 +20,9 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScParenthesizedElement
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.RemoveUnnecessaryParenthesesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class RemoveUnnecessaryParenthesesIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("remove.unnecessary.parentheses")
+  def getFamilyName: String = ScalaBundle.message("remove.unnecessary.parentheses")
 
-  override def getText: String = ScalaBundle.message("remove.unnecessary.parentheses")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("remove.unnecessary.parentheses"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     !isInspectionEnabledIn(project, "ScalaUnnecessaryParentheses") &&

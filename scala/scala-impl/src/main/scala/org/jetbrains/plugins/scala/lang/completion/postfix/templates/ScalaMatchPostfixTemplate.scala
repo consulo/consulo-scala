@@ -14,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression.Scal
  */
 final class ScalaMatchPostfixTemplate extends PostfixTemplateWithExpressionSelector(
   null,
-  ScalaWithMatchSurrounder.getTemplateDescription,
+  ScalaWithMatchSurrounder.getTemplateDescription.get,
   "expr match {...}",
   SelectAllAncestors(ScalaWithMatchSurrounder),
   null

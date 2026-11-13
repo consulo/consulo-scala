@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.matcher
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -22,9 +24,9 @@ import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertToTypedPatternIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Pattern matching"))
 class ConvertToTypedPatternIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("convert.to.typed.pattern")
+  def getFamilyName: String = ScalaBundle.message("convert.to.typed.pattern")
 
-  override def getText: String = ScalaBundle.message("convert.to.typed.pattern")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.to.typed.pattern"))
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     element match {

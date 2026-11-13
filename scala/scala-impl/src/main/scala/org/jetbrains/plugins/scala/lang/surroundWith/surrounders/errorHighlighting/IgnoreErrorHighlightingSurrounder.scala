@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.errorHighlighting
 
+import consulo.localize.LocalizeValue
+
 import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
@@ -8,7 +10,7 @@ import org.jetbrains.plugins.scala.lang.surroundWith.ScalaPsiSurrounder
 
 class IgnoreErrorHighlightingSurrounder extends ScalaPsiSurrounder {
   //noinspection ScalaExtractStringToBundle
-  override def getTemplateDescription: String = "/*_*/.../*_*/"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("/*_*/.../*_*/")
 
   override def isApplicable(elements: Array[PsiElement]): Boolean = elements.nonEmpty
 

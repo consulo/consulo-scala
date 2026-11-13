@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -19,9 +21,9 @@ class MakeImplicitConversionExplicit extends PsiElementBaseIntentionAction {
 
   import MakeImplicitConversionExplicit._
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.make.implicit.conversion.explicit")
+  def getFamilyName: String = ScalaBundle.message("family.name.make.implicit.conversion.explicit")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     findImplicitElement(element).isDefined

@@ -178,7 +178,7 @@ object InternalProfilerToolWindowFactory {
       else dataSource.resume()
     }
 
-    override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
+    def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
   }
 
   class ClearAction(dataSource: DataSource[?], tableModel: DataByIdTableModel[?]) extends AnAction with DumbAware {
@@ -189,7 +189,7 @@ object InternalProfilerToolWindowFactory {
       tableModel.clear()
     }
 
-    override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+    def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 
   class CacheContentClearAction(project: Project) extends AnAction with DumbAware {
@@ -234,6 +234,6 @@ object InternalProfilerToolWindowFactory {
         .notify(project)
     }
 
-    override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+    def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 }

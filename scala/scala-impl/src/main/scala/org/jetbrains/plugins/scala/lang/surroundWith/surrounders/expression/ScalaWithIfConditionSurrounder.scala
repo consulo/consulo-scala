@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.psi.PsiElement
 
 object ScalaWithIfConditionSurrounder extends ScalaWithIfConditionSurrounderBase {
@@ -7,5 +9,5 @@ object ScalaWithIfConditionSurrounder extends ScalaWithIfConditionSurrounderBase
     "if (" + super.getTemplateAsString(elements) + ") {}"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription: String = "if (expr) {...}"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("if (expr) {...}")
 }

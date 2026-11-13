@@ -30,7 +30,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt}
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ExpandPatternIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Pattern matching"))
 class ExpandPatternIntention extends PsiElementBaseIntentionAction {
-  override def getFamilyName: String = ScalaBundle.message("family.name.expand.to.constructor.pattern")
+  def getFamilyName: String = ScalaBundle.message("family.name.expand.to.constructor.pattern")
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     findReferencePattern(element) match {
@@ -54,7 +54,7 @@ class ExpandPatternIntention extends PsiElementBaseIntentionAction {
     }
   }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
+  def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     val element = file.findElementAt(editor.getCaretModel.getOffset)
     findReferencePattern(element) match {
       case Some((origPattern, newPatternText)) =>

@@ -81,7 +81,7 @@ private final class EnableFullQualifiedImports extends LocalQuickFix {
     ScalaCodeStyleSettings.getInstance(project).setAddFullQualifiedImports(true)
   }
 
-  override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
+  def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
 }
 

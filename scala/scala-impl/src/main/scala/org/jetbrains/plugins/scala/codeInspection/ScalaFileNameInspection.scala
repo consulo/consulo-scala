@@ -131,7 +131,7 @@ object ScalaFileNameInspection {
                                     (implicit project: Project): Unit =
       RefactoringFactory.getInstance(project).createRename(td, name).run()
 
-    override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = {
+    def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = {
       val typeDef = PsiTreeUtil.getParentOfType(previewDescriptor.getPsiElement, classOf[ScTypeDefinition])
       if (typeDef == null) IntentionPreviewInfo.EMPTY
       else {
@@ -148,7 +148,7 @@ object ScalaFileNameInspection {
                                     (implicit project: Project): Unit =
       new RenameProcessor(project, file, name, false, false).run()
 
-    override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = {
+    def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = {
       val file = previewDescriptor.getPsiElement.getContainingFile
       if (file == null) return IntentionPreviewInfo.EMPTY
 

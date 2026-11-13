@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
@@ -19,7 +21,7 @@ class ScalaWithDoWhileSurrounder extends ScalaExpressionSurrounder {
     "do {" + super.getTemplateAsString(elements) + "} while (true)"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription = "do / while"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("do / while")
 
   override def getSurroundSelectionRange(withDoWhileNode: ASTNode): Option[TextRange] =
     unwrapParenthesis(withDoWhileNode) match {

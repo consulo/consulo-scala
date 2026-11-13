@@ -20,7 +20,7 @@ class RegenerateTypeAnnotation extends AbstractTypeAnnotationIntention {
 
   import RegenerateTypeAnnotation._
 
-  override def getFamilyName: String = FamilyName
+  def getFamilyName: String = FamilyName
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     getTypeAnnotation(element) &&

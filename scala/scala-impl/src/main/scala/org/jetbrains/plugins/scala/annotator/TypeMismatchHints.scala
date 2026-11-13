@@ -121,7 +121,7 @@ object TypeMismatchHints {
             )
           }
 
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+          def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
         }
       )
     }

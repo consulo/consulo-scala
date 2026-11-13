@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -23,9 +25,9 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.ConvertToInfixExpressionIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 final class ConvertToInfixExpressionIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = ScalaBundle.message("family.name.convert.to.infix.expression")
+  def getFamilyName: String = ScalaBundle.message("family.name.convert.to.infix.expression")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     if (!IntentionAvailabilityChecker.checkIntention(this, element)) return false

@@ -56,7 +56,7 @@ private object AbsoluteImportInspection {
       }
     }
 
-    override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
+    def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
       IntentionPreviewInfo.EMPTY
   }
 }

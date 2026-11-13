@@ -18,7 +18,7 @@ class ToggleTypeAnnotation extends AbstractTypeAnnotationIntention {
 
   import ToggleTypeAnnotation._
 
-  override def getFamilyName: String = FamilyName
+  def getFamilyName: String = FamilyName
 
   override protected def descriptionStrategy: Strategy = new Strategy {
 

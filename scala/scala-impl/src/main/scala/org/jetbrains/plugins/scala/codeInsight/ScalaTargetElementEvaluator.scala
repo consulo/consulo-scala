@@ -39,7 +39,6 @@ import java.{util => ju}
  */
 @ExtensionImpl
 class ScalaTargetElementEvaluator extends TargetElementUtilExtender {
-  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
   override def getReferenceOrReferencedElement(ref: PsiReference, flags: ju.Set[String]): PsiElement = ref.getElement match {

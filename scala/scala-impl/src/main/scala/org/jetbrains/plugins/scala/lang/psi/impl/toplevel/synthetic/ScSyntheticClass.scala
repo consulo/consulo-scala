@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.TopicImpl
 
@@ -177,7 +179,7 @@ final class ScSyntheticClass(
       val This: ScSyntheticClass = ScSyntheticClass.this
       override def getLocationString: String = "(scala)"
 
-      override def getPresentableText: String = NlsString.force(This.className)
+      override def getPresentableText: LocalizeValue = LocalizeValue.of(NlsString.force(This.className))
 
       override def getIcon(open: Boolean): Image = IconDescriptorUpdaters.getIcon(This, 0)
     }

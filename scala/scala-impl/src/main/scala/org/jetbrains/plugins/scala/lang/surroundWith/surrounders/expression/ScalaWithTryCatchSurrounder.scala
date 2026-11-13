@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
+import consulo.localize.LocalizeValue
+
 import consulo.language.psi.PsiElement
 
 object ScalaWithTryCatchSurrounder extends ScalaWithTryCatchSurrounderBase {
@@ -9,5 +11,5 @@ object ScalaWithTryCatchSurrounder extends ScalaWithTryCatchSurrounderBase {
       s"\n} catch {\n case _ ${arrow(elements)} \n}"
 
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization
-  override def getTemplateDescription = "try / catch"
+  override def getTemplateDescription: LocalizeValue = LocalizeValue.of("try / catch")
 }

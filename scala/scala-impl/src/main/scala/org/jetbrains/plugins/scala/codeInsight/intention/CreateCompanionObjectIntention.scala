@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.localize.LocalizeValue
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -24,7 +26,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.CreateCompanionObjectIntention", fileExtensions = Array("scala"), categories = Array("Scala"))
 class CreateCompanionObjectIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getText: String = ScalaBundle.message("create.companion.object.for.class")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.companion.object.for.class"))
 
   override def invoke(project: Project, editor: Editor, psiElement: PsiElement): Unit = {
     getTypeIfAvailable(psiElement).foreach { clazz =>
@@ -58,7 +60,7 @@ class CreateCompanionObjectIntention extends PsiElementBaseIntentionAction with 
     }
   }
 
-  override def getFamilyName: String = ScalaBundle.message("family.name.create.companion.object")
+  def getFamilyName: String = ScalaBundle.message("family.name.create.companion.object")
 }
 
 object CreateCompanionObjectIntention {

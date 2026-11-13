@@ -96,7 +96,7 @@ object TypeAnnotationInspection {
     override def applyFix(project: Project, problemDescriptor: ProblemDescriptor): Unit =
       TypeAnnotationUtil.showTypeAnnotationsSettings(project)
 
-    override def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
+    def generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
       IntentionPreviewInfo.EMPTY
   }
 }
