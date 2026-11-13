@@ -1,27 +1,15 @@
 package org.jetbrains.plugins.scala.statistics
 
-import com.intellij.internal.statistic.eventLog.EventLogGroup
-import com.intellij.internal.statistic.service.fus.collectors.CounterUsagesCollector
 import consulo.project.Project
-import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector.Group
 
-//noinspection UnstableApiUsage
-class ScalaDebuggerUsagesCollector extends CounterUsagesCollector {
-  override def getGroup: EventLogGroup = Group
-}
-
+/**
+ * Upstream reports these events to IntelliJ FUS (feature usage statistics) via `ScalaDebuggerUsagesCollector` counter collector.
+ * Consulo has no FUS event log, so logging is a no-op.
+ */
 object ScalaDebuggerUsagesCollector {
-  private val Group = new EventLogGroup("scala.debugger", 1) // TODO: SCL-24479
-
-  private val DebuggerEvent = Group.registerEvent("debugger") // TODO: SCL-24479
-  private val EvaluatorEvent = Group.registerEvent("evaluator") // TODO: SCL-24479
-  private val CompilingEvaluatorEvent = Group.registerEvent("compiling.evaluator") // TODO: SCL-24479
-  private val LambdaBreakpointEvent = Group.registerEvent("lambda.breakpoint") // TODO: SCL-24479
-  private val SmartStepIntoEvent = Group.registerEvent("smart.step.into") // TODO: SCL-24479
-
-  def logDebugger(project: Project): Unit = DebuggerEvent.log(project)
-  def logEvaluator(project: Project): Unit = EvaluatorEvent.log(project)
-  def logCompilingEvaluator(project: Project): Unit = CompilingEvaluatorEvent.log(project)
-  def logLambdaBreakpoint(project: Project): Unit = LambdaBreakpointEvent.log(project)
-  def logSmartStepInto(project: Project): Unit = SmartStepIntoEvent.log(project)
+  def logDebugger(project: Project): Unit = ()
+  def logEvaluator(project: Project): Unit = ()
+  def logCompilingEvaluator(project: Project): Unit = ()
+  def logLambdaBreakpoint(project: Project): Unit = ()
+  def logSmartStepInto(project: Project): Unit = ()
 }

@@ -6,7 +6,6 @@ import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingAdapter
 import com.intellij.codeInsight.template.impl.{TemplateImpl}
 import consulo.language.editor.template.{TemplateState, TextExpression}

@@ -4,7 +4,6 @@ import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.template.TemplateBuilder
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.{CodeInsightUtilCore, FileModificationService}
 import consulo.codeEditor.Editor
 import consulo.fileEditor.history.IdeDocumentHistory

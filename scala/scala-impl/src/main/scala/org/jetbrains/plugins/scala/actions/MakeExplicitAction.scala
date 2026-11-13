@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.language.editor.PlatformDataKeys
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.ui.ex.popup.BaseListPopupStep
@@ -32,12 +32,12 @@ final class MakeExplicitAction extends AnAction(
 
   override def actionPerformed(event: AnActionEvent): Unit = {
     val context = event.getDataContext
-    val project = CommonDataKeys.PROJECT.getData(context) match {
+    val project = context.getData(CommonDataKeys.PROJECT) match {
       case null => return
       case value => value
     }
 
-    PlatformCoreDataKeys.SELECTED_ITEM.getData(context) match {
+    context.getData(PlatformDataKeys.SELECTED_ITEM) match {
       case Parameters(function: ScFunction, oldExpression, _, editor, elements) if
       oldExpression != null &&
         editor != null &&

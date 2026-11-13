@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod
 
+import consulo.util.dataholder.Key
 import consulo.dataContext.DataContext
-import com.intellij.openapi.actionSystem.DataKey
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.ui.ModalityState
 import consulo.codeEditor.{Editor, ScrollType}
@@ -373,5 +373,5 @@ object ScalaExtractMethodHandler {
   // Used in ScalaExtractMethodTestBase
   // Test package doesn't match this package, so using the common parent package as a `private` scope
   @TestOnly
-  private[scala] val ChosenTargetScopeKey: DataKey[Int] = DataKey.create("chosenTargetScope")
+  private[scala] val ChosenTargetScopeKey: Key[Int] = Key.create("chosenTargetScope")
 }

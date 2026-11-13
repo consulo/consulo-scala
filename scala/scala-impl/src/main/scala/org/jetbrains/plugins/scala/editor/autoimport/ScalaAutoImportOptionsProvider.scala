@@ -81,7 +81,7 @@ final class ScalaAutoImportOptionsProvider extends UiDslUnnamedConfigurable.Simp
       if (dataContext != null)
         invokeLater {
           for {
-            settings <- Settings.KEY.getData(dataContext).toOption
+            settings <- dataContext.getData(Settings.KEY).toOption
             configurable <- settings.find("preferences.sourceCode.Scala").asOptionOf[CodeStyleConfigurableWrapper]
           } {
             settings.select(configurable).doWhenDone { () =>

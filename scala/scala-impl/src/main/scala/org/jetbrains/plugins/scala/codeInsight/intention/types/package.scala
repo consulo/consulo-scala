@@ -4,7 +4,6 @@ import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.template.{Expression, TemplateManager}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingListener
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiDocumentManager, PsiElement}

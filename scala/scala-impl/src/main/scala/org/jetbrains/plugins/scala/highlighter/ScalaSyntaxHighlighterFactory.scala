@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.highlighter
 
+import consulo.language.parser.ParserDefinition
 import consulo.html.language.HTMLLanguage
 import consulo.language.Language
-import com.intellij.lang.LanguageParserDefinitions
 import consulo.language.editor.highlight.SyntaxHighlighterFactory
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
@@ -41,7 +41,7 @@ object ScalaSyntaxHighlighterFactory {
     @Nullable file: VirtualFile,
     language: Language
   ): ScalaSyntaxHighlighter = {
-    val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language)
+    val parserDefinition = ParserDefinition.forLanguage(language)
 
     val isScala3 = language.isKindOf(Scala3Language.INSTANCE)
 

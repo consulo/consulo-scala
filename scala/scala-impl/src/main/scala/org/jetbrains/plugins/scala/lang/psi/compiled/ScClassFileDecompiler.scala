@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
+import consulo.language.parser.ParserDefinition
 import com.intellij.java.language.impl.JavaClassFileType
 import consulo.language.Language
-import com.intellij.lang.LanguageParserDefinitions
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
@@ -53,15 +53,13 @@ object ScClassFileDecompiler {
     }
 
     private def stub2Builder =
-      LanguageParserDefinitions.INSTANCE
-        .forLanguage(ScalaLanguage.INSTANCE)
+      ParserDefinition.forLanguage(ScalaLanguage.INSTANCE)
         .asInstanceOf[ScalaParserDefinition]
         .getFileNodeType
         .stubBuilder
 
     private def stub3Builder =
-      LanguageParserDefinitions.INSTANCE
-        .forLanguage(Scala3Language.INSTANCE)
+      ParserDefinition.forLanguage(Scala3Language.INSTANCE)
         .asInstanceOf[Scala3ParserDefinition]
         .getFileNodeType
         .stubBuilder

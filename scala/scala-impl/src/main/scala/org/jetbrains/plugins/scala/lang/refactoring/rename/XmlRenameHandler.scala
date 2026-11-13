@@ -6,7 +6,6 @@ import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.template.EmptyExpression
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.template.{ExpressionContext, Template, TemplateManager, TextResult}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingAdapter
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.DataContext
@@ -26,10 +25,10 @@ import java.util
 
 class XmlRenameHandler extends RenameHandler with ScalaRefactoringActionHandler {
   override def isAvailableOnDataContext(dataContext: DataContext): Boolean = {
-    val editor = CommonDataKeys.EDITOR.getData(dataContext)
+    val editor = dataContext.getData(CommonDataKeys.EDITOR)
     if (editor == null || !editor.getSettings.isVariableInplaceRenameEnabled) return false
 
-    val file = CommonDataKeys.PSI_FILE.getData(dataContext)
+    val file = dataContext.getData(CommonDataKeys.PSI_FILE)
     if (file == null) return false
     val element = file.findElementAt(editor.getCaretModel.getOffset)
 
@@ -60,7 +59,7 @@ class XmlRenameHandler extends RenameHandler with ScalaRefactoringActionHandler 
       elements(0).getParent.asInstanceOf[ScXmlPairedTag]
     if (element.getMatchedTag == null || element.getTagNameElement == null || element.getMatchedTag.getTagNameElement == null) return
 
-    val editor = CommonDataKeys.EDITOR.getData(dataContext)
+    val editor = dataContext.getData(CommonDataKeys.EDITOR)
     val elementStartName = element.getTagName
     val rangeHighlighters = new util.ArrayList[RangeHighlighter]()
     val matchedRange = element.getMatchedTag.getTagNameElement.getTextRange

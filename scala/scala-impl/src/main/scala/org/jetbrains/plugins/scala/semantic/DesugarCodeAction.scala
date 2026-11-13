@@ -32,10 +32,10 @@ object DesugarCodeAction {
 
   def actionPerformed(e: AnActionEvent): Unit = {
     val project = e.getProject
-    val editor = CommonDataKeys.EDITOR.getData(e.getDataContext)
+    val editor = e.getDataContext.getData(CommonDataKeys.EDITOR)
     val document = editor.getDocument
     val virtualFile = editor.getVirtualFile
-    val psiFile = CommonDataKeys.PSI_FILE.getData(e.getDataContext).asInstanceOf[ScalaFile]
+    val psiFile = e.getDataContext.getData(CommonDataKeys.PSI_FILE).asInstanceOf[ScalaFile]
     if (psiFile.isCompiled) {
       CommonRefactoringUtil.showErrorHint(project, editor, "File must have source", getTemplateText, null)
       return

@@ -42,10 +42,10 @@ class CreateScalaDocStubAction extends AnAction(
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     val context = e.getDataContext
-    val editor = CommonDataKeys.EDITOR.getData(context)
+    val editor = context.getData(CommonDataKeys.EDITOR)
 
     if (editor == null) return
-    val file = PsiUtilBase.getPsiFileInEditor(editor, CommonDataKeys.PROJECT.getData(context))
+    val file = PsiUtilBase.getPsiFileInEditor(editor, context.getData(CommonDataKeys.PROJECT))
     if (!file.getLanguage.isKindOf(ScalaLanguage.INSTANCE)) return
 
     actionPerformedImpl(file, editor)

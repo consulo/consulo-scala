@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
+import consulo.util.lang.ObjectUtil
 import consulo.disposer.Disposable
 import consulo.logging.Logger
 import consulo.project.{DumbService, Project}
@@ -14,7 +15,6 @@ import com.intellij.java.language.impl.psi.impl.JavaPsiFacadeImpl
 import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
 import com.intellij.java.language.psi.search.PsiShortNamesCache
 import com.intellij.java.language.psi.util.PsiClassUtil
-import com.intellij.util.ObjectUtils
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.{Nullable, TestOnly}
@@ -568,7 +568,7 @@ class ScalaPsiManager(implicit val project: Project) extends Disposable {
   }
 
   private val syntheticPackages = ContainerUtil.createConcurrentWeakValueMap[String, AnyRef]()
-  private val emptyMarker: AnyRef = ObjectUtils.sentinel("syntheticPackageEmptyMarker")
+  private val emptyMarker: AnyRef = ObjectUtil.sentinel("syntheticPackageEmptyMarker")
 
   def syntheticPackage(fqn: String): ScSyntheticPackage = {
     val syntheticOrEmptyMarker =

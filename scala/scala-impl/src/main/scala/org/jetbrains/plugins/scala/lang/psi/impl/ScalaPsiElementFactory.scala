@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
+import consulo.util.lang.ObjectUtil
+import consulo.language.parser.ParserDefinition
 import consulo.language.ast.ASTNode
-import com.intellij.lang.LanguageParserDefinitions
 import consulo.language.parser.{PsiBuilder, PsiBuilderFactory}
 import consulo.util.lang.ControlFlowException
 import consulo.component.ProcessCanceledException
@@ -21,7 +22,7 @@ import consulo.language.ast.{IElementType, IFileElementType}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.file.light.LightVirtualFile
 import consulo.language.util.IncorrectOperationException
-import org.apache.commons.lang3.{ObjectUtils, StringUtils}
+import org.apache.commons.lang3.{StringUtils}
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaKeywordTokenType, ScalaModifier, ScalaTokenType, ScalaTokenTypes}
@@ -202,7 +203,7 @@ object ScalaPsiElementFactory {
         .append(" ")
         .append(name)
 
-      val firstNonNullOfContextAndChild = ObjectUtils.firstNonNull(context, child)
+      val firstNonNullOfContextAndChild = ObjectUtil.firstNonNull(context, child)
       implicit val ctx: ProjectContext = projectContext.getOrElse(firstNonNullOfContextAndChild)
       val features: ScalaFeatures = scalaFeatures.getOrElse(firstNonNullOfContextAndChild)
 
@@ -1484,7 +1485,7 @@ object ScalaPsiElementFactory {
     scalaFile.putUserData(SyntheticFileKey, true)
 
     val project = ctx.getProject
-    val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language)
+    val parserDefinition = ParserDefinition.forLanguage(language)
 
     val chameleon = scalaFile.getTreeElement
 

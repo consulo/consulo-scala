@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks.parser
 
-import com.intellij.lang.LightPsiParser
+import consulo.language.version.LanguageVersion
 import consulo.language.parser.{PsiBuilder, PsiParser}
 import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -9,15 +9,15 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.ScalaDocRefLinkElementTypes
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.ScalaDocRefLinkElementTypes.STRICT_MEMBER_ID
 
-class ScalaDocRefLinkParser extends PsiParser with LightPsiParser {
+class ScalaDocRefLinkParser extends PsiParser {
 
-  override def parseLight(rootElementType: IElementType, builder: PsiBuilder): Unit = {
+  def parseLight(rootElementType: IElementType, builder: PsiBuilder): Unit = {
     val rootMarker = builder.mark()
     parseQuery(builder)
     rootMarker.done(rootElementType)
   }
 
-  override def parse(rootElementType: IElementType, builder: PsiBuilder): consulo.language.ast.ASTNode = {
+  override def parse(rootElementType: IElementType, builder: PsiBuilder, languageVersion: LanguageVersion): consulo.language.ast.ASTNode = {
     parseLight(rootElementType, builder)
     builder.getTreeBuilt
   }

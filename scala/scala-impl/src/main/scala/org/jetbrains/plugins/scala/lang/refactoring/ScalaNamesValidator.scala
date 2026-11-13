@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.lang.LanguageNamesValidation
 import consulo.language.editor.refactoring.NamesValidator
 import consulo.project.Project
 import consulo.util.lang.StringUtil.isEmpty
@@ -51,7 +50,7 @@ object ScalaNamesValidator {
 
   // TODO distinguish between Scala 2 & 3
   private def validator: NamesValidator =
-    LanguageNamesValidation.INSTANCE.forLanguage(ScalaLanguage.INSTANCE)
+    NamesValidator.forLanguage(ScalaLanguage.INSTANCE)
 
   private val lexerCache: UnloadableThreadLocal[ScalaLexer] =
     new UnloadableThreadLocal(new ScalaLexer(false, null))

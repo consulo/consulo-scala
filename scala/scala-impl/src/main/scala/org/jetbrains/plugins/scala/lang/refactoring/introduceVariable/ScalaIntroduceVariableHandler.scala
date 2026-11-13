@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
+import consulo.util.dataholder.Key
 import consulo.dataContext.DataContext
-import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.command.impl.StartMarkAction
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, SelectionModel}
@@ -124,5 +124,5 @@ object ScalaIntroduceVariableHandler {
     }
   }
 
-  @TestOnly val ForcedReplaceTestOptions: DataKey[ReplaceTestOptions] = DataKey.create("ForcedReplaceTestOptions")
+  @TestOnly val ForcedReplaceTestOptions: Key[ReplaceTestOptions] = Key.create("ForcedReplaceTestOptions")
 }

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.semantic
 
+import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.rawHighlight.HighlightInfo
-import com.intellij.codeInsight.intention.CommonIntentionAction
 import consulo.language.editor.annotation.{AnnotationSession, HighlightSeverity}
 import consulo.colorScheme.TextAttributesKey
 import consulo.document.util.TextRange
@@ -24,7 +24,7 @@ private class AnnotatorHolderMock(file: PsiFile) extends AnnotatorHolderMockBase
     range: TextRange,
     message: String,
     enforcedAttributes: TextAttributesKey,
-    fixes: Seq[CommonIntentionAction]
+    fixes: Seq[IntentionAction]
   ): Option[Message] = {
     val constructor = Message.HighlightingSeverityToConstructor.get(severity)
     constructor.map(_.apply(fileTextOf(range), message))
@@ -46,7 +46,7 @@ private object AnnotatorHolderMock {
 
     private var myAnnotations: List[(TextRange, T)] = List[(TextRange, T)]()
 
-    def createMockAnnotation(severity: HighlightSeverity, range: TextRange, message: String, enforcedAttributes: TextAttributesKey, fixes: Seq[CommonIntentionAction]): Option[T]
+    def createMockAnnotation(severity: HighlightSeverity, range: TextRange, message: String, enforcedAttributes: TextAttributesKey, fixes: Seq[IntentionAction]): Option[T]
 
     //noinspection ApiStatus,UnstableApiUsage
     override def getCurrentAnnotationSession: AnnotationSession = new AnnotationSession(file): @nowarn("cat=deprecation")
@@ -67,7 +67,7 @@ private object AnnotatorHolderMock {
         message: String,
         range: TextRange,
         enforcedAttributes: TextAttributesKey,
-        fixes: Seq[CommonIntentionAction]
+        fixes: Seq[IntentionAction]
       ): Unit =
         myAnnotations :::= createMockAnnotation(severity, range, message, enforcedAttributes, fixes).toList.map(range -> _)
     }

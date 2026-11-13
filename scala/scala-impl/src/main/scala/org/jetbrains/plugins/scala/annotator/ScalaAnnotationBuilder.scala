@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
-import com.intellij.codeInsight.intention.CommonIntentionAction
 import consulo.language.editor.inspection.{LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
 import consulo.language.ast.ASTNode
 import consulo.language.editor.annotation.ProblemGroup
@@ -150,7 +150,7 @@ trait ScalaAnnotationBuilder {
    * If you want to tweak the fix, e.g. modify its range, please use {@link newFix ( IntentionAction )} instead.
    * This is an intermediate method in the creating new annotation pipeline.
    */
-  def withFix(fix: CommonIntentionAction): this.type
+  def withFix(fix: IntentionAction): this.type
 
   /**
    * Begin registration of the new quickfix associated with the annotation.
@@ -158,7 +158,7 @@ trait ScalaAnnotationBuilder {
    *
    * @param fix an intention action to be shown for the annotation as a quick fix
    */
-  def newFix(fix: CommonIntentionAction): ScalaAnnotationBuilder.FixBuilder
+  def newFix(fix: IntentionAction): ScalaAnnotationBuilder.FixBuilder
 
   /**
    * Begin registration of the new quickfix associated with the annotation.

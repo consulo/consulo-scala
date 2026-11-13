@@ -5,7 +5,6 @@ import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
 import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
 import consulo.language.content.ProjectRootsUtil
 import consulo.dataContext.DataContext
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import consulo.util.lang.ControlFlowException
 import consulo.codeEditor.LogicalPosition
 import consulo.fileEditor.FileEditorManager
@@ -153,7 +152,7 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
   }
 
   override def isAvailable(dataContext: DataContext): Boolean = {
-    val module = dataContext.getData(PlatformCoreDataKeys.MODULE)
+    val module = dataContext.getData(Module.KEY)
     module != null && (
       (super.isAvailable(dataContext) && hasScalaInstalledInModule(module)) ||
         NewScalaFileActionExtension.isAvailable(dataContext)

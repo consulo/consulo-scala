@@ -5,7 +5,6 @@ import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType, CompletionUtilCore}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import consulo.language.psi.util.PsiTreeUtil

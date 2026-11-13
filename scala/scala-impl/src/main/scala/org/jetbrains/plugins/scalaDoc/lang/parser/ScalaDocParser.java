@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scalaDoc.lang.parser;
 
+import consulo.language.version.LanguageVersion;
 import consulo.language.ast.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import consulo.language.parser.PsiBuilder;
 import consulo.language.parser.PsiParser;
 import consulo.language.ast.IElementType;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsing;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.ScaladocMarkdownParsing;
 
-public class ScalaDocParser implements PsiParser, LightPsiParser {
+public class ScalaDocParser implements PsiParser {
   private final int tabSize;
   private final boolean isMarkdown;
 
@@ -17,7 +17,6 @@ public class ScalaDocParser implements PsiParser, LightPsiParser {
     this.isMarkdown = isMarkdown;
   }
 
-  @Override
   public void parseLight(IElementType root, PsiBuilder builder) {
     if (isMarkdown) {
       ScaladocMarkdownParsing.parse(builder, root);
@@ -27,7 +26,7 @@ public class ScalaDocParser implements PsiParser, LightPsiParser {
   }
 
   @Override
-  public ASTNode parse(IElementType root, PsiBuilder builder) {
+  public ASTNode parse(IElementType root, PsiBuilder builder, LanguageVersion languageVersion) {
     parseLight(root, builder);
     return builder.getTreeBuilt();
   }

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.intention.CommonIntentionAction
+import consulo.language.editor.intention.IntentionAction
 import consulo.document.util.TextRange
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifier, PsiModifierList}
 import org.jetbrains.annotations.Nls
@@ -545,7 +545,7 @@ object ScTemplateDefinitionAnnotator extends ElementAnnotator[ScTemplateDefiniti
     ScalaBundle.message("object.creation.impossible.since", reasons)
   }
 
-  def needsToBeAbstractFixes(element: ScTemplateDefinition): Iterable[CommonIntentionAction] = {
+  def needsToBeAbstractFixes(element: ScTemplateDefinition): Iterable[IntentionAction] = {
     val nameId = element.nameId
     val maybeModifierFix = element match {
       case cls: ScClass => Some(new ModifierQuickFix.Add(cls, nameId, ScalaModifier.Abstract))

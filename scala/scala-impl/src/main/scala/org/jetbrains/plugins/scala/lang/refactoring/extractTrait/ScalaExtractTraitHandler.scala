@@ -55,7 +55,7 @@ class ScalaExtractTraitHandler extends ScalaRefactoringActionHandler {
     }
 
     if (dataContext != null) {
-      val editor: Editor = CommonDataKeys.EDITOR.getData(dataContext)
+      val editor: Editor = dataContext.getData(CommonDataKeys.EDITOR)
       if (editor != null && clazz != null) {
         val typeAdjuster = new TypeAdjuster()
         invokeOnClass(clazz, project, typeAdjuster)

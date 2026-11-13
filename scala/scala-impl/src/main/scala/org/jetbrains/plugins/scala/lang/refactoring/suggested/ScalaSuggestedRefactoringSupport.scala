@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.suggested
 
+import consulo.util.lang.ObjectUtil
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.refactoring.suggested.{SuggestedRefactoringAvailability, SuggestedRefactoringExecution, SuggestedRefactoringStateChanges, SuggestedRefactoringSupport, SuggestedRefactoringUI}
-import com.intellij.util.ObjectUtils
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
@@ -33,7 +33,7 @@ final class ScalaSuggestedRefactoringSupport extends SuggestedRefactoringSupport
   @Nullable
   override def nameRange(element: PsiElement): TextRange = element match {
     case named: ScNamedElement =>
-      ObjectUtils.doIfNotNull[PsiElement, TextRange](named.getNameIdentifier, _.getTextRange)
+      ObjectUtil.doIfNotNull[PsiElement, TextRange](named.getNameIdentifier, _.getTextRange)
     case _ => null
   }
 

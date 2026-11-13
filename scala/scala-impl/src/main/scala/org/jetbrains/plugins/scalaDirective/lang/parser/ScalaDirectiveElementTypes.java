@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scalaDirective.lang.parser;
 
 import consulo.language.ast.ASTNode;
 import consulo.language.Language;
-import com.intellij.lang.LanguageParserDefinitions;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.parser.PsiBuilder;
 import consulo.language.parser.PsiBuilderFactory;
@@ -23,7 +22,7 @@ public interface ScalaDirectiveElementTypes {
             Project project = JavaPsiFacade.getInstance(lazyNode.getTreeParent().getPsi().getProject()).getProject();
 
             Language language = getLanguage();
-            ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language);
+            ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
 
             PsiBuilder builder = PsiBuilderFactory.getInstance()
                     .createBuilder(project, lazyNode, parserDefinition.createLexer(project), language, lazyNode.getText());

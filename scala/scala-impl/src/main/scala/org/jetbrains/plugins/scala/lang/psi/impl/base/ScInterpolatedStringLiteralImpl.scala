@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
+import consulo.language.editor.refactoring.NamesValidator
 import consulo.language.ast.ASTNode
-import com.intellij.lang.LanguageNamesValidation
 import consulo.logging.Logger
 import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -95,7 +95,7 @@ final class ScInterpolatedStringLiteralImpl(node: ASTNode,
   private def referenceText: String = firstNode.getText
 
   private def isValidIdentifier(name: String) = {
-    val validation = LanguageNamesValidation.INSTANCE.forLanguage(getLanguage)
+    val validation = NamesValidator.forLanguage(getLanguage)
     val project = getProject
 
     !validation.isKeyword(name, project) &&

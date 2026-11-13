@@ -48,10 +48,10 @@ class ShowTypeInfoAction extends AnAction(
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     val context = e.getDataContext
-    val editor: Editor = CommonDataKeys.EDITOR.getData(context)
+    val editor: Editor = context.getData(CommonDataKeys.EDITOR)
     if (editor == null)
       return
-    val file = PsiUtilBase.getPsiFileInEditor(editor, CommonDataKeys.PROJECT.getData(context))
+    val file = PsiUtilBase.getPsiFileInEditor(editor, context.getData(CommonDataKeys.PROJECT))
     if (file == null)
       return
     if (!file.getLanguage.isKindOf(ScalaLanguage.INSTANCE))

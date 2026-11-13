@@ -50,8 +50,8 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     val context = e.getDataContext
-    implicit val project: Project = CommonDataKeys.PROJECT.getData(context)
-    implicit val editor: Editor = CommonDataKeys.EDITOR.getData(context)
+    implicit val project: Project = context.getData(CommonDataKeys.PROJECT)
+    implicit val editor: Editor = context.getData(CommonDataKeys.EDITOR)
     if (project == null || editor == null)
       return
 

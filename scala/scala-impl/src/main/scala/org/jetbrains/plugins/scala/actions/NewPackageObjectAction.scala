@@ -7,7 +7,6 @@ import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
 import consulo.dataContext.DataContext
 import consulo.language.editor.LangDataKeys
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import consulo.module.Module
 import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiElement}
@@ -34,13 +33,13 @@ class NewPackageObjectAction extends LazyFileTemplateAction(
 
     e.getPresentation.setIcon(icon)
 
-    val hasPackage = Option(LangDataKeys.IDE_VIEW.getData(e.getDataContext))
+    val hasPackage = Option(e.getDataContext.getData(LangDataKeys.IDE_VIEW))
             .flatMap(_.getDirectories.headOption)
             .flatMap(dir => Option(JavaDirectoryService.getInstance.getPackage(dir)))
             .map(_.getQualifiedName)
             .exists(_.nonEmpty)
 
-    val module: Module = e.getDataContext.getData(PlatformCoreDataKeys.MODULE)
+    val module: Module = e.getDataContext.getData(Module.KEY)
     // Don't show "Package Object" in Scala 3 projects - in Scala 3 the preferable approach is to use top-level declarations.
     // The package objects are primarily left for compatibility with Scala 2.
     // So we don't encourage users to create package objects in Scala 3 projects.
@@ -59,7 +58,7 @@ class NewPackageObjectAction extends LazyFileTemplateAction(
     val dataContext = event.getDataContext
 
     for {
-      view           <- LangDataKeys.IDE_VIEW.getData(dataContext).toOption
+      view           <- dataContext.getData(LangDataKeys.IDE_VIEW).toOption
       dir            <- getTargetDirectory(dataContext, view).toOption
       defaults        = getAttributesDefaults(dataContext)
       createdElement <- createElement(selectedTemplate, dir, defaults)

@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.parser
 
+import consulo.language.version.LanguageVersion
 import consulo.language.ast.ASTNode
-import com.intellij.lang.LightPsiParser
 import consulo.language.parser.{PsiBuilder, PsiParser}
 import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.Tracing
 
-class ScalaParser(isScala3: Boolean) extends PsiParser with LightPsiParser {
+class ScalaParser(isScala3: Boolean) extends PsiParser {
 
   import parsing._
   import builder._
@@ -16,7 +16,7 @@ class ScalaParser(isScala3: Boolean) extends PsiParser with LightPsiParser {
   def mkScalaPsiBuilder(delegate: PsiBuilder, isScala3: Boolean): ScalaPsiBuilder =
     new ScalaPsiBuilderImpl(delegate, isScala3)
 
-  override def parseLight(rootElementType: IElementType, delegate: PsiBuilder): Unit = {
+  def parseLight(rootElementType: IElementType, delegate: PsiBuilder): Unit = {
     implicit val builder: ScalaPsiBuilder = mkScalaPsiBuilder(delegate, isScala3)
 
     rootElementType match {
@@ -31,7 +31,7 @@ class ScalaParser(isScala3: Boolean) extends PsiParser with LightPsiParser {
     Tracing.parser(builder)
   }
 
-  override def parse(rootElementType: IElementType, delegate: PsiBuilder): ASTNode = {
+  override def parse(rootElementType: IElementType, delegate: PsiBuilder, languageVersion: LanguageVersion): ASTNode = {
     parseLight(rootElementType, delegate)
     delegate.getTreeBuilt
   }

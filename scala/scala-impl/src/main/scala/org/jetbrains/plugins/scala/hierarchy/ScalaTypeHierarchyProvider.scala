@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt
 
 final class ScalaTypeHierarchyProvider extends JavaTypeHierarchyProvider {
   override def getTarget(dataContext: DataContext): PsiClass = {
-    val editor = Option(CommonDataKeys.EDITOR.getData(dataContext))
+    val editor = Option(dataContext.getData(CommonDataKeys.EDITOR))
 
     editor
       .flatMap(getScalaTarget)

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
-import com.intellij.codeInsight.intention.CommonIntentionAction
 import consulo.language.editor.inspection.{LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
 import consulo.language.ast.ASTNode
 import consulo.language.editor.annotation.{AnnotationBuilder, ProblemGroup}
@@ -89,12 +89,12 @@ class ScalaAnnotationBuilderAdapter(annotationBuilder: AnnotationBuilder)
     this
   }
 
-  override def withFix(fix: CommonIntentionAction): this.type = {
+  override def withFix(fix: IntentionAction): this.type = {
     annotationBuilder.withFix(fix)
     this
   }
 
-  override def newFix(fix: CommonIntentionAction): ScalaAnnotationBuilder.FixBuilder =
+  override def newFix(fix: IntentionAction): ScalaAnnotationBuilder.FixBuilder =
     annotationBuilder.newFix(fix)
 
   override def newLocalQuickFix(fix: LocalQuickFix, problemDescriptor: ProblemDescriptor): ScalaAnnotationBuilder.FixBuilder =

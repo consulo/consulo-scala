@@ -97,7 +97,7 @@ class ScalaChangeSignatureHandler extends ChangeSignatureHandler with ScalaRefac
 
     val element = file.findScalaLikeFile.flatMap(
       scalaFile => Option(findTargetMember(scalaFile, editor))
-    ).getOrElse(CommonDataKeys.PSI_ELEMENT.getData(dataContext))
+    ).getOrElse(dataContext.getData(CommonDataKeys.PSI_ELEMENT))
 
     invokeOnElement(element)
   }
@@ -107,7 +107,7 @@ class ScalaChangeSignatureHandler extends ChangeSignatureHandler with ScalaRefac
                      (implicit project: Project, dataContext: DataContext): Unit =
     elements match {
       case Array(head) =>
-        implicit val editor: Editor = if (dataContext != null) CommonDataKeys.EDITOR.getData(dataContext)
+        implicit val editor: Editor = if (dataContext != null) dataContext.getData(CommonDataKeys.EDITOR)
         else null
         invokeOnElement(head)
       case _ =>

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.parser
 
+import consulo.language.version.LanguageVersion
 import consulo.language.ast.ASTNode
-import com.intellij.lang.LightPsiParser
 import consulo.language.parser.PsiBuilder
 import consulo.language.parser.PsiParser
 import consulo.language.ast.IElementType
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.tLINE_COMMENT
 
-class ScalaDirectiveParser extends PsiParser with LightPsiParser {
+class ScalaDirectiveParser extends PsiParser {
 
   /**
    * Parses a [[org.jetbrains.plugins.scalaDirective.psi.impl.ScDirectiveImpl]].
@@ -17,7 +17,12 @@ class ScalaDirectiveParser extends PsiParser with LightPsiParser {
    * The approach is to stop processing tokens after an unexpected or erroneous token is encountered.
    * This is tracked via <code>noErrorsOccurred</code>.
    */
-  override def parseLight(root: IElementType, builder: PsiBuilder): Unit = {
+  override def parse(root: IElementType, builder: PsiBuilder, languageVersion: LanguageVersion): ASTNode = {
+    parseLight(root, builder)
+    builder.getTreeBuilt
+  }
+
+  def parseLight(root: IElementType, builder: PsiBuilder): Unit = {
 
     var error = false
 
@@ -49,13 +54,5 @@ class ScalaDirectiveParser extends PsiParser with LightPsiParser {
     while (builder.getTokenType != null) processCurrentToken(builder, tDIRECTIVE_VALUE, tDIRECTIVE_COMMA, tLINE_COMMENT)
 
     rootMarker.done(root)
-  }
-
-  /**
-   * @see [[parseLight]]
-   */
-  override def parse(@NotNull root: IElementType, @NotNull builder: PsiBuilder): ASTNode = {
-    parseLight(root, builder)
-    builder.getTreeBuilt
   }
 }

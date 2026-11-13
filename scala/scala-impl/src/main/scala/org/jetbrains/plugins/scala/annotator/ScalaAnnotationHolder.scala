@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInspection.util.InspectionMessage
 import consulo.language.editor.annotation.{AnnotationSession, HighlightSeverity}
 
 /**
@@ -26,7 +25,7 @@ trait ScalaAnnotationHolder extends ScalaAnnotationHolderAPI {
    *          visitor. You'll need to call {@link AnnotationBuilder# range ( TextRange )} or similar method explicitly only if target element differs from current element.
    *          Please note, that the range in {@link AnnotationBuilder# range ( TextRange )} must be inside the range of the current element.
    */
-  def newAnnotation(severity: HighlightSeverity, @InspectionMessage message: String): ScalaAnnotationBuilder
+  def newAnnotation(severity: HighlightSeverity, message: String): ScalaAnnotationBuilder
 
   /**
    * Begin constructing a new annotation with no message and no tooltip.

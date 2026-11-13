@@ -5,8 +5,6 @@ import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.refactoring.RefactoringQuickFix;
-import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.codeInspection.util.IntentionName;
 import consulo.dataContext.DataContext;
 import consulo.project.Project;
 import consulo.application.util.HtmlChunk;
@@ -31,12 +29,12 @@ public class RenameElementQuickfix extends LocalQuickFixOnPsiElement implements 
     }
 
     @Override
-    public @IntentionName String getText() {
+    public String getText() {
         return name;
     }
 
     @Override
-    public @IntentionFamilyName String getFamilyName() {
+    public String getFamilyName() {
         return getText();
     }
 

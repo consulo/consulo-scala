@@ -4,7 +4,6 @@ import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}

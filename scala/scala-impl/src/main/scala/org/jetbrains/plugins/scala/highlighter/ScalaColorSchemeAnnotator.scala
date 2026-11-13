@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.highlighter
 
 import consulo.language.editor.rawHighlight.HighlightInfoType
-import com.intellij.codeInspection.util.InspectionMessage
 import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
 import consulo.colorScheme.TextAttributesKey
 import consulo.document.util.TextRange
@@ -202,7 +201,7 @@ object ScalaColorSchemeAnnotator {
   private def createInfoAnnotation(
     psiElement: PsiElement,
     attributes: TextAttributesKey,
-    @InspectionMessage message: String = null
+    message: String = null
   )(implicit holder: ScalaAnnotationHolder): Unit = {
     val builder =
       if (message == null)

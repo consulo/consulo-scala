@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.codeInspection.notImplementedCode
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor}

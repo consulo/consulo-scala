@@ -6,7 +6,6 @@ import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.inspection.ProblemHighlightType
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor

@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.scaladoc.parser;
 
 import consulo.language.ast.ASTNode;
 import consulo.language.Language;
-import com.intellij.lang.LanguageParserDefinitions;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.parser.PsiBuilder;
 import consulo.language.parser.PsiBuilderFactory;
@@ -36,7 +35,7 @@ public interface ScalaDocElementTypes {
 
             Project project = psi.getProject();
             Language language = getLanguage();
-            ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language);
+            ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
             Lexer lexer = parserDefinition.createLexer(project);
             PsiParser parser = parserDefinition.createParser(project);
             PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(project, lazyNode, lexer, language, lazyNode.getChars());
@@ -67,7 +66,7 @@ public interface ScalaDocElementTypes {
             Project project = JavaPsiFacade.getInstance(lazyNode.getTreeParent().getPsi().getProject()).getProject();
 
             Language language = getLanguage();
-            ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language);
+            ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
 
             if (parserDefinition instanceof ScalaDocParserDefinition) {
                 boolean isMarkdown = isMarkdown(lazyNode);

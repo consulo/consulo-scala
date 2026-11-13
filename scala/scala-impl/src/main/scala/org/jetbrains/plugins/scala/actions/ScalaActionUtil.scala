@@ -24,7 +24,7 @@ object ScalaActionUtil {
     e.getPresentation.setEnabledAndVisible(isInScalaFile)
   }
 
-  def getFileFrom(e: AnActionEvent): Option[PsiFile] = Option(CommonDataKeys.PSI_FILE.getData(e.getDataContext))
+  def getFileFrom(e: AnActionEvent): Option[PsiFile] = Option(e.getDataContext.getData(CommonDataKeys.PSI_FILE))
 
   @RequiresEdt
   def showHint(editor: Editor, @Nls text: String): Unit = {

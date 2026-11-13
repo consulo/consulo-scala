@@ -5,7 +5,6 @@ import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.intention.BaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.util.PsiTreeUtil

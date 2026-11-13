@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDoc.highlighter;
 
-import com.intellij.lang.LanguageParserDefinitions;
+import consulo.language.parser.ParserDefinition;
 import consulo.language.lexer.Lexer;
 import consulo.colorScheme.TextAttributesKey;
 import consulo.language.editor.highlight.SyntaxHighlighterBase;
@@ -23,8 +23,7 @@ public final class ScalaDocSyntaxHighlighter extends SyntaxHighlighterBase {
 
     @Override
     public Lexer getHighlightingLexer() {
-        return LanguageParserDefinitions.INSTANCE
-                .forLanguage(ScalaDocLanguage.INSTANCE)
+        return ParserDefinition.forLanguage(ScalaDocLanguage.INSTANCE)
                 .createLexer(null);
     }
 

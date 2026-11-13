@@ -21,14 +21,14 @@ class DesugarCodeAction extends AnAction(
     implicit val project: Project = event.getProject
     if (project == null) return
 
-    val file = CommonDataKeys.PSI_FILE.getData(event.getDataContext).asInstanceOf[ScalaFile]
+    val file = event.getDataContext.getData(CommonDataKeys.PSI_FILE).asInstanceOf[ScalaFile]
     if (file == null) return
 
     // https://youtrack.jetbrains.com/issue/SCL-25618#focus=Comments-27-14327746.0-0
     org.jetbrains.plugins.scala.semantic.DesugarCodeAction.actionPerformed(event)
     return
 
-    val editor = CommonDataKeys.EDITOR.getData(event.getDataContext)
+    val editor = event.getDataContext.getData(CommonDataKeys.EDITOR)
     if (editor == null) return
 
     val selection = editor.getSelectionModel

@@ -6,7 +6,6 @@ import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
 import consulo.language.editor.ui.navigation.{PsiTargetNavigator, TargetPresentationProvider}
 import consulo.language.editor.template.{Template, TemplateBuilder}
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.logging.Logger
 import consulo.codeEditor.Editor
 import consulo.project.Project

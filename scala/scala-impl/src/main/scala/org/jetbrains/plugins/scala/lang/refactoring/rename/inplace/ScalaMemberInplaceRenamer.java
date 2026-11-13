@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace;
 
+import consulo.language.editor.refactoring.NamesValidator;
 import consulo.language.editor.TargetElementUtil;
 import consulo.language.Language;
-import com.intellij.lang.LanguageNamesValidation;
 import consulo.application.WriteAction;
 import consulo.undoRedo.CommandProcessor;
 import consulo.codeEditor.Editor;
@@ -151,7 +151,7 @@ public class ScalaMemberInplaceRenamer extends MemberInplaceRenamer {
 
     @Override
     public boolean isIdentifier(String newName, Language language) {
-        return LanguageNamesValidation.INSTANCE.forLanguage(language).isIdentifier(newName, myProject);
+        return NamesValidator.forLanguage(language).isIdentifier(newName, myProject);
     }
 
     @Override

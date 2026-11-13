@@ -7,7 +7,6 @@ import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContex
 import consulo.language.editor.completion.AutoCompletionPolicy
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation, LookupElementRenderer}
 import consulo.language.editor.template.TemplateBuilderFactory
-import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.ConstantNode
 import consulo.application.ApplicationManager
 import consulo.project.Project
