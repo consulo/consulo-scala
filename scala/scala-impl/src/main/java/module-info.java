@@ -95,6 +95,7 @@ module org.intellij.scala {
     requires org.intellij.scala.tasty.reader;
     requires org.intellij.scala.decompiler;
     requires org.intellij.scala.api;
+    requires org.intellij.scala.intellij.compat;
     requires org.intellij.scala.compiler.settings.definition;
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;

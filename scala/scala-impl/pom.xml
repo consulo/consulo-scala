@@ -158,6 +158,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-intellij.compat</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-scala.api</artifactId>
             <version>${project.version}</version>
         </dependency>
