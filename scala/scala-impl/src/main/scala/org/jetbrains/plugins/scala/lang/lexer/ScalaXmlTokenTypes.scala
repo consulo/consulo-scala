@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.lexer
 
-import com.intellij.psi.tree.TokenSet
+import consulo.language.ast.TokenSet
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 
 /**

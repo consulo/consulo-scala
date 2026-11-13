@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.{ASTNode, Language}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDeclaration, ScFunctionDefinition, ScMacroDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenAliasDeclaration, ScGivenAliasDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.{ScFunctionDeclarationImpl, ScFunctionDefinitionImpl, ScMacroDefinitionImpl}

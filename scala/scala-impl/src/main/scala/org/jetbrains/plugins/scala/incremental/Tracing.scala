@@ -5,20 +5,22 @@ import extensions.{&, FirstChild, PsiElementExt}
 import lang.psi.api.expr.{ScArgumentExprList, ScBlock, ScParenthesisedExpr}
 import project.ProjectExt
 import startup.ProjectActivity
-import com.intellij.codeHighlighting.Pass
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer.DaemonListener
+import consulo.language.editor.Pass
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
-import com.intellij.openapi.editor.markup.{HighlighterLayer, HighlighterTargetArea, RangeHighlighter, TextAttributes}
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.fileEditor.FileEditor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.psi.{PsiElement, PsiFile, PsiManager}
-import com.intellij.ui.{Gray, JBColor}
+import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea, RangeHighlighter}
+import consulo.colorScheme.TextAttributes
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.fileEditor.FileEditor
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.application.util.registry.Registry
+import consulo.virtualFileSystem.VirtualFile
+import consulo.project.ui.wm.WindowManager
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
+import consulo.ui.ex.{Gray, JBColor}
 import com.intellij.util.ui.StartupUiUtil
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 

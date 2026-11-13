@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile, PsiNamedElement}
-import com.intellij.refactoring.rename.inplace.{InplaceRefactoring, VariableInplaceRenameHandler, VariableInplaceRenamer}
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.inplace.{InplaceRefactoring, VariableInplaceRenameHandler, VariableInplaceRenamer}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 

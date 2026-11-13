@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.actions.utils
 
-import com.intellij.openapi.editor.event.{VisibleAreaEvent, VisibleAreaListener}
-import org.jetbrains.annotations.NotNull
+import consulo.codeEditor.event.{VisibleAreaEvent, VisibleAreaListener}
 import org.jetbrains.concurrency.CancellablePromise
 
 import java.util.concurrent.atomic.AtomicReference

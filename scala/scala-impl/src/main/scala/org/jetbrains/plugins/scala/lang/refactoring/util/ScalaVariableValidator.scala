@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import com.intellij.java.language.psi.PsiMember
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, ResolvesTo}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

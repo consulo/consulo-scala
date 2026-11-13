@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
-import com.intellij.codeInsight.completion.{CompletionLocation, CompletionWeigher}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.PsiMethod
+import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
+import consulo.language.editor.completion.lookup.LookupElement
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem

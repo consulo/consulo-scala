@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
@@ -13,7 +13,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.ScSyntheticClass
 import org.jetbrains.plugins.scala.lang.psi.types.api.Any
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType, ScTypeExt, ScalaType}
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 /**
  * Partially based on and inspired by contribution from @vovapolu

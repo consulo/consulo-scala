@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.generation.GenerateMembersUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.codeStyle.CodeStyle
+import com.intellij.java.impl.codeInsight.generation.GenerateMembersUtil
+import consulo.codeEditor.Editor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.enterHandler.EnterHandlerUtils
 import org.jetbrains.plugins.scala.editor.{ScalaEditorUtils, ScalaIndentationSyntaxUtils}
 import org.jetbrains.plugins.scala.extensions.{&, ElementType, Parent, PrevElement, PsiFileExt}

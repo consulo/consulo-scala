@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.relativeImports
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElementVisitor, PsiFile, PsiPackage}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElementVisitor, PsiFile, PsiPackage}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

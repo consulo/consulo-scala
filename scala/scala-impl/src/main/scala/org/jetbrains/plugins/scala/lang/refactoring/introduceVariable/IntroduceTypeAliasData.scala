@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 
 class IntroduceTypeAliasData {

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.codeInsight.runner.JavaMainMethodProvider
-import com.intellij.psi.{PsiClass, PsiMethod}
+import com.intellij.java.language.codeInsight.runner.JavaMainMethodProvider
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 /**

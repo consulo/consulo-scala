@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package literals
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
+import consulo.language.ast.ASTNode
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScLiteral, literals}
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, api}
 

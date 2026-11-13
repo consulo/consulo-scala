@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.{ASTNode, Language}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScNewTemplateDefinitionImpl

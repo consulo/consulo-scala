@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.openapi.util.SystemInfoRt
+import consulo.util.nodep.SystemInfoRt
 import org.jetbrains.annotations.Nls
 
 import java.awt.event.KeyEvent

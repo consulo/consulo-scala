@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.getParentOfType
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.getParentOfType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

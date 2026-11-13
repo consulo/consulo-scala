@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.framework
 
-import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.codeInspection.dataFlow.DfaNullability
-import com.intellij.codeInspection.dataFlow.jvm.problems.IndexOutOfBoundsProblem
-import com.intellij.codeInspection.dataFlow.lang.UnsatisfiedConditionProblem
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.value.{DerivedVariableDescriptor, DfaValue}
-import com.intellij.psi.PsiElement
-import com.intellij.util.ThreeState
+import consulo.language.editor.inspection.ProblemsHolder
+import consulo.language.dataFlow.types.DfaNullability
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.problems.IndexOutOfBoundsProblem
+import consulo.language.dataFlow.interpreter.UnsatisfiedConditionProblem
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.value.{DerivedVariableDescriptor, DfaValue}
+import consulo.language.psi.PsiElement
+import consulo.util.lang.ThreeState
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle

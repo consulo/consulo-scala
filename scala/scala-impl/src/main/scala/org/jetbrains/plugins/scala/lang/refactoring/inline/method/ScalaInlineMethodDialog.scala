@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.refactoring.BaseRefactoringProcessor
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineDialog

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.collections.{`scalaOption`, literal}
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, PsiElementExt}

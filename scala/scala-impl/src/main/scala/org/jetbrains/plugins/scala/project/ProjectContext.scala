@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiManager}
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiManager}
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.types.ScalaTypeSystem
 import org.jetbrains.plugins.scala.lang.psi.types.api.{StdTypes, TypeSystem}

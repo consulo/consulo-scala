@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion.global
 
-import com.intellij.codeInsight.completion.JavaCompletionUtil.putAllMethods
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiClass, PsiMethod, PsiNamedElement}
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil.putAllMethods
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionUtil.findInheritorObjectsForOwner

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.expressions
 
-import com.intellij.lang.PsiBuilder
+import consulo.language.parser.PsiBuilder
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule
 import org.jetbrains.plugins.scala.lang.parser.parsing.base.End

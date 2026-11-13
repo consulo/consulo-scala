@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
-import com.intellij.lang.Language
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.impl.LibraryScopeCache
-import com.intellij.openapi.roots.{ProjectFileIndex, ProjectRootManager}
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.language.Language
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.scope.LibraryScopeCache
+import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.platform.workspace.storage.WorkspaceEntityWithSymbolicId
-import com.intellij.psi.search.{FilenameIndex, GlobalSearchScope}
-import com.intellij.psi.{PsiClassOwner, PsiElement, PsiFile, PsiManager, SingleRootFileViewProvider}
-import com.intellij.util.CommonProcessors.FindProcessor
+import consulo.language.psi.search.FilenameIndex
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.PsiClassOwner
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
+import consulo.language.impl.file.SingleRootFileViewProvider
+import consulo.application.util.function.CommonProcessors.FindProcessor
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.extensions.{ClassQualifiedName, ObjectExt, PsiClassExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiImplementationHelper.findAssociatedEntities

@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.findUsages.factory.dialog
 
-import com.intellij.find.FindBundle
-import com.intellij.find.findUsages._
-import com.intellij.openapi.project.Project
-import com.intellij.ui.{IdeBorderFactory, StateRestoringCheckBox}
-import com.intellij.util.ui.JBUI.Borders
+import consulo.find.FindBundle
+import consulo.find.ui.AbstractFindUsagesDialog
+import consulo.find.{FindUsagesHandler, FindUsagesOptions}
+import com.intellij.find.findUsages.JavaFindUsagesDialog
+import consulo.project.Project
+import consulo.ui.ex.awt.{IdeBorderFactory, StateRestoringCheckBox}
+import consulo.ui.ex.awt.JBUI.Borders
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaTypeDefinitionFindUsagesOptions
@@ -30,7 +32,7 @@ class ScalaTypeDefinitionUsagesDialog(element: ScTypeDefinition, project: Projec
     myCbUsages
   }
 
-  import com.intellij.find.findUsages.AbstractFindUsagesDialog.{isSelected, isToChange}
+  import consulo.find.ui.AbstractFindUsagesDialog.{isSelected, isToChange}
 
   override def calcFindUsagesOptions(options: ScalaTypeDefinitionFindUsagesOptions): Unit = {
     super.calcFindUsagesOptions(options)

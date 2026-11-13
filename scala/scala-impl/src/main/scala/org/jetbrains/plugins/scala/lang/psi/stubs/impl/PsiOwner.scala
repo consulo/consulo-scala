@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.PsiElement
-import com.intellij.util.SofterReference
+import consulo.language.psi.PsiElement
+import consulo.application.util.SofterReference
 
 trait PsiOwner[T <: PsiElement] {
   def getPsi: T

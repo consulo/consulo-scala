@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.framework
 
-import com.intellij.codeInspection.dataFlow.lang.{DfaAnchor, DfaListener, UnsatisfiedConditionProblem}
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.value.DfaValue
-import com.intellij.util.ThreeState
+import consulo.language.dataFlow.ir.DfaAnchor
+import consulo.language.dataFlow.interpreter.{DfaListener, UnsatisfiedConditionProblem}
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.value.DfaValue
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaDfaResult.ProblemOccurrence
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaConstants.DfaConstantValue
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaTypeUtils.dfTypeToReportedConstant

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.project.DumbService
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.macros.MacroDef

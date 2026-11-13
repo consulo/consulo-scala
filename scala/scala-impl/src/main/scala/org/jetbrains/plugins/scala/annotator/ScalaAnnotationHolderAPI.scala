@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.annotator
 
 import com.intellij.codeInsight.intention.CommonIntentionAction
-import com.intellij.codeInspection.ProblemHighlightType
+import consulo.language.editor.inspection.ProblemHighlightType
 import com.intellij.codeInspection.util.InspectionMessage
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.colorScheme.TextAttributes
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 
 /**
  * Methods similar to the deprecated API of [[com.intellij.lang.annotation.AnnotationHolder]],

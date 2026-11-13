@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.editor.codeFolding;
 
 import com.intellij.application.options.editor.CodeFoldingOptionsProvider;
-import com.intellij.openapi.options.BeanConfigurable;
+import consulo.configurable.BeanConfigurable;
 import org.jetbrains.plugins.scala.editor.ScalaEditorBundle;
 import org.jetbrains.plugins.scala.settings.ScalaCodeFoldingSettings;
 

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.booleans
 
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElementVisitor
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.booleans.SimplifyBooleanUtil.isOfBooleanType
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.StringExt

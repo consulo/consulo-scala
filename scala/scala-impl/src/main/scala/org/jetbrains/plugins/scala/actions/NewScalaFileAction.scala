@@ -1,19 +1,24 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.actions.{CreateFileFromTemplateDialog, CreateTemplateInPackageAction}
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager, JavaTemplateUtil}
-import com.intellij.ide.projectView.impl.ProjectRootsUtil
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.editor.LogicalPosition
-import com.intellij.openapi.fileEditor.FileEditorManager
+import consulo.ide.action.{CreateFileFromTemplateDialog, CreateTemplateInPackageAction}
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
+import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
+import consulo.language.content.ProjectRootsUtil
+import consulo.dataContext.DataContext
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.util.lang.ControlFlowException
+import consulo.codeEditor.LogicalPosition
+import consulo.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.ex.FileTypeManagerEx
-import com.intellij.openapi.module.{Module, ModuleType}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.ui.InputValidatorEx
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.module.Module
+import com.intellij.openapi.module.ModuleType
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.ui.ex.InputValidatorEx
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.JavaDirectoryService
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiFileFactory}
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
 import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
@@ -21,8 +26,11 @@ import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
-import org.jetbrains.plugins.scala.project._
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaFileType}
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.sbt.project.module.SbtModuleType
 
 import java.util.Properties

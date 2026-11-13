@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
+import consulo.language.ast.ASTNode
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScNamedTuple, ScNamedTupleExprComponent}
 import org.jetbrains.plugins.scala.lang.psi.types.api.{NamedTupleType, StdTypes}

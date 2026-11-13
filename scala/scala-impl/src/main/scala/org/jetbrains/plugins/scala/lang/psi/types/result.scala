@@ -5,7 +5,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.types.api.StdTypes
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.util.HashBuilder.toHashBuilder
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.ScalaBundle
 
 object result {
   trait Typeable {

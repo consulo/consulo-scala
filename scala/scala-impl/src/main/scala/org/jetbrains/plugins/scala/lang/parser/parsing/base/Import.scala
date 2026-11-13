@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.base
 
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType

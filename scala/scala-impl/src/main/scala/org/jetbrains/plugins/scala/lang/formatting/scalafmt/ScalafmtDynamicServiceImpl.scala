@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.notification.{Notification, NotificationAction}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.components.{PersistentStateComponent, State, Storage}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator, Task}
-import com.intellij.openapi.project.{Project, ProjectManager}
-import com.intellij.util.xmlb.XmlSerializerUtil
+import consulo.project.ui.notification.{Notification, NotificationAction}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.component.persist.{PersistentStateComponent, State, Storage}
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.project.{Project, ProjectManager}
+import consulo.util.xml.serializer.XmlSerializerUtil
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.ScalaBundle

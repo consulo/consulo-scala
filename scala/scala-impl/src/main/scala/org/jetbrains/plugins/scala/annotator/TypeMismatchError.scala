@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.lang.annotation.{HighlightSeverity, ProblemGroup}
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.annotation.{HighlightSeverity, ProblemGroup}
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme}
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.annotationHolder.DelegateAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.hints.onlyErrorStripeAttributes
 import org.jetbrains.plugins.scala.annotator.quickfix.{EnableTypeMismatchHints, ReportHighlightingErrorQuickFix}
@@ -17,7 +17,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.designator.DesignatorOwner
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.TypePresentation
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScLiteralType, ScType, ScTypeExt, TypePresentationContext}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
-import org.jetbrains.plugins.scala.{ScalaBundle, isUnitTestMode}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 private object TypeMismatchError {
   def register(element: PsiElement, expectedType: ScType, actualType: ScType,

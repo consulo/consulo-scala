@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiModifier._
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiUtil
+import consulo.language.ast.ASTNode
+import consulo.project.DumbService
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiModifier._
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiField, PsiMethod, PsiModifier}
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
@@ -23,7 +25,7 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScTemplateDefinitionStub
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScTemplateDefinitionElementType
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.ScDesignatorType
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.ObjectSingletonInstanceName
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.ObjectSingletonInstanceName
 
 class ScObjectImpl(
   stub:      ScTemplateDefinitionStub[ScObject],

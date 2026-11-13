@@ -2,7 +2,8 @@
 
 package org.jetbrains.plugins.scala.semantic
 
-import com.intellij.psi.{PsiElement, PsiFile, PsiMember, PsiMethod, PsiNamedElement, PsiPackage}
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiPackage}
+import com.intellij.java.language.psi.{PsiMember, PsiMethod}
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotator, template}
 import org.jetbrains.plugins.scala.extensions.{&, IterableOnceExt, ObjectExt, Parent, PsiClassExt, PsiElementExt, PsiMemberExt, PsiNamedElementExt, ReferenceTarget}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.psi.scope.PsiScopeProcessor
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.lang.resolve.ResolveTargets
 
 private[lang] object ProcessorUtils {

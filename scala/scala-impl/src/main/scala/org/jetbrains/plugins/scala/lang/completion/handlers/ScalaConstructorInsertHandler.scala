@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion.handlers
 
-import com.intellij.codeInsight.completion.{InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.application.{ModalityState, ReadAction}
-import com.intellij.psi.util.PsiTreeUtil.getParentOfType
-import com.intellij.psi.{PsiClass, PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.ui.ModalityState
+import consulo.application.ReadAction
+import consulo.language.psi.util.PsiTreeUtil.getParentOfType
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.{InsertionContextExt, afterNewKeywordPattern}

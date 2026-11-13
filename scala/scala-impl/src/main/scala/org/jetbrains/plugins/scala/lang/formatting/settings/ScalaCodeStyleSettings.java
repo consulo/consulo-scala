@@ -1,18 +1,17 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.application.options.CodeStyle;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CustomCodeStyleSettings;
-import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters;
-import com.intellij.util.xmlb.XmlSerializer;
-import com.intellij.util.xmlb.annotations.OptionTag;
+import consulo.language.codeStyle.CodeStyle;
+import consulo.project.Project;
+import consulo.util.xml.serializer.InvalidDataException;
+import consulo.util.xml.serializer.WriteExternalException;
+import consulo.language.codeStyle.CodeStyleSettings;
+import consulo.language.codeStyle.CustomCodeStyleSettings;
+import consulo.util.xml.serializer.SkipDefaultValuesSerializationFilters;
+import consulo.util.xml.serializer.XmlSerializer;
+import consulo.util.xml.serializer.annotation.OptionTag;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil;
 import scala.collection.immutable.ArraySeq;
@@ -279,7 +278,7 @@ public class ScalaCodeStyleSettings extends CustomCodeStyleSettings {
 
   @SuppressWarnings("deprecation")
   @Override
-  public void writeExternal(Element parentElement, @NotNull CustomCodeStyleSettings parentSettings) throws WriteExternalException {
+  public void writeExternal(Element parentElement, CustomCodeStyleSettings parentSettings) throws WriteExternalException {
     Element scalaCodeStyleSettings = new Element(getTagName());
     parentElement.addContent(scalaCodeStyleSettings);
     XmlSerializer.serializeInto(this, scalaCodeStyleSettings, new SkipDefaultValuesSerializationFilters());
@@ -288,7 +287,6 @@ public class ScalaCodeStyleSettings extends CustomCodeStyleSettings {
     }
   }
 
-  @NotNull
   private static HashSet<String> asSet(String... strings) {
     return new HashSet<>(Arrays.asList(strings));
   }

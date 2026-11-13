@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.highlighter.lexer
 
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.IElementType
 
 // NOTE: I would better make it a mixing, but I can't due to this bug https://github.com/scala/bug/issues/3564
 abstract class ScalaStringLiteralRawAwareLexer(

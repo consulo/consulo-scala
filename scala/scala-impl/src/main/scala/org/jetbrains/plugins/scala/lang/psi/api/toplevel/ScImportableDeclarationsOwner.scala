@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 

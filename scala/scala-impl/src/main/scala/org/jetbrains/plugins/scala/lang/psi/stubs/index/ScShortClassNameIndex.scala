@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.stubs.{StringStubIndexExtension, StubIndexKey}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.stub.{StringStubIndexExtension, StubIndexKey}
 
 class ScShortClassNameIndex extends StringStubIndexExtension[PsiClass] {
   override def getKey: StubIndexKey[String, PsiClass] =

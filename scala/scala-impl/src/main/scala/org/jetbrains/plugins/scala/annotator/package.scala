@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi.PsiElement
-import com.intellij.util.text.LiteralFormatUtil
+import consulo.project.{DumbService, Project}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.util.text.LiteralFormatUtil
 import com.intellij.util.ui.StartupUiUtil
-import com.intellij.xml.util.XmlStringUtil.escapeString
+import consulo.util.lang.xml.XmlStringUtil.escapeString
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.inReadAction
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 package object annotator {
   def errorOrWarning(

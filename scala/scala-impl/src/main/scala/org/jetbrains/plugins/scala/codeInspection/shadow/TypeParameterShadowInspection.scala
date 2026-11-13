@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.shadow
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.quickfix.RenameElementQuickfix
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam

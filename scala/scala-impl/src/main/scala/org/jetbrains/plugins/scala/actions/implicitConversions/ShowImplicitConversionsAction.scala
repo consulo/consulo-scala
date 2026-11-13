@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.actions.implicitConversions
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorFontType
-import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.util.PsiUtilBase
-import com.intellij.ui.JBColor
-import com.intellij.ui.components.JBList
-import com.intellij.util.Alarm
+import consulo.language.editor.CodeInsightBundle
+import consulo.application.AllIcons
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, IdeActions}
+import consulo.language.editor.CommonDataKeys
+import consulo.codeEditor.Editor
+import consulo.colorScheme.EditorFontType
+import consulo.ui.ex.keymap.util.KeymapUtil
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiWhiteSpace}
+import consulo.language.editor.util.PsiUtilBase
+import consulo.ui.ex.JBColor
+import consulo.ui.ex.awt.JBList
+import consulo.ui.ex.awt.util.Alarm
 import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle

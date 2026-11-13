@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.util.PsiTreeUtil.{getContextOfType, isContextAncestor}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.util.PsiTreeUtil.{getContextOfType, isContextAncestor}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.psi.impl.source.codeStyle.PostFormatProcessor
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.language.codeStyle.PostFormatProcessor
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 
 class ScalaBracePostFormatProcessor extends PostFormatProcessor with ScalaIntellijFormatterLike {

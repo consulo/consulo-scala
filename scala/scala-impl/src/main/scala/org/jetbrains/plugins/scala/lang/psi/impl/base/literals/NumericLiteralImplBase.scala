@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package literals
 
-import com.intellij.lang.ASTNode
-import com.intellij.util.text.LiteralFormatUtil
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.impl.util.text.LiteralFormatUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 
 abstract class NumericLiteralImplBase(node: ASTNode,

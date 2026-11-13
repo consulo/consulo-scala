@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.project;
 
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.xmlb.annotations.Tag;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.xml.serializer.annotation.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;

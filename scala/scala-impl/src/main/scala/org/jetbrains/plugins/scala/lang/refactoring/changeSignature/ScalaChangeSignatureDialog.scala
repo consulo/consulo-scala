@@ -1,23 +1,26 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.codeInsight.daemon.impl.analysis.{FileHighlightingSetting, HighlightLevelUtil}
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent, CustomShortcutSet}
-import com.intellij.openapi.editor.event.{DocumentEvent, DocumentListener}
-import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.openapi.util.text.StringUtil
+import consulo.language.editor.FileHighlightingSetting
+import consulo.language.editor.highlight.HighlightLevelUtil
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent, CustomShortcutSet}
+import consulo.document.event.{DocumentEvent, DocumentListener}
+import consulo.language.file.LanguageFileType
+import consulo.project.Project
+import consulo.ui.ex.awt.ValidationInfo
+import consulo.util.lang.StringUtil
 import com.intellij.psi.{util => _, _}
-import com.intellij.refactoring.BaseRefactoringProcessor
-import com.intellij.refactoring.changeSignature.{CallerChooserBase, ChangeSignatureDialogBase, ParameterTableModelItemBase}
-import com.intellij.refactoring.ui.{CodeFragmentTableCellEditorBase, StringTableCellEditor, VisibilityPanelBase}
-import com.intellij.ui.table.{JBTable, TableView}
-import com.intellij.ui.treeStructure.Tree
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
+import consulo.language.editor.refactoring.changeSignature.{CallerChooserBase, ChangeSignatureDialogBase, ParameterTableModelItemBase}
+import consulo.language.editor.refactoring.ui.{CodeFragmentTableCellEditorBase, StringTableCellEditor, VisibilityPanelBase}
+import consulo.ui.ex.awt.table.{JBTable, TableView}
+import consulo.ui.ex.awt.tree.Tree
 import com.intellij.ui.{util => _, _}
 import com.intellij.util.Consumer
-import com.intellij.util.ui.table.{JBListTable, JBTableRowEditor, JBTableRowRenderer}
-import com.intellij.util.ui.{StartupUiUtil, UIUtil}
+import consulo.ui.ex.awt.table.{JBListTable, JBTableRowEditor}
+import com.intellij.util.ui.table.JBTableRowRenderer
+import com.intellij.util.ui.StartupUiUtil
+import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
@@ -31,7 +34,8 @@ import org.jetbrains.plugins.scala.lang.refactoring.extractMethod.ScalaExtractMe
 import org.jetbrains.plugins.scala.lang.refactoring.ui.ScalaComboBoxVisibilityPanel
 import org.jetbrains.plugins.scala.settings.annotations._
 import org.jetbrains.plugins.scala.util.TypeAnnotationUtil
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaFileType}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaFileType
 
 import java.awt._
 import java.awt.event.ActionEvent

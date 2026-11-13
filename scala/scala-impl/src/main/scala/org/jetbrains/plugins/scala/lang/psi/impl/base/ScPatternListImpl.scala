@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.{ScBindingPatternFactory, ScReferencePatternFactory}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.TokenSets.BINDING_PATTERNS

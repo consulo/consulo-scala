@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScExportsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods.{DefinitionRole, EQ, SETTER, isApplicable, methodName}

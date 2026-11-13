@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.IndexSink
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ArrayUtil.EMPTY_STRING_ARRAY
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.IndexSink
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.util.collection.ArrayUtil.EMPTY_STRING_ARRAY
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScParameterOwner
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, ScTypeParametersOwner}
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.{ImplicitConversionIndex, ImplicitInstanceIndex}
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.AnyFqn
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.AnyFqn
 
 import scala.annotation.tailrec
 

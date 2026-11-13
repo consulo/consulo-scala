@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.aot
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionResultSet}
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElement
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionResultSet}
+import consulo.util.lang.StringUtil
+import consulo.language.psi.PsiElement
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion.{DelegatingCompletionProvider, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

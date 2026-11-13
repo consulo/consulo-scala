@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import com.intellij.util.SlowOperations
 import org.jetbrains.plugins.scala.caches.measure
 import org.jetbrains.plugins.scala.extensions._

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.xml
 
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.AbstractFixOnPsiElement

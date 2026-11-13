@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.impl.light.LightElement
+import consulo.language.psi.PsiNamedElement
+import consulo.language.impl.psi.LightElement
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 object isWrapper {

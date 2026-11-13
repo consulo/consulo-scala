@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.highlighter.lexer
 
-import com.intellij.lexer.StringLiteralLexer
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.StringEscapesTokenTypes
-import com.intellij.psi.tree.IElementType
+import consulo.language.lexer.StringLiteralLexer
+import consulo.util.lang.StringUtil
+import consulo.language.ast.StringEscapesTokenTypes
+import consulo.language.ast.IElementType
 
 /** @see [[org.jetbrains.plugins.scala.lang.psi.impl.base.literals.escapers.ScalaStringParser]] */
 class ScalaStringLiteralLexer(

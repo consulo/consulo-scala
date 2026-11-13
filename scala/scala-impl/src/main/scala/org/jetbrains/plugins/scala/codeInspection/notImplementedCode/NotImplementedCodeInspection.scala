@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.notImplementedCode
 
-import com.intellij.codeInsight.CodeInsightUtilCore
+import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.template.TemplateBuilderImpl
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions._

@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.codeInsight.CodeInsightSettings;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.*;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.editor.CodeInsightSettings;
+import consulo.application.ApplicationManager;
+import consulo.component.persist.PersistentStateComponent;
+import com.intellij.openapi.components.ReportValue;
+import com.intellij.openapi.components.SettingsCategory;
+import consulo.component.persist.Storage;
+import consulo.util.xml.serializer.XmlSerializerUtil;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.plugins.scala.codeInspection.collections.OperationOnCollectionInspectionBase;
 
@@ -132,7 +134,7 @@ public class ScalaApplicationSettings implements PersistentStateComponent<ScalaA
   }
 
   @Override
-  public void loadState(@NotNull ScalaApplicationSettings scalaApplicationSettings) {
+  public void loadState(ScalaApplicationSettings scalaApplicationSettings) {
     XmlSerializerUtil.copyBean(scalaApplicationSettings, this);
   }
 

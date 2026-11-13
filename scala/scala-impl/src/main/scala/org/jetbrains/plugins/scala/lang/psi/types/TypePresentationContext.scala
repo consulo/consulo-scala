@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScSimpleTypeElement

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.externalSystem.model.ProjectSystemId
-import com.intellij.openapi.externalSystem.service.notification.NotificationData
-import com.intellij.openapi.util.Key
+import consulo.externalSystem.model.ProjectSystemId
+import consulo.externalSystem.service.notification.NotificationData
+import consulo.util.dataholder.Key
 import org.jetbrains.annotations.TestOnly
 
 package object external {

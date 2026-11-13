@@ -1,18 +1,19 @@
 package org.jetbrains.plugins.scala.finder
 
-import com.intellij.openapi.fileTypes.FileTypeRegistry
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.impl.java.stubs.index.JavaStubIndexKeys
-import com.intellij.psi.search.{DelegatingGlobalSearchScope, GlobalSearchScope}
-import com.intellij.psi.stubs.StubIndex
-import com.intellij.psi.{PsiClass, PsiElementFinder, PsiPackage}
+import consulo.virtualFileSystem.fileType.FileTypeRegistry
+import consulo.project.{DumbService, Project}
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.impl.psi.impl.java.stubs.index.JavaStubIndexKeys
+import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
+import consulo.language.psi.stub.StubIndex
+import com.intellij.java.language.psi.{PsiClass, PsiElementFinder}
+import consulo.language.psi.PsiPackage
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScObject, ScTrait, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.tasty.TastyFileType
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.{PackageObjectClassName, TopLevelDefinitionsClassNameSuffix, TraitImplementationClassSuffix_211}
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.{PackageObjectClassName, TopLevelDefinitionsClassNameSuffix, TraitImplementationClassSuffix_211}
 import org.jetbrains.plugins.scala.util.TopLevelMembers
 
 import java.util

@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer.DaemonListener
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.event.{BulkAwareDocumentListener, DocumentEvent}
-import com.intellij.openapi.fileEditor.FileEditor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiManager, PsiTreeChangeAdapter, PsiTreeChangeEvent}
-import org.jetbrains.annotations.ApiStatus
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
+import consulo.language.ast.ASTNode
+import consulo.codeEditor.EditorFactory
+import consulo.document.event.{BulkAwareDocumentListener, DocumentEvent}
+import consulo.fileEditor.FileEditor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiManager}
+import consulo.language.psi.event.{PsiTreeChangeAdapter, PsiTreeChangeEvent}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilder
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
@@ -24,7 +24,7 @@ import java.util as ju
 import scala.annotation.nowarn
 import scala.collection.mutable.ListBuffer
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 object Tracing {
   def highlightingLexerStart(text: CharSequence, startOffset: Int, endOffset: Int, initialState: Int): Unit = if (parameters.lexer) {
     trace(s"Highlighting lexer: ${text.subSequence(startOffset, endOffset).showWhitespaces}")

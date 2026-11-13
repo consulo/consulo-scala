@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.javadoc.PsiDocTag
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement, ResolveState}
-import org.jetbrains.annotations.NotNull
+import consulo.language.ast.ASTNode
+import consulo.document.FileDocumentManager
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.javadoc.PsiDocTag
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, ScTypeParam}

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

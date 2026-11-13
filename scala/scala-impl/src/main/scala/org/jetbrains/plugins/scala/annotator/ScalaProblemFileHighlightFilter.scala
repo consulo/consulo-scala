@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.openapi.compiler.CompilerManager
-import com.intellij.openapi.fileTypes.FileTypeManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.Condition
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
+import consulo.compiler.CompilerManager
+import consulo.language.file.FileTypeManager
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.util.lang.function.Condition
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiManager
 import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.annotator.ScalaProblemFileHighlightFilter._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

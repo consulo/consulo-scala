@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 package typedef
 
-import com.intellij.psi.CommonClassNames
+import com.intellij.java.language.psi.CommonClassNames
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScEnumCase
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType

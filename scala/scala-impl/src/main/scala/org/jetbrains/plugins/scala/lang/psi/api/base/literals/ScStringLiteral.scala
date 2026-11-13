@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base.literals
 
-import com.intellij.psi.{ContributedReferenceHost, PsiLanguageInjectionHost}
+import consulo.language.psi.{ContributedReferenceHost, PsiLanguageInjectionHost}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 
 trait ScStringLiteral extends ScLiteral

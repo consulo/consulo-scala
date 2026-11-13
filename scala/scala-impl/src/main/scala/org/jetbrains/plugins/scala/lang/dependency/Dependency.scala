@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.lang.dependency
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.psi._
-import com.intellij.psi.scope.NameHint
+import consulo.application.ApplicationManager
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.scope.NameHint
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

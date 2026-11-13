@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.JVMElementFactoryProvider
+import consulo.project.Project
+import com.intellij.java.language.psi.JVMElementFactoryProvider
 
 final class ScalaFactoryProvider extends JVMElementFactoryProvider {
 

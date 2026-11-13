@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.openapi.fileEditor.impl.EditorTabTitleProvider
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.fileEditor.EditorTabTitleProvider
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 
 class PackageObjectEditorTabTitleProvider extends EditorTabTitleProvider {
   override def getEditorTabTitle(project: Project, file: VirtualFile): String = {

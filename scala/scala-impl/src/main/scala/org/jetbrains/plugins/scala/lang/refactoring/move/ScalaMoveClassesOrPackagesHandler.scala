@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{DialogWrapper, Messages}
-import com.intellij.psi.{PsiClass, PsiDirectory, PsiElement}
-import com.intellij.refactoring.move.MoveCallback
-import com.intellij.refactoring.move.moveClassesOrPackages._
-import com.intellij.refactoring.util.{CommonRefactoringUtil, TextOccurrencesUtil}
-import com.intellij.refactoring.{JavaRefactoringSettings, MoveDestination}
+import consulo.project.Project
+import consulo.ui.ex.awt.{DialogWrapper, Messages}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDirectory, PsiElement}
+import consulo.language.editor.refactoring.move.MoveCallback
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.{JavaMoveClassesOrPackagesHandler, MoveClassesOrPackagesDialog, MoveClassesOrPackagesImpl, MoveClassesOrPackagesProcessor, MoveClassesOrPackagesToNewDirectoryDialog}
+import consulo.language.editor.refactoring.util.{CommonRefactoringUtil, TextOccurrencesUtil}
+import com.intellij.java.impl.refactoring.{JavaRefactoringSettings, MoveDestination}
 import org.jetbrains.annotations.{NotNull, Nullable}
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings

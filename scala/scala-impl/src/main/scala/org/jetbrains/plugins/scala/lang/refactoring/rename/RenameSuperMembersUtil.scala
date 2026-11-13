@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala
 package lang.refactoring.rename
 
-import com.intellij.codeInsight.navigation.PsiTargetNavigator
+import consulo.language.editor.ui.navigation.PsiTargetNavigator
 import com.intellij.ide.util.PsiClassRenderingInfo
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.refactoring.rename.RenamePsiElementProcessor
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.PsiElementProcessor
+import consulo.language.editor.refactoring.rename.RenamePsiElementProcessor
 import org.jetbrains.annotations.{Nls, NotNull, Nullable}
 import org.jetbrains.plugins.scala.codeInsight.navigation.DelegatingPsiTargetPresentationRenderer
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiElementExt, PsiNamedElementExt}

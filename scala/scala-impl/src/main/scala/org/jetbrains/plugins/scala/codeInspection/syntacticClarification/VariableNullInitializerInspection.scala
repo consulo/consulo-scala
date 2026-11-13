@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.syntacticClarification
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.syntacticClarification.VariableNullInitializerInspection._
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

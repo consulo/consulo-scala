@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.psi.impl
 
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveElementType
 import org.jetbrains.plugins.scalaDirective.psi.api.ScDirectiveToken
 

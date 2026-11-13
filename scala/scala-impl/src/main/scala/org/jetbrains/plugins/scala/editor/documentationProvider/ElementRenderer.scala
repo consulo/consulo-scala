@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
 import com.intellij.codeInsight.daemon.impl.{AnnotationHolderImpl, AnnotationSessionImpl}
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme, TextAttributesKey}
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, TextAttributesKey}
+import consulo.colorScheme.TextAttributes
+import consulo.document.util.TextRange
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.highlighter.{ScalaColorSchemeAnnotator, ScalaSyntaxHighlighterFactory}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

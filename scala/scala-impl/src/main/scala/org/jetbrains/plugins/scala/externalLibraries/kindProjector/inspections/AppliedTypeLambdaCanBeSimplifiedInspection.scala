@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
-import com.intellij.codeInsight.intention.FileModifier.SafeFieldForPreview
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.FileModifier.SafeFieldForPreview
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.TypeLambda
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._

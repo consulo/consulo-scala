@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiTypeParameter
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.ScTypeParamFactory
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType._

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightModifierList
-import com.intellij.psi.util.PsiUtil
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{PsiAnnotation, PsiClass, PsiElementFactory, PsiParameter}
+import consulo.language.psi.{PsiElement, PsiManager}
+import com.intellij.java.language.impl.psi.impl.light.LightModifierList
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

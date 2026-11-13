@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 
 class ScalaWithParenthesisSurrounder extends ScalaExpressionSurrounder {

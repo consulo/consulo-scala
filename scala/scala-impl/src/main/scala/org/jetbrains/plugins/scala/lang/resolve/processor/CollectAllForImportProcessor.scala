@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.psi._
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.lang.psi.impl.ScPackageImpl
 import org.jetbrains.plugins.scala.lang.resolve.{ResolveTargets, ScalaResolveResult}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt

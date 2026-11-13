@@ -1,21 +1,26 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
-import com.intellij.analysis.AnalysisScope
-import com.intellij.execution.ExecutionException
-import com.intellij.execution.configurations._
-import com.intellij.execution.filters.TextConsoleBuilderFactory
-import com.intellij.execution.process.{OSProcessHandler, ProcessEvent, ProcessListener}
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.ide.BrowserUtil
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.ex.PathUtilEx
-import com.intellij.openapi.projectRoots.{JdkUtil, Sdk}
-import com.intellij.openapi.roots._
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
+import consulo.language.editor.scope.AnalysisScope
+import consulo.process.ExecutionException
+import com.intellij.java.execution.configurations.{JavaCommandLineState, JavaCommandLineStateUtil}
+import com.intellij.execution.configurations.JavaParameters
+import consulo.execution.ui.console.TextConsoleBuilderFactory
+import com.intellij.execution.process.OSProcessHandler
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.webBrowser.BrowserUtil
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import com.intellij.java.language.impl.projectRoots.ex.PathUtilEx
+import consulo.process.cmd.JdkUtil
+import consulo.content.bundle.Sdk
+import consulo.module.content.layer.OrderEnumerator
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 import java.io.{IOException, PrintStream}
 import java.nio.file.{Files, Paths}

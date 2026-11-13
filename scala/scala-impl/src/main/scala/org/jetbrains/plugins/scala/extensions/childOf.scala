@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 object childOf {
   infix def unapply(elem: PsiElement): Option[(PsiElement, PsiElement)] = {

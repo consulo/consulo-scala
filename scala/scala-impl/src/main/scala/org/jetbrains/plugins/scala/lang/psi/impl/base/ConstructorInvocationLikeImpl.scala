@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.extensions._

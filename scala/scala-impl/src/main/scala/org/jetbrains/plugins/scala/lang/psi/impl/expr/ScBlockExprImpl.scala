@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement
-import com.intellij.psi.tree.ILazyParseableElementType
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LazyParseablePsiElement
+import consulo.language.ast.ILazyParseableElementType
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaElementVisitor, ScalaPsiElement}
 

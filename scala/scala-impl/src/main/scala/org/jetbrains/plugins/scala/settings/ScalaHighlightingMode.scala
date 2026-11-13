@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.codeInsight.daemon.impl.analysis.{FileHighlightingSetting, HighlightingSettingsPerFile}
-import com.intellij.openapi.application.ApplicationManager
+import consulo.language.editor.FileHighlightingSetting
+import com.intellij.codeInsight.daemon.impl.analysis.HighlightingSettingsPerFile
+import consulo.application.ApplicationManager
 //noinspection ApiStatus
 import com.intellij.ide.trustedProjects.TrustedProjects
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.psi.{PsiFile, PsiJavaFile}
+import consulo.project.Project
+import consulo.application.util.registry.Registry
+import consulo.language.psi.PsiFile
+import com.intellij.java.language.psi.PsiJavaFile
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.scala.ScalaFileType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.PsiFileExt
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaFile}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.project.{ProjectExt, ProjectPsiElementExt}
 
 import scala.concurrent.duration._

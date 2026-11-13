@@ -2,9 +2,9 @@ package org.jetbrains.plugins.scala.codeInspection.source3
 
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiFile}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.annotator.quickfix.AddCaseToGeneratorQuickfix
 import org.jetbrains.plugins.scala.codeInspection.source3.Source3Inspection._
@@ -20,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.sbt.language.SbtLanguage
+import org.jetbrains.sbt.api.language.SbtLanguage
 
 import scala.beans.BeanProperty
 

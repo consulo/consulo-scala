@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.implicits
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.implicits.OldStyleAggregateContextBoundsInspection._
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}

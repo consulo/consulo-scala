@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.openapi.project.{Project, ProjectManagerListener}
+import consulo.project.Project
+import consulo.project.event.ProjectManagerListener
 import org.jetbrains.plugins.scala.lang.formatting.settings.migration.ProjectCodeStyleSettingsMigrationService
 
 private final class ScalaCodeStyleProjectListener extends ProjectManagerListener {

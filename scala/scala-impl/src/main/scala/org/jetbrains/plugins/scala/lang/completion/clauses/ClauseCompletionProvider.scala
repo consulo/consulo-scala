@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion.positionFromParameters
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable

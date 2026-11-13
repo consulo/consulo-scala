@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.packagesearch.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionResultSet}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.completion.{CompletionParameters, CompletionResultSet}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
 
 abstract class BaseDependencyCompletionParameters[Element <: PsiElement](

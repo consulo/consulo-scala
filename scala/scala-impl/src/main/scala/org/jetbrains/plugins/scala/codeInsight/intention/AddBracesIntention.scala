@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.editor.AutoBraceAdvertiser
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

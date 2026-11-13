@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
+import consulo.project.DumbService
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.refactoring.Associations
 

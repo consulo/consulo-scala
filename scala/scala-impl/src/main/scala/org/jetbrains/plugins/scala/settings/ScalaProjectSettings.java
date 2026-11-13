@@ -1,21 +1,23 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.lang.java.JavaLanguage;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.*;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.java.language.JavaLanguage;
+import consulo.application.ApplicationManager;
+import consulo.component.persist.PersistentStateComponent;
+import com.intellij.openapi.components.ReportValue;
+import consulo.component.persist.Storage;
+import consulo.component.persist.StoragePathMacros;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.module.content.ModuleRootManager;
 import com.intellij.openapi.roots.SourceFolder;
-import com.intellij.util.xmlb.Converter;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.intellij.util.xmlb.annotations.MapAnnotation;
-import com.intellij.util.xmlb.annotations.OptionTag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.util.xml.serializer.Converter;
+import consulo.util.xml.serializer.XmlSerializerUtil;
+import consulo.util.xml.serializer.annotation.MapAnnotation;
+import consulo.util.xml.serializer.annotation.OptionTag;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.ScalaLanguage;
+import org.jetbrains.plugins.scala.api.ScalaLanguage;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,7 +159,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
   public static class ScalaCollectionHighlightingLevelConverter extends Converter<ScalaCollectionHighlightingLevel> {
     @Nullable
     @Override
-    public ScalaCollectionHighlightingLevel fromString(@NotNull String value) {
+    public ScalaCollectionHighlightingLevel fromString(String value) {
       try {
         int index = Integer.parseInt(value);
         return ScalaCollectionHighlightingLevel.values()[index];
@@ -168,7 +170,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
 
     @Nullable
     @Override
-    public String toString(@NotNull ScalaCollectionHighlightingLevel value) {
+    public String toString(ScalaCollectionHighlightingLevel value) {
       return value.toString();
     }
   }
@@ -184,11 +186,11 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
   public static final int DEFAULT_COMPILER_HIGHLIGHTING_DELAY = 450; // ms.
   private int COMPILER_HIGHLIGHTING_DELAY = DEFAULT_COMPILER_HIGHLIGHTING_DELAY; // ms
 
-  public static ScalaProjectSettings in(@NotNull Project project) {
+  public static ScalaProjectSettings in(Project project) {
     return getInstance(project);
   }
 
-  public static ScalaProjectSettings getInstance(@NotNull Project project) {
+  public static ScalaProjectSettings getInstance(Project project) {
     return project.getService(ScalaProjectSettings.class);
   }
 
@@ -198,11 +200,10 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
   }
 
   @Override
-  public void loadState(@NotNull ScalaProjectSettings scalaProjectSettings) {
+  public void loadState(ScalaProjectSettings scalaProjectSettings) {
     XmlSerializerUtil.copyBean(scalaProjectSettings, this);
   }
 
-  @NotNull
   public String getPresentableName() {
     return ScalaBundle.message("scala.project.settings");
   }
@@ -473,8 +474,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
     SCALATEST_DEFAULT_SUPERCLASS = superClassName;
   }
 
-  @NotNull
-  public String getBasePackageFor(@NotNull Module module) {
+  public String getBasePackageFor(Module module) {
     if (INHERIT_BASE_PACKAGES) {
       return Arrays.stream(ModuleRootManager.getInstance(module).getContentEntries())
               .flatMap(it -> Arrays.stream(it.getSourceFolders()))
@@ -495,16 +495,15 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
     INHERIT_BASE_PACKAGES = b;
   }
 
-  @NotNull
   public Map<String, String> getCustomBasePackages() {
     return CUSTOM_BASE_PACKAGES;
   }
 
-  public void setCustomBasePackages(@NotNull Map<String, String> basePackages) {
+  public void setCustomBasePackages(Map<String, String> basePackages) {
     CUSTOM_BASE_PACKAGES = basePackages;
   }
 
-  public void setCustomBasePackage(@NotNull String module, @Nullable String basePackages) {
+  public void setCustomBasePackage(String module, @Nullable String basePackages) {
     if (basePackages == null) {
       CUSTOM_BASE_PACKAGES.remove(module);
     } else {

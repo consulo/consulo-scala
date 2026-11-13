@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.codeInspection.typeChecking
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
+import consulo.language.editor.PsiEquivalenceUtil
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnTwoPsiElements, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions._

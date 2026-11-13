@@ -1,21 +1,21 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
 import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification._
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator, ProgressManager, Task}
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.roots.libraries.{Library, LibraryTable, LibraryTablesRegistrar}
-import com.intellij.openapi.util.ModificationTracker
+import consulo.component.PropertiesComponent
+import consulo.project.ui.notification.{NotificationDisplayType, Notifications}
+import consulo.application.ApplicationManager
+import com.thaiopensource.util.Service
+import consulo.logging.Logger
+import consulo.container.plugin.PluginId
+import consulo.module.ModuleManager
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
+import consulo.project.{DumbService, Project}
+import consulo.content.library.{Library, LibraryTable, LibraryTablesRegistrar}
+import consulo.component.util.ModificationTracker
 import com.intellij.openapi.vfs.JarFileSystem
-import com.intellij.util.lang.UrlClassLoader
+import consulo.util.nodep.classloader.UrlClassLoader
 import com.intellij.util.messages.Topic
-import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.DependencyManagerBase._
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -133,7 +133,7 @@ final class LibraryExtensionsManager(project: Project) {
   }
 
   @TestOnly
-  @Internal
+  // upstream: @Internal
   //NOTE: the is 1 usage in `zio-direct-intellij` test code in `ZioDirectMacroSupportTest.registerScalaPluginExtensions`
   //https://github.com/zio/zio-direct-intellij/blob/48fd4cb957f3be153f6395e2987fdaf229c91132/src/test/scala/ZioDirectMacroSupportTest.scala#L38
   def processResolvedExtension(resolved: Path): Unit = {

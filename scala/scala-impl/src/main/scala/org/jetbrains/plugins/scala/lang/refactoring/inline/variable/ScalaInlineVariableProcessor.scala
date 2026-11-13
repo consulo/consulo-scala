@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.variable
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiReference
+import consulo.project.Project
+import consulo.language.psi.PsiReference
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScValueOrVariableDefinition

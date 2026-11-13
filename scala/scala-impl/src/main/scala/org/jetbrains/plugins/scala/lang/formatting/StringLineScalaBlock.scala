@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting._
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleSettings
+import consulo.language.codeStyle.{Alignment, Block, ChildAttributes, Indent, Spacing, Wrap}
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleSettings
 
 import java.util
 

@@ -1,16 +1,25 @@
 package org.jetbrains.plugins.scala.lang
 
-import com.intellij.codeInsight.AutoPopupController
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup._
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.patterns._
-import com.intellij.psi._
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil.{getContextOfType, getParentOfType}
-import com.intellij.util.{Consumer, ProcessingContext}
+import consulo.language.editor.AutoPopupController
+import com.intellij.codeInsight.completion.{BaseCompletionParameters, CompletionUtil}
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResult, CompletionResultSet, CompletionSorter, CompletionType, OffsetKey, OffsetMap}
+import consulo.language.editor.completion.lookup.InsertionContext
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
+import consulo.application.util.matcher.PrefixMatcher
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.editor.completion.WeighingContext
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import com.intellij.patterns.Capture
+import consulo.language.pattern.{ElementPattern, PatternCondition, PlatformPatterns, PsiElementPattern, StandardPatterns}
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil.{getContextOfType, getParentOfType}
+import com.intellij.util.Consumer
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker.hasStableType
 import org.jetbrains.plugins.scala.caches.{CachesUtil, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.{PsiElement, PsiPolyVariantReference, ResolveResult}
+import consulo.language.psi.{PsiElement, PsiPolyVariantReference, ResolveResult}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
 trait ScPolyResolvable extends PsiPolyVariantReference with PsiElement {

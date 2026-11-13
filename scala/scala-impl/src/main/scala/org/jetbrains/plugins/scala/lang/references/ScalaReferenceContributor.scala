@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.references
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.patterns.PsiJavaPatterns.psiElement
-import com.intellij.patterns.{PlatformPatterns, PsiJavaElementPattern}
-import com.intellij.psi._
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.FilePathReferenceProvider
+import consulo.document.util.TextRange
+import com.intellij.java.language.patterns.PsiJavaPatterns.psiElement
+import consulo.language.pattern.PlatformPatterns
+import com.intellij.java.language.patterns.PsiJavaElementPattern
+import consulo.language.psi.{PsiElement, PsiReference, PsiReferenceContributor, PsiReferenceProvider, PsiReferenceRegistrar}
+import com.intellij.java.impl.psi.impl.source.resolve.reference.impl.providers.FilePathReferenceProvider
 import com.intellij.psi.impl.source.resolve.reference.{ArbitraryPlaceUrlReferenceProvider, CommentsReferenceContributor}
-import com.intellij.psi.tree.TokenSet
-import com.intellij.util.{IncorrectOperationException, ProcessingContext}
+import consulo.language.ast.TokenSet
+import consulo.language.util.{IncorrectOperationException, ProcessingContext}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

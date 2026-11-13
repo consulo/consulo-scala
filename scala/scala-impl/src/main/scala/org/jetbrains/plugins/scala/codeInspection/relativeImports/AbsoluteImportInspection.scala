@@ -2,10 +2,10 @@ package org.jetbrains.plugins.scala.codeInspection.relativeImports
 
 import com.intellij.codeInsight.daemon.QuickFixBundle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.relativeImports.AbsoluteImportInspection.OptimizeImportsQuickFix
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.editor.importOptimizer.{OptimizeImportSettings, ScalaImportOptimizer}

@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
 import com.intellij.ide.fileTemplates.impl.FileTemplateBase
-import com.intellij.ide.fileTemplates.ui.CreateFromTemplateDialog
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager, FileTemplateUtil}
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.{PsiClass, PsiDirectory, PsiElement}
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.annotations.NotNull
+import consulo.ide.action.ui.CreateFromTemplateDialog
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager, FileTemplateUtil}
+import consulo.java.impl.JavaBundle
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDirectory, PsiElement}
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.actions.ScalaFileTemplateUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

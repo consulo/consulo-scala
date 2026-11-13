@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.settings.annotations
 
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiModifierListOwner}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiModifierListOwner
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotationsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScNullLiteral

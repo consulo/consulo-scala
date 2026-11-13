@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScTypeAliasDeclaration, ScValueDeclaration}
@@ -50,7 +51,7 @@ class ScExistentialTypeElementImpl(node: ASTNode) extends ScalaPsiElementImpl(no
     }
   }
 
-  import com.intellij.psi.scope.PsiScopeProcessor
+  import consulo.language.psi.resolve.PsiScopeProcessor
 
   override def processDeclarations(processor: PsiScopeProcessor,
                                   state: ResolveState,

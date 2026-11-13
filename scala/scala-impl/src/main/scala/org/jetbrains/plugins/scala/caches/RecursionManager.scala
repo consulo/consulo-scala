@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.RecursionGuard.StackStamp
-import com.intellij.openapi.util.{RecursionManager => PlatformRM}
+import consulo.logging.Logger
+import consulo.application.util.RecursionGuard.StackStamp
+import consulo.application.util.{RecursionManager => PlatformRM}
 import org.jetbrains.plugins.scala.util.HashBuilder._
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 

@@ -1,17 +1,17 @@
 package org.jetbrains.plugins.scala.uiTests.backend
 
 import com.intellij.configurationStore.StoreUtil
-import com.intellij.openapi.application.WriteAction
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.ProjectManager
+import consulo.application.WriteAction
+import consulo.module.ModuleManager
+import consulo.application.progress.ProgressIndicator
+import consulo.project.ProjectManager
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.libraries.{Library, LibraryProperties, LibraryTable, LibraryTablesRegistrar, LibraryType, NewLibraryConfiguration}
+import consulo.content.library.{Library, LibraryProperties, LibraryTable, LibraryTablesRegistrar, LibraryType, NewLibraryConfiguration}
 import com.intellij.openapi.roots.ui.configuration.libraries.LibraryEditingUtil
 import com.intellij.openapi.roots.ui.configuration.libraryEditor.NewLibraryEditor
-import com.intellij.openapi.roots.{ModifiableRootModel, ModuleRootModificationUtil}
+import consulo.module.content.layer.ModifiableRootModel
+import consulo.module.content.util.ModuleRootModificationUtil
 import org.apache.ivy.util.MessageLogger
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.components.libextensions.ProgressIndicatorLogger
 import org.jetbrains.plugins.scala.extensions.withProgressSynchronouslyTry

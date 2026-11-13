@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.generation.{SelfManagingCommenter, SelfManagingCommenterUtil}
-import com.intellij.lang.CodeDocumentationAwareCommenter
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiComment, PsiFile}
-import com.intellij.util.text.CharArrayUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.SelfManagingCommenter
+import com.intellij.codeInsight.generation.SelfManagingCommenterUtil
+import consulo.language.CodeDocumentationAwareCommenter
+import consulo.document.Document
+import consulo.document.util.TextRange
+import consulo.language.ast.IElementType
+import consulo.language.psi.{PsiComment, PsiFile}
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 

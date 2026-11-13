@@ -1,24 +1,28 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.CodeInsightUtilCore
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup._
-import com.intellij.codeInsight.template._
-import com.intellij.codeInsight.template.impl.ConstantNode
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.patterns.ElementPattern
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ProcessingContext
-import org.jetbrains.plugins.scala.NotImplementedError
+import consulo.language.editor.CodeInsightUtilCore
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext, PrioritizedLookupElement}
+import consulo.language.editor.completion.AutoCompletionPolicy
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation, LookupElementRenderer}
+import consulo.language.editor.template.TemplateBuilderFactory
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.ConstantNode
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.language.pattern.ElementPattern
+import consulo.language.pattern.PlatformPatterns.psiElement
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiMethod, PsiModifier}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.ProcessingContext
+import org.jetbrains.plugins.scala.api.NotImplementedError
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaConstructorInsertHandler
 import org.jetbrains.plugins.scala.lang.completion.lookups.{ScalaChainLookupElement, ScalaKeywordLookupItem, ScalaLookupItem}
-import org.jetbrains.plugins.scala.lang.psi._
+import org.jetbrains.plugins.scala.api.lang.psi._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScCaseClause, ScTypedPattern}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScSimpleTypeElement, ScTypeElement}
 import org.jetbrains.plugins.scala.lang.psi.api.expr._

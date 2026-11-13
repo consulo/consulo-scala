@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.controlFlow.impl
 
-import com.intellij.psi.PsiNamedElement
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.StringExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

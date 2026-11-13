@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 package params
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{NullSafe, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScGiven
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaElementVisitor, ScalaPsiElement}

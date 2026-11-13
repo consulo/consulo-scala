@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScSplicedPatternExpr
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl
 import org.jetbrains.plugins.scala.lang.psi.types.result.{Failure, TypeResult}

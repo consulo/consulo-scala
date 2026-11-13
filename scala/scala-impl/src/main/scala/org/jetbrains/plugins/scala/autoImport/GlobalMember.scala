@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport
 
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.extensions.{&, Parent}
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionUtil.{findAllInheritorObjectsForOwner, findInheritorObjectsForOwner, findPackageForTopLevelMember}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScValueOrVariable}

@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.codeInspection.shebang
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.hint.HintManager
-import com.intellij.codeInspection.{InspectionManager, LocalInspectionTool, LocalQuickFix, LocalQuickFixAndIntentionActionOnPsiElement, ProblemDescriptor, ProblemHighlightType}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.{DumbAware, Project}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.language.editor.hint.HintManager
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, LocalQuickFixAndIntentionActionOnPsiElement, ProblemDescriptor, ProblemHighlightType}
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.fileEditor.FileEditorManager
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile}
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile}
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle

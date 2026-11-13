@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.resourceLeaks
 
-import com.intellij.codeInspection._
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection._
 import org.jetbrains.plugins.scala.codeInspection.collections.{MethodRepr, Qualified, invocation, unqualifed}
 import org.jetbrains.plugins.scala.extensions._

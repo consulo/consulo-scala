@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
 import com.intellij.psi.impl.PsiManagerEx
-import com.intellij.psi.impl.file.PsiPackageImpl
-import com.intellij.psi.scope.{NameHint, PsiScopeProcessor}
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.java.language.impl.psi.impl.file.PsiPackageImpl
+import com.intellij.java.language.impl.psi.scope.NameHint
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.caches.{ScalaShortNamesCacheManager, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd
@@ -16,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.{ScSynthetic
 import org.jetbrains.plugins.scala.lang.psi.{ScDeclarationSequenceHolder, ScalaPsiUtil}
 import org.jetbrains.plugins.scala.lang.resolve.processor.{BaseProcessor, ResolveProcessor}
 import org.jetbrains.plugins.scala.lang.resolve.{ResolveTargets, ScalaResolveState}
-import org.jetbrains.plugins.scala.{ScalaLanguage, ScalaLowerCase}
+import org.jetbrains.plugins.scala.api.{ScalaLanguage, ScalaLowerCase}
 
 final class ScPackageImpl private (val pack: PsiPackage)
     extends PsiPackageImpl(

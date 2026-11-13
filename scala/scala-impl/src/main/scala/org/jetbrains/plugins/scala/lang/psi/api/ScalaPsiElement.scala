@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.extapi.psi.PsiFileBase
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil.isContextAncestor
+import consulo.language.impl.psi.PsiFileBase
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.psi.util.PsiTreeUtil.isContextAncestor
 import org.jetbrains.plugins.scala.extensions.Valid
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.types.Context

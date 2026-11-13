@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base.types
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.{PsiElement, ResolveState}
-import com.intellij.psi.scope.PsiScopeProcessor
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScDependentFunctionTypeElement, ScDesugarizableToParametrizedTypeElement, ScTypeElement, ScTypeElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameterClause

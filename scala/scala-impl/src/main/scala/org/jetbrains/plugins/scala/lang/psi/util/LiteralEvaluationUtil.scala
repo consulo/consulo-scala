@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.util
 
-import com.intellij.openapi.diagnostic.ControlFlowException
+import consulo.util.lang.ControlFlowException
 
 object LiteralEvaluationUtil {
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.{PsiElementVisitor, PsiFile, PsiRecursiveVisitor}
+import consulo.language.psi.{PsiElementVisitor, PsiFile, PsiRecursiveVisitor}
 import org.jetbrains.plugins.scala.lang.psi.api.base._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScCaseClause, ScCaseClauses, ScNamedTuplePattern, ScPattern, ScPatternArgumentList}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._

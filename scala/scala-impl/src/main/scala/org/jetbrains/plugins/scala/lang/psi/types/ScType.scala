@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.progress.ProgressManager
+import consulo.application.progress.ProgressManager
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.ifReadAllowed
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.NameRenderer

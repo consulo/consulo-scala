@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef
 
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.{PsiDocCommentOwner, PsiWhiteSpace}
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.PsiWhiteSpace
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions._

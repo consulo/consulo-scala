@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.project.sdkdetect
 
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.ScalaBundle
 
 import java.nio.file.Path
 

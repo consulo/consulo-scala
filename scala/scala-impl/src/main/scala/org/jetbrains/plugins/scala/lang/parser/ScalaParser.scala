@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.lang.parser
 
-import com.intellij.lang.{ASTNode, LightPsiParser, PsiBuilder, PsiParser}
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import com.intellij.lang.LightPsiParser
+import consulo.language.parser.{PsiBuilder, PsiParser}
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.Tracing
 
 class ScalaParser(isScala3: Boolean) extends PsiParser with LightPsiParser {

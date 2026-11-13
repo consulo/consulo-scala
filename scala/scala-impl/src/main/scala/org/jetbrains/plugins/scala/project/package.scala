@@ -1,27 +1,36 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.execution.ExecutionException
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.editor.Document
+import consulo.process.ExecutionException
+import consulo.disposer.Disposable
+import consulo.document.Document
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.fileEditor.{FileDocumentManager, FileEditorManager}
-import com.intellij.openapi.module.*
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.{DumbService, Project, ProjectUtil}
-import com.intellij.openapi.roots.*
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.document.FileDocumentManager
+import consulo.fileEditor.FileEditorManager
+import consulo.module.{ModifiableModuleModel, Module, ModuleManager}
+import com.intellij.openapi.module.ModuleType
+import consulo.language.util.ModuleUtilCore
+import consulo.application.progress.ProgressManager
+import consulo.project.{DumbService, Project}
+import consulo.project.util.ProjectUtil
+import com.intellij.openapi.roots.ExternalProjectSystemRegistry
+import consulo.module.content.layer.{ModifiableRootModel, OrderEnumerator}
+import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
+import consulo.module.content.{ModuleRootManager, ProjectFileIndex, ProjectRootManager}
+import consulo.content.OrderRootType
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.libraries.{Library, LibraryTablesRegistrar}
-import com.intellij.openapi.util.{Key, UserDataHolder, UserDataHolderEx}
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.content.library.{Library, LibraryTablesRegistrar}
+import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.path.EelPath
 import com.intellij.platform.eel.provider.EelProviderUtil
 import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.platform.workspace.jps.entities.{DependencyScope, *}
+import consulo.module.content.layer.orderEntry.DependencyScope
+import com.intellij.platform.workspace.jps.entities.*
 import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
-import com.intellij.psi.{LanguageSubstitutors, PsiElement, PsiFile}
-import com.intellij.util.PathsList
+import consulo.language.psi.{LanguageSubstitutors, PsiElement, PsiFile}
+import consulo.virtualFileSystem.util.PathsList
 import org.jetbrains.annotations.{ApiStatus, TestOnly}
 import org.jetbrains.jps.model.serialization.library.JpsLibraryTableSerializer
 import org.jetbrains.plugins.scala.caches.cachedInUserData
@@ -41,8 +50,9 @@ import org.jetbrains.plugins.scala.project.external.CompanionProxyUtils.LegacyBr
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerConfiguration, ScalaCompilerSettings}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.tasty.reader.CompilerOptions
-import org.jetbrains.plugins.scala.util.{ScalaPluginJars, UnloadAwareDisposable}
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.plugins.scala.util.ScalaPluginJars
+import org.jetbrains.plugins.scala.api.util.UnloadAwareDisposable
+import org.jetbrains.sbt.api.language.SbtFile
 import org.jetbrains.sbt.project.module.SbtModuleType
 import org.jetbrains.sbt.{Sbt, WorkspaceModelUtil}
 
@@ -908,7 +918,7 @@ package object project {
 
     @deprecated("Not eel-aware. Use eel-aware path translation instead. No direct replacement.", "2026.1")
     @Deprecated(forRemoval = true, since = "2026.1")
-    @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
+    // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
     def addScalaCompilerClassPath(module: Module): Unit =
       try {
         val files = module.scalaCompilerClasspath.asJava

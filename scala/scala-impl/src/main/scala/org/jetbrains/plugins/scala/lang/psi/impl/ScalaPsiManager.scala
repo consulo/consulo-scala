@@ -1,20 +1,24 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.roots.{ModuleRootEvent, ModuleRootListener, ProjectRootManager}
-import com.intellij.openapi.util._
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.impl.JavaPsiFacadeImpl
-import com.intellij.psi.search.{DelegatingGlobalSearchScope, GlobalSearchScope, PsiShortNamesCache}
-import com.intellij.psi.util.PsiClassUtil
+import consulo.disposer.Disposable
+import consulo.logging.Logger
+import consulo.project.{DumbService, Project}
+import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
+import consulo.module.content.ProjectRootManager
+import consulo.application.util.LowMemoryWatcher
+import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiClass, PsiType, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiPackage}
+import com.intellij.java.language.impl.psi.impl.JavaPsiFacadeImpl
+import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
+import com.intellij.java.language.psi.search.PsiShortNamesCache
+import com.intellij.java.language.psi.util.PsiClassUtil
 import com.intellij.util.ObjectUtils
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.{Nullable, TestOnly}
-import org.jetbrains.plugins.scala.ScalaLowerCase
+import org.jetbrains.plugins.scala.api.ScalaLowerCase
 import org.jetbrains.plugins.scala.caches.stats.{CacheCapabilities, CacheTracker}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, CleanupScheduler, ModTracker, ScalaModificationTracker, ScalaShortNamesCacheManager, ValueWrapper, cachedInUserData, cachedWithoutModificationCount}
 import org.jetbrains.plugins.scala.extensions._

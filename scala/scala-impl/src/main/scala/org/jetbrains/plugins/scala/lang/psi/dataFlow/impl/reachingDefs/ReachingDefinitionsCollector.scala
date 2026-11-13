@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.dataFlow.impl.reachingDefs
 
 import _root_.org.jetbrains.plugins.scala.lang.psi.api.ScControlFlowOwner
-import com.intellij.codeInsight.PsiEquivalenceUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil._
-import com.intellij.psi.{PsiElement, PsiMethod, PsiNamedElement, PsiPackage}
+import consulo.language.editor.PsiEquivalenceUtil
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil._
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScSimpleTypeElement

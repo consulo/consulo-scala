@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.PsiModifierList
+import com.intellij.java.language.psi.PsiModifierList
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.util.EnumSet._

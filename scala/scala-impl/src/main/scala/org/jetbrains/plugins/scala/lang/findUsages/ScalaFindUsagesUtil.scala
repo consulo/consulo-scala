@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiParameter, PsiVariable}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScFieldId
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern

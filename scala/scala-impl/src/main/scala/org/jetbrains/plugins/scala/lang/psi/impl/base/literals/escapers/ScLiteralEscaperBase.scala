@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base.literals.escapers
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.LiteralTextEscaper
+import consulo.document.util.TextRange
+import consulo.language.psi.LiteralTextEscaper
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 
 abstract class ScLiteralEscaperBase[T <: ScStringLiteral](literal: T)

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import com.intellij.codeInsight.completion._
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
-import com.intellij.openapi.project.DumbAware
-import com.intellij.util.ProcessingContext
+import consulo.application.dumb.DumbAware
+import consulo.language.util.ProcessingContext
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.plugins.scala.lang.completion.positionFromParameters
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher

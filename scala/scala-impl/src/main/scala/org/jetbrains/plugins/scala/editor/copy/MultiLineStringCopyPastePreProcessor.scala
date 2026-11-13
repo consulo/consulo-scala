@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.editor.copy
 
-import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
-import com.intellij.openapi.editor.{Document, Editor, RawText}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.util.text.StringUtil.startsWithChar
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.action.CopyPastePreProcessor
+import consulo.document.Document
+import consulo.codeEditor.{Editor, RawText}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.util.lang.StringUtil.startsWithChar
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.editor.copy.MultiLineStringCopyPastePreProcessor._
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, childOf, inWriteAction}
 import org.jetbrains.plugins.scala.format.WithStrippedMargin

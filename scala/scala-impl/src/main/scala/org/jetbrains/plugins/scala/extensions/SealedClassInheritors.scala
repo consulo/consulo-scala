@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ClassInheritorsSearch
+import consulo.language.psi.scope.LocalSearchScope
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala

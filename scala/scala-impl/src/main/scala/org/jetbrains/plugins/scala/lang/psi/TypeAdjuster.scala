@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.logging.Logger
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiLiteral}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiNamedElement, SmartPsiElementPointer}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.measure

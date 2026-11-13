@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle.message
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.codeInsight.generation.{ClassMemberWithElement, PsiElementClassMember}
-import com.intellij.psi.PsiDocCommentOwner
+import consulo.language.editor.generation.ClassMemberWithElement
+import com.intellij.java.language.impl.codeInsight.generation.PsiElementClassMember
+import com.intellij.java.language.psi.PsiDocCommentOwner
 
 package object overrideImplement {
   type ClassMember = PsiElementClassMember[? <: PsiDocCommentOwner] & ScalaNamedMember

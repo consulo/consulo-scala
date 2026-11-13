@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 

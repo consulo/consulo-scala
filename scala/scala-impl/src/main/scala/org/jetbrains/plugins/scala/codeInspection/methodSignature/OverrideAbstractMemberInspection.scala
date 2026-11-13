@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaModifier, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.{isConcreteTermSignature, superValsSignatures}

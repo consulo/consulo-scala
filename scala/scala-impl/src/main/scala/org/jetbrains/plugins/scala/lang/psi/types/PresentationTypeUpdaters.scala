@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.SimpleUpdate
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
 object PresentationTypeUpdaters {
 

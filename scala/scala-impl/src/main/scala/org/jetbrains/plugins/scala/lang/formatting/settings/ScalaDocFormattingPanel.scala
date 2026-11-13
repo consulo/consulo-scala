@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.application.options.codeStyle.OptionTreeWithPreviewPanel
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.ui.OnePixelDivider
-import com.intellij.psi.codeStyle.{CodeStyleSettings, LanguageCodeStyleSettingsProvider}
-import com.intellij.ui.border.CustomLineBorder
+import consulo.language.codeStyle.ui.setting.OptionTreeWithPreviewPanel
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.ui.ex.awt.OnePixelDivider
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.language.codeStyle.setting.LanguageCodeStyleSettingsProvider
+import consulo.ui.ex.awt.CustomLineBorder
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaDocFormattingPanel.ScalaDocCodeSample
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent

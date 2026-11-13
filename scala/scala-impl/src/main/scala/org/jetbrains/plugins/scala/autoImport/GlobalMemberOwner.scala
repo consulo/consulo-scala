@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport
 
-import com.intellij.psi.{PsiClass, PsiElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.hasStablePath
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenDefinition, ScMember, ScObject}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypedDefinition}

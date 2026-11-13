@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiManager}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.logging.Logger
+import consulo.fileEditor.FileEditorManager
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiManager}
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
 import org.jetbrains.plugins.scala.util.{MacroExpansion, Place}

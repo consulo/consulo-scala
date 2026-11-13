@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiDocumentManager
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils.{shouldIgnoreTypeMismatchIn, smartCheckConformance}
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationHolder, TypeMismatchError}

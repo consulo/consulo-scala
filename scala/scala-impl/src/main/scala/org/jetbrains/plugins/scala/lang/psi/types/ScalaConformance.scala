@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameterListOwner}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiClassAdapter

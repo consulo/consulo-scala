@@ -4,10 +4,12 @@ import com.intellij.application.options.CodeStyleSchemesConfigurable
 import com.intellij.application.options.codeStyle.CodeStyleMainPanel
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.openapi.options.ex.ConfigurableVisitor
-import com.intellij.openapi.options.{Configurable, ConfigurableGroup, ShowSettingsUtil}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.ui.HyperlinkLabel
+import consulo.configurable.Configurable
+import com.intellij.openapi.options.ConfigurableGroup
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.ui.ex.awt.HyperlinkLabel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOrRemoveStrategy
@@ -18,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.ReturnTypeLevel.{ADD, BY_CODE_STYLE, REMOVE}
-import org.jetbrains.plugins.scala.settings._
+import org.jetbrains.plugins.scala.compilersettings.settings._
 import org.jetbrains.plugins.scala.settings.annotations._
 
 import javax.swing.event.HyperlinkEvent

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.{CodeStyleManager, CodeStyleSettings, CommonCodeStyleSettings}
-import com.intellij.psi.impl.source.SourceTreeToPsiMap
-import com.intellij.psi.impl.source.codeStyle.{CodeEditUtil, PostFormatProcessorHelper}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.{CodeStyleManager, CodeStyleSettings, CommonCodeStyleSettings}
+import consulo.language.impl.psi.SourceTreeToPsiMap
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.codeStyle.PostFormatProcessorHelper
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor

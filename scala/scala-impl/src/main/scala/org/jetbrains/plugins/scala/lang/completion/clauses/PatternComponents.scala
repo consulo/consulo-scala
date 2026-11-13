@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.ScalaKeyword
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier

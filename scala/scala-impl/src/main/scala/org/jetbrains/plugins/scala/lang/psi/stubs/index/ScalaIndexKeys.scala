@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.{StubIndex, StubIndexKey}
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.stub.{StubIndex, StubIndexKey}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.CollectUniquesProcessorEx
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.psi.{PsiElement, PsiField, PsiNamedElement}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiField
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.{InvocationDetailsOwner, ScalaElementVisitor}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScVariable

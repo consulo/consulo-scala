@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.JavaCompletionFeatures
-import com.intellij.featureStatistics.FeatureUsageTracker
-import com.intellij.psi.{PsiClass, PsiNamedElement}
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionFeatures
+import consulo.externalService.statistic.FeatureUsageTracker
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.{ClassQualifiedName, ContainingClass, OptionExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaImportingInsertHandler
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder

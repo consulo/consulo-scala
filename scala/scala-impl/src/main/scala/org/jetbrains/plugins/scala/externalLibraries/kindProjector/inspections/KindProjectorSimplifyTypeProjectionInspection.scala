@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
-import com.intellij.codeInsight.intention.FileModifier
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiFile}
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, _}
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.{KindProjectorUtil, TypeLambda}

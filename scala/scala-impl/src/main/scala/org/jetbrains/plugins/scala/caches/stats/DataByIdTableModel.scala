@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.caches.stats
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.table.TableView
-import com.intellij.ui.{SpeedSearchComparator, TableViewSpeedSearch}
-import com.intellij.util.ui.{ColumnInfo, ListTableModel}
+import consulo.util.lang.StringUtil
+import consulo.ui.ex.awt.table.TableView
+import consulo.ui.ex.awt.speedSearch.{SpeedSearchComparator, TableViewSpeedSearch}
+import consulo.ui.ex.awt.ColumnInfo
+import consulo.ui.ex.awt.table.ListTableModel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.invokeLater
 

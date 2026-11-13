@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.annotator.Tree.{Leaf, Node}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass

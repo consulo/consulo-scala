@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.openapi.fileEditor.impl.{EditorComposite, EditorFileSwapper}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
+import com.intellij.openapi.fileEditor.impl.EditorComposite
+import consulo.fileEditor.EditorFileSwapper
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiManager
 import kotlin.Pair
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

@@ -2,14 +2,14 @@ package org.jetbrains.plugins.scala.editor.autoimport
 
 import com.intellij.application.options.CodeStyleConfigurableWrapper
 import com.intellij.application.options.editor.AutoImportOptionsProvider
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.ide.DataManager
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.application.ApplicationBundle
+import consulo.language.editor.CodeInsightSettings
+import consulo.dataContext.DataManager
+import consulo.java.impl.JavaBundle
+import consulo.application.ApplicationBundle
 import com.intellij.openapi.options.UiDslUnnamedConfigurable
-import com.intellij.openapi.options.ex.Settings
-import com.intellij.ui.CollectionComboBoxModel
-import com.intellij.ui.dsl.builder._
+import consulo.configurable.Settings
+import consulo.ui.ex.awt.CollectionComboBoxModel
+import com.intellij.ui.dsl.builder.{Panel, Row}
 import kotlin.Unit.{INSTANCE => KUnit}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, invokeLater}

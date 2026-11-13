@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.move.moveClassesOrPackages.{CommonMoveUtil, MoveDirectoryWithClassesHelper}
-import com.intellij.refactoring.util.MoveRenameUsageInfo
-import com.intellij.usageView.UsageInfo
+import consulo.project.Project
+import com.intellij.java.language.psi.JavaPsiFacade
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.{CommonMoveUtil, MoveDirectoryWithClassesHelper}
+import consulo.usage.MoveRenameUsageInfo
+import consulo.usage.UsageInfo
 import com.intellij.util.Function
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.{NotNull, Unmodifiable}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

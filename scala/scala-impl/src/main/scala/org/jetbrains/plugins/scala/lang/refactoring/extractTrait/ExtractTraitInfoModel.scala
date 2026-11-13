@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
-import com.intellij.refactoring.classMembers.{AbstractMemberInfoModel, MemberInfoChange}
+import consulo.language.editor.refactoring.classMember.{AbstractMemberInfoModel, MemberInfoChange}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 

@@ -1,21 +1,24 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
 import com.intellij.ide.actions.{SaveAllAction, SaveDocumentAction}
-import com.intellij.openapi.actionSystem.ex.AnActionListener
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, AnActionResult, CommonDataKeys}
-import com.intellij.openapi.command.CommandProcessor.{getInstance => CommandProcessor}
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.{FileDocumentManager, FileEditorManager, TextEditor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
+import consulo.ui.ex.action.event.AnActionListener
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.AnActionResult
+import consulo.language.editor.CommonDataKeys
+import consulo.undoRedo.CommandProcessor.{getInstance => CommandProcessor}
+import consulo.document.Document
+import consulo.document.FileDocumentManager
+import consulo.fileEditor.{FileEditorManager, TextEditor}
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
 import com.intellij.openapi.util.registry.RegistryManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiDocumentManager, PsiFile}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.processors.ScalaFmtPreFormatProcessor
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.sbt.api.language.SbtFile
 
 final class ScalafmtReformatOnFileSaveTask extends AnActionListener {
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.psi._
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression

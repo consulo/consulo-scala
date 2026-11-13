@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.console
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiFile
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiFile
 
 import java.lang
 

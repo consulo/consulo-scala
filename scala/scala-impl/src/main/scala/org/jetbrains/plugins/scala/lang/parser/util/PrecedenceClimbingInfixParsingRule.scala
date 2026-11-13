@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.util
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.psi.tree.IElementType
+import consulo.language.parser.PsiBuilder
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.parser.{ErrMsg, PsiBuilderExt, ScalaPsiBuilderExt}
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilder

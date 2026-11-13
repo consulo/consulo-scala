@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, ifReadAllowed}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

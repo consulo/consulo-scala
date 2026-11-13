@@ -1,11 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.adapters;
 
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiTypeParameter;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.java.language.psi.PsiAnnotation;
+import com.intellij.java.language.psi.PsiTypeParameter;
 
 public interface PsiTypeParameterAdapter extends PsiTypeParameter, PsiAnnotatedAdapter {
-  @NotNull
   @Override
   default PsiAnnotation[] getAnnotations() {
     return psiAnnotations();

@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Ref
-import com.intellij.psi._
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.search.searches.{OverridingMethodsSearch, ReferencesSearch}
-import com.intellij.refactoring.changeSignature.{MethodCallUsageInfo => JavaCallUsageInfo, _}
-import com.intellij.refactoring.rename.ResolveSnapshotProvider
-import com.intellij.refactoring.rename.ResolveSnapshotProvider.ResolveSnapshot
-import com.intellij.usageView.UsageInfo
-import com.intellij.util.containers.MultiMap
+import consulo.project.Project
+import consulo.util.lang.ref.Ref
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiMethod, PsiMethodCallExpression, PsiParameter, PsiReferenceExpression}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
+import consulo.content.scope.SearchScope
+import com.intellij.java.indexing.search.searches.OverridingMethodsSearch
+import consulo.language.psi.search.ReferencesSearch
+import com.intellij.java.impl.refactoring.changeSignature.{MethodCallUsageInfo => JavaCallUsageInfo}
+import com.intellij.refactoring.changeSignature._
+import consulo.language.editor.refactoring.ResolveSnapshotProvider
+import consulo.language.editor.refactoring.ResolveSnapshotProvider.ResolveSnapshot
+import consulo.usage.UsageInfo
+import consulo.util.collection.MultiMap
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScConstructorPattern, ScInfixPattern, ScInterpolationPattern}

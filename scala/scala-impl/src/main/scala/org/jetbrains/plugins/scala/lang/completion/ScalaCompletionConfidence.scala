@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.CompletionConfidence
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.util.ThreeState
+import consulo.language.editor.completion.CompletionConfidence
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.util.lang.ThreeState
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt}
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionConfidence._

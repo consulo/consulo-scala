@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.apache.ivy.util.AbstractMessageLogger
 
 class ProgressIndicatorLogger(private val indicator: ProgressIndicator) extends AbstractMessageLogger {

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.openapi.diagnostic.{ControlFlowException, Logger}
-import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi.PsiElement
+import consulo.util.lang.ControlFlowException
+import consulo.logging.Logger
+import consulo.component.extension.ExtensionPointName
+import consulo.project.{DumbService, Project}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.components.libextensions.DynamicExtensionPoint
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

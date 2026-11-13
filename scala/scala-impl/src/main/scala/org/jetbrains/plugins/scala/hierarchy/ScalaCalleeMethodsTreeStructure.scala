@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.hierarchy
 
-import com.intellij.ide.hierarchy.call.CallHierarchyNodeDescriptor
-import com.intellij.ide.hierarchy.{HierarchyNodeDescriptor, HierarchyTreeStructure}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.searches.OverridingMethodsSearch
-import com.intellij.psi._
-import com.intellij.util.ArrayUtil
+import com.intellij.java.impl.ide.hierarchy.call.CallHierarchyNodeDescriptor
+import consulo.language.editor.hierarchy.{HierarchyNodeDescriptor, HierarchyTreeStructure}
+import consulo.project.Project
+import com.intellij.java.indexing.search.searches.OverridingMethodsSearch
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod, PsiMethodCallExpression, PsiNewExpression, PsiReferenceExpression}
+import consulo.language.psi.PsiElement
+import consulo.util.collection.ArrayUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDefinition}

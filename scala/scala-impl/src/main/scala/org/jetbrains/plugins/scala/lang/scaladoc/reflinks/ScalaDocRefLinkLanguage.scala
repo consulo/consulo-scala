@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks
 
-import com.intellij.lang.{DependentLanguage, Language}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.{DependentLanguage, Language}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 final class ScalaDocRefLinkLanguage
   extends Language(ScalaLanguage.INSTANCE, "ScalaDocRefLink")

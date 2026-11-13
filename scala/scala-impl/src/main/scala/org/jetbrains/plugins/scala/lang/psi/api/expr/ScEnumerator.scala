@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.psi.{PsiElement, PsiPolyVariantReference}
+import consulo.language.psi.{PsiElement, PsiPolyVariantReference}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 
 trait ScEnumerator extends ScalaPsiElement with PsiPolyVariantReference {

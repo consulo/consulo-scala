@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.application.options.codeStyle.CodeStyleSchemesModel
-import com.intellij.notification._
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.components._
-import com.intellij.openapi.project.Project
+import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
+import com.thaiopensource.util.Service
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt

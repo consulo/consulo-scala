@@ -1,15 +1,16 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
-import com.intellij.ide.util.SuperMethodWarningUtil
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.util.CommonRefactoringUtil
+import com.intellij.java.impl.ide.util.SuperMethodWarningUtil
+import consulo.dataContext.DataContext
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.project.Project
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import com.intellij.java.language.psi.{PsiMethod, PsiModifier}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.expression.ConvertParameterToUnderscoreIntention
 import org.jetbrains.plugins.scala.extensions._

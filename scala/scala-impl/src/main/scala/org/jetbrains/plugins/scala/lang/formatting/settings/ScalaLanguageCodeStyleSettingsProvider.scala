@@ -1,20 +1,23 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.application.options.codeStyle.CodeStyleSchemesModel
-import com.intellij.application.options.{CodeStyleAbstractConfigurable, CodeStyleAbstractPanel, SmartIndentOptionsEditor}
-import com.intellij.lang.Language
-import com.intellij.openapi.application.ApplicationBundle
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.OptionAnchor
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType
-import com.intellij.psi.codeStyle._
-import com.intellij.psi.{PsiFile, PsiFileFactory}
+import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
+import consulo.language.codeStyle.ui.setting.{CodeStyleAbstractConfigurable, CodeStyleAbstractPanel, SmartIndentOptionsEditor}
+import consulo.language.Language
+import consulo.application.ApplicationBundle
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.language.codeStyle.setting.CodeStyleSettingsCustomizable.OptionAnchor
+import consulo.language.codeStyle.setting.LanguageCodeStyleSettingsProvider.SettingsType
+import com.intellij.psi.codeStyle.{CodeStyleConfigurable, CodeStyleSettingsCustomizableOptions, DisplayPriority, IndentOptions}
+import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
+import consulo.language.codeStyle.setting.{CodeStyleSettingsCustomizable, LanguageCodeStyleSettingsProvider}
+import consulo.language.psi.{PsiFile, PsiFileFactory}
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaLanguageCodeStyleSettingsProvider._
-import org.jetbrains.plugins.scala.{NlsString, Scala3Language, ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{NlsString, Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
 
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.ListHasAsScala

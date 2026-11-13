@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.global
 
-import com.intellij.codeInsight.completion.InsertHandler
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.PsiNamedElement
+import consulo.language.editor.completion.lookup.InsertHandler
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.autoImport.{GlobalMember, GlobalMemberOwner}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScPackageLike

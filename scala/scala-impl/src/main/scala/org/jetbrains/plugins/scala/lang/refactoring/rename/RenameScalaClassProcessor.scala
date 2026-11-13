@@ -1,19 +1,21 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.{PsiClass, PsiElement, PsiReference}
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.rename.{RenameDialog, RenameJavaClassProcessor}
-import com.intellij.usageView.UsageInfo
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.content.scope.SearchScope
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import consulo.language.editor.refactoring.rename.RenameDialog
+import com.intellij.java.impl.refactoring.rename.RenameJavaClassProcessor
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
 import java.awt.BorderLayout
 import java.util

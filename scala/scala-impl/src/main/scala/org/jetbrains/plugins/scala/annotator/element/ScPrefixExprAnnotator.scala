@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.openapi.project.DumbAware
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScPrefixExpr
 

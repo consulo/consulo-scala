@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.patterns;
 
-import com.intellij.patterns.ElementPattern;
-import com.intellij.patterns.InitialPatternCondition;
-import com.intellij.patterns.PatternCondition;
-import com.intellij.patterns.PsiJavaElementPattern;
-import com.intellij.psi.PsiMethod;
-import com.intellij.util.ProcessingContext;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.pattern.ElementPattern;
+import consulo.language.pattern.InitialPatternCondition;
+import consulo.language.pattern.PatternCondition;
+import com.intellij.java.language.patterns.PsiJavaElementPattern;
+import com.intellij.java.language.psi.PsiMethod;
+import consulo.language.util.ProcessingContext;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral;
 
@@ -15,14 +14,14 @@ public class ScalaElementPattern<T extends ScalaPsiElement, Self extends ScalaEl
     super(tClass);
   }
 
-  public ScalaElementPattern(@NotNull InitialPatternCondition<T> tInitialPatternCondition) {
+  public ScalaElementPattern(InitialPatternCondition<T> tInitialPatternCondition) {
     super(tInitialPatternCondition);
   }
 
   public Self isRegExpLiteral() {
     return with(new PatternCondition<T>("isRegExpLiteral") {
       @Override
-      public boolean accepts(@NotNull final T literal, final ProcessingContext context) {
+      public boolean accepts(final T literal, final ProcessingContext context) {
         return ScalaElementPatternImpl.isRegExpLiteral(literal);
       }
     });
@@ -31,7 +30,7 @@ public class ScalaElementPattern<T extends ScalaPsiElement, Self extends ScalaEl
   public Self callArgument(final int index, final ElementPattern<? extends PsiMethod> methodPattern) {
     return with(new PatternCondition<T>("callArgument") {
       @Override
-      public boolean accepts(@NotNull final T host, final ProcessingContext context) {
+      public boolean accepts(final T host, final ProcessingContext context) {
         return ScalaElementPatternImpl.isMethodCallArgument(host, context, index, methodPattern);
       }
     });
@@ -46,7 +45,7 @@ public class ScalaElementPattern<T extends ScalaPsiElement, Self extends ScalaEl
       super(aClass);
     }
 
-    public Capture(@NotNull final InitialPatternCondition<T> condition) {
+    public Capture(final InitialPatternCondition<T> condition) {
       super(condition);
     }
   }

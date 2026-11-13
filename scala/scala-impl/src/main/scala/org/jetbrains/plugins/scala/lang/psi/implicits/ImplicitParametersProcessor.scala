@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiNamedElement, ResolveState}
-import com.intellij.util.containers.SmartHashSet
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.util.collection.SmartHashSet
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.isImplicit
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClause

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
-import com.intellij.lang.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoHandlerWithTabActionSupport, UpdateParameterInfoContext}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoHandlerWithTabActionSupport, UpdateParameterInfoContext}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
 abstract class ScalaParameterInfoHandler[

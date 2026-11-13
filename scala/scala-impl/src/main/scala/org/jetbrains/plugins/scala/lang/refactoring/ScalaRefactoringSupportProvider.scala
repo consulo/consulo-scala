@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 
-import com.intellij.lang.refactoring.RefactoringSupportProvider
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.RefactoringActionHandler
-import com.intellij.refactoring.changeSignature.ChangeSignatureHandler
+import consulo.language.editor.refactoring.RefactoringSupportProvider
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.action.RefactoringActionHandler
+import consulo.language.editor.refactoring.changeSignature.ChangeSignatureHandler
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScFieldId
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

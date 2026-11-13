@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.renderers
 
-import com.intellij.psi.{PsiClass, PsiModifier, PsiPackage}
+import com.intellij.java.language.psi.{PsiClass, PsiModifier}
+import consulo.language.psi.PsiPackage
 import org.jetbrains.plugins.scala.editor.documentationProvider.{HtmlPsiUtils, _}
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.highlighter.ScalaColorsSchemeUtils

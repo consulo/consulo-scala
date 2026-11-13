@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.{CharSequenceHashStubIndexExtension, StubIndex, StubIndexKey}
-import com.intellij.util.CommonProcessors.alwaysFalse
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.psi.stubs.CharSequenceHashStubIndexExtension
+import consulo.language.psi.stub.{StubIndex, StubIndexKey}
+import consulo.application.util.function.CommonProcessors.alwaysFalse
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 

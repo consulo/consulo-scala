@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.lists
 
-import com.intellij.application.options.CodeStyle
+import consulo.language.codeStyle.CodeStyle
 import com.intellij.openapi.editor.actions.lists.{CommaListSplitJoinContext, JoinOrSplit, ListWithElements}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.CommonCodeStyleSettings
+import consulo.language.psi.util.PsiTreeUtil
 import kotlin.Pair
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.Parent

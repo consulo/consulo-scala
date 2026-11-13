@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.api
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocElementType
 
 

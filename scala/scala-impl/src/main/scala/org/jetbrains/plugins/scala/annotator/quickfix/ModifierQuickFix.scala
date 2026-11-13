@@ -2,11 +2,11 @@ package org.jetbrains.plugins.scala.annotator.quickfix
 
 import com.intellij.codeInsight._
 import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElement
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.tree.IElementType
+import consulo.logging.Logger
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.ast.IElementType
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier

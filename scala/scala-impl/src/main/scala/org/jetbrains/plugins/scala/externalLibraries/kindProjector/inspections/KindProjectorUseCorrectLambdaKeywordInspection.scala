@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
-import com.intellij.codeInsight.intention.FileModifier.SafeFieldForPreview
+import consulo.language.editor.inspection.FileModifier.SafeFieldForPreview
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections.KindProjectorUseCorrectLambdaKeywordInspection._

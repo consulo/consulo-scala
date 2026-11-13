@@ -1,14 +1,18 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
-import com.intellij.ide.highlighter.JavaClassFileType
-import com.intellij.lang.{Language, LanguageParserDefinitions}
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{FileViewProvider, PsiFile, PsiFileFactory, PsiManager, SingleRootFileViewProvider, compiled, stubs}
-import com.intellij.util.indexing.FileContent
+import com.intellij.java.language.impl.JavaClassFileType
+import consulo.language.Language
+import com.intellij.lang.LanguageParserDefinitions
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.{PsiFile, PsiFileFactory, PsiManager}
+import consulo.language.impl.file.SingleRootFileViewProvider
+import com.intellij.psi.{compiled, stubs}
+import consulo.language.psi.stub.FileContent
 import org.jetbrains.plugins.scala.lang.parser.{Scala3ParserDefinition, ScalaParserDefinition}
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.tasty.TastyFileType
 
 final class ScClassFileDecompiler extends compiled.ClassFileDecompilers.Full {

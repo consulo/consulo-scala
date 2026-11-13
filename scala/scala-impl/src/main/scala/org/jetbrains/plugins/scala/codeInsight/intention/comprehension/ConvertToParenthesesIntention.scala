@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.comprehension
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.{PsiElement, TokenType}
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.ast.TokenType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.comprehension.ConvertToParenthesesIntention._
 import org.jetbrains.plugins.scala.extensions._

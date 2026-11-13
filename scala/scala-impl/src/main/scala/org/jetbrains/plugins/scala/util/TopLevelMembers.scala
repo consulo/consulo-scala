@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.psi.search.{FilenameIndex, GlobalSearchScope}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.project.Project
+import consulo.util.nodep.io.FileUtilRt
+import consulo.language.psi.search.FilenameIndex
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import com.sun.jdi.ReferenceType
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TopLevelDefinitionsSingletonClassNameSuffix
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TopLevelDefinitionsSingletonClassNameSuffix
 
 import scala.annotation.nowarn
 

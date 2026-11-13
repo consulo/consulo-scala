@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.util;
 
-import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
+import consulo.language.editor.intention.BaseIntentionAction;
 import com.intellij.codeInspection.InspectionProfileEntry;
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.psi.PsiElement;
+import consulo.component.extension.ExtensionPointName;
+import consulo.language.psi.PsiElement;
 
 abstract public class IntentionAvailabilityChecker {
   private static final ExtensionPointName<IntentionAvailabilityChecker> EP_NAME =

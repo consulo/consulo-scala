@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement
-import com.intellij.psi.javadoc.PsiDocTag
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IElementType
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.LazyParseablePsiElement
+import com.intellij.java.language.psi.javadoc.PsiDocTag
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition

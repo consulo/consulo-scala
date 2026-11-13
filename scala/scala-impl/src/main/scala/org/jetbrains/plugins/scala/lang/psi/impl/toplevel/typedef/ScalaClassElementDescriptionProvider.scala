@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
-import com.intellij.usageView.UsageViewTypeLocation
+import consulo.language.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
+import consulo.usage.UsageViewTypeLocation
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 

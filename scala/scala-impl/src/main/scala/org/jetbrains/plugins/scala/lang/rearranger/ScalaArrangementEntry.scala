@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.rearranger
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.arrangement._
-import com.intellij.psi.codeStyle.arrangement.std.ArrangementSettingsToken
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.arrangement.{ArrangementEntry, DefaultArrangementEntry, ModifierAwareArrangementEntry, NameAwareArrangementEntry, TypeAwareArrangementEntry}
+import consulo.language.codeStyle.arrangement.std.ArrangementSettingsToken
 import org.jetbrains.plugins.scala.util.HashBuilder._
 
 import java.util

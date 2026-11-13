@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.fake
 
-import com.intellij.lang.Language
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.util.{MethodSignatureBackedByPsiMethod, PsiTreeUtil}
+import consulo.language.Language
+import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiAnnotation, PsiClass, PsiClassType, PsiCodeBlock, PsiExpression, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMember, PsiMethod, PsiModifierList, PsiParameter, PsiParameterList, PsiReferenceList, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiElement, PsiManager}
+import com.intellij.psi.Role
+import consulo.language.impl.psi.LightElement
+import com.intellij.java.language.impl.psi.impl.source.HierarchicalMethodSignatureImpl
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import com.intellij.java.language.psi.util.MethodSignatureBackedByPsiMethod
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.adapters.{PsiAnnotatedAdapter, PsiTypeParametersOwnerAdapter}

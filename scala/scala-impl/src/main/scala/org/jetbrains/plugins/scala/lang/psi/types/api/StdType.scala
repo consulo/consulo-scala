@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.openapi.Disposable
-import com.intellij.psi.CommonClassNames._
-import com.intellij.psi.PsiClass
+import consulo.disposer.Disposable
+import com.intellij.java.language.psi.CommonClassNames._
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.SyntheticClasses

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor.precedence
 
-import com.intellij.psi.PsiElement
-import com.intellij.util.containers.SmartHashSet
+import consulo.language.psi.PsiElement
+import consulo.util.collection.SmartHashSet
 import it.unimi.dsi.fastutil.Hash
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

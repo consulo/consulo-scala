@@ -2,10 +2,10 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
 import com.intellij.codeInsight.editorActions.wordSelection.LineCommentSelectioner
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 
 import java.util

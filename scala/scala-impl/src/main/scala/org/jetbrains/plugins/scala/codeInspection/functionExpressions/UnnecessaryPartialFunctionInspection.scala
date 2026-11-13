@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.functionExpressions
 
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.psi.{PsiClass, PsiElementVisitor, PsiFile}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElementVisitor, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.functionExpressions.UnnecessaryPartialFunctionInspection._
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.util.TextRange
-import com.intellij.ui.Gray
+import consulo.colorScheme.TextAttributes
+import consulo.document.util.TextRange
+import consulo.ui.ex.Gray
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
-import org.jetbrains.plugins.scala.settings._
+import org.jetbrains.plugins.scala.compilersettings.settings._
 
 object ByNameParameter extends AnnotatorPart[ScExpression] {
 

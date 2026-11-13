@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.lang.parser
 
-import com.intellij.lang.Language
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.LanguageSubstitutor
-import com.intellij.testFramework.LightVirtualFile
+import consulo.language.Language
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.LanguageSubstitutor
+import consulo.language.file.light.LightVirtualFile
 import com.intellij.util.SlowOperations
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.parser.ScalaLanguageSubstitutor.looksLikeScala3LibSourcesJar
 import org.jetbrains.plugins.scala.project.ModuleExt
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType, ScalaLanguage}
 
 import scala.util.Using
 import scala.util.matching.Regex

@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
 import com.intellij.concurrency.ConcurrentCollectionFactory
-import com.intellij.psi.{PsiClass, PsiNamedElement, PsiTypeParameter}
-import com.intellij.util.containers.{ConcurrentLongObjectMap, ContainerUtil}
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter}
+import consulo.language.psi.PsiNamedElement
+import consulo.util.collection.primitive.longs.ConcurrentLongObjectMap
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt, PsiNamedElementExt, StubBasedExt}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.types.api.{TypeParameter, TypeParameterType}

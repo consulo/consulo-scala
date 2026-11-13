@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.navigation.actions.TypeDeclarationProvider
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.language.editor.action.TypeDeclarationProvider
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScCompoundType, ScType, ScTypeExt}
 

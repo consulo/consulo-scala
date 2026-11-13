@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.Language
-import com.intellij.openapi.vfs.{StandardFileSystems, VirtualFile}
-import com.intellij.psi.stubs._
-import com.intellij.psi.templateLanguages.TemplateLanguage
-import com.intellij.psi.tree.{IElementType, IFileElementType, IStubFileElementType, TemplateLanguageStubBaseVersion}
-import com.intellij.psi.{PsiClass, PsiFile}
+import consulo.language.Language
+import consulo.virtualFileSystem.{StandardFileSystems, VirtualFile}
+import consulo.language.psi.stub.{DefaultStubBuilder, PsiFileStubImpl}
+import consulo.language.template.TemplateLanguage
+import consulo.language.ast.{IElementType, IFileElementType}
+import consulo.language.psi.stub.IStubFileElementType
+import com.intellij.psi.tree.TemplateLanguageStubBaseVersion
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.TokenSets
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

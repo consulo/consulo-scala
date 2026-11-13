@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.util.ParserUtils
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

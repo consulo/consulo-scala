@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.findUsages.factory.dialog
 
-import com.intellij.find.findUsages.{CommonFindUsagesDialog, FindUsagesHandler, FindUsagesOptions}
-import com.intellij.lang.jvm.JvmModifier
-import com.intellij.openapi.project.Project
+import consulo.find.ui.CommonFindUsagesDialog
+import consulo.find.{FindUsagesHandler, FindUsagesOptions}
+import com.intellij.java.language.jvm.JvmModifier
+import consulo.project.Project
 import com.intellij.openapi.ui.panel.ComponentPanelBuilder
-import com.intellij.ui.StateRestoringCheckBox
-import org.jetbrains.annotations.ApiStatus
+import consulo.ui.ex.awt.StateRestoringCheckBox
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaMemberFindUsagesOptions
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
@@ -17,7 +17,7 @@ import scala.annotation.nowarn
 /**
  * Implementation of this class was originally inspired by [[com.intellij.find.findUsages.FindMethodUsagesDialog]]
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ScalaOverridableMemberFindUsagesDialog(
   member: ScMember,
   project: Project,

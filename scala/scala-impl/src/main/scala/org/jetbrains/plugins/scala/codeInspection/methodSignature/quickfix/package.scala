@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, PsiMethod}
+import consulo.language.ast.IElementType
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

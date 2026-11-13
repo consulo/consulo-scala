@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.openapi.application.ApplicationManager;
+import consulo.application.ApplicationManager;
 
 public abstract class ScalaCodeFoldingSettings {
 

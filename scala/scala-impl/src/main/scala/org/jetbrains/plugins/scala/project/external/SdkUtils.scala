@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.project.external
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable, Sdk}
-import com.intellij.openapi.util.io.FileUtil
+import consulo.project.Project
+import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable}
+import consulo.content.bundle.Sdk
+import consulo.util.io.FileUtil
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.{EelMachineProviderUtil, EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor, LocalEelMachine}
-import com.intellij.pom.java.LanguageLevel
+import com.intellij.java.language.LanguageLevel
 import com.intellij.util.EelUtilsKt
 import org.apache.commons.codec.digest.DigestUtils
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.extensions.{inReadAction, inWriteAction}
 
 import java.nio.file.Path
@@ -19,7 +19,7 @@ object SdkUtils {
 
   @deprecated(message = "Use findProjectSdk(SdkReference, EelDescriptor)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def findProjectSdk(sdkRef: SdkReference): Option[Sdk] =
     findProjectSdk(sdkRef, LocalEelDescriptor.INSTANCE)
 
@@ -50,7 +50,7 @@ object SdkUtils {
 
   @deprecated(message = "Use findMostRecentJdkConfiguredInIde(Sdk => Boolean, EelDescriptor)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def findMostRecentJdkConfiguredInIde(condition: Sdk => Boolean): Option[Sdk] =
     findMostRecentJdkConfiguredInIde(condition, LocalEelDescriptor.INSTANCE)
 
@@ -72,7 +72,7 @@ object SdkUtils {
 
   @deprecated(message = "Use mostRecentRegisteredJdk(EelDescriptor)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def mostRecentRegisteredJdk: Option[Sdk] =
     findMostRecentJdkConfiguredInIde(_ => true)
 
@@ -99,7 +99,7 @@ object SdkUtils {
 
   @deprecated(message = "Use findOrCreateSdk(SdkReference, Project)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def findOrCreateSdk(sdkReference: SdkReference): Option[Sdk] = {
     def createFromHome = {
       Option(sdkReference).collect {

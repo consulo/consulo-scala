@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.dfa.types
 
-import com.intellij.codeInspection.dataFlow.types.{DfConstantType, DfType}
+import consulo.language.dataFlow.types.{DfConstantType, DfType}
 
 case object DfUnitType extends DfConstantType[Unit](()) {
   override def join(dfType: DfType): DfType =

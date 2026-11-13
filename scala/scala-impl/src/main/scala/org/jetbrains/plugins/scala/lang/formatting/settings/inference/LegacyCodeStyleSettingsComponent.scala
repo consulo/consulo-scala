@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.inference
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import consulo.application.ApplicationManager
+import com.thaiopensource.util.Service
+import consulo.project.Project
 import com.intellij.psi.impl.source.codeStyle.CodeStyleSchemesImpl
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 

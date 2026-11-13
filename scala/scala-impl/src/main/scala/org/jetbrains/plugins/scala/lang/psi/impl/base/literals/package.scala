@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.psi.util.PsiLiteralUtil
+import com.intellij.java.language.psi.util.PsiLiteralUtil
 import org.jetbrains.annotations.Nullable
 
 import java.lang.{Long => JLong}

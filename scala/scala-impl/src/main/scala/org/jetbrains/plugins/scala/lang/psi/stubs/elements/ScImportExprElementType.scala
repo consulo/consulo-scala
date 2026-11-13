@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.imports.ScImportExprImpl
 

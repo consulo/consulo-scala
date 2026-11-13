@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.psi.codeStyle.CodeStyleSettings;
+import consulo.language.codeStyle.CodeStyleSettings;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.ScalaBundle;
 
 import javax.swing.*;
@@ -28,7 +27,7 @@ public final class MultiLineStringCodeStylePanel extends ScalaCodeStylePanelBase
     private JSpinner marginIndentSpinner;
     private JCheckBox alignDanglingClosingQuotes;
 
-    protected MultiLineStringCodeStylePanel(@NotNull CodeStyleSettings settings) {
+    protected MultiLineStringCodeStylePanel(CodeStyleSettings settings) {
         super(settings, ScalaBundle.message("multi.line.string.panel.title"));
 
         ScalaCodeStyleSettings scalaSettings = settings.getCustomSettings(ScalaCodeStyleSettings.class);
@@ -100,7 +99,7 @@ public final class MultiLineStringCodeStylePanel extends ScalaCodeStylePanelBase
         marginIndentSpinner.setValue(ss.MULTILINE_STRING_MARGIN_INDENT);
     }
 
-    private static boolean isInvalidInput(@NotNull String text, String selectedText, KeyEvent e) {
+    private static boolean isInvalidInput(String text, String selectedText, KeyEvent e) {
         return text.length() > 0 && !e.isActionKey() && e.getKeyChar() != KeyEvent.VK_BACK_SPACE &&
                 e.getKeyChar() != KeyEvent.VK_DELETE && !text.equals(selectedText);
     }

@@ -1,25 +1,28 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.ide.util.EditorHelper
-import com.intellij.openapi.application.{ApplicationManager, ModalityState, ReadAction}
-import com.intellij.openapi.diagnostic.Logger
+import consulo.language.editor.util.EditorHelper
+import consulo.application.{ApplicationManager, ReadAction}
+import consulo.ui.ModalityState
+import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.model.project.{ModuleData, ProjectData}
-import com.intellij.openapi.externalSystem.model.{ExternalSystemDataKeys, ProjectSystemId}
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.model.project.ModuleData
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{ExternalSystemDataKeys, ProjectSystemId}
+import consulo.externalSystem.model.task.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
-import com.intellij.openapi.externalSystem.settings.{AbstractExternalSystemSettings, ExternalProjectSettings}
-import com.intellij.openapi.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemUtil}
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ContentEntry, ModifiableRootModel}
-import com.intellij.openapi.startup.StartupManager
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.{LocalFileSystem, VirtualFile}
-import com.intellij.psi.{PsiFile, PsiManager}
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.externalSystem.setting.{AbstractExternalSystemSettings, ExternalProjectSettings}
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
+import consulo.document.FileDocumentManager
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.layer.{ContentEntry, ModifiableRootModel}
+import consulo.project.startup.StartupManager
+import consulo.util.dataholder.Key
+import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
+import consulo.language.psi.{PsiFile, PsiManager}
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.{ApiStatus, Nullable}
 import org.jetbrains.jps.model.java.{JavaResourceRootType, JavaSourceRootType}
 import org.jetbrains.plugins.scala.extensions.PathExt
@@ -27,7 +30,7 @@ import org.jetbrains.sbt.project.settings.SbtProjectSettings
 
 import java.nio.file.{Files, Path}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 object ModuleBuilderUtil {
   private val Log = Logger.getInstance(this.getClass)
 

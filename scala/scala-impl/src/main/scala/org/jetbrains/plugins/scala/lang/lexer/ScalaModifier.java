@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.psi.PsiModifier;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.java.language.psi.PsiModifier;
+import org.jspecify.annotations.Nullable;
 
 public enum ScalaModifier {
     Private(PsiModifier.PRIVATE),

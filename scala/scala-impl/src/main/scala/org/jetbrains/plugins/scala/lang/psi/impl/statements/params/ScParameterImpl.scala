@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMethod, PsiTypeElement}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, ifReadAllowed}
@@ -21,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScGiven
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaStubBasedElementImpl
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ParameterExpectedTypesUtil._
-import org.jetbrains.plugins.scala.lang.psi.stubs._
+import org.jetbrains.plugins.scala.api.lang.psi.stubs._
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.signatures.ScParamElementType
 import org.jetbrains.plugins.scala.lang.psi.types.FunctionTypeMarker.ContextFunctionN
 import org.jetbrains.plugins.scala.lang.psi.types._

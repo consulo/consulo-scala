@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.anonymousToInner
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiReference}
-import com.intellij.refactoring.move.MoveHandlerDelegate
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.language.editor.refactoring.move.MoveHandlerDelegate
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 

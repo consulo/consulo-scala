@@ -1,14 +1,13 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.codeInsight.folding.CodeFoldingSettings;
-import com.intellij.codeInsight.folding.JavaCodeFoldingSettings;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.PersistentStateComponent;
+import consulo.language.editor.folding.CodeFoldingSettings;
+import com.intellij.java.language.codeInsight.folding.JavaCodeFoldingSettings;
+import consulo.application.ApplicationManager;
+import consulo.component.persist.PersistentStateComponent;
 import com.intellij.openapi.components.SettingsCategory;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.util.xml.serializer.XmlSerializerUtil;
 
 @State(
         name = "ScalaCodeFoldingSettings",
@@ -42,7 +41,7 @@ public class ScalaCodeFoldingSettingsImpl extends ScalaCodeFoldingSettings imple
   }
 
   @Override
-  public void loadState(@NotNull ScalaCodeFoldingSettingsImpl scalaCodeFoldingSettings) {
+  public void loadState(ScalaCodeFoldingSettingsImpl scalaCodeFoldingSettings) {
     XmlSerializerUtil.copyBean(scalaCodeFoldingSettings, this);
   }
 

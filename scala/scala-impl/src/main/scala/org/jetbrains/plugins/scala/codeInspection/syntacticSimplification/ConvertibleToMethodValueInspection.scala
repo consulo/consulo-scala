@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.syntacticSimplification
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiField, PsiMethod}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.collections.MethodRepr
 import org.jetbrains.plugins.scala.codeInspection.syntacticSimplification.ConvertibleToMethodValueInspection._

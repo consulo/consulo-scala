@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.{PsiElement, PsiReference}
+import consulo.language.psi.{PsiElement, PsiReference}
 
 object PsiReferenceEx {
   object resolve {

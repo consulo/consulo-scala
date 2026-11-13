@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.settings.annotations
 
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.project.Project
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.BooleanExt
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.settings.annotations.ScalaTypeAnnotationSettings.TypeAnnotationReasons

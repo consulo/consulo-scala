@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.dfa
 
-import com.intellij.codeInspection.{LocalInspectionTool, LocalInspectionToolSession, ProblemsHolder}
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiElementVisitor, PsiFile}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalInspectionToolSession, ProblemsHolder}
+import consulo.project.DumbService
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiElementVisitor, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.dfa.DfaInspectionBase.visitorProviderKey
 import org.jetbrains.plugins.scala.lang.dfa.analysis.ScalaDfaVisitor
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaDfaResult

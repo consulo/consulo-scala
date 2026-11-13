@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.psi.impl.source.SourceTreeToPsiMap
-import com.intellij.psi.impl.source.codeStyle.{CodeEditUtil, PostFormatProcessor, PostFormatProcessorHelper}
-import com.intellij.psi.{PsiElement, PsiErrorElement, PsiFile}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.language.impl.psi.SourceTreeToPsiMap
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.codeStyle.{PostFormatProcessor, PostFormatProcessorHelper}
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiFile}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.processors.ScalaTrailingCommaVisitor.isSingleInfixBlockExpression
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

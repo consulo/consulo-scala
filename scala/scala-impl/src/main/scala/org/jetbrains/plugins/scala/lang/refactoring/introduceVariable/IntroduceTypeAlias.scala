@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.codeInsight.template.impl.{TemplateManagerImpl, TemplateState}
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl
+import consulo.language.editor.template.TemplateState
+import consulo.dataContext.DataContext
+import consulo.application.ApplicationManager
 import com.intellij.openapi.command.impl.StartMarkAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.psi._
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile, SmartPsiElementPointer}
 import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil
-import com.intellij.psi.util.PsiTreeUtil.{findElementOfClassAtRange, getChildOfType, getParentOfType}
+import consulo.language.psi.util.PsiTreeUtil.{findElementOfClassAtRange, getChildOfType, getParentOfType}
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, ValidSmartPointer, executeWriteActionCommand, inWriteAction}

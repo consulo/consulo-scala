@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, HighlightInfo}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementWeigher}
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiReference}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
+import consulo.language.editor.completion.lookup.InsertionContext
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.language.pattern.PlatformPatterns
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiReference}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

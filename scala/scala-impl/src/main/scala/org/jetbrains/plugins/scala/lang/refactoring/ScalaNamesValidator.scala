@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 import com.intellij.lang.LanguageNamesValidation
-import com.intellij.lang.refactoring.NamesValidator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil.isEmpty
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.editor.refactoring.NamesValidator
+import consulo.project.Project
+import consulo.util.lang.StringUtil.isEmpty
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{KEYWORDS, SOFT_KEYWORDS, tIDENTIFIER}
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal

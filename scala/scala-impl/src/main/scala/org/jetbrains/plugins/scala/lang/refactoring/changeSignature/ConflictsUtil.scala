@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.changeSignature.{ChangeInfo, JavaChangeInfo, OverriderUsageInfo}
-import com.intellij.util.containers.MultiMap
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.changeSignature.ChangeInfo
+import com.intellij.java.impl.refactoring.changeSignature.{JavaChangeInfo, OverriderUsageInfo}
+import consulo.util.collection.MultiMap
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor

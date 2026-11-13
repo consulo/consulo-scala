@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations
 
-import com.intellij.codeInspection.dataFlow.CustomMethodHandlers.CustomMethodHandler
-import com.intellij.codeInspection.dataFlow.interpreter.DataFlowInterpreter
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory}
-import com.intellij.codeInspection.dataFlow.{CustomMethodHandlers, DfaCallArguments, MethodContract, MutationSignature}
-import com.intellij.psi.PsiMethod
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.CustomMethodHandlers.CustomMethodHandler
+import consulo.language.dataFlow.interpreter.DataFlowInterpreter
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.{CustomMethodHandlers, DfaCallArguments, MethodContract, MutationSignature}
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.ClassesSpecialSupport.findSpecialSupportForClasses
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.InterproceduralAnalysis.registerParameterValues
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport.CollectionsSpecialSupport.findSpecialSupportForCollections

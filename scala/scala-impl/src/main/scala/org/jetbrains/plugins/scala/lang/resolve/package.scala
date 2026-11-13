@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{MethodInvocation, ScExpression, ScGenericCall, ScParenthesisedExpr, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionExt}

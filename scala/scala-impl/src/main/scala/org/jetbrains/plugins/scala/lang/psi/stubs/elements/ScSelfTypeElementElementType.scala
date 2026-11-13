@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScSelfTypeElement
 import org.jetbrains.plugins.scala.lang.psi.impl.base.types.ScSelfTypeElementImpl
 

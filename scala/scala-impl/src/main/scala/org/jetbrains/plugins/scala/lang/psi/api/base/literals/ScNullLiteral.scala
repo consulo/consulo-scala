@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 package literals
 
-import com.intellij.openapi.util.Key
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 
 trait ScNullLiteral extends ScLiteral {

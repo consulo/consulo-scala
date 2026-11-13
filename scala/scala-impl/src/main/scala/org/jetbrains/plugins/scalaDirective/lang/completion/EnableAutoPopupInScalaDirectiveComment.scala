@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import com.intellij.codeInsight.AutoPopupController
-import com.intellij.codeInsight.completion.CompletionConfidence
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate.Result
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiComment, PsiElement, PsiFile}
-import com.intellij.util.ThreeState
+import consulo.language.editor.AutoPopupController
+import consulo.language.editor.completion.CompletionConfidence
+import consulo.language.editor.action.TypedHandlerDelegate
+import consulo.language.editor.action.TypedHandlerDelegate.Result
+import consulo.codeEditor.Editor
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile}
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

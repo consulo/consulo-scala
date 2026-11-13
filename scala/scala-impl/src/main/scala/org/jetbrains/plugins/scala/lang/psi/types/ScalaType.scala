@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi.PsiNamedElement
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter

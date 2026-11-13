@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeHighlighting._
-import com.intellij.codeInsight.daemon.impl.FileStatusMap
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.language.editor.Pass
+import consulo.language.editor.highlight.{TextEditorHighlightingPass, TextEditorHighlightingPassFactory}
+import com.intellij.codeHighlighting.{TextEditorHighlightingPassFactoryRegistrar, TextEditorHighlightingPassRegistrar}
+import consulo.language.editor.FileStatusMap
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 final class ScalaUnusedDeclarationPassFactory

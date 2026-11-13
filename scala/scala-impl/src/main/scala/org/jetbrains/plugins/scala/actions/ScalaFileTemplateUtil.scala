@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.fileTemplates.FileTemplate
-import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi.{PsiClass, PsiDirectory, PsiFile, PsiMethod}
+import consulo.fileTemplate.FileTemplate
+import consulo.language.editor.WriteCommandAction
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiDirectory, PsiFile}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScOptionalBracesOwner
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt, ScalaFeatures}

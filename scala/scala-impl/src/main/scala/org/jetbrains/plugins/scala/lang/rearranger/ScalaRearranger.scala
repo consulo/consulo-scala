@@ -1,19 +1,24 @@
 package org.jetbrains.plugins.scala.lang.rearranger
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.{Pair, TextRange}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.codeStyle.CodeStyleSettings
+import consulo.document.Document
+import consulo.util.lang.Pair
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.arrangement.`match`.{ArrangementSectionRule, StdArrangementEntryMatcher, StdArrangementMatchRule}
-import com.intellij.psi.codeStyle.arrangement.group.ArrangementGroupingRule
-import com.intellij.psi.codeStyle.arrangement.model.{ArrangementAtomMatchCondition, ArrangementCompositeMatchCondition, ArrangementMatchCondition}
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.EntryType._
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.Grouping._
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.Modifier._
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.Order._
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens._
-import com.intellij.psi.codeStyle.arrangement.std._
-import com.intellij.psi.codeStyle.arrangement._
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.codeStyle.arrangement.group.ArrangementGroupingRule
+import consulo.language.codeStyle.arrangement.model.{ArrangementAtomMatchCondition, ArrangementCompositeMatchCondition, ArrangementMatchCondition}
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.EntryType._
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.Grouping._
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.Modifier._
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.Order._
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens._
+import consulo.language.codeStyle.arrangement.std.{ArrangementSettingsToken, ArrangementStandardSettingsAware, CompositeArrangementSettingsToken, StdArrangementSettings, StdArrangementTokens}
+import com.intellij.psi.codeStyle.arrangement.std.{EntryType, General, Grouping}
+import com.intellij.java.debugger.engine.evaluation.expression.Modifier
+import consulo.externalSystem.util.Order
+import consulo.language.codeStyle.arrangement.{ArrangementSettings, ArrangementSettingsSerializer, ArrangementUtil, DefaultArrangementSettingsSerializer, Rearranger}
+import com.intellij.psi.codeStyle.arrangement.Mixin
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.rearranger.RearrangerUtils._
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 

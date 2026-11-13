@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.ide.highlighter.XmlFileType
+import consulo.xml.language.XmlFileType
 import com.intellij.openapi.module
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.{GlobalSearchScope, ProjectScope, PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.xml.XmlToken
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiElement
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.psi.search.ProjectScope
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import consulo.xml.language.psi.XmlToken
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline.ShouldProcess
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.{Method, SearchMethodResult}
 import org.jetbrains.plugins.scala.extensions.ObjectExt

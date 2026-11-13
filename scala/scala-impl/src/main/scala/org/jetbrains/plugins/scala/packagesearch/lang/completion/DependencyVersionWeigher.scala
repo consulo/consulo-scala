@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.packagesearch.lang.completion
 
-import com.intellij.codeInsight.completion.impl.NegatingComparable
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.util.NegatingComparable
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
 import org.apache.maven.artifact.versioning.ComparableVersion
 
 object DependencyVersionWeigher extends LookupElementWeigher("scalaDependencyVersionWeigher") {

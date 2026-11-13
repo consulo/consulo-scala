@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.hashCodeUsesVar
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.psi._
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.PsiElementVisitor
+import com.intellij.java.language.psi.PsiMethod
 import com.siyeh.ig.psiutils.MethodUtils
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor

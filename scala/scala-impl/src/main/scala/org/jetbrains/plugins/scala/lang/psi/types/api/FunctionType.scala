@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi.{PsiClass, PsiElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope

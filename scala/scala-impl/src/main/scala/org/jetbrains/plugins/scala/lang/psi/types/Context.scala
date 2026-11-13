@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi.{PsiDirectory, PsiElement, PsiFile}
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition

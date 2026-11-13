@@ -15,12 +15,11 @@
 
 package org.jetbrains.plugins.scala.highlighter;
 
-import com.intellij.lang.BracePair;
-import com.intellij.lang.PairedBraceMatcher;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.language.BracePair;
+import consulo.language.PairedBraceMatcher;
+import consulo.language.psi.PsiFile;
+import consulo.language.ast.IElementType;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypesEx;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaXmlTokenTypes;
@@ -49,13 +48,12 @@ public class ScalaBraceMatcher implements PairedBraceMatcher {
   };
 
   @Override
-  @NotNull
   public BracePair[] getPairs() {
     return PAIRS;
   }
 
   @Override
-  public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType type, @Nullable IElementType tokenType) {
+  public boolean isPairedBracesAllowedBeforeType(IElementType type, @Nullable IElementType tokenType) {
     return tokenType == null
         || ScalaTokenTypes.tWHITE_SPACE_IN_LINE == tokenType
         || tokenType == ScalaTokenTypes.tSEMICOLON

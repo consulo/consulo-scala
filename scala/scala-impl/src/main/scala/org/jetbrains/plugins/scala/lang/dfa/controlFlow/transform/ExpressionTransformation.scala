@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform
 
-import com.intellij.codeInspection.dataFlow.interpreter.DataFlowInterpreter
-import com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow.ControlFlowOffset
-import com.intellij.codeInspection.dataFlow.lang.ir.DfaInstructionState
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.types.DfTypes
-import com.intellij.codeInspection.dataFlow.value.DfaControlTransferValue
-import com.intellij.codeInspection.dataFlow.value.DfaControlTransferValue.Trap
-import com.intellij.psi.{CommonClassNames, PsiElement, PsiMethod}
-import com.intellij.util.containers.FList
+import consulo.language.dataFlow.interpreter.DataFlowInterpreter
+import consulo.language.dataFlow.ir.ControlFlow.ControlFlowOffset
+import consulo.language.dataFlow.ir.DfaInstructionState
+import consulo.language.dataFlow.memory.DfaMemoryState
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.DfTypes
+import consulo.language.dataFlow.value.DfaControlTransferValue
+import consulo.language.dataFlow.value.DfaControlTransferValue.Trap
+import com.intellij.java.language.psi.{CommonClassNames, PsiMethod}
+import consulo.language.psi.PsiElement
+import consulo.util.collection.FList
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaStatementAnchor
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport.SpecialSupportUtils.tryRetrieveCollectionSizeDirectly

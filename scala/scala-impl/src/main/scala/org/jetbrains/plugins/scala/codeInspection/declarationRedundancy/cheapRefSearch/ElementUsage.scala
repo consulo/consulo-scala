@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, SmartPsiElementPointer}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, SmartPsiElementPointer}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScReferenceExpression}

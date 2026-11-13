@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaConstants.Packages._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.MethodInvocation
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.ScalaCodeContext

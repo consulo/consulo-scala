@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.externalLibraries.contextApplied
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, ScTypeParam}

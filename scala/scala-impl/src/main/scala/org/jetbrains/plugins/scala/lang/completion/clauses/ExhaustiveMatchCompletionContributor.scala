@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.LookupElementPresentation
-import com.intellij.patterns.{ElementPattern, PlatformPatterns}
-import com.intellij.psi._
+import consulo.language.editor.completion.{CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.InsertionContext
+import consulo.language.editor.completion.lookup.LookupElementPresentation
+import consulo.language.pattern.{ElementPattern, PlatformPatterns}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.{CaptureExt, ScalaCompletionContributor, ScalaKeyword}
 import org.jetbrains.plugins.scala.lang.parser

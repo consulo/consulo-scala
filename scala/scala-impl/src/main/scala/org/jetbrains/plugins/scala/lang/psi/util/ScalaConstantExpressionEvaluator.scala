@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.util
 
-import com.intellij.psi.PsiConstantEvaluationHelper.AuxEvaluator
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.ConstantExpressionEvaluator
+import com.intellij.java.language.psi.PsiConstantEvaluationHelper.AuxEvaluator
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.ConstantExpressionEvaluator
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
-import com.intellij.psi.PsiFile
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.codeInspection.scalastyle.{ScalastyleService, ScalastyleSettings}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

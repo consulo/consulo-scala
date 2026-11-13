@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.psi.*
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
 import com.intellij.psi.impl.light.LightDefaultConstructor
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
-import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.util.treeView.{AbstractTreeNode, AbstractTreeStructure, NodeDescriptor}
-import com.intellij.openapi.project.Project
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.AbstractTreeNode
+import consulo.ui.ex.tree.{AbstractTreeStructure, NodeDescriptor}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.actions.implicitArguments.ImplicitArgumentNodes.resolveResultNode
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 

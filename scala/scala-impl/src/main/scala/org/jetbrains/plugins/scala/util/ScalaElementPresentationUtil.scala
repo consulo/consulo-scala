@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.codeInsight.TestFrameworks
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Iconable
+import com.intellij.java.language.codeInsight.TestFrameworks
+import consulo.project.DumbService
+import consulo.component.util.Iconable
 import com.intellij.psi.impl.{ElementBase, ElementPresentationUtil}
-import com.intellij.psi.util.InheritanceUtil
-import com.intellij.psi.{CommonClassNames, JavaPsiFacade, PsiModifier, PsiModifierListOwner}
+import com.intellij.java.language.psi.util.InheritanceUtil
+import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiModifier, PsiModifierListOwner}
 import com.intellij.ui.{IconManager, PlatformIcons}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScQuotedType
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScExpressionImplBase
 

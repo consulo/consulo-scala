@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.Disposable
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.disposer.Disposable
+import consulo.application.util.concurrent.AppExecutorUtil
 
 import java.util.concurrent.{ScheduledExecutorService, ScheduledFuture}
 import scala.concurrent.duration.{DurationInt, FiniteDuration}

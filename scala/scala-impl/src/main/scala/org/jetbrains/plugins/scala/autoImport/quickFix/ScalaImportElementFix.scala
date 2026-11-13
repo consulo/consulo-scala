@@ -1,24 +1,25 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.codeInsight.JavaProjectCodeInsightSettings
+import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
 import com.intellij.codeInsight.hint.HintManagerImpl
-import com.intellij.codeInsight.intention.PriorityAction
+import consulo.language.editor.inspection.PriorityAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection.HintAction
-import com.intellij.codeWithMe.ClientId
+import consulo.language.editor.intention.HintAction
+import consulo.application.util.ClientId
 import com.intellij.idea.AppMode
 import com.intellij.model.SideEffectGuard.SideEffectNotAllowedException
-import com.intellij.openapi.application.{ApplicationManager, ReadAction}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.editor.impl.ImaginaryEditor
-import com.intellij.openapi.editor.{ClientEditorManager, Editor, LogicalPosition}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{ModificationTracker, TextRange}
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.application.{ApplicationManager, ReadAction}
+import com.thaiopensource.util.Service
+import consulo.codeEditor.imaginary.ImaginaryEditor
+import com.intellij.openapi.editor.ClientEditorManager
+import consulo.codeEditor.{Editor, LogicalPosition}
+import consulo.project.Project
+import consulo.component.util.ModificationTracker
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.application.util.concurrent.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import com.intellij.util.ui.UIUtil
-import org.jetbrains.annotations.ApiStatus
+import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.autoImport.quickFix.Presentation.htmlWithBody
 import org.jetbrains.plugins.scala.autoImport.quickFix.ScalaImportElementFix._
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker
@@ -26,7 +27,8 @@ import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, PsiFile
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaKeywordTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScGenericCall
-import org.jetbrains.plugins.scala.{ScalaBundle, isUnitTestMode}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 import java.awt.Point
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
@@ -164,7 +166,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
    *
    * Must be called from the background thread as it is a potentially long-running task.
    */
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   @RequiresBackgroundThread
   final def preComputeElements(): Unit = if (place.isValid && isComputationScheduled.compareAndSet(false, true)) {
     val elementsToImport = findElementsToImport()

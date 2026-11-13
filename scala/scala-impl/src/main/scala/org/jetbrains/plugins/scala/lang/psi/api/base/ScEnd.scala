@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.{PsiElement, PsiNamedElement, PsiReference}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScBegin, ScalaPsiElement}
 
 trait ScEnd extends ScalaPsiElement with PsiNamedElement with PsiReference {

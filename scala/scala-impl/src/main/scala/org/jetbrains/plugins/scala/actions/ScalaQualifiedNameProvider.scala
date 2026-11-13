@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.actions.{JavaQualifiedNameProvider, QualifiedNameProvider}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import com.intellij.java.impl.ide.actions.JavaQualifiedNameProvider
+import consulo.language.editor.QualifiedNameProvider
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScObject, ScTypeDefinition}

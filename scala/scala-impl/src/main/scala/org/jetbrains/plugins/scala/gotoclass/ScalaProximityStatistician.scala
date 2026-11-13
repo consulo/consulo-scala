@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.gotoclass
 
-import com.intellij.openapi.project.DumbService
-import com.intellij.psi.PsiElement
-import com.intellij.psi.statistics.StatisticsInfo
-import com.intellij.psi.util.ProximityLocation
-import com.intellij.psi.util.proximity.ProximityStatistician
+import consulo.project.DumbService
+import consulo.language.psi.PsiElement
+import consulo.language.statistician.StatisticsInfo
+import consulo.language.util.proximity.ProximityLocation
+import consulo.language.util.proximity.ProximityStatistician
 import org.jetbrains.plugins.scala.lang.completion.statistician.ScalaStatisticManager
 
 class ScalaProximityStatistician extends ProximityStatistician {

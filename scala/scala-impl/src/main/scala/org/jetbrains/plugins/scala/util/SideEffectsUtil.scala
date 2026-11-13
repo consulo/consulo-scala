@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, PsiClassExt, PsiMemberExt, PsiNamedElementExt, Resolved, ResolvesTo}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

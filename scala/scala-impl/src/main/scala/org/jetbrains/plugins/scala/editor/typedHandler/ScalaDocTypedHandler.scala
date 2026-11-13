@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate.Result
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.{PsiTreeUtil, PsiUtil}
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.action.TypedHandlerDelegate
+import consulo.language.editor.action.TypedHandlerDelegate.Result
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.util.PsiUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.editor.typedHandler.ScalaDocTypedHandler._
 import org.jetbrains.plugins.scala.editor.{DocumentExt, ScalaEditorUtils}
 import org.jetbrains.plugins.scala.extensions.{CharSeqExt, DocWhitespace, ElementType, ObjectExt, PsiElementExt, ToNullSafe}

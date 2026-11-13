@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
-import com.intellij.openapi.util.text.StringUtil
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType}
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester.namesByType

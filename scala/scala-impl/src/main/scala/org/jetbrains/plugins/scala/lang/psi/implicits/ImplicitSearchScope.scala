@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, childOf}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClause
@@ -15,7 +15,9 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGiven, ScMem
 import org.jetbrains.plugins.scala.lang.psi.api.{ImplicitArgumentsOwner, ScalaFile}
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 case class ImplicitSearchScope(representative: PsiElement) {
 

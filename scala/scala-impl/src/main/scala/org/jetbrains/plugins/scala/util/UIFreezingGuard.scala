@@ -2,12 +2,15 @@ package org.jetbrains.plugins.scala.util
 
 import com.intellij.concurrency.JobScheduler
 import com.intellij.diagnostic.PerformanceWatcher
-import com.intellij.ide.IdeEventQueue
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.{ApplicationManager, ModalityState, TransactionGuard}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.progress._
-import com.intellij.openapi.project.Project
+import consulo.desktop.awt.ui.IdeEventQueue
+import consulo.disposer.Disposable
+import consulo.application.ApplicationManager
+import consulo.ui.ModalityState
+import com.intellij.openapi.application.TransactionGuard
+import com.thaiopensource.util.Service
+import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager, StandardProgressIndicator}
+import consulo.component.ProcessCanceledException
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.language.editor.intention.IntentionAction
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.UnresolvedReferenceFixProvider
 import org.jetbrains.plugins.scala.autoImport.ImportOrderings.defaultImportOrdering
@@ -25,7 +26,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypedDe
 import org.jetbrains.plugins.scala.lang.psi.impl.{ScPackageImpl, ScalaPsiManager}
 import org.jetbrains.plugins.scala.lang.resolve.ResolveTargets
 import org.jetbrains.plugins.scala.lang.resolve.ResolveUtils.{isAccessible, kindMatches}
-import org.jetbrains.plugins.scala.settings._
+import org.jetbrains.plugins.scala.compilersettings.settings._
 
 final class ScalaImportTypeFix private (ref: ScReference)
   extends ScalaImportElementFix[ElementToImport](ref) {

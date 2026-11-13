@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScAnnotationsHolder}

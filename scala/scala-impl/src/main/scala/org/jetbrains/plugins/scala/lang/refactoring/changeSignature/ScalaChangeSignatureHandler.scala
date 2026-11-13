@@ -1,14 +1,18 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.ide.util.SuperMethodWarningUtil
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiMethod}
-import com.intellij.refactoring.changeSignature.{ChangeSignatureHandler, ChangeSignatureUtil}
-import com.intellij.refactoring.util.CommonRefactoringUtil
-import com.intellij.refactoring.{HelpID, RefactoringBundle}
+import com.intellij.java.impl.ide.util.SuperMethodWarningUtil
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.editor.refactoring.changeSignature.ChangeSignatureHandler
+import com.intellij.java.impl.refactoring.changeSignature.ChangeSignatureUtil
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
+import com.intellij.java.impl.refactoring.HelpID
+import consulo.language.editor.refactoring.RefactoringBundle
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScMethodLike, ScReference}

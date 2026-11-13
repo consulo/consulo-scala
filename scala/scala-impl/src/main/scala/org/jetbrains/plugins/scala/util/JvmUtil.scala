@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}

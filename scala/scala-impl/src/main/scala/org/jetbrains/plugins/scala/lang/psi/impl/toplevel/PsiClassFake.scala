@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 
-import com.intellij.openapi.util.Pair
-import com.intellij.psi.PsiReferenceList.Role
-import com.intellij.psi._
+import consulo.util.lang.Pair
+import com.intellij.java.language.psi.PsiReferenceList.Role
+import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiClass, PsiClassInitializer, PsiClassType, PsiField, PsiJavaCodeReferenceElement, PsiJavaToken, PsiMethod, PsiModifier, PsiModifierList, PsiReferenceList, PsiSubstitutor, PsiTypeParameter, PsiTypeParameterList}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiClassAdapter
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScDocCommentOwner

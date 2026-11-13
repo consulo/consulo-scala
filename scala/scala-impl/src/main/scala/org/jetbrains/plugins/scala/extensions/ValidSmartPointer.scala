@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.{PsiElement, SmartPsiElementPointer}
+import consulo.language.psi.{PsiElement, SmartPsiElementPointer}
 
 object ValidSmartPointer {
 

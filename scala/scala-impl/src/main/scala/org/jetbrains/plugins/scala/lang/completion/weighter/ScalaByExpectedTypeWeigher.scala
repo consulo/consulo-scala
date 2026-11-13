@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementWeigher, WeighingContext}
-import com.intellij.psi.{PsiElement, PsiField, PsiMethod, PsiNamedElement}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.editor.completion.WeighingContext
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiField, PsiMethod}
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

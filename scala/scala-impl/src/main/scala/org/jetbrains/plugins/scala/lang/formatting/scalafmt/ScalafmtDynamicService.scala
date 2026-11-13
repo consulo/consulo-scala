@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
+import consulo.application.ApplicationManager
+import consulo.project.Project
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicService.{ResolveResult, ScalafmtResolveError}

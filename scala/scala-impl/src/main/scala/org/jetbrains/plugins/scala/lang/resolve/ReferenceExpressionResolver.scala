@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil._
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiAnnotationMethod, PsiClass, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.util.PsiTreeUtil._
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.dependency.Dependency.DependencyProcessor
@@ -891,7 +893,7 @@ class ReferenceExpressionResolver(implicit projectContext: ProjectContext) {
 }
 
 object ReferenceExpressionResolver {
-  import com.intellij.openapi.util.Key
+  import consulo.util.dataholder.Key
 
   val ConstructorProxyHolderKey: Key[Boolean] = Key.create[Boolean]("scala.resolve.synthetic.constructor.proxy.holder")
 }

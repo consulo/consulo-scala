@@ -3,3 +3,4 @@ sandbox/
 .idea/
 *.iml
 dependency-reduced-pom.xml
+tools/.cache/

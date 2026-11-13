@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.psi.{PsiClass, PsiElement}
-import com.intellij.refactoring.move.moveClassesOrPackages.MoveAllClassesInFileHandler
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveAllClassesInFileHandler
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 

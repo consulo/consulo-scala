@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.hint.HintUtil
-import com.intellij.codeInsight.javadoc.JavaDocUtil
-import com.intellij.lang.documentation.CodeDocumentationProvider
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Pair
-import com.intellij.psi._
+import consulo.language.editor.ui.awt.HintUtil
+import com.intellij.java.language.impl.codeInsight.javadoc.JavaDocUtil
+import consulo.language.editor.documentation.CodeDocumentationProvider
+import consulo.logging.Logger
+import consulo.util.lang.Pair
+import consulo.language.psi.{PsiComment, PsiDocCommentBase, PsiElement, PsiFile, PsiManager}
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocumentationProvider._
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocumentationUtils.EmptyDoc

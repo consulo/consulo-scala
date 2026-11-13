@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.project.Project
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor

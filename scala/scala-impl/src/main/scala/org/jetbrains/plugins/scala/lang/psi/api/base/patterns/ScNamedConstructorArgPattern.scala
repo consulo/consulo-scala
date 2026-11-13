@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base.patterns
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.types.api.NamedTupleType
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.psi.ResolveResult
+import consulo.language.psi.ResolveResult
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 

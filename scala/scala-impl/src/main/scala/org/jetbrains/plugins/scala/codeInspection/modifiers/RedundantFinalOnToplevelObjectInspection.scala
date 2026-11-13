@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.codeInspection.modifiers
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.{PsiElementVisitor, PsiFile}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.{PsiElementVisitor, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.PsiElementVisitorSimple
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaModifier, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 final class RedundantFinalOnToplevelObjectInspection extends LocalInspectionTool with DumbAware {
   override def isAvailableForFile(file: PsiFile): Boolean = file match {

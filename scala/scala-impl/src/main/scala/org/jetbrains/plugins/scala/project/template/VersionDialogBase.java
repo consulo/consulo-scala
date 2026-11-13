@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.project.template;
 
-import com.intellij.openapi.ui.DialogWrapper;
+import consulo.ui.ex.awt.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.sbt.project.template.SComboBox;
+import org.jetbrains.sbt.api.project.template.SComboBox;
 
 import javax.swing.*;
 import java.awt.*;

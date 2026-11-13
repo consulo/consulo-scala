@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, ifReadAllowed}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

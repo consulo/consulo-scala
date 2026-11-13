@@ -1,24 +1,26 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.diagnostic.Logger
+import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.libraries.Library
-import com.intellij.openapi.roots.{OrderEnumerator, OrderRootType, libraries}
-import com.intellij.openapi.util.{Key, ModificationTracker}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.CommonProcessors.FindProcessor
-import org.jetbrains.annotations.ApiStatus.Internal
+import consulo.content.library.Library
+import consulo.module.content.layer.OrderEnumerator
+import consulo.content.OrderRootType
+import com.intellij.openapi.roots.libraries
+import consulo.util.dataholder.Key
+import consulo.component.util.ModificationTracker
+import consulo.virtualFileSystem.VirtualFile
+import consulo.application.util.function.CommonProcessors.FindProcessor
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.caches.cached
 import org.jetbrains.plugins.scala.project.ScalaFeatures.SerializableScalaFeatures
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel._
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel._
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerConfiguration, ScalaCompilerSettings}
-import org.jetbrains.plugins.scala.util.JarManifestUtils
-import org.jetbrains.sbt.project.SbtVersionProvider
+import org.jetbrains.plugins.scala.rt.util.JarManifestUtils
+import org.jetbrains.sbt.api.project.SbtVersionProvider
 
 import java.io.IOException
 import java.nio.file.{Files, Path}
@@ -210,7 +212,7 @@ private class ScalaModuleSettings private(
     Option(ExternalSystemModulePropertyManager.getInstance(module).getExternalSystemId)
 }
 
-@Internal
+// upstream: @Internal
 object ScalaModuleSettings {
   private val Scala_2_12_2_version = Version("2.12.2")
 

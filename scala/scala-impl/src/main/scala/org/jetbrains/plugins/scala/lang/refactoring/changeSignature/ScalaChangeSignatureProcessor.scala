@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.openapi.project.Project
-import com.intellij.refactoring.changeSignature.{ChangeSignatureProcessorBase, ChangeSignatureViewDescriptor}
-import com.intellij.usageView.{UsageInfo, UsageViewDescriptor}
+import consulo.project.Project
+import consulo.language.editor.refactoring.changeSignature.ChangeSignatureProcessorBase
+import com.intellij.java.impl.refactoring.changeSignature.ChangeSignatureViewDescriptor
+import consulo.usage.{UsageInfo, UsageViewDescriptor}
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo.ScalaChangeInfo
 
 final class ScalaChangeSignatureProcessor(changeInfo: ScalaChangeInfo)

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.ide.BrowserUtil
-import com.intellij.notification._
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
+import consulo.webBrowser.BrowserUtil
+import com.intellij.notification.CollapseActionsDirection
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.project.Project
 import org.jetbrains.plugins.scala.settings.{ScalaApplicationSettings, ScalaEditorSmartKeysConfigurable, ShowSettingsUtilImplExt}
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 

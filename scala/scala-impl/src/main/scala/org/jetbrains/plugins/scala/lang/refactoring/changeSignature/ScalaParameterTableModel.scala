@@ -1,11 +1,15 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.codeInsight.daemon.impl.analysis.{FileHighlightingSetting, HighlightLevelUtil}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.refactoring.changeSignature._
-import com.intellij.util.ui.ColumnInfo
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.editor.FileHighlightingSetting
+import consulo.language.editor.highlight.HighlightLevelUtil
+import consulo.project.Project
+import com.intellij.java.language.psi.JavaCodeFragment
+import consulo.language.psi.PsiElement
+import com.intellij.psi.VisibilityChecker
+import com.intellij.refactoring.changeSignature.{DefaultValueColumn, NameColumn, TypeColumn}
+import consulo.language.editor.refactoring.changeSignature.ParameterTableModelBase
+import consulo.ui.ex.awt.ColumnInfo
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.ScalaParameterTableModel._
 import org.jetbrains.plugins.scala.lang.refactoring.ui.ScalaCodeFragmentTableCellEditor

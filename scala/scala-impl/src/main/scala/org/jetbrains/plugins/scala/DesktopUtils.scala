@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.project.Project
+import consulo.project.ui.notification.NotificationType
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
 import java.awt.datatransfer.StringSelection

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
-import com.intellij.codeInsight.intention.FileModifier.SafeFieldForPreview
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{JavaPsiFacade, PsiClass}
+import consulo.language.editor.inspection.FileModifier.SafeFieldForPreview
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
 import org.jetbrains.plugins.scala.ScalaBundle
 
 /**

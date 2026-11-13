@@ -1,18 +1,19 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.util.Ref
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiFile, PsiWhiteSpace}
-import com.intellij.util.IncorrectOperationException
-import com.intellij.util.text.CharArrayUtil
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.action.EnterHandlerDelegate.Result
+import consulo.language.editor.action.EnterHandlerDelegateAdapter
+import consulo.dataContext.DataContext
+import consulo.logging.Logger
+import consulo.codeEditor.action.EditorActionHandler
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.util.lang.ref.Ref
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiFile, PsiWhiteSpace}
+import consulo.language.util.IncorrectOperationException
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

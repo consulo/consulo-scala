@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.util.SimpleModificationTracker
+import consulo.component.util.SimpleModificationTracker
 import org.jetbrains.plugins.scala.Tracing
 
 class ScalaModificationTracker(name: String) extends SimpleModificationTracker {

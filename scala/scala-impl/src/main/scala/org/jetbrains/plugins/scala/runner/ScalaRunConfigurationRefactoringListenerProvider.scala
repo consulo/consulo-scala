@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.runner
 
 import com.intellij.execution.impl.RunConfigurationRefactoringElementListenerProvider
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.listeners.RefactoringElementListener
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.event.RefactoringElementListener
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 

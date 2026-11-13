@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.navigation.NavigationUtil
-import com.intellij.ide.util.EditSourceUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.PsiElementProcessor
+import consulo.navigation.NavigationUtil
+import consulo.language.psi.util.EditSourceUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiFile}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.resolve.PsiElementProcessor
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.{ScalaBundle, ScalaCodeInsightActionHandler}
 import org.jetbrains.plugins.scala.extensions._

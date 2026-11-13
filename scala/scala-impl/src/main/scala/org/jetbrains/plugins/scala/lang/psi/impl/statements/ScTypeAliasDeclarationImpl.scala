@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.ide.util.EditSourceUtil
-import com.intellij.lang.ASTNode
-import com.intellij.navigation.ItemPresentation
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil.getNextSiblingOfType
+import consulo.language.psi.util.EditSourceUtil
+import consulo.language.ast.ASTNode
+import consulo.navigation.ItemPresentation
+import consulo.language.psi.PsiElement
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil.getNextSiblingOfType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

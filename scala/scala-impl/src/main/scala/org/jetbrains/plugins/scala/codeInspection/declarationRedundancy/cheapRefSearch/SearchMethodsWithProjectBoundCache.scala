@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import com.thaiopensource.util.Service
+import consulo.project.Project
 
 /**
  * Each [[Search.Method]] has its own cache, and one [[Search.Method]] instance is bound to a project

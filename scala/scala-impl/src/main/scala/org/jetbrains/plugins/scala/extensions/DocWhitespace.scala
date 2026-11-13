@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 
 object DocWhitespace {

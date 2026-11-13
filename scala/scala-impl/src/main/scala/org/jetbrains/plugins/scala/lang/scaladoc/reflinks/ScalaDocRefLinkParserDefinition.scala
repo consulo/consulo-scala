@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement
-import com.intellij.lang.{ASTNode, ParserDefinition, PsiParser}
-import com.intellij.lexer.Lexer
-import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.{IFileElementType, TokenSet}
-import com.intellij.psi.{FileViewProvider, PsiElement, PsiFile}
-import org.jetbrains.annotations.NotNull
+import consulo.language.impl.psi.ASTWrapperPsiElement
+import consulo.language.ast.ASTNode
+import consulo.language.parser.{ParserDefinition, PsiParser}
+import consulo.language.lexer.Lexer
+import consulo.project.Project
+import consulo.language.ast.{IFileElementType, TokenSet}
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.lexer.ScalaDocRefLinkLexer
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.parser.ScalaDocRefLinkParser
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScalaDocRefLinkFile

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.functionExpressions
 
 import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiWhiteSpace}
+import consulo.project.Project
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.functionExpressions.UnnecessaryPartialFunctionQuickFix._
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

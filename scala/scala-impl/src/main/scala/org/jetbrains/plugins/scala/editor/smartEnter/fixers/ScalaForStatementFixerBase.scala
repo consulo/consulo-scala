@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.editor.smartEnter.fixers
 
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiErrorElement, SyntaxTraverser}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiErrorElement, SyntaxTraverser}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.editor.smartEnter.ScalaSmartEnterProcessor

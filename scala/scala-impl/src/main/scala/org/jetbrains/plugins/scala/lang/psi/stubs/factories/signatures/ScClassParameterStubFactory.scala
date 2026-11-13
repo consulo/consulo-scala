@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories.signatures
 
-import com.intellij.psi.stubs.IndexSink
+import consulo.language.psi.stub.IndexSink
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScClassParameterImpl
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScParameterStub

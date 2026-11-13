@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.codeInsight.template.postfix.templates.ElseExpressionPostfixTemplateBase
-import com.intellij.openapi.project.DumbAware
+import consulo.language.editor.refactoring.postfixTemplate.ElseExpressionPostfixTemplateBase
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.AncestorSelector.SelectTopmostAncestors
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.ScalaPostfixTemplatePsiInfo
 import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression.ScalaWithIfConditionSurrounder

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
 import com.intellij.jarRepository.RemoteRepositoriesConfiguration
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.project.Project
+import consulo.module.ModuleManager
+import consulo.project.Project
 import org.jetbrains.plugins.scala.DependencyManagerBase
 import org.jetbrains.plugins.scala.DependencyManagerBase.{IvyResolver, MavenResolver}
 import org.jetbrains.sbt.project.module.SbtModule

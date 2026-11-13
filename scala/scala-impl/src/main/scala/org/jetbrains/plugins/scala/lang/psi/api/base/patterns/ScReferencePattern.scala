@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 package patterns
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScBegin
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScValueOrVariableDefinition

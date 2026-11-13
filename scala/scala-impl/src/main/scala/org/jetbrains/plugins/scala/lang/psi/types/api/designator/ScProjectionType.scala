@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 package designator
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, RecursionManager, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

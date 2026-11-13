@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.tree.TokenSet
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElementVisitor
+import consulo.language.ast.TokenSet
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.scaladoc.ScalaDocMissingParameterDescriptionInspection._
 import org.jetbrains.plugins.scala.extensions._

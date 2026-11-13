@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.{PsiElement, PsiNamedElement, ResolveState}
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.types.api.{Any, FunctionType, Nothing, TypeParameter}

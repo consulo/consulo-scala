@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.startup
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.util.JavaCoroutines
 import kotlin.coroutines.Continuation
 

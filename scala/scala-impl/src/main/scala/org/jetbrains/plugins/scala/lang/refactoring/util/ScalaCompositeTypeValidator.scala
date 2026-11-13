@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.{GlobalSearchScopesCore, PsiSearchHelper}
-import com.intellij.psi.{PsiDirectory, PsiElement, PsiFile, PsiNamedElement}
-import com.intellij.util.Processor
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScopesCore
+import consulo.language.psi.search.PsiSearchHelper
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiNamedElement}
+import consulo.application.util.function.Processor
 
 object ScalaCompositeTypeValidator {
   def apply(validators: List[ScalaValidator],

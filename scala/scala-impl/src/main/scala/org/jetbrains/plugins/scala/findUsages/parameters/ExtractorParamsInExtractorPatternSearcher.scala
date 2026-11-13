@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.findUsages.parameters
 
-import com.intellij.find.findUsages.{CustomUsageSearcher, FindUsagesOptions}
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.usageView.UsageInfo
-import com.intellij.usages.{Usage, UsageInfoToUsageConverter}
-import com.intellij.util.Processor
+import com.intellij.find.findUsages.CustomUsageSearcher
+import consulo.find.FindUsagesOptions
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.language.psi.search.ReferencesSearch
+import consulo.usage.UsageInfo
+import consulo.usage.{Usage, UsageInfoToUsageConverter}
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScExtractorPattern}

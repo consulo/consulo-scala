@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting.{Block, ChildAttributes, Indent}
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, TokenType}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.codeStyle.{Block, ChildAttributes, Indent}
+import consulo.language.codeStyle.CommonCodeStyleSettings
+import consulo.language.ast.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.ast.TokenType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.formatting.ScalaBlock.isConstructorArgOrMemberFunctionParameter
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicConfigService

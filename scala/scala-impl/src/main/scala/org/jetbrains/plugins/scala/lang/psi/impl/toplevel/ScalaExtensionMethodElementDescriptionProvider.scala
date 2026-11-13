@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 
-import com.intellij.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
-import com.intellij.usageView.{UsageViewLongNameLocation, UsageViewShortNameLocation}
+import consulo.language.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
+import consulo.usage.{UsageViewLongNameLocation, UsageViewShortNameLocation}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiPresentationUtils.{extensionMethodPresentableText, extensionMethodShortText}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 

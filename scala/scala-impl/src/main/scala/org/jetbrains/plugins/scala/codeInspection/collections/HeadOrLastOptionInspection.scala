@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
+import consulo.language.editor.PsiEquivalenceUtil
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.openapi.editor.{DefaultLineWrapPositionStrategy, Document}
+import consulo.codeEditor.DefaultLineWrapPositionStrategy
+import consulo.document.Document
 
 class ScalaLineWrapPositionStrategy extends DefaultLineWrapPositionStrategy {
   override def canUseOffset(document: Document, offset: Int, virtual: Boolean): Boolean = {

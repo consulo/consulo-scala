@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.ShutDownTracker
+import consulo.application.ApplicationManager
+import consulo.util.lang.ShutDownTracker
 import org.jetbrains.plugins.scala.extensions.invokeOnDispose
 
 /**

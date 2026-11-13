@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.settings
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.openapi.options.ex.{ConfigurableExtensionPointUtil, ConfigurableVisitor, ConfigurableWrapper}
-import com.intellij.openapi.options.{Configurable, SearchableConfigurable}
-import com.intellij.openapi.project.{Project, ProjectManager}
+import consulo.configurable.{Configurable, SearchableConfigurable}
+import consulo.project.{Project, ProjectManager}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaLanguageCodeStyleSettingsProvider
 

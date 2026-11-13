@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 class ScalaWithForSurrounder extends ScalaWithForSurrounderBase {
   //noinspection ScalaExtractStringToBundle,DialogTitleCapitalization

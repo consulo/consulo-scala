@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.PsiClass
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.Tracing
 import org.jetbrains.plugins.scala.caches.RecursionManager
 import org.jetbrains.plugins.scala.caches.stats.{CacheCapabilities, CacheTracker, Tracer}

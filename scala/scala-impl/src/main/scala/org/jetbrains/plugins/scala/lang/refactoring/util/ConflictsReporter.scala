@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import com.intellij.openapi.ui.MessageType
-import com.intellij.openapi.ui.popup.{Balloon, JBPopupFactory}
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.ui.ConflictsDialog
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.containers.MultiMap
+import consulo.ui.ex.popup.{Balloon, JBPopupFactory}
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.ui.ConflictsDialog
+import consulo.ui.ex.RelativePoint
+import consulo.util.collection.MultiMap
 import org.jetbrains.plugins.scala.extensions.invokeLater
 
 import java.awt.Point

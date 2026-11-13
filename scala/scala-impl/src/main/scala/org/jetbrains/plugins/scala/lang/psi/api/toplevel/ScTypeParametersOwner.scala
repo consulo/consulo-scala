@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
@@ -55,7 +56,7 @@ trait ScTypeParametersOwner extends ScalaPsiElement {
   def typeParametersClause: Option[ScTypeParamClause] =
     leadingTypeParametersClause
 
-  import com.intellij.psi.scope.PsiScopeProcessor
+  import consulo.language.psi.resolve.PsiScopeProcessor
   override def processDeclarations(processor: PsiScopeProcessor,
                                   state: ResolveState,
                                   lastParent: PsiElement,

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.project.Project
+import consulo.component.PropertiesComponent
+import consulo.project.Project
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaTypeDefinitionFindUsagesOptions._
 
 final class ScalaTypeDefinitionFindUsagesOptions(project: Project) extends ScalaFindUsagesOptionsBase(project, isSearchForTextOccurrencesDefault = false) {

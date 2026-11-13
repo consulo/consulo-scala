@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
-import com.intellij.codeInsight.daemon.impl.{HighlightInfo, HighlightInfoType, HighlightVisitor}
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.rawHighlight.HighlightInfoHolder
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType, HighlightVisitor}
+import consulo.colorScheme.TextAttributesKey
+import consulo.application.dumb.DumbAware
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.highlighter.ScalaColorsSchemeUtils.NamedArgument
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.SOFT_KEYWORDS
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScAssignment
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias

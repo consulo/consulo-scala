@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
-import com.intellij.psi._
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiEllipsisType, PsiParameter, PsiParameterList, PsiType, PsiTypeParameter}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, ScParameterClause, ScParameters, ScTypeParam, ScTypeParamClause}

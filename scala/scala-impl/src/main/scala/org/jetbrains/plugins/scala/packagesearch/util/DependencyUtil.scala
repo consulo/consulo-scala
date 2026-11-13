@@ -1,17 +1,19 @@
 // TODO: move to a more appropriate package
 package org.jetbrains.plugins.scala.packagesearch.util
 
-import com.intellij.openapi.diagnostic.{ControlFlowException, Logger}
+import consulo.util.lang.ControlFlowException
+import consulo.logging.Logger
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils
-import com.intellij.psi.PsiElement
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.language.psi.PsiElement
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.annotations.{ApiStatus, VisibleForTesting}
 import org.jetbrains.plugins.scala.extensions.{NonNullObjectExt, SeqExt}
 import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersionInspection.{ArtifactIdSuffix, DependencyDescriptor}
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.BaseDependencyCompletionParameters
 import org.jetbrains.plugins.scala.project.{ProjectExt, ProjectPsiElementExt}
-import org.jetbrains.plugins.scala.{LatestScalaVersions, isUnitTestMode}
+import org.jetbrains.plugins.scala.LatestScalaVersions
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicReference
@@ -22,7 +24,7 @@ import scala.util.matching.Regex
 object DependencyUtil {
   private val versionCompletion = VersionCompletion.instance()
 
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   @VisibleForTesting
   private[jetbrains] def updateMockVersionCompletionCache(newCache: ((String, String), Seq[String])*): Unit =
     VersionCompletion.MockVersionCompletion.cache.set(Map(newCache*))

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.impl.nodes.AbstractPsiBasedNode
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.psi.PsiElement
+import consulo.project.ui.view.tree.AbstractPsiBasedNode
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.project.ProjectContext
 

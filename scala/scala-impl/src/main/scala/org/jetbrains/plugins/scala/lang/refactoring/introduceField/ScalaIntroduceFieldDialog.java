@@ -1,22 +1,25 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField;
 
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.help.HelpManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.refactoring.HelpID;
-import com.intellij.ui.*;
+import consulo.application.ApplicationManager;
+import consulo.document.event.DocumentEvent;
+import consulo.document.event.DocumentListener;
+import consulo.application.HelpManager;
+import consulo.project.Project;
+import consulo.ui.ex.awt.ComboBox;
+import consulo.ui.ex.awt.DialogWrapper;
+import com.intellij.java.impl.refactoring.HelpID;
+import consulo.language.editor.ui.awt.EditorComboBoxEditor;
+import consulo.language.editor.ui.awt.EditorComboBoxRenderer;
+import consulo.language.editor.ui.awt.EditorTextField;
+import consulo.ui.ex.awt.HyperlinkLabel;
+import consulo.language.editor.ui.awt.StringComboboxEditor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.ScalaFileType;
+import org.jetbrains.plugins.scala.api.ScalaFileType;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition;
 import org.jetbrains.plugins.scala.lang.psi.types.ScType;
@@ -271,7 +274,7 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
 
         ((EditorTextField) myNameComboBox.getEditor().getEditorComponent()).addDocumentListener(new DocumentListener() {
                                                                                                     @Override
-                                                                                                    public void documentChanged(@NotNull DocumentEvent event) {
+                                                                                                    public void documentChanged(DocumentEvent event) {
                                                                                                         fireNameDataChanged();
                                                                                                     }
                                                                                                 }
@@ -328,7 +331,6 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
     }
 
     @Override
-    @NotNull
     protected Action[] createActions() {
         return new Action[]{getOKAction(), getCancelAction(), getHelpAction()};
     }

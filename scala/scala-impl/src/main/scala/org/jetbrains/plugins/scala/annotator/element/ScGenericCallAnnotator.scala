@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.element
 
 import com.intellij.psi.impl.light.LightDefaultConstructor
-import com.intellij.psi.{PsiMethod, PsiNamedElement, PsiTypeParameterListOwner}
+import com.intellij.java.language.psi.{PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.quickfix.ImportNamedTypeArgumentsFeatureFlagQuickFix
@@ -17,7 +18,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.ScSyntheticF
 import org.jetbrains.plugins.scala.lang.psi.types.api.{PsiTypeParameterListOwnerExt, PsiTypeParametersExt, TypeParameter}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, DefaultTypeParameterMismatch, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 import scala.annotation.tailrec
 

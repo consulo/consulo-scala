@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.filters.expression
 
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.filter.ElementFilter
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScDo, ScExpression}

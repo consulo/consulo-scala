@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.find.findUsages.JavaFindUsagesOptions
-import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.project.Project
-import org.jetbrains.annotations.ApiStatus
+import com.intellij.java.analysis.impl.find.findUsages.JavaFindUsagesOptions
+import consulo.component.PropertiesComponent
+import consulo.project.Project
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 abstract class ScalaFindUsagesOptionsBase(project: Project, isSearchForTextOccurrencesDefault: Boolean = true) extends JavaFindUsagesOptions(project) {
   //NOTE: this is the field from base class
   isSearchForTextOccurrences = isSearchForTextOccurrencesDefault

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.documentation.render.PsiCommentInlineDocumentation
-import com.intellij.openapi.util.TextRange
-import com.intellij.platform.backend.documentation.{InlineDocumentation, InlineDocumentationProvider}
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.documentation.PsiCommentInlineDocumentation
+import consulo.document.util.TextRange
+import consulo.language.editor.documentation.{InlineDocumentation, InlineDocumentationProvider}
+import consulo.language.psi.PsiFile
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 

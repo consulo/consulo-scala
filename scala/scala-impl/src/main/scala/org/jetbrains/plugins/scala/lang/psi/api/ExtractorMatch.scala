@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScExtractorPattern}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

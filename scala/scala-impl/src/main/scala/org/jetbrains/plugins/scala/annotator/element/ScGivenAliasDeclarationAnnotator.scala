@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.CodeInsightUtilCore
+import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInsight.intention.{FileModifier, IntentionAction}
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.template.TemplateBuilderImpl
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationHolder, TemplateUtils}

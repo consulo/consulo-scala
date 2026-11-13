@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInspection.{IntentionWrapper, ProblemsHolder}
-import com.intellij.lang.xml.XMLLanguage
-import com.intellij.psi.search.{LocalSearchScope, PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.{PsiAnnotationOwner, PsiElement, PsiElementVisitor, PsiReference}
+import consulo.language.editor.intention.IntentionWrapper
+import consulo.language.editor.inspection.ProblemsHolder
+import consulo.xml.language.XMLLanguage
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import com.intellij.java.language.psi.PsiAnnotationOwner
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiReference}
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.ScalaUnusedDeclarationInspection.hasUnusedAnnotation
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt

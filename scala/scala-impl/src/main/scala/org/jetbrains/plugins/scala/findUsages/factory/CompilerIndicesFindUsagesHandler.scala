@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.find.findUsages.FindUsagesOptions
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod, PsiNamedElement}
-import com.intellij.usageView.UsageInfo
-import com.intellij.util.Processor
+import consulo.find.FindUsagesOptions
+import consulo.module.content.ProjectFileIndex
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.usage.UsageInfo
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.findUsages.ExternalReferenceSearcher
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition

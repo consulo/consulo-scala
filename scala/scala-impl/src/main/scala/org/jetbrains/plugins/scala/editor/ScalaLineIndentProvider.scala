@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.lang.Language
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.lineIndent.LineIndentProvider
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.Language
+import consulo.codeEditor.Editor
+import consulo.codeEditor.EditorEx
+import consulo.project.Project
+import consulo.language.codeStyle.lineIndent.LineIndentProvider
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
 final class ScalaLineIndentProvider extends LineIndentProvider {

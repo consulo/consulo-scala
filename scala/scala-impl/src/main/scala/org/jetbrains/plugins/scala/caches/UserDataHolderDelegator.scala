@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.util.{Disposer, UserDataHolderBase, UserDataHolderEx}
+import consulo.disposer.Disposable
+import consulo.disposer.Disposer
+import consulo.util.dataholder.{UserDataHolderBase, UserDataHolderEx}
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.nowarn

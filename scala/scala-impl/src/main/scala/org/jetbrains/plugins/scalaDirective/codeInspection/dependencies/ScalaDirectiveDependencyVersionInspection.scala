@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.codeInspection.dependencies
 
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.LocalQuickFix
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersionInspection
 import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersionInspection.DependencyDescriptor
 import org.jetbrains.plugins.scalaDirective.dependencies.{ScalaDirectiveDependencyDescriptor, ScalaDirectiveDependencyPattern}

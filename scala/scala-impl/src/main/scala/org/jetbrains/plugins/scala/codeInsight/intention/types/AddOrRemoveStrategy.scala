@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{Sc3TypedPattern, ScTypedPattern, ScTypedPatternLike}

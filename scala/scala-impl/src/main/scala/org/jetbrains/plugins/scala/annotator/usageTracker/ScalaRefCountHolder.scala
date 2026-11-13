@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.annotator.usageTracker
 
-import com.intellij.codeHighlighting.Pass
-import com.intellij.codeInsight.daemon.{DaemonCodeAnalyzer, impl}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.psi._
-import com.intellij.util.containers.ContainerUtil
+import consulo.language.editor.Pass
+import consulo.language.editor.DaemonCodeAnalyzer
+import com.intellij.codeInsight.daemon.impl
+import consulo.logging.Logger
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement, SmartPsiElementPointer}
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.caches.CachesUtil
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.usages._
 

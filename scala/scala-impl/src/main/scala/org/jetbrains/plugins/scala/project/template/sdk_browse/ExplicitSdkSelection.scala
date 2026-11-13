@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.project.template.sdk_browse
 
-import com.intellij.openapi.fileChooser.FileChooser
+import consulo.fileChooser.FileChooser
 import org.jetbrains.plugins.scala.project.template.ScalaSdkDescriptor
 
 import javax.swing.JComponent

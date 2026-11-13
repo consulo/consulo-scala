@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.annotator.usageTracker.ScalaRefCountHolder
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.{HighlightingPassInspection, ProblemInfo}

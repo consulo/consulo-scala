@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.formatting.Indent
-import com.intellij.lang.ASTNode
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings.{NEXT_LINE_SHIFTED, NEXT_LINE_SHIFTED2}
-import com.intellij.psi.impl.source.tree.{LeafPsiElement, PsiWhiteSpaceImpl}
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.{PsiComment, PsiElement}
+import consulo.language.codeStyle.Indent
+import consulo.language.ast.ASTNode
+import consulo.language.codeStyle.CommonCodeStyleSettings.{NEXT_LINE_SHIFTED, NEXT_LINE_SHIFTED2}
+import consulo.language.impl.psi.{LeafPsiElement, PsiWhiteSpaceImpl}
+import consulo.language.ast.TokenSet
+import consulo.language.psi.{PsiComment, PsiElement}
 import org.jetbrains.plugins.scala.editor.Scala3IndentationBasedSyntaxUtils
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, _}
 import org.jetbrains.plugins.scala.lang.TokenSets

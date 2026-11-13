@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.SAM
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.codeInspection.SAM.ConvertExpressionToSAMInspection._
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

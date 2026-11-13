@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation}
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.patterns.{ElementPattern, PsiElementPattern}
-import com.intellij.psi.impl.source.DummyHolder
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil.{getContextOfType, getParentOfType}
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
-import com.intellij.util.ProcessingContext
-import com.intellij.util.ui.EmptyIcon
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext, PrioritizedLookupElement}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation}
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.pattern.{ElementPattern, PsiElementPattern}
+import consulo.language.impl.psi.DummyHolder
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil.{getContextOfType, getParentOfType}
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.util.ProcessingContext
+import consulo.ui.ex.awt.EmptyIcon
 import org.jetbrains.plugins.scala.editor.enterHandler.EnterHandlerUtils.calcCaretIndent
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.ScalaEndMarkerCompletionContributor._

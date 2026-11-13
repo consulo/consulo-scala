@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components.libextensions.ui
 
-import com.intellij.notification.{Notification, NotificationType, Notifications}
+import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
 import org.jetbrains.plugins.scala.ScalaBundle
 
 import javax.swing.event.HyperlinkEvent

@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.notification.{Notification, NotificationAction}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.{FileDocumentManager, FileEditorManager, FileEditorOpenRequest}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.{LocalFileSystem, VirtualFile}
-import com.intellij.psi.PsiFile
+import consulo.language.codeStyle.CodeStyle
+import consulo.project.ui.notification.{Notification, NotificationAction}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.logging.Logger
+import consulo.document.FileDocumentManager
+import consulo.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
+import consulo.project.Project
+import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
+import consulo.language.psi.PsiFile
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.typesafe.config._
 import org.apache.commons.text.StringEscapeUtils
@@ -22,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtNotification
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.utils.ScalafmtConfigUtils
 import org.jetbrains.plugins.scala.lang.formatting.settings.{ScalaCodeStyleSettings, ScalaFmtSettingsPanel}
 import org.jetbrains.plugins.scala.settings.ShowSettingsUtilImplExt
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.sbt.api.language.SbtFile
 import org.scalafmt.dynamic.{ScalafmtReflect, ScalafmtReflectConfig, ScalafmtVersion}
 
 import java.nio.charset.Charset

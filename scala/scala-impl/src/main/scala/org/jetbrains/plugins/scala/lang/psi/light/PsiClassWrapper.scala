@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.navigation.ItemPresentation
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.util.{Pair, TextRange}
-import com.intellij.pom.java.LanguageLevel
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiClassImplUtil.MemberType
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.impl.{PsiClassImplUtil, PsiSuperMethodImplUtil}
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.scope.processor.MethodsProcessor
-import com.intellij.psi.search.{GlobalSearchScope, SearchScope}
-import com.intellij.psi.util.PsiUtil
+import consulo.navigation.ItemPresentation
+import consulo.util.lang.StringUtil
+import consulo.util.lang.Pair
+import consulo.document.util.TextRange
+import com.intellij.java.language.LanguageLevel
+import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiClass, PsiClassInitializer, PsiClassType, PsiField, PsiIdentifier, PsiMethod, PsiModifierList, PsiReferenceList, PsiSubstitutor, PsiTypeParameter, PsiTypeParameterList}
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.impl.PsiClassImplUtil.MemberType
+import consulo.language.impl.psi.LightElement
+import com.intellij.java.language.impl.psi.impl.{PsiClassImplUtil, PsiSuperMethodImplUtil}
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import consulo.language.psi.resolve.PsiScopeProcessor
+import com.intellij.java.language.impl.psi.scope.processor.MethodsProcessor
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.content.scope.SearchScope
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier

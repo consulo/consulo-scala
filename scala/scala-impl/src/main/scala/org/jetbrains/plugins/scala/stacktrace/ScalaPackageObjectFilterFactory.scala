@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.stacktrace
 
-import com.intellij.execution.filters._
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.execution.ui.console.{ConsoleFilterProvider, HyperlinkInfo, OpenFileHyperlinkInfo}
+import com.intellij.java.execution.filters.{ExceptionFilter, ExceptionFilterFactory, ExceptionWorker}
+import com.intellij.execution.filters.ResultItem
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inReadAction}
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.PackageObjectSingletonClassName
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.PackageObjectSingletonClassName
 
 import scala.jdk.CollectionConverters._
 

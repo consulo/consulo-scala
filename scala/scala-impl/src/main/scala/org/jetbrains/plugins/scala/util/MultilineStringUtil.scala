@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.application.options.CodeStyle
+import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.document.Document
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.format.WithStrippedMargin
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

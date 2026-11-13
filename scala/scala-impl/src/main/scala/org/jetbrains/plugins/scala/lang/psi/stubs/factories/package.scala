@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs._
-import com.intellij.util.{ArrayFactory, ArrayUtil}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{IndexSink, StubIndexKey, StubInputStream, StubOutputStream}
+import consulo.util.collection.{ArrayFactory, ArrayUtil}
 import org.jetbrains.plugins.scala.extensions.{ArrayExt, IterableExt}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 

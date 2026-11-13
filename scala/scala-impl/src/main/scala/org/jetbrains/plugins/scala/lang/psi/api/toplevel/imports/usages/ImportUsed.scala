@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.usages
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiElement, SmartPointerManager, SmartPsiElementPointer}
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiElement, SmartPointerManager, SmartPsiElementPointer}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, ifReadAllowed}
 import org.jetbrains.plugins.scala.lang.TokenTexts
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

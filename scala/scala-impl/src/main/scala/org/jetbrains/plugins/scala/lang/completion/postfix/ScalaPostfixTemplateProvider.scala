@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix
 
-import com.intellij.codeInsight.template.postfix.templates._
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiFile
+import consulo.language.editor.postfixTemplate.{PostfixTemplate, PostfixTemplateProvider}
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiFile
 
 import java.{util => ju}
 import scala.jdk.CollectionConverters._

@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.ui.IdeBorderFactory;
-import com.intellij.ui.components.JBList;
+import consulo.language.codeStyle.CodeStyleSettings;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.ui.ex.awt.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UI;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettingsUtil;
 
@@ -42,7 +41,7 @@ public final class ImportsPanel extends ScalaCodeStylePanelBase {
     private final DefaultListModel<String> myImportLayoutModel;
 
     @SuppressWarnings("deprecation")
-    public ImportsPanel(@NotNull CodeStyleSettings settings) {
+    public ImportsPanel(CodeStyleSettings settings) {
         super(settings, ScalaBundle.message("imports.panel.title"));
 
         myImportRetativeToBasePackagePanel.add(UI.PanelFactory.panel(myImportRetativeToBasePackageCheckBox)
@@ -116,7 +115,7 @@ public final class ImportsPanel extends ScalaCodeStylePanelBase {
     }
 
     @Override
-    public void apply(@NotNull CodeStyleSettings settings) {
+    public void apply(CodeStyleSettings settings) {
         if (!isModified(settings)) return;
 
         ScalaCodeStyleSettings scalaCodeStyleSettings = settings.getCustomSettings(ScalaCodeStyleSettings.class);

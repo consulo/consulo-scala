@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.element
 
 import com.intellij.codeInsight.intention.CommonIntentionAction
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiClass, PsiMethod, PsiModifier, PsiModifierList}
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifier, PsiModifierList}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.quickfix.{ImplementMembersQuickFix, ModifierQuickFix}
@@ -22,7 +22,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, PhysicalMethodSignat
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.overrideImplement.{ScMethodMember, ScalaOIUtil, ScalaTypedMember}
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle, overrideImplement}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.{ScalaBundle, overrideImplement}
 
 import scala.annotation.tailrec
 import scala.util.chaining._

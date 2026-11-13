@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.psi.stubs.IndexSink
+import consulo.language.psi.stub.IndexSink
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
 final class ImplicitInstanceIndex extends ScStringStubIndexExtension[ScMember] {

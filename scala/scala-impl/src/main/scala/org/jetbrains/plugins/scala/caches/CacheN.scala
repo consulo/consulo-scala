@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.util.ModificationTracker
+import consulo.component.util.ModificationTracker
 import org.jetbrains.plugins.scala.caches.CachesUtil.CacheCapabilties._
 import org.jetbrains.plugins.scala.caches.CachesUtil.Timestamped
 import org.jetbrains.plugins.scala.caches.stats.{CacheTracker, Tracer}

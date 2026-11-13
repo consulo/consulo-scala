@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.{InsertionContext, InsertHandler => IJInsertHandler}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementDecorator}
+import consulo.language.editor.completion.lookup.{InsertionContext, InsertHandler => IJInsertHandler}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator}
 
 package object aot {
 

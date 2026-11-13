@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories.signatures
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubElement, StubInputStream, StubOutputStream}
-import com.intellij.util.ArrayUtil.EMPTY_STRING_ARRAY
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{StubElement, StubInputStream, StubOutputStream}
+import consulo.util.collection.ArrayUtil.EMPTY_STRING_ARRAY
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParameter, ScParameter}
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.signatures.ScParamElementType
 import org.jetbrains.plugins.scala.lang.psi.stubs.factories.{ScStubSerializingElementFactory, StubInputStreamExt, StubOutputStreamExt}

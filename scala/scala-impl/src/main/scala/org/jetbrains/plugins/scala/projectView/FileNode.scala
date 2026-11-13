@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala
 package projectView
 
-import com.intellij.ide.projectView.impl.nodes.PsiFileNode
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
+import consulo.project.ui.view.tree.PsiFileNode
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.tasty.TastyFileType

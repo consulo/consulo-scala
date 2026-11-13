@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.components
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation
+import consulo.project.Project
+import consulo.project.ui.wm.StatusBarWidget
+import consulo.project.ui.wm.StatusBarWidget.WidgetPresentation
 import com.intellij.util.Consumer
 import org.jetbrains.plugins.scala.ScalaBundle.message
 import org.jetbrains.plugins.scala.actions.ScalaHighlightingModeAction

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.InferUtil

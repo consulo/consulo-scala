@@ -1,18 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.DumbService
+import consulo.logging.Logger
+import consulo.project.DumbService
 import com.intellij.openapi.roots.PackageIndex
-import com.intellij.openapi.util.Key
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.FileTypeUtils
-import com.intellij.psi.{JavaDirectoryService, PsiClass, PsiClassOwner, PsiDirectory, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiNamedElement, PsiPackage, PsiReference}
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.move.moveClassesOrPackages.MoveClassHandler
-import com.intellij.refactoring.move.moveFilesOrDirectories.MoveFilesOrDirectoriesUtil
-import com.intellij.refactoring.util.{MoveRenameUsageInfo, TextOccurrencesUtil}
-import com.intellij.usageView.UsageInfo
+import consulo.util.dataholder.Key
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import com.intellij.java.language.psi.util.FileTypeUtils
+import com.intellij.java.language.psi.{JavaDirectoryService, PsiClass, PsiClassOwner}
+import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiNamedElement, PsiPackage, PsiReference}
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveClassHandler
+import consulo.language.editor.refactoring.move.fileOrDirectory.MoveFilesOrDirectoriesUtil
+import consulo.usage.MoveRenameUsageInfo
+import consulo.language.editor.refactoring.util.TextOccurrencesUtil
+import consulo.usage.UsageInfo
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt, ScalaFileExt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}

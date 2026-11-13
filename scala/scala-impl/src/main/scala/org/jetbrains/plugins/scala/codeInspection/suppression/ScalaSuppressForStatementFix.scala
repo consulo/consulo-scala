@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.codeInspection.suppression
 
-import com.intellij.codeInsight.daemon.HighlightDisplayKey
-import com.intellij.codeInsight.daemon.impl.actions.SuppressByCommentFix
-import com.intellij.codeInspection.{InspectionsBundle, SuppressionUtil, SuppressionUtilCore}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement}
+import consulo.language.editor.rawHighlight.HighlightDisplayKey
+import consulo.language.editor.inspection.SuppressByCommentFix
+import consulo.language.editor.inspection.{InspectionsBundle, SuppressionUtil}
+import com.intellij.codeInspection.SuppressionUtilCore
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

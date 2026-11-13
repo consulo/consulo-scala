@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.net.HttpConnectionUtils
 import org.jetbrains.plugins.scala.ScalaBundle

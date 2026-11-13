@@ -1,38 +1,55 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
-import com.intellij.extapi.psi.StubBasedPsiElementBase
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ex.ApplicationUtil
-import com.intellij.openapi.application.{ApplicationManager, ModalityState, TransactionGuard}
-import com.intellij.openapi.command.{CommandProcessor, UndoConfirmationPolicy, WriteCommandAction}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.{Editor, RangeMarker}
-import com.intellij.openapi.fileEditor.{FileEditorManager, FileEditorOpenRequest, OpenFileDescriptor}
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressManager}
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.util._
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiImplUtil
-import com.intellij.psi.impl.light.LightMethod
-import com.intellij.psi.impl.source.tree.{FileElement, SharedImplUtil}
-import com.intellij.psi.impl.source.{PostprocessReformattingAspect, PsiFileImpl}
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope}
-import com.intellij.psi.stubs.StubElement
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.CommonProcessors.CollectUniquesProcessor
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.language.impl.psi.stub.StubBasedPsiElementBase
+import consulo.language.ast.ASTNode
+import consulo.disposer.Disposable
+import consulo.application.util.ApplicationUtil
+import consulo.application.ApplicationManager
+import consulo.ui.ModalityState
+import com.intellij.openapi.application.TransactionGuard
+import consulo.undoRedo.{CommandProcessor, UndoConfirmationPolicy}
+import consulo.language.editor.WriteCommandAction
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.document.RangeMarker
+import consulo.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
+import consulo.navigation.OpenFileDescriptor
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressManager
+import consulo.project.{DumbService, Project}
+import com.intellij.openapi.util.{A, B, DialogTitle, E, F, NlsContexts, NlsSafe}
+import consulo.application.util.function.{Computable, ThrowableComputable}
+import consulo.disposer.Disposer
+import consulo.util.lang.ref.Ref
+import consulo.document.util.TextRange
+import consulo.util.dataholder.UserDataHolderEx
+import consulo.util.lang.StringUtil
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
+import consulo.language.file.FileViewProvider
+import com.intellij.java.language.psi.{PsiArrayType, PsiClass, PsiDocCommentOwner, PsiMember, PsiMethod, PsiModifier, PsiModifierListOwner, PsiParameter, PsiParameterList, PsiType, PsiVariable}
+import consulo.language.psi.{PsiComment, PsiDirectory, PsiDocumentManager, PsiElement, PsiErrorElement, PsiFile, PsiNamedElement, PsiWhiteSpace, SmartPointerManager, SmartPsiElementPointer}
+import consulo.language.psi.stub.Stub
+import com.intellij.java.language.impl.psi.impl.PsiImplUtil
+import com.intellij.java.language.impl.psi.impl.light.LightMethod
+import consulo.language.impl.ast.{FileElement, SharedImplUtil}
+import consulo.language.codeStyle.PostprocessReformattingAspect
+import consulo.language.impl.psi.PsiFileImpl
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.language.psi.stub.StubElement
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.application.util.function.CommonProcessors.CollectUniquesProcessor
+import consulo.application.util.concurrent.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.intellij.util.text.CharArrayUtil
-import com.intellij.util.{ArrayFactory, Processor}
+import consulo.util.lang.CharArrayUtil
+import consulo.util.collection.ArrayFactory
+import consulo.application.util.function.Processor
 import org.jetbrains.annotations.{Nls, NonNls, Nullable}
 import org.jetbrains.plugins.scala.caches.UserDataHolderDelegator
-import org.jetbrains.plugins.scala.extensions.implementation.iterator._
+import org.jetbrains.plugins.scala.api.extensions.implementation.iterator._
 import org.jetbrains.plugins.scala.internal.ScalaDynamicPluginManager
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaModifier, ScalaTokenTypes}

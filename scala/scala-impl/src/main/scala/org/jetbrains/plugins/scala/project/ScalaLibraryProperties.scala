@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.roots.libraries.LibraryProperties
-import com.intellij.openapi.util.io.FileUtil
+import consulo.content.library.LibraryProperties
+import consulo.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.util.HashBuilder._

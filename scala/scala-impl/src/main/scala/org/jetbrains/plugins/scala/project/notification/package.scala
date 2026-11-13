@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiManager
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.sbt.Sbt
 
 package object notification {

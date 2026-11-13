@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.unwrap
 
-import com.intellij.codeInsight.unwrap.{UnwrapDescriptorBase, Unwrapper}
+import consulo.language.editor.refactoring.unwrap.{UnwrapDescriptorBase, Unwrapper}
 
 class ScalaUnwrapDescriptor extends UnwrapDescriptorBase {
   override def createUnwrappers(): Array[Unwrapper] = Array (

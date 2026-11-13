@@ -1,10 +1,14 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import com.intellij.openapi.project.Project;
+import consulo.project.Project;
 import com.intellij.openapi.ui.DialogPanel;
-import com.intellij.openapi.util.Pair;
-import com.intellij.ui.*;
-import com.intellij.ui.components.JBLabel;
+import consulo.util.lang.Pair;
+import consulo.ui.ex.awt.BrowserHyperlinkListener;
+import consulo.ui.ex.awt.util.ColorUtil;
+import com.intellij.ui.ContextHelpLabel;
+import consulo.ui.ex.awt.EnumComboBoxModel;
+import consulo.ui.ex.awt.TitledSeparator;
+import consulo.ui.ex.awt.JBLabel;
 import com.intellij.ui.dsl.builder.BuilderKt;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

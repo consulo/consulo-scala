@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
-import com.intellij.codeInsight.CodeInsightUtilCore
+import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
 import com.intellij.codeInsight.template.TemplateBuilderImpl
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.util.CommonRefactoringUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.annotator.createFromUsage.CreateFromUsageUtil._

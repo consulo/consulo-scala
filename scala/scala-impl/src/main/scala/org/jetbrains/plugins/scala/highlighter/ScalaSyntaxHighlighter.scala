@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.lexer._
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.fileTypes.{SyntaxHighlighter, SyntaxHighlighterBase}
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.psi.xml.XmlTokenType
-import com.intellij.psi.{StringEscapesTokenTypes, TokenType}
+import consulo.language.lexer.{DelegateLexer, LayeredLexer, Lexer, StringLiteralLexer}
+import consulo.colorScheme.TextAttributesKey
+import consulo.language.editor.highlight.{SyntaxHighlighter, SyntaxHighlighterBase}
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.xml.language.psi.XmlTokenType
+import consulo.language.ast.{StringEscapesTokenTypes, TokenType}
 import org.jetbrains.plugins.scala.Tracing
 import org.jetbrains.plugins.scala.highlighter.ScalaSyntaxHighlighter.CustomScalaLexer
 import org.jetbrains.plugins.scala.highlighter.lexer.{ScalaInterpolatedStringLiteralLexer, ScalaMultilineStringLiteralLexer, ScalaStringLiteralLexer}

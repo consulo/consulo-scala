@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.projectView
 
 import com.intellij.ide.IconProvider
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 import javax.swing.Icon

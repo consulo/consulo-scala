@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.util.text.StringUtil.isEmpty
-import com.intellij.psi._
+import consulo.util.lang.StringUtil.isEmpty
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import com.intellij.java.language.psi.{PsiMember, PsiModifier}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings.EXCLUDE_PREFIX
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

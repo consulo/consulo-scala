@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ClassInheritorsSearch
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.scope.LocalSearchScope
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScTypeAliasDeclaration, ScTypeAliasDefinition}
@@ -17,7 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScCompoundType, ScLi
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 

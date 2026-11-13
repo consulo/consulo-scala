@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.codeInsight.template.postfix.templates.{PostfixTemplate, StringBasedPostfixTemplate}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement, PsiFile}
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.postfixTemplate.PostfixTemplate
+import com.intellij.codeInsight.template.postfix.templates.StringBasedPostfixTemplate
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt}
 import org.jetbrains.plugins.scala.lang.completion.ScalaKeyword
 import org.jetbrains.plugins.scala.lang.completion.clauses.{ClauseCompletionParameters, ExhaustiveMatchCompletionContributor, PatternGenerationStrategy}

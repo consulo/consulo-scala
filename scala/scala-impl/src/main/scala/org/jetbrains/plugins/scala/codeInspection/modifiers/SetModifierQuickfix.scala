@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.modifiers
 
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.codeInspection.modifiers.SetModifierQuickfix.makeName

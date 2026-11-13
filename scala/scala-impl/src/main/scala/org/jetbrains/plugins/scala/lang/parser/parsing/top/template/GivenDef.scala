@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.top
 package template
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.parser.PsiBuilder
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule

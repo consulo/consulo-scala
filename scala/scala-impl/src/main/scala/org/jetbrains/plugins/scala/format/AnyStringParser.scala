@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.format
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 
 object AnyStringParser extends StringParser {

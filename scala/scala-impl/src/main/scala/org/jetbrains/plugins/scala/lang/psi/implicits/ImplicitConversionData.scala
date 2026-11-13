@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.autoImport.GlobalImplicitConversion
 import org.jetbrains.plugins.scala.autoImport.GlobalMember.findGlobalMembers
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
@@ -20,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{ConstraintSystem, Constraints
 import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.project.ProjectContext
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.AnyFqn
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.AnyFqn
 
 import scala.annotation.tailrec
 

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.filters.definitions
 
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement, PsiErrorElement, PsiWhiteSpace}
+import consulo.language.psi.filter.ElementFilter
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiWhiteSpace}
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.parser.ErrMsg

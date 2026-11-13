@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiClass, PsiClassType, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.OverridingAnnotator
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cachedInUserData}

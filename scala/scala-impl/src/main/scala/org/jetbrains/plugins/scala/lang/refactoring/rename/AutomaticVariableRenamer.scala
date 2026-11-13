@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
-import com.intellij.refactoring.rename.naming.{AutomaticRenamer, AutomaticRenamerFactory}
-import com.intellij.usageView.UsageInfo
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.util.lang.StringUtil
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.{AutomaticRenamer, AutomaticRenamerFactory}
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScTypedPatternLike

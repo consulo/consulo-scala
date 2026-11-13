@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.{PsiElement, PsiPackage, PsiReference}
-import com.intellij.refactoring.rename.RenamePsiPackageProcessor
+import consulo.codeEditor.Editor
+import consulo.content.scope.SearchScope
+import consulo.language.psi.{PsiElement, PsiPackage, PsiReference}
+import com.intellij.java.impl.refactoring.rename.RenamePsiPackageProcessor
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd

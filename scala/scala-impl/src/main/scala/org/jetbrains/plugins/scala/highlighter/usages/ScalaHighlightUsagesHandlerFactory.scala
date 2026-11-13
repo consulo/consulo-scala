@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.highlighter.usages
 
-import com.intellij.codeInsight.TargetElementUtil
-import com.intellij.codeInsight.highlighting.{HighlightUsagesHandlerBase, HighlightUsagesHandlerFactory}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.editor.TargetElementUtil
+import consulo.language.editor.highlight.usage.{HighlightUsagesHandlerBase, HighlightUsagesHandlerFactory}
+import consulo.codeEditor.Editor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightImplicitUsagesHandler.TargetKind
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightUsagesHandlerFactory.{ReferenceToCaseClassApplyOrUnapply, implicitHighlighter}

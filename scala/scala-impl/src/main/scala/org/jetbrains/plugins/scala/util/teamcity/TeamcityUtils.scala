@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala.util.teamcity
 
-import org.jetbrains.annotations.ApiStatus
 
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Experimental
 object TeamcityUtils {
 
   sealed trait Status {

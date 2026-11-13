@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.codeInspection
 
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import com.intellij.codeInspection._
-import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.lang.injection.InjectedLanguageManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.source.resolve.FileContextUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiFile, PsiNamedElement}
-import com.intellij.refactoring.RefactoringFactory
-import com.intellij.refactoring.rename.RenameProcessor
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
+import consulo.language.editor.scratch.ScratchUtil
+import consulo.language.inject.InjectedLanguageManager
+import consulo.project.Project
+import consulo.language.psi.FileContextUtil
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiFile, PsiNamedElement}
+import consulo.language.editor.refactoring.RefactoringFactory
+import consulo.language.editor.refactoring.rename.RenameProcessor
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

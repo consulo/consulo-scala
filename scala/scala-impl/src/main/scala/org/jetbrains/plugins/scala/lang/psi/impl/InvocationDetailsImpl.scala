@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.psi.{PsiElement, PsiMethod, PsiTypeParameterList}
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMethod, PsiTypeParameterList}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._

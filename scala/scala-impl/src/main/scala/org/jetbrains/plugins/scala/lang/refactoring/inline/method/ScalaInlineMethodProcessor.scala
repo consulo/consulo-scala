@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiReference
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
+import consulo.project.Project
+import consulo.language.psi.PsiReference
+import consulo.language.impl.psi.CodeEditUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineProcessor

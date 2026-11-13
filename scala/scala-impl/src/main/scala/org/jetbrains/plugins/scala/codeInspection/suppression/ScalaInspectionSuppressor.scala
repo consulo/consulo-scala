@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.suppression
 
-import com.intellij.codeInspection.{InspectionSuppressor, SuppressQuickFix}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.{InspectionSuppressor, SuppressQuickFix}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 
 class ScalaInspectionSuppressor extends InspectionSuppressor {

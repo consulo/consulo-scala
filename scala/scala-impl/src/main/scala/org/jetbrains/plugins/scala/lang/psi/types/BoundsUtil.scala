@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement, PsiTypeParameter}
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScTypeAlias, ScTypeAliasDeclaration, ScTypeAliasDefinition}

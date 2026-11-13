@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.PsiFileImpl
-import com.intellij.psi.stubs.StubElement
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.PsiFileImpl
+import consulo.language.psi.stub.StubElement
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.ScTypeDefinitionLikeFactory
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.ObjectExt

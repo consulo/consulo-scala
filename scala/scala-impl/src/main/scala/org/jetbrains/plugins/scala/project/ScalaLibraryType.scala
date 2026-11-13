@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries._
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.content.library.{LibraryType, NewLibraryConfiguration, PersistentLibraryKind}
 import com.intellij.openapi.roots.ui.configuration._
-import com.intellij.openapi.roots.{JavadocOrderRootType, OrderRootType}
-import com.intellij.openapi.vfs.{VfsUtil, VirtualFile}
+import com.intellij.openapi.roots.JavadocOrderRootType
+import consulo.content.OrderRootType
+import com.intellij.openapi.vfs.VfsUtil
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.icons.Icons

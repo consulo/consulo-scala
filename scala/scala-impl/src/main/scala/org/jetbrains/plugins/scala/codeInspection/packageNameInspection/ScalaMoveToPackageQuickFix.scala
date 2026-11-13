@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
-import com.intellij.CommonBundle
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ModuleRootManager, SourceFolder}
-import com.intellij.openapi.ui.Messages
-import com.intellij.refactoring.util.{CommonMoveClassesOrPackagesUtil, RefactoringMessageUtil}
-import com.intellij.util.IncorrectOperationException
+import consulo.application.CommonBundle
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ModuleRootManager
+import com.intellij.openapi.roots.SourceFolder
+import consulo.ui.ex.awt.Messages
+import com.intellij.refactoring.util.CommonMoveClassesOrPackagesUtil
+import com.intellij.java.impl.refactoring.util.RefactoringMessageUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.codeInspection.packageNameInspection.ScalaMoveToPackageQuickFix._

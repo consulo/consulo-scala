@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil._

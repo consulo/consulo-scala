@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import com.intellij.ide.BrowserUtil
-import com.intellij.openapi.fileChooser.{FileChooser, FileChooserDescriptor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.ui._
-import com.intellij.ui.components.{JBLabel, JBList}
+import consulo.webBrowser.BrowserUtil
+import consulo.fileChooser.{FileChooser, FileChooserDescriptor}
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.ui.ex.awt.{IdeBorderFactory, JBSplitter, ScrollPaneFactory, ToolbarDecorator}
+import consulo.ui.ex.awt.{JBLabel, JBList}
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
-import com.intellij.util.ui.UIUtil
+import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager._

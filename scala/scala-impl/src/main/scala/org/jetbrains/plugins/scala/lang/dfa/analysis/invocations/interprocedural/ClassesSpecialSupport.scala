@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural
 
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory}
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.MethodEffect
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport.SpecialSupportUtils.{containingScalaClass, containingScalaObject, isPsiClassCase, scalaClass}

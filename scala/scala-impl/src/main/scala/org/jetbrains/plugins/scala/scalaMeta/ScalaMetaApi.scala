@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.scalaMeta
 
-import com.intellij.openapi.application.ApplicationManager
+import consulo.application.ApplicationManager
 
 trait ScalaMetaApi
   extends QuasiquoteInferUtilApi

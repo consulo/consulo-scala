@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.modcommand.ModCommandAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.collections.{Simplification, SimplificationType}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

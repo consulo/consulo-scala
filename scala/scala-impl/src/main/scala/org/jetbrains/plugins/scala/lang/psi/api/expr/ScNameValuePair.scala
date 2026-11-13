@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.psi.{PsiElement, PsiNameValuePair}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiNameValuePair
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

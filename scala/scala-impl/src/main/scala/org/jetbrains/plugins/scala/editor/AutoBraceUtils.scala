@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, PsiErrorElement}
+import consulo.language.ast.IElementType
+import consulo.language.psi.{PsiElement, PsiErrorElement}
 import org.jetbrains.plugins.scala.editor.enterHandler.Scala3IndentationBasedSyntaxEnterHandler
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

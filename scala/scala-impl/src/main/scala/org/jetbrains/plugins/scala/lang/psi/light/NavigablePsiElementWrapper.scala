@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{NavigatablePsiElement, PsiElement, PsiFile}
+import consulo.document.util.TextRange
+import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiFile}
 
 trait NavigablePsiElementWrapper[E <: NavigatablePsiElement] extends NavigatablePsiElement {
   val delegate: E

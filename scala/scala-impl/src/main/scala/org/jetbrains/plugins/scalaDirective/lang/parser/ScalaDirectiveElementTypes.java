@@ -1,21 +1,25 @@
 package org.jetbrains.plugins.scalaDirective.lang.parser;
 
-import com.intellij.lang.*;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.tree.ILazyParseableElementType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.language.ast.ASTNode;
+import consulo.language.Language;
+import com.intellij.lang.LanguageParserDefinitions;
+import consulo.language.parser.ParserDefinition;
+import consulo.language.parser.PsiBuilder;
+import consulo.language.parser.PsiBuilderFactory;
+import consulo.project.Project;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import consulo.language.ast.ILazyParseableElementType;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scalaDirective.psi.impl.ScDirectiveImpl;
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage;
 
 public interface ScalaDirectiveElementTypes {
 
-    @NotNull ILazyParseableElementType SCALA_DIRECTIVE = new ILazyParseableElementType("SCALA_DIRECTIVE", ScalaDirectiveLanguage.INSTANCE) {
+    ILazyParseableElementType SCALA_DIRECTIVE = new ILazyParseableElementType("SCALA_DIRECTIVE", ScalaDirectiveLanguage.INSTANCE) {
 
         @Override
         @Nullable
-        public ASTNode parseContents(@NotNull ASTNode lazyNode) {
+        public ASTNode parseContents(ASTNode lazyNode) {
             Project project = JavaPsiFacade.getInstance(lazyNode.getTreeParent().getPsi().getProject()).getProject();
 
             Language language = getLanguage();

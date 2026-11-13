@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.search.{LocalSearchScope, SearchScope}
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiClassType, PsiIdentifier, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiElement, PsiErrorElement}
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.content.scope.SearchScope
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.icons.Icons

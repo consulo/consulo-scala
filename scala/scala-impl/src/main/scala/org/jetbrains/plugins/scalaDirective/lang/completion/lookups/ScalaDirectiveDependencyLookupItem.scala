@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion.lookups
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import org.jetbrains.plugins.scala.extensions.ElementType
 import org.jetbrains.plugins.scala.lang.completion.InsertionContextExt
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

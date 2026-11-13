@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 package patterns
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeVariableTypeElement

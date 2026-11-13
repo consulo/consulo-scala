@@ -1,22 +1,26 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.lang.{ASTNode, LanguageParserDefinitions, PsiBuilder, PsiBuilderFactory}
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.text.StringUtil.convertLineSeparators
-import com.intellij.pom.java.LanguageLevel
-import com.intellij.psi._
-import com.intellij.psi.impl.compiled.ClsParameterImpl
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.impl.source.tree.TreeElement
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.tree.{IElementType, IFileElementType}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.LightVirtualFile
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import com.intellij.lang.LanguageParserDefinitions
+import consulo.language.parser.{PsiBuilder, PsiBuilderFactory}
+import consulo.util.lang.ControlFlowException
+import consulo.component.ProcessCanceledException
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.util.lang.StringUtil.convertLineSeparators
+import com.intellij.java.language.LanguageLevel
+import com.intellij.java.language.psi.{JVMElementFactory, PsiAnnotation, PsiClass, PsiClassInitializer, PsiClassType, PsiField, PsiMethod, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiSubstitutor, PsiType, PsiTypeParameter, PsiTypeParameterList, PsiTypeParameterListOwner}
+import com.intellij.psi.LanguageFileViewProviders
+import consulo.language.psi.{PsiComment, PsiElement, PsiManager}
+import com.intellij.java.language.impl.psi.impl.compiled.ClsParameterImpl
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.impl.ast.TreeElement
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.ast.{IElementType, IFileElementType}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.file.light.LightVirtualFile
+import consulo.language.util.IncorrectOperationException
 import org.apache.commons.lang3.{ObjectUtils, StringUtils}
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.extensions._
@@ -49,7 +53,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator.isIdenti
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.{ScDocComment, ScDocParagraph, ScDocResolvableCodeReference, ScDocSyntaxElement}
 import org.jetbrains.plugins.scala.project.ProjectContext.toManager
 import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectExt, ScalaFeatures}
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scalaDirective.psi.api.ScDirective
 
 import java.{util => ju}

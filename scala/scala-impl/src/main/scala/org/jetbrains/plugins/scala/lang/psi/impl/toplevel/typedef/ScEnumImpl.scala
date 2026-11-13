@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiField
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.PsiField
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType

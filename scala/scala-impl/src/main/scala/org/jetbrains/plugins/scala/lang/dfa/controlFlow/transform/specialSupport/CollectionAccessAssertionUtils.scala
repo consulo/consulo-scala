@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.specialSupport
 
-import com.intellij.codeInspection.dataFlow.jvm.SpecialField
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.SpecialField
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.{ScalaCollectionAccessProblem, ScalaDfaProblemKind}
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.ScalaDfaControlFlowBuilder
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.ResultReq

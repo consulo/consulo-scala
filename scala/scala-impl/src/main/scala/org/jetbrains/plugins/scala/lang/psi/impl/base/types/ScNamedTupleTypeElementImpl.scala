@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base.types
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
+import consulo.language.ast.ASTNode
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScNamedTupleTypeComponent, ScNamedTupleTypeElement}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

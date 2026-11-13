@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.parser;
 
-import com.intellij.lang.WhitespacesAndCommentsBinder;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.tree.IElementType;
+import consulo.language.parser.WhitespacesAndCommentsBinder;
+import consulo.util.lang.StringUtil;
+import consulo.language.ast.IElementType;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes;
 import org.jetbrains.plugins.scalaDirective.lang.parser.ScalaDirectiveElementTypes;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes;

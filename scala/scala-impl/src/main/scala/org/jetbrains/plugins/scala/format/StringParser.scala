@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.format
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 trait StringParser extends StringParserLike[PsiElement]
 

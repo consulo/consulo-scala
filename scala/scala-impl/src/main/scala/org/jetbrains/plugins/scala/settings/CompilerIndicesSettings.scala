@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.openapi.components.{PersistentStateComponent, State, Storage}
-import com.intellij.openapi.project.Project
+import consulo.component.persist.{PersistentStateComponent, State, Storage}
+import consulo.project.Project
 import com.intellij.task.impl.{JpsProjectTaskRunner, ProjectTaskList}
 import com.intellij.task.{ProjectTaskManager, ProjectTaskRunner}
 import org.jetbrains.sbt.shell.SbtProjectTaskRunner

@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.lang.findUsages;
 
-import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
-import com.intellij.lang.cacheBuilder.WordOccurrence;
-import com.intellij.lexer.Lexer;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
-import com.intellij.util.Processor;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.cacheBuilder.DefaultWordsScanner;
+import consulo.language.cacheBuilder.WordOccurrence;
+import consulo.language.lexer.Lexer;
+import consulo.language.ast.IElementType;
+import consulo.language.ast.TokenSet;
+import consulo.application.util.function.Processor;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes;
 
@@ -22,7 +21,7 @@ public class ScalaWordsScanner extends DefaultWordsScanner {
   }
 
   public ScalaWordsScanner(final Lexer lexer, final TokenSet identifierTokenSet, final TokenSet commentTokenSet,
-                             final TokenSet literalTokenSet, @NotNull TokenSet skipCodeContextTokenSet) {
+                             final TokenSet literalTokenSet, TokenSet skipCodeContextTokenSet) {
     super(lexer, identifierTokenSet, commentTokenSet, literalTokenSet, skipCodeContextTokenSet);
     myLexer = lexer;
     myIdentifierTokenSet = identifierTokenSet;
@@ -32,8 +31,8 @@ public class ScalaWordsScanner extends DefaultWordsScanner {
   }
 
   @Override
-  public void processWords(@NotNull CharSequence fileText,
-                           @NotNull Processor<? super WordOccurrence> processor) {
+  public void processWords(CharSequence fileText,
+                           Processor<? super WordOccurrence> processor) {
     myLexer.start(fileText);
     WordOccurrence occurrence = new WordOccurrence(fileText, 0, 0, null); // shared occurrence
 

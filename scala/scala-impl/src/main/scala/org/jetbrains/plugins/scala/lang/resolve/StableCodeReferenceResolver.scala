@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.psi.{PsiNamedElement, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiNamedElement
+import com.intellij.java.language.psi.PsiTypeParameterListOwner
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScExtractorPattern
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScParameterizedTypeElement, ScSimpleTypeElement, ScTypeArgument}

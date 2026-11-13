@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.lang.annotation.HighlightSeverity
+import consulo.language.editor.annotation.HighlightSeverity
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils._
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder

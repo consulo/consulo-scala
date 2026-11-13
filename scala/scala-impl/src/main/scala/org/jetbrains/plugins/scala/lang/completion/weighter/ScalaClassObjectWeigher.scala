@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
-import com.intellij.psi.util.ProximityLocation
-import com.intellij.psi.util.proximity.ProximityWeigher
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.language.util.proximity.ProximityLocation
+import consulo.language.util.proximity.ProximityWeigher
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}

@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
-import com.intellij.CommonBundle
-import com.intellij.analysis.{AnalysisScope, BaseAnalysisAction, BaseAnalysisActionDialog}
-import com.intellij.execution.configurations._
-import com.intellij.execution.executors.DefaultRunExecutor
+import consulo.application.CommonBundle
+import consulo.language.editor.scope.AnalysisScope
+import consulo.language.editor.impl.action.BaseAnalysisAction
+import consulo.language.editor.ui.awt.scope.BaseAnalysisActionDialog
+import consulo.execution.configuration.{RunConfigurationBase, RunProfileState, RunnerSettings}
+import consulo.execution.executor.DefaultRunExecutor
 import com.intellij.execution.impl.{RunManagerImpl, RunnerAndConfigurationSettingsImpl}
-import com.intellij.execution.runners.{ExecutionEnvironment, ExecutionEnvironmentBuilder, ProgramRunner}
-import com.intellij.execution.util.ExecutionErrorDialog
-import com.intellij.execution.{ExecutionException, Executor}
-import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
-import com.intellij.ui.DocumentAdapter
+import consulo.execution.runner.{ExecutionEnvironment, ExecutionEnvironmentBuilder, ProgramRunner}
+import consulo.execution.ui.awt.ExecutionErrorDialog
+import consulo.process.ExecutionException
+import consulo.execution.executor.Executor
+import consulo.execution.configuration.ui.SettingsEditor
+import consulo.project.Project
+import consulo.ui.ex.awt.event.DocumentAdapter
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.scaladoc.generate.ScaladocAction.ScaladocRunConfiguration
 

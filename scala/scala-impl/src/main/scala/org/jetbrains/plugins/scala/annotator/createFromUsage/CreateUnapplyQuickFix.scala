@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
-import com.intellij.codeInsight.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilder
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.createFromUsage.CreateFromUsageUtil._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScPattern

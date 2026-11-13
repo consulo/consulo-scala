@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder, LookupElementRenderer}
-import com.intellij.patterns.{ElementPattern, PlatformPatterns, PsiElementPattern}
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.DirectClassInheritorsSearch
-import com.intellij.psi._
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementRenderer}
+import consulo.language.pattern.{ElementPattern, PlatformPatterns, PsiElementPattern}
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.indexing.search.searches.DirectClassInheritorsSearch
+import com.intellij.java.language.psi.{CommonClassNames, PsiClass, PsiMember}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
@@ -18,7 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createPatternFromTextWithContext
 import org.jetbrains.plugins.scala.lang.psi.types.api.{FunctionType, PartialFunctionType}
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.{AnyFqn, AnyRefFqn, NothingFqn}
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.{AnyFqn, AnyRefFqn, NothingFqn}
 
 package object clauses {
 

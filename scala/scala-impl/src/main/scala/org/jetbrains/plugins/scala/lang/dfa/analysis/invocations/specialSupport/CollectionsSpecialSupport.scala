@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport
 
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.rangeSet.LongRangeSet
-import com.intellij.codeInspection.dataFlow.types.{DfType, DfTypes}
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory, RelationType}
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.rangeSet.LongRangeSet
+import consulo.language.dataFlow.types.DfType
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.DfTypes
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory, RelationType}
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.MethodEffect
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport.SpecialSupportUtils.{collectionSizeRangeFromDfaValueInState, collectionSpecificSizeFromDfaValueInState, retrieveSingleProperArgumentValue}
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.InvocationInfo

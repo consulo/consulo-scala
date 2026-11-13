@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef
 
-import com.intellij.extapi.psi.StubBasedPsiElementBase
-import com.intellij.openapi.util.Key
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiMember, PsiModifier}
+import consulo.language.impl.psi.stub.StubBasedPsiElementBase
+import consulo.util.dataholder.Key
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiModifier}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.{Nullable, TestOnly}
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, StubBasedExt}
@@ -13,7 +14,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParame
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtensionBody, ScFunction, ScTypeAlias, ScValueOrVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.{ScExtendsBlock, ScTemplateBody}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, ScPackaging}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaFile, ScalaPsiElement}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.SyntheticNamedElement
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScMemberOrLocal

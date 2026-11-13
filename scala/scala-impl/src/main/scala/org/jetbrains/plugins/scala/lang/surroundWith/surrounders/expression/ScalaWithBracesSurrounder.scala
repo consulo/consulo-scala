@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 
 /*
  * ScalaWithBracketsSurrounder is responsible of surrounders, witch enclause expression in brackets: { Expression } or ( Expression )

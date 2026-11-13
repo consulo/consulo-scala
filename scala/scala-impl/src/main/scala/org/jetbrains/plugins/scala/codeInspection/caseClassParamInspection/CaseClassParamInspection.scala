@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.caseClassParamInspection
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.PsiElementVisitorSimple
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

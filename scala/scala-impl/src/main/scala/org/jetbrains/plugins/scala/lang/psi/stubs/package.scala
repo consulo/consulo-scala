@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.psi.CommonClassNames.JAVA_LANG_OBJECT
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.StubElement
-import com.intellij.util.ArrayUtil.EMPTY_STRING_ARRAY
+import com.intellij.java.language.psi.CommonClassNames.JAVA_LANG_OBJECT
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.StubElement
+import consulo.util.collection.ArrayUtil.EMPTY_STRING_ARRAY
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScCaptureTypeElement, ScCompoundTypeElement, ScDesugarizableTypeElement, ScInfixTypeElement, ScParameterizedTypeElement, ScSimpleTypeElement, ScTypeElement, ScTypeProjection}
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.AnyRefFqn
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.AnyRefFqn
 
 package object stubs {
 

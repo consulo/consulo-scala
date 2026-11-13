@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{MethodInvocation, ScExpression}
 

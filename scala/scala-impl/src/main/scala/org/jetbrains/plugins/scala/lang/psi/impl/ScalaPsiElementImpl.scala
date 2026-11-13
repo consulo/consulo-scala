@@ -1,19 +1,21 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.extapi.psi.{ASTWrapperPsiElement, StubBasedPsiElementBase}
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.openapi.util.UserDataHolderBase
-import com.intellij.psi.impl.CheckUtil
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.stubs.{IStubElementType, StubElement}
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.psi.{PsiElement, StubBasedPsiElement}
-import com.intellij.util.ArrayFactory
+import consulo.language.impl.psi.ASTWrapperPsiElement
+import consulo.language.impl.psi.stub.StubBasedPsiElementBase
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.util.dataholder.UserDataHolderBase
+import consulo.language.impl.psi.CheckUtil
+import consulo.language.impl.psi.LazyParseablePsiElement
+import consulo.content.scope.SearchScope
+import consulo.language.psi.stub.{IStubElementType, StubElement}
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.language.psi.{PsiElement, StubBasedPsiElement}
+import consulo.util.collection.ArrayFactory
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.ModTracker
 import org.jetbrains.plugins.scala.extensions.ObjectExt
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.{stubOrPsiNextSibling, stubOrPsiPrevSibling}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition

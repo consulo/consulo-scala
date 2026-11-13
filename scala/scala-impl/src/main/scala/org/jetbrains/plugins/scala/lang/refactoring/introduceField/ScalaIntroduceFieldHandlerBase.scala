@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField
 
-import com.intellij.codeInsight.navigation.PsiTargetNavigator
+import consulo.language.editor.ui.navigation.PsiTargetNavigator
 import com.intellij.ide.util.PsiClassRenderingInfo
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.resolve.PsiElementProcessor
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.navigation.DelegatingPsiTargetPresentationRenderer

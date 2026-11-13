@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion.lookups
 
-import com.intellij.codeInsight.completion.{InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.util.ui.EmptyIcon
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.ui.ex.awt.EmptyIcon
 import org.jetbrains.plugins.scalaDirective.lang.completion.UsingDirective
 
 object ScalaDirectiveLookupItem {

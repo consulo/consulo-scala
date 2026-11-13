@@ -1,16 +1,21 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup._
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementRenderer}
 import com.intellij.openapi.application.ex.ApplicationManagerEx
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Iconable
-import com.intellij.psi._
-import com.intellij.psi.filters._
-import com.intellij.psi.filters.position.{FilterPattern, LeftNeighbour}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ProcessingContext
+import consulo.application.progress.ProgressIndicator
+import consulo.project.DumbService
+import consulo.component.util.Iconable
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMember, PsiMethod}
+import consulo.language.psi.filter.{AndFilter, NotFilter, OrFilter}
+import consulo.xml.psi.filters.TextContainFilter
+import com.intellij.java.impl.psi.filters.TextFilter
+import consulo.language.pattern.FilterPattern
+import consulo.language.psi.filter.position.LeftNeighbour
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation.addTargetNameAnnotationIfNeeded
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, PsiFileExt, PsiModifierListOwnerExt}

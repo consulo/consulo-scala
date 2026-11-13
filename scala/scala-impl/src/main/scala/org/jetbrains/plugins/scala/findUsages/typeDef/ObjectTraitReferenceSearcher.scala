@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.findUsages.typeDef
 
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.{PsiElement, PsiReference}
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.application.dumb.IndexNotReadyException
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTrait}
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper

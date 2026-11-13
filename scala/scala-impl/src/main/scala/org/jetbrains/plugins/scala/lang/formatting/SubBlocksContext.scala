@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting.Alignment
-import com.intellij.lang.ASTNode
+import consulo.language.codeStyle.Alignment
+import consulo.language.ast.ASTNode
 
 private[formatting]
 class SubBlocksContext(

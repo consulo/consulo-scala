@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 
 class ExtensionSettingsSectionConfigurable(project: Project) extends SettingsSectionConfigurable {

@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.codeInsight.MethodImplementor
-import com.intellij.codeInsight.generation.{GenerationInfo, PsiGenerationInfo}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiMember, PsiMethod}
+import com.intellij.java.impl.codeInsight.MethodImplementor
+import com.intellij.java.language.impl.codeInsight.generation.GenerationInfo
+import com.intellij.java.impl.codeInsight.generation.PsiGenerationInfo
+import consulo.codeEditor.Editor
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
+import consulo.language.psi.PsiElement
 import com.intellij.util.{Consumer, EmptyConsumer}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster

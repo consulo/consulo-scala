@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.findUsages.vals
 
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.{PsiElement, PsiReference, PsiReferenceExpression}
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.{PsiElement, PsiReference}
+import com.intellij.java.language.psi.PsiReferenceExpression
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScValue, ScVariable}

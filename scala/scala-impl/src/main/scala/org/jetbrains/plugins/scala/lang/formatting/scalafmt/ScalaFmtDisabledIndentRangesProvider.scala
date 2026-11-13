@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.DisabledIndentRangesProvider
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.DisabledIndentRangesProvider
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 
 import java.util

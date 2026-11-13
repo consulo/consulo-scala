@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiReference
-import com.intellij.refactoring.BaseRefactoringProcessor
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiReference
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

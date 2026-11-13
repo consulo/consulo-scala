@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.{PsiClass, PsiMember}
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
 
 object ContainingClass {
 

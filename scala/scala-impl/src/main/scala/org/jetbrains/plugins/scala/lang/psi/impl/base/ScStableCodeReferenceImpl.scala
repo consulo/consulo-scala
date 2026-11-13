@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.impl.source.DummyHolder
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiField}
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiFile, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.ast.TokenType
+import consulo.language.impl.psi.DummyHolder
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.Tracing
 import org.jetbrains.plugins.scala.autoImport.quickFix.{ClassToImport, ElementToImport, MemberToImport}
@@ -28,7 +31,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.{ScDerivesClause, ScExtendsBlock, ScTemplateBody}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypedDefinition}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScPackage, ScPackageLike, ScalaFile}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.{ScPackage, ScPackageLike, ScalaFile}
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.{PatternTypeInference, ScReferenceImpl}
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.MixinNodes
 import org.jetbrains.plugins.scala.lang.psi.impl.{CompilerType, ScalaPsiElementFactory, ScalaPsiManager}

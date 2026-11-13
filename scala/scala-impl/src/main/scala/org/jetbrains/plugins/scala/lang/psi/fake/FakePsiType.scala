@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.fake
 
-import com.intellij.psi.{PsiAnnotation, PsiType, PsiTypeVisitor}
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.java.language.psi.{PsiAnnotation, PsiType, PsiTypeVisitor}
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring.ScTypePresentationExt
 

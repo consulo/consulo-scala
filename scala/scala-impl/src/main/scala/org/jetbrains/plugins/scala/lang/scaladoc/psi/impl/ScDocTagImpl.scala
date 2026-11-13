@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.javadoc.{PsiDocComment, PsiDocTagValue}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.javadoc.{PsiDocComment, PsiDocTagValue}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createScalaDocTagName
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

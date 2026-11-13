@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 import com.intellij.codeInsight.editorActions.TextBlockTransferableData
-import com.intellij.openapi.util.TextRange
+import consulo.document.util.TextRange
 
 import java.awt.datatransfer.DataFlavor
 

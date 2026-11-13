@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.daemon.ProblemHighlightFilter
-import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.roots.{JavaProjectRootsUtil, ProjectRootManager}
-import com.intellij.psi.PsiFile
+import consulo.language.editor.ProblemHighlightFilter
+import consulo.language.editor.scratch.ScratchUtil
+import consulo.java.impl.util.JavaProjectRootsUtil
+import consulo.module.content.ProjectRootManager
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.sbt.api.language.SbtFile
 
 final class ScalaProblemHighlightFilter extends ProblemHighlightFilter {
 

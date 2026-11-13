@@ -2,11 +2,13 @@ package org.jetbrains.plugins.scala.actions
 
 import _root_.com.intellij.codeInsight.TargetElementUtil
 import _root_.com.intellij.psi._
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.editor.{Editor, SelectionModel}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.util.{PsiTreeUtil, PsiUtilBase}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.codeEditor.{Editor, SelectionModel}
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.util.PsiUtilBase
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.plugins.scala.actions.ShowTypeInfoAction.typeTextOf
 import org.jetbrains.plugins.scala.actions.utils.TaskRunnerWithLoadingProgress
@@ -21,7 +23,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil.getSelectedExpression
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 
 /**

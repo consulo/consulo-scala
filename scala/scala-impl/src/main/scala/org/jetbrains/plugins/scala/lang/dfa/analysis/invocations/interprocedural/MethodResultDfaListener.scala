@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural
 
-import com.intellij.codeInspection.dataFlow.lang.{DfaAnchor, DfaListener, UnsatisfiedConditionProblem}
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.DfaValue
-import com.intellij.util.ThreeState
+import consulo.language.dataFlow.ir.DfaAnchor
+import consulo.language.dataFlow.interpreter.{DfaListener, UnsatisfiedConditionProblem}
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.DfaValue
+import consulo.util.lang.ThreeState
 
 class MethodResultDfaListener(resultDestination: DfaValue) extends DfaListener {
 

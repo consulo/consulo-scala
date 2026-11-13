@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.PsiClassType.ClassResolveResult
-import com.intellij.psi._
-import com.intellij.psi.impl.source.PsiImmediateClassType
+import consulo.logging.Logger
+import com.intellij.java.language.psi.PsiClassType.ClassResolveResult
+import com.intellij.java.language.psi.{PsiArrayType, PsiCapturedWildcardType, PsiClass, PsiClassType, PsiDisjunctionType, PsiElementFactory, PsiSubstitutor, PsiType, PsiTypeParameter, PsiWildcardType}
+import consulo.language.psi.PsiManager
+import com.intellij.java.language.impl.psi.PsiTypeMapper
+import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.constructTypeForPsiClass

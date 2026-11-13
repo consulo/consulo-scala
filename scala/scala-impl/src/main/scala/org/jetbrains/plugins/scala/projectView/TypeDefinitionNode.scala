@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.ViewSettings
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.lang.{ASTNode, TokenSeparatorGenerator}
-import com.intellij.psi.TokenType
-import com.intellij.psi.impl.source.tree.Factory
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.ast.{ASTNode, TokenSeparatorGenerator}
+import consulo.language.ast.TokenType
+import consulo.language.impl.ast.Factory
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScImportStmtElementType
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveElementType

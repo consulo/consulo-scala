@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiImplUtil
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.PsiImplUtil
 import org.jetbrains.plugins.scala.extensions.{ASTNodeExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

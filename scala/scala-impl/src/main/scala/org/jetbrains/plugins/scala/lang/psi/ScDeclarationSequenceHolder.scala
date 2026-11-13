@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.scope._
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.lang.psi.ScDeclarationSequenceHolder.processSyntheticsForTopLevelDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

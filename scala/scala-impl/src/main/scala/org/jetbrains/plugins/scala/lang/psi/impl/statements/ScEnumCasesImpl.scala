@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiClass
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, ifReadAllowed}
 import org.jetbrains.plugins.scala.lang.TokenSets
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor

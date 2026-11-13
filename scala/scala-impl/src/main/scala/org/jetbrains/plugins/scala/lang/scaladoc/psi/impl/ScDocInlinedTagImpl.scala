@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiErrorElement
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiErrorElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

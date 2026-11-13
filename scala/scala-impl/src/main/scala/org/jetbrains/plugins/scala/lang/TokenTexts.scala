@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 
 object TokenTexts {

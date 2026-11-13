@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.PsiFile
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor

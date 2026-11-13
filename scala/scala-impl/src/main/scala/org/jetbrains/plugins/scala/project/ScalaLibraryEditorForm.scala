@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import consulo.disposer.Disposable
+import consulo.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.roots.libraries.ui
 import com.intellij.openapi.roots.ui.distribution.DistributionComboBox
-import com.intellij.openapi.ui.{ComboBox, ComponentValidator}
+import consulo.ui.ex.awt.{ComboBox, ComponentValidator}
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.ui.IdeBorderFactory
-import com.intellij.ui.components.JBLabel
+import consulo.ui.ex.awt.IdeBorderFactory
+import consulo.ui.ex.awt.JBLabel
 import com.intellij.uiDesigner.core.{GridLayoutManager, Spacer}
-import com.intellij.util.ui.JBUI
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.project.ScalaLibraryEditorForm._
 import org.jetbrains.plugins.scala.util.ui.distribution.{DistributionComboBoxUtils, GenericBundledDistributionInfo, LocalDistributionInfoWithShorterDisplayedPath, SimpleFileChooserInfo}

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.psi._
-import com.intellij.psi.impl.source.resolve.JavaResolveUtil
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.java.language.JavaLanguage
+import com.intellij.java.language.psi.{PsiClass, PsiClassOwner, PsiField, PsiMember, PsiMethod, PsiModifier, PsiModifierList, PsiParameter}
+import consulo.language.psi.{PsiElement, PsiFile, PsiPackage}
+import com.intellij.java.language.impl.psi.impl.source.resolve.JavaResolveUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

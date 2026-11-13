@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.api
 
-import com.intellij.psi.javadoc.PsiDocTagValue
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.javadoc.PsiDocTagValue
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPolyResolvable
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createScalaDocTagValue
 

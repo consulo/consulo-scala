@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.psi.{PsiElement, PsiMethod, PsiModifier}
-import com.intellij.refactoring.classMembers.MemberInfoBase
+import com.intellij.java.language.JavaLanguage
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMethod, PsiModifier}
+import consulo.language.editor.refactoring.classMember.MemberInfoBase
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.completion.ScalaKeyword
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

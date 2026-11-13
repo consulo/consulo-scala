@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.actions.CreateTemplateInPackageAction
-import com.intellij.ide.fileTemplates.{FileTemplateManager, JavaTemplateUtil}
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.ide.action.CreateTemplateInPackageAction
+import consulo.fileTemplate.FileTemplateManager
+import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
+import consulo.util.lang.ControlFlowException
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
+import com.intellij.java.language.psi.JavaDirectoryService
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiFileFactory}
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.Nls
 import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition

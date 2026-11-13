@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.infiniteCycle
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiReference}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiReference}
 import org.jetbrains.plugins.scala.codeInspection.PsiElementVisitorSimple
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.findUsages.rules
 
-import com.intellij.navigation.NavigationItemFileStatus
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataSink, UiDataProvider}
-import com.intellij.openapi.util.Iconable
-import com.intellij.openapi.vcs.FileStatus
-import com.intellij.psi.{SmartPointerManager, SmartPsiElementPointer}
-import com.intellij.usageView.UsageInfo
-import com.intellij.usages.{UsageGroup, UsageView}
+import consulo.language.editor.util.NavigationItemFileStatus
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.{DataSink, UiDataProvider}
+import consulo.component.util.Iconable
+import consulo.virtualFileSystem.status.FileStatus
+import consulo.language.psi.{SmartPointerManager, SmartPsiElementPointer}
+import consulo.usage.UsageInfo
+import consulo.usage.{UsageGroup, UsageView}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
 import javax.swing.Icon

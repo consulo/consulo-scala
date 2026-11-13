@@ -15,7 +15,7 @@
 
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.psi.tree.IElementType;
+import consulo.language.ast.IElementType;
 
 public interface ScalaTokenTypesEx extends ScalaTokenTypes {
 

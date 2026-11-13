@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.psi.PsiNamedElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.FakeCompanionClassOrCompanionClass
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
@@ -13,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.resolve.{ResolveTargets, ScalaResolveResult}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.Scala_2_11
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_11
 
 class ExtractorResolveProcessor(ref: ScReference,
                                 refName: String,

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.patterns
 
-import com.intellij.lang.WhitespacesAndCommentsBinder
-import com.intellij.psi.tree.IElementType
+import consulo.language.parser.WhitespacesAndCommentsBinder
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType.{ClassKeyword, ObjectKeyword}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule

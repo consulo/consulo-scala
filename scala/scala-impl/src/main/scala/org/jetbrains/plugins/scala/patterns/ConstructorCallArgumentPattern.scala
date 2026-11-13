@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.patterns
 
-import com.intellij.patterns.{PatternCondition, PsiJavaPatterns, PsiMethodPattern}
-import com.intellij.util.ProcessingContext
+import consulo.language.pattern.PatternCondition
+import com.intellij.java.language.patterns.{PsiJavaPatterns, PsiMethodPattern}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.project.ScalaFeatures.forPsiOrDefault
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
 class ConstructorCallArgumentPattern(
   className: String,

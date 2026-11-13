@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.{PsiClass, PsiElement, PsiField, PsiMethod, PsiModifierListOwner, PsiPackage}
+import consulo.language.editor.rawHighlight.HighlightInfoType
+import consulo.colorScheme.TextAttributesKey
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiModifierListOwner}
+import consulo.language.psi.{PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiClassExt, PsiMemberExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScCaseClause, ScReferencePattern}
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScFieldId, ScReference, ScStableCodeReference}

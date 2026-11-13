@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.application.options._
-import com.intellij.application.options.codeStyle.CodeStyleSchemesModel
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.util.Disposer
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.ui.components.JBLabel
+import consulo.language.codeStyle.ui.setting.TabbedLanguageCodeStylePanel
+import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
+import consulo.project.Project
+import consulo.ui.ex.awt.ComboBox
+import consulo.disposer.Disposer
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.ui.ex.awt.JBLabel
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager, Spacer}
-import com.intellij.util.ui.JBUI
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.lang.rearranger.ScalaArrangementPanel
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import java.awt._
 import java.awt.event.ItemEvent

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiClass, PsiNamedElement}
+import consulo.codeEditor.Editor
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.autoImport.GlobalImplicitInstance
 import org.jetbrains.plugins.scala.autoImport.GlobalMember.findGlobalMembers
@@ -17,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScAndType, ScCompoundType, ScType, ScTypeExt}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.{AnyFqn, AnyRefFqn, JavaLangObjectFqn}
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.{AnyFqn, AnyRefFqn, JavaLangObjectFqn}
 
 final class ImportImplicitInstanceFix private (notFoundImplicitParams: () => Seq[ScalaResolveResult],
                                                owner: ImplicitArgumentsOwner,

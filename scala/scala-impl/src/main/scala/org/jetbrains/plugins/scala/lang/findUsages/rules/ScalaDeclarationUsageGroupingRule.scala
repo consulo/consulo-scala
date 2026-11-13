@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.findUsages.rules
 
-import com.intellij.lang.injection.InjectedLanguageManager
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElement
-import com.intellij.usages.rules.{PsiElementUsage, SingleParentUsageGroupingRule}
-import com.intellij.usages.{Usage, UsageGroup, UsageInfo2UsageAdapter, UsageTarget}
+import consulo.language.inject.InjectedLanguageManager
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElement
+import consulo.usage.rule.{PsiElementUsage, SingleParentUsageGroupingRule}
+import consulo.usage.{Usage, UsageGroup, UsageInfo2UsageAdapter, UsageTarget}
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.findUsages.rules.ScalaDeclarationUsageGroupingRule.getPsiElementAndContainingScalaFile
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiPresentationUtils.extensionMethodShortText
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScValueOrVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}

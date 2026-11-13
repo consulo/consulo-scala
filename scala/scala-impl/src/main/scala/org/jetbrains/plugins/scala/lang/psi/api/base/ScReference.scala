@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

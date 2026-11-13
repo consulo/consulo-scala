@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInspection.ProblemHighlightType
+import consulo.language.editor.inspection.ProblemHighlightType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotations

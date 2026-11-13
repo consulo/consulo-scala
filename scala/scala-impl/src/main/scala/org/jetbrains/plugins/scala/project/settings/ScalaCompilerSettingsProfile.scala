@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import com.intellij.openapi.module.Module
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.module.Module
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
 

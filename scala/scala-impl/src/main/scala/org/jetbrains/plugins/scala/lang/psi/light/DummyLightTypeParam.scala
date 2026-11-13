@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.{PsiElement, PsiTypeParameterListOwner}
+import consulo.language.impl.psi.LightElement
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiTypeParameterListOwner
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
@@ -10,7 +11,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.PsiClassFake
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, api}
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.project.ProjectContext
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 class DummyLightTypeParam(override val name: String)(implicit pc: ProjectContext)
   extends LightElement(pc, ScalaLanguage.INSTANCE) with ScTypeParam with PsiClassFake {

@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.openapi.actionSystem.{DataContext, DataKey}
+import consulo.dataContext.DataContext
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.command.impl.StartMarkAction
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.editor.{Editor, SelectionModel}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.util._
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil.findElementOfClassAtOffset
-import com.intellij.refactoring.HelpID
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.codeEditor.{Editor, SelectionModel}
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
+import com.intellij.openapi.util.D
+import consulo.document.util.TextRange
+import consulo.project.ui.wm.WindowManager
+import consulo.language.psi.{PsiFile, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil.findElementOfClassAtOffset
+import com.intellij.java.impl.refactoring.HelpID
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

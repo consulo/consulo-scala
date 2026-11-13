@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting.Alignment.createAlignment
-import com.intellij.formatting._
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
+import consulo.language.codeStyle.Alignment.createAlignment
+import consulo.language.codeStyle.{Alignment, Block, Wrap, WrapType}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiErrorElement
+import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.ScalaDocBlockBuilderUtils._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

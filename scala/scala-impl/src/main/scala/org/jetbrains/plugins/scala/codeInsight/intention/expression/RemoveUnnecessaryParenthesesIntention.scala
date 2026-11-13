@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
-import com.intellij.codeInsight.daemon.HighlightDisplayKey
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.rawHighlight.HighlightDisplayKey
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.profile.codeInspection.InspectionProjectProfileManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ParenthesizedElement.Ops
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScParenthesizedElement

@@ -15,13 +15,13 @@
 
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
+import consulo.language.ast.IElementType;
+import consulo.language.ast.TokenSet;
 import org.jetbrains.plugins.scalaDirective.lang.parser.ScalaDirectiveElementTypes;
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes;
 
-import static com.intellij.psi.xml.XmlTokenType.*;
+import static consulo.xml.language.psi.XmlTokenType.*;
 import static org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType.Double;
 import static org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType.Float;
 import static org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType.Integer;

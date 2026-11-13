@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.handlers
 
-import com.intellij.codeInsight.completion.{InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.PsiClass
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.LookupElement
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression

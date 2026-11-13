@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.extensions.ExtensionPointName
-import org.jetbrains.annotations.ApiStatus
+import consulo.dataContext.DataContext
+import consulo.component.extension.ExtensionPointName
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait NewScalaFileActionExtension {
   /**
    * This method is used only if the given `dataContext` contains a non-null module and if:

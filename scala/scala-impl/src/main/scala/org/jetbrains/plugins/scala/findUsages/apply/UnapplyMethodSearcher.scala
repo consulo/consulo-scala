@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.findUsages.apply
 
-import com.intellij.psi._
+import consulo.language.psi.PsiReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScExtractorPattern
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}
 

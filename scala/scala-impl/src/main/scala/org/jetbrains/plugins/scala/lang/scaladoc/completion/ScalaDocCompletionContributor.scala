@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.application.dumb.DumbAware
+import consulo.language.pattern.PlatformPatterns
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.completion.{ScalaCompletionContributor, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScTypeAlias}

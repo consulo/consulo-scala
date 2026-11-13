@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.prefixMutableCollections
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
+import consulo.language.psi.{PsiElementVisitor, PsiFile}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions._

@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala.actions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.intellij.openapi.ui.popup.{JBPopup, JBPopupFactory, PopupChooserBuilder, PopupStep}
-import com.intellij.openapi.util.Disposer
-import com.intellij.psi.util.PsiUtilBase
-import com.intellij.psi.{NavigatablePsiElement, PsiDocumentManager, PsiElement, PsiNamedElement}
-import com.intellij.ui.awt.RelativePoint
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.ui.ex.popup.BaseListPopupStep
+import consulo.ui.ex.popup.{JBPopup, JBPopupFactory, PopupStep}
+import com.intellij.openapi.ui.popup.PopupChooserBuilder
+import consulo.disposer.Disposer
+import consulo.language.editor.util.PsiUtilBase
+import consulo.language.psi.{NavigatablePsiElement, PsiDocumentManager, PsiElement, PsiNamedElement}
+import consulo.ui.ex.RelativePoint
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

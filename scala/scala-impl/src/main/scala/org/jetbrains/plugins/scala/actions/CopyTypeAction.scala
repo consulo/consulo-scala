@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.ide.CopyPasteManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiUtilBase
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.codeEditor.Editor
+import consulo.ui.ex.CopyPasteManager
+import consulo.project.Project
+import consulo.language.editor.util.PsiUtilBase
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle

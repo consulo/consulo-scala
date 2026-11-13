@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.psi.PsiReference
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.util.Processor
+import consulo.language.psi.PsiReference
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.{SearchMethodResult, Method}
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline.ShouldProcess
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

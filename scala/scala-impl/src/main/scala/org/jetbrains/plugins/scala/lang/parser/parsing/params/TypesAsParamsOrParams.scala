@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.params
 
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.{ErrMsg, ScalaElementType, ScalaPsiBuilderExt}
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule

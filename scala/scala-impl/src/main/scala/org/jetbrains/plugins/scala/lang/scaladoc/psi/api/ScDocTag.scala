@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.api
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.javadoc.PsiDocTag
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.javadoc.PsiDocTag
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 
 trait ScDocTag extends ScalaPsiElement with PsiDocTag {

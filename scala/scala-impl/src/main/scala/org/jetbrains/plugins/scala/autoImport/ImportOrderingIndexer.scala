@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.autoImport
 
-import com.intellij.util.indexing._
-import com.intellij.util.io.{KeyDescriptor, VoidDataExternalizer}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.index.io.{DataIndexer, ID}
+import consulo.language.psi.stub.{FileBasedIndex, FileBasedIndexExtension, FileContent}
+import consulo.execution.ui.console.InputFilter
+import consulo.index.io.{KeyDescriptor, VoidDataExternalizer}
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.finder.SourceFilterScope
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder

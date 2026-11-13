@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.AncestorSelector._
 
 final class ScalaThrowExceptionPostfixTemplate extends ScalaStringBasedPostfixTemplate(

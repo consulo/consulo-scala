@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.newvfs.FileAttribute
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileWithId, newvfs}
+import consulo.util.dataholder.Key
+import consulo.virtualFileSystem.FileAttribute
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileWithId}
+import com.intellij.openapi.vfs.newvfs
 import org.jetbrains.plugins.scala.decompiler.Decompiler
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScClassFileDecompiler.ScClsStubBuilder.getStubVersion

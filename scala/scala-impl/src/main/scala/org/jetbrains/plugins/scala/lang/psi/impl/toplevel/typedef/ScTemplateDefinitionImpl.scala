@@ -2,18 +2,22 @@ package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
 import com.intellij.execution.junit.JUnitUtil
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.{Key, Pair => JBPair}
-import com.intellij.psi._
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.impl.{PsiClassImplUtil, PsiSuperMethodImplUtil}
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.scope.processor.MethodsProcessor
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.{PsiTreeUtil, PsiUtil}
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import consulo.project.DumbService
+import consulo.util.dataholder.Key
+import consulo.util.lang.{Pair => JBPair}
+import com.intellij.java.language.psi.{CommonClassNames, HierarchicalMethodSignature, PsiClass, PsiClassType, PsiField, PsiMethod, PsiSubstitutor}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.impl.psi.LeafPsiElement
+import com.intellij.java.language.impl.psi.impl.{PsiClassImplUtil, PsiSuperMethodImplUtil}
+import consulo.language.psi.resolve.PsiScopeProcessor
+import com.intellij.java.language.impl.psi.scope.processor.MethodsProcessor
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{ModTracker, ScalaShortNamesCacheManager, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._

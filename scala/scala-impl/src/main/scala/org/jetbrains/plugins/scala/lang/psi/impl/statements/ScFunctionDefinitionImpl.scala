@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.ScFunctionDefinitionFactory
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.extensions.{StubBasedExt, ifReadAllowed}

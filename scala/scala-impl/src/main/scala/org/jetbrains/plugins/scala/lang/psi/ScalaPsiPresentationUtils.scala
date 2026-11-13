@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.psi._
-import com.intellij.psi.util.{PsiFormatUtil, PsiFormatUtilBase}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiSubstitutor}
+import com.intellij.java.language.psi.util.{PsiFormatUtil, PsiFormatUtilBase}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScSignatureClause}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, TypePresentationContext}

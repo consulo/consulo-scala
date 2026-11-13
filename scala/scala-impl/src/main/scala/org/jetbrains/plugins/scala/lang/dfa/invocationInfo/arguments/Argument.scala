@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.dfa.invocationInfo.arguments
 
-import com.intellij.codeInsight.Nullability
+import com.intellij.java.language.codeInsight.Nullability
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.arguments.Argument.{ArgumentKind, PassingMechanism}
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaTypeUtils
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression

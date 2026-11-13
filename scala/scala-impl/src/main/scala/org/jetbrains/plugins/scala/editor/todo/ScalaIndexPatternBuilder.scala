@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.editor.todo
 
-import com.intellij.extapi.psi.PsiFileBase
-import com.intellij.lang.ParserDefinition
-import com.intellij.lexer.Lexer
-import com.intellij.psi.PsiFile
-import com.intellij.psi.impl.search.IndexPatternBuilder
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.impl.psi.PsiFileBase
+import consulo.language.parser.ParserDefinition
+import consulo.language.lexer.Lexer
+import consulo.language.psi.PsiFile
+import consulo.language.psi.search.IndexPatternBuilder
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes.SCALA_DOC_COMMENT

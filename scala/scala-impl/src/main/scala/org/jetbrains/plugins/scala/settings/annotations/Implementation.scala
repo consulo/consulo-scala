@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.settings.annotations
 
-import com.intellij.psi.{PsiElement, PsiEnumConstant, PsiMethod}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiEnumConstant, PsiMethod}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

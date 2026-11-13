@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

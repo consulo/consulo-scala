@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.{PsiElement, PsiParameterList, PsiTypeParameterList}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiParameterList, PsiTypeParameterList}
 import org.jetbrains.plugins.scala.lang.psi.api.InvocationDetails.ArgumentClause
 import org.jetbrains.plugins.scala.lang.psi.api.base.ConstructorInvocationLike
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScTypeArgs, ScTypeElement}

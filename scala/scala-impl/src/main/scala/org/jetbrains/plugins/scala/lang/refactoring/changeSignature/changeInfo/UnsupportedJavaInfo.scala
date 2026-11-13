@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo
-import com.intellij.psi.PsiMethod
-import com.intellij.refactoring.changeSignature.ThrownExceptionInfo
+import com.intellij.java.language.psi.PsiMethod
+import com.intellij.java.impl.refactoring.changeSignature.ThrownExceptionInfo
 
 import java.util
 

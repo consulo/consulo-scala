@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions.implementation.iterator
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 class ContextsIterator(element: PsiElement, strict: Boolean = true) extends Iterator[PsiElement] {
   private var current = if (strict && element != null) element.getContext else element

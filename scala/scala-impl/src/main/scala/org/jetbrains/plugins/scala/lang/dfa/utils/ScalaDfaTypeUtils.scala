@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.lang.dfa.utils
 
-import com.intellij.codeInsight.{Nullability, NullableNotNullManager}
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.dataFlow.jvm.SpecialField
-import com.intellij.codeInspection.dataFlow.rangeSet.LongRangeSet
-import com.intellij.codeInspection.dataFlow.types._
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory}
-import com.intellij.codeInspection.dataFlow.{DfaPsiUtil, Mutability}
-import com.intellij.psi.{PsiArrayType, PsiElement, PsiModifierListOwner, PsiType}
+import com.intellij.java.language.codeInsight.{Nullability, NullableNotNullManager}
+import consulo.language.editor.inspection.ProblemHighlightType
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.SpecialField
+import consulo.language.dataFlow.rangeSet.LongRangeSet
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.{DfDoubleType, DfFloatType, DfIntType, DfLongType, DfPrimitiveType, DfReferenceType, DfTypes}
+import consulo.language.dataFlow.types.{DfIntegralType, DfType}
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.{DfaPsiUtil, Mutability}
+import com.intellij.java.language.psi.{PsiArrayType, PsiModifierListOwner, PsiType}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.extensions._

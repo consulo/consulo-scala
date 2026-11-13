@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.impl.source.DummyHolderFactory
-import com.intellij.psi.{PsiElement, PsiFile, PsiManager, PsiTypeElement}
-import org.jetbrains.plugins.scala.Scala3Language
+import consulo.project.Project
+import consulo.language.impl.psi.LightElement
+import consulo.language.impl.psi.DummyHolderFactory
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
+import com.intellij.java.language.psi.PsiTypeElement
+import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.extensions.LockExtensions
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

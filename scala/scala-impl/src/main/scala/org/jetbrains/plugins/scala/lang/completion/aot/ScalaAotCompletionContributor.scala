@@ -2,11 +2,12 @@ package org.jetbrains.plugins.scala.lang
 package completion
 package aot
 
-import com.intellij.codeInsight.completion.{CompletionInitializationContext, CompletionParameters, CompletionResultSet, CompletionType, InsertionContext}
-import com.intellij.codeInsight.lookup.*
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionInitializationContext, CompletionParameters, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.InsertionContext
+import consulo.language.editor.completion.lookup.Lookup
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.completion.{InsertionContextExt, ScalaCompletionContributor, ScalaKeyword, identifierPattern, identifierWithParentPattern, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier

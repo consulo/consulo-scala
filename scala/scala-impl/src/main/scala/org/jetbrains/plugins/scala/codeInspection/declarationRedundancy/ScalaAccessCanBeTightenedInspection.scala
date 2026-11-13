@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, HighlightInfo}
-import com.intellij.codeInsight.intention.PriorityAction.Priority
-import com.intellij.codeInsight.intention.{FileModifier, PriorityAction}
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.impl.ImaginaryEditor
-import com.intellij.openapi.project.Project
-import com.intellij.profile.codeInspection.InspectionProjectProfileManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.language.editor.inspection.PriorityAction.Priority
+import consulo.language.editor.inspection.{FileModifier, PriorityAction}
+import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.codeEditor.Editor
+import consulo.codeEditor.imaginary.ImaginaryEditor
+import consulo.project.Project
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.ScalaAccessCanBeTightenedInspection.{elementToHighlightIn, getPipeline}
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.SymbolEscaping.elementIsSymbolWhichEscapesItsDefiningScopeWhenItIsPrivate

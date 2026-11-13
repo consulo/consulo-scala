@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.impl
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.impl.ScDocResolvableCodeReferenceImpl
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScDocRefStrictMemberIdQuery
 

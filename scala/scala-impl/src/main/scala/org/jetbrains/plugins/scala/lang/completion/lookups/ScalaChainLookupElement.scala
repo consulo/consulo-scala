@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
-import com.intellij.codeInsight.completion.InsertionContext
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer}
+import consulo.language.editor.completion.lookup.InsertionContext
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer}
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaInsertHandler
 
 final class ScalaChainLookupElement(delegate: ScalaLookupItem, prefix: ScalaLookupItem)

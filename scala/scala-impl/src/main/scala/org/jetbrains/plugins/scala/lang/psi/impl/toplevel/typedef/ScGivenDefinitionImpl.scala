@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, PsiNamedElement, ResolveState}
+import consulo.language.ast.ASTNode
+import consulo.component.ProcessCanceledException
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.{Model, ObjectExt, StringsExt}
 import org.jetbrains.plugins.scala.icons.Icons

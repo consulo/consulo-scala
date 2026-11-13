@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
 import com.intellij.codeInsight.editorActions.enter.EnterAfterUnmatchedBraceHandler
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Pair
-import com.intellij.psi.util.PsiUtilCore
-import com.intellij.psi.{PsiElement, PsiFile, TokenType}
-import com.intellij.util.text.CharArrayUtil
+import consulo.codeEditor.Editor
+import consulo.util.lang.Pair
+import consulo.language.psi.PsiUtilCore
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.ast.TokenType
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 class ScalaEnterAfterUnmatchedBraceHandler extends EnterAfterUnmatchedBraceHandler {

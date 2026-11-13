@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{CommonClassNames, PsiClass, PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
@@ -30,7 +31,8 @@ import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.lang.resolve.MethodTypeProvider.PsiMethodTypeProviderExt
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
-import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectPsiElementExt}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.scalaMeta.QuasiquoteInferUtil
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
 import org.jetbrains.plugins.scala.util.SAMUtil

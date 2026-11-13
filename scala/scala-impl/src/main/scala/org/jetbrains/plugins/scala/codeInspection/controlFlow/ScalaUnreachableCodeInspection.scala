@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
-import com.intellij.codeInspection._
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder}
 import com.intellij.modcommand.{ActionContext, ModCommand, ModCommandAction, ModPsiUpdater, PsiBasedModCommandAction}
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInsight.unwrap.{ScalaUnwrapContext, ScalaWhileUnwrapper}
 import org.jetbrains.plugins.scala.codeInspection.{AbstractUpdateModCommandOnTwoPsiElements, ScalaInspectionBundle}

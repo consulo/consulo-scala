@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubElement, StubInputStream, StubOutputStream}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{StubElement, StubInputStream, StubOutputStream}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.imports.ScImportStmtImpl
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScImportStmtStub

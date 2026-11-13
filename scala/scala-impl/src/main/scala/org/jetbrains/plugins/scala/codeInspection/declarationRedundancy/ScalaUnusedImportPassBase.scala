@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeHighlighting.TextEditorHighlightingPass
-import com.intellij.codeInsight.daemon.impl.{HighlightInfo, HighlightInfoType, UpdateHighlightersUtil}
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.openapi.editor.Document
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.highlight.TextEditorHighlightingPass
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
+import consulo.language.editor.highlight.UpdateHighlightersUtil
+import consulo.language.editor.intention.IntentionAction
+import consulo.document.Document
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.extensions.Parent
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt

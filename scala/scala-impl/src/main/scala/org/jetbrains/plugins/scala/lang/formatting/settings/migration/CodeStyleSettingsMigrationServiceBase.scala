@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components._
-import com.intellij.openapi.diagnostic.Logger
+import consulo.application.ApplicationManager
+import consulo.component.persist.PersistentStateComponent
+import consulo.logging.Logger
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.formatting.settings.migration.CodeStyleSettingsMigrationServiceBase._
 

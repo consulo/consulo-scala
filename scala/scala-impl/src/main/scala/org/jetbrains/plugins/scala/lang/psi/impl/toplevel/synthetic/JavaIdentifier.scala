@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package synthetic
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.impl.light.LightIdentifier
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.document.util.TextRange
+import com.intellij.java.language.impl.psi.impl.light.LightIdentifier
+import consulo.language.psi.{PsiElement, PsiFile}
 
 class JavaIdentifier(scalaId : PsiElement) extends LightIdentifier(scalaId.getManager, scalaId.getText) {
   override def getTextRange: TextRange = scalaId.getTextRange

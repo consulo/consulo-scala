@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement
-import com.intellij.psi.tree.ILazyParseableElementType
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LazyParseablePsiElement
+import consulo.language.ast.ILazyParseableElementType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocReferenceLink
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScDocRefQuery

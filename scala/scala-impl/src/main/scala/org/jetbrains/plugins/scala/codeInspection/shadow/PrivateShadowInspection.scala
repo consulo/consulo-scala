@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.codeInspection.shadow
 
-import com.intellij.codeInsight.intention.{HighPriorityAction, LowPriorityAction}
-import com.intellij.codeInspection._
+import consulo.language.editor.intention.{HighPriorityAction, LowPriorityAction}
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder, UpdateInspectionOptionFix}
 import com.intellij.codeInspection.ex.DisableInspectionToolAction
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package literals
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiLiteralUtil
+import consulo.language.ast.ASTNode
+import consulo.project.Project
+import com.intellij.java.language.psi.util.PsiLiteralUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScFloatingPointLiteral.FloatingPointParseResult
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.{ScFloatLiteral, ScFloatingPointLiteral}

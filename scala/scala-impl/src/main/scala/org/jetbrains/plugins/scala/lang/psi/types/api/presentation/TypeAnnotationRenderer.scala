@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api.presentation
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.IndexNotReadyException
+import consulo.application.ApplicationManager
+import consulo.application.dumb.IndexNotReadyException
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter

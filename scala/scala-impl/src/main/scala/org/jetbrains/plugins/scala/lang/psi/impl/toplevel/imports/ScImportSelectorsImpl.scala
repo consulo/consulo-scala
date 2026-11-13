@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package imports
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports._

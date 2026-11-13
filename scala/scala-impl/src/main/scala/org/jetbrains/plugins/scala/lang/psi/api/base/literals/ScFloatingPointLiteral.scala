@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base.literals
 
-import com.intellij.psi.util.PsiLiteralUtil
-import com.intellij.util.text.LiteralFormatUtil
+import com.intellij.java.language.psi.util.PsiLiteralUtil
+import com.intellij.java.language.impl.util.text.LiteralFormatUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScFloatingPointLiteral.FloatingPointParseResult
 

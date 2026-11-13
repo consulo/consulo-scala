@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.util.Ref
+import consulo.util.lang.ref.Ref
 import org.jetbrains.plugins.scala.extensions.{NonNullObjectExt, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{TypeParamId, TypeParamIdOwner}
 import org.jetbrains.plugins.scala.lang.psi.types.api._

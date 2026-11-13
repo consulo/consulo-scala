@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.ScFunctionFactory
 import org.jetbrains.plugins.scala.extensions.StubBasedExt
 import org.jetbrains.plugins.scala.lang.TokenSets.FUNCTIONS

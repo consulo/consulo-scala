@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.util.treeView.ValidateableNode
-import com.intellij.openapi.util.Iconable
+import consulo.ui.ex.tree.PresentationData
+import consulo.ui.ex.awt.tree.ValidateableNode
+import consulo.component.util.Iconable
 
 import java.util.Collections.emptyList
 

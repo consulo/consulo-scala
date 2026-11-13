@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project.sdkdetect.repository
 
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.util.SystemInfo
+import consulo.application.progress.ProgressIndicator
+import consulo.application.util.SystemInfo
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.project.template.{BrewSdkChoice, ScalaSdkDescriptor, SdkChoice}

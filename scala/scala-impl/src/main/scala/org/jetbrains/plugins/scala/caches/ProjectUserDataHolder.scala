@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, UserDataHolder, UserDataHolderEx}
-import com.intellij.psi.PsiElement
+import consulo.module.Module
+import consulo.project.Project
+import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 
 trait ProjectUserDataHolder[-E] {

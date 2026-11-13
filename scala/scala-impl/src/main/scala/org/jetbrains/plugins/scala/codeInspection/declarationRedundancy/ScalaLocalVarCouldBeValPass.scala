@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.openapi.editor.Document
+import consulo.document.Document
 import org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection.VarCouldBeValInspection
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.tasty
 
-import com.intellij.openapi.fileTypes.{FileType, SyntaxHighlighter, SyntaxHighlighterFactory, SyntaxHighlighterProvider}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.plugins.scala.Scala3Language
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.language.editor.highlight.{SyntaxHighlighter, SyntaxHighlighterFactory, SyntaxHighlighterProvider}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.highlighter.ScalaSyntaxHighlighterFactory.createScalaSyntaxHighlighter
 
 class TastySyntaxHighlighterFactory extends SyntaxHighlighterFactory with SyntaxHighlighterProvider {

@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.project.Project
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.{Consumer, ProcessingContext}
+import com.intellij.java.impl.codeInsight.completion.AllClassesGetter
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.project.Project
+import consulo.language.pattern.PlatformPatterns.psiElement
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import com.intellij.util.Consumer
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{tMULTILINE_STRING, tSTRING}

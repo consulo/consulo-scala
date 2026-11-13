@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation
 
-import com.intellij.codeInspection._
-import com.intellij.psi.PsiElement
+import com.intellij.java.analysis.impl.codeInspection.RemoveAnnotationQuickFix
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumCases, ScValueOrVariableDefinition}
 

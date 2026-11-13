@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.javadoc.JavaDocInfoGenerator
-import com.intellij.lang.documentation.DocumentationMarkup
-import com.intellij.psi.util.PsiUtil
-import com.intellij.psi.{PsiClass, PsiDocCommentOwner, PsiElement}
+import com.intellij.java.impl.codeInsight.javadoc.JavaDocInfoGenerator
+import consulo.language.editor.documentation.DocumentationMarkup
+import com.intellij.java.language.psi.util.PsiUtil
+import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 

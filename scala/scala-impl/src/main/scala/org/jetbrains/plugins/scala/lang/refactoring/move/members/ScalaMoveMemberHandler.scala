@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.members
 
-import com.intellij.psi._
-import com.intellij.refactoring.move.moveMembers.MoveMembersProcessor.MoveMembersUsageInfo
-import com.intellij.refactoring.move.moveMembers.{MoveJavaMemberHandler, MoveMembersOptions}
-import com.intellij.util.containers.MultiMap
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiModifierList}
+import consulo.language.psi.{PsiElement, PsiReference}
+import com.intellij.java.impl.refactoring.move.moveMembers.MoveMembersProcessor.MoveMembersUsageInfo
+import com.intellij.java.impl.refactoring.move.moveMembers.{MoveJavaMemberHandler, MoveMembersOptions}
+import consulo.util.collection.MultiMap
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}

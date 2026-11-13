@@ -1,20 +1,21 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.completion.{CompletionResultSet, InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.{CodeStyleManager, CommonCodeStyleSettings}
-import com.intellij.psi.{PsiDocumentManager, PsiFile}
-import com.intellij.util.ui.EmptyIcon
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.completion.CompletionResultSet
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.document.Document
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.{CodeStyleManager, CommonCodeStyleSettings}
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
+import consulo.ui.ex.awt.EmptyIcon
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.{BooleanExt, ObjectExt, PsiFileExt}
 import org.jetbrains.plugins.scala.lang.completion.InsertionContextExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression.ScalaPsiElementExt
-import org.jetbrains.plugins.scala.{ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 object ScalaKeywordLookupItem {
 

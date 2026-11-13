@@ -1,17 +1,22 @@
 package org.jetbrains.plugins.scala.lang.refactoring.delete
 
 import com.intellij.java.syntax.parser.JavaKeywords
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Condition
-import com.intellij.psi._
-import com.intellij.psi.impl.source.javadoc.PsiDocMethodOrFieldRef
-import com.intellij.psi.javadoc.PsiDocTag
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.{MethodSignatureUtil, PsiTreeUtil}
-import com.intellij.refactoring.safeDelete._
-import com.intellij.refactoring.safeDelete.usageInfo._
-import com.intellij.usageView.UsageInfo
-import com.intellij.util._
+import consulo.logging.Logger
+import consulo.util.lang.function.Condition
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiCodeBlock, PsiElementFactory, PsiExpressionStatement, PsiJavaCodeReferenceElement, PsiJavaFile, PsiMethod, PsiMethodCallExpression, PsiModifier, PsiModifierList, PsiParameter, PsiReferenceExpression, PsiReferenceList, PsiSuperExpression, PsiTypeElement, PsiTypeParameter, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiManager, PsiNamedElement, PsiReference}
+import com.intellij.java.language.impl.psi.impl.source.javadoc.PsiDocMethodOrFieldRef
+import com.intellij.java.language.psi.javadoc.PsiDocTag
+import consulo.language.psi.search.ReferencesSearch
+import com.intellij.java.language.psi.util.MethodSignatureUtil
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.safeDelete.SafeDeleteProcessor
+import com.intellij.java.impl.refactoring.safeDelete.usageInfo.{SafeDeleteExtendsClassUsageInfo, SafeDeleteOverridingMethodUsageInfo, SafeDeletePrivatizeMethod, SafeDeleteReferenceJavaDeleteUsageInfo}
+import consulo.language.editor.refactoring.safeDelete.usageInfo.SafeDeleteUsageInfo
+import consulo.usage.UsageInfo
+import consulo.util.nodep.ArrayUtilRt
+import consulo.language.util.IncorrectOperationException
+import consulo.application.util.function.Processor
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

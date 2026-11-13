@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.lexer
 
-import com.intellij.lexer.{MergingLexerAdapter, XmlLexer}
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.psi.xml.XmlTokenType
+import consulo.language.lexer.MergingLexerAdapter
+import consulo.xml.lexer.XmlLexer
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.xml.language.psi.XmlTokenType
 import org.jetbrains.annotations.Nullable
 
 import java.util

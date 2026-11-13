@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.expressions
 
-import com.intellij.lang.WhitespacesAndCommentsBinder
-import com.intellij.psi.tree.IElementType
+import consulo.language.parser.WhitespacesAndCommentsBinder
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilder

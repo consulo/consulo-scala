@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.intention.{FileModifier, IntentionAction}
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.extensions._

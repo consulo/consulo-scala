@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.TokenSet
+import consulo.language.psi.PsiElement
+import consulo.language.ast.TokenSet
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{LBRACE_OR_COLON_TOKEN_SET, tCOLON, tLBRACE, tRBRACE}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.openapi.editor.colors.{EditorColorsManager, TextAttributesKey}
-import com.intellij.openapi.editor.markup.TextAttributes
+import consulo.colorScheme.{EditorColorsManager, TextAttributesKey}
+import consulo.colorScheme.TextAttributes
 import com.intellij.openapi.editor.richcopy.HtmlSyntaxInfoUtil
 import org.jetbrains.plugins.scala.highlighter.DefaultHighlighter
 

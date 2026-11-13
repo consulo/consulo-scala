@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 

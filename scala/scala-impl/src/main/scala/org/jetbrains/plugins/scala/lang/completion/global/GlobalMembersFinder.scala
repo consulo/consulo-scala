@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.global
 
-import com.intellij.codeInsight.completion.PrefixMatcher
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.{PsiClass, PsiElement, PsiMember, PsiNamedElement}
+import consulo.application.util.matcher.PrefixMatcher
+import consulo.language.editor.completion.lookup.LookupElement
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, JavaEnum, PsiElementExt, PsiNamedElementExt, ScalaEnumeration, SealedClassInheritors}
 import org.jetbrains.plugins.scala.lang.completion
 import org.jetbrains.plugins.scala.lang.completion.{global, regardlessAccessibility}

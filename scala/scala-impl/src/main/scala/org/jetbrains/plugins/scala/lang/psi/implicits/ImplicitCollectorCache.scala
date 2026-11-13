@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.RecursionManager
 import org.jetbrains.plugins.scala.caches.stats.Tracer
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}

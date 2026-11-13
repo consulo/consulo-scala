@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api.presentation
 
-import com.intellij.psi.{PsiClass, PsiNamedElement, PsiPackage}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiNamedElement, PsiPackage}
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt, childOf}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScRefinement

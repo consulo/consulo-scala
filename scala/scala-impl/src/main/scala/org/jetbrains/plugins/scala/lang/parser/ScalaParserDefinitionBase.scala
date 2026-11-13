@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.lang.parser
 
-import com.intellij.lang.{ASTNode, ParserDefinition}
-import com.intellij.psi.{FileViewProvider, PsiElement}
+import consulo.language.ast.ASTNode
+import consulo.language.parser.ParserDefinition
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

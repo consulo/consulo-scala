@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.rearranger
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
 import scala.collection.{immutable, mutable}

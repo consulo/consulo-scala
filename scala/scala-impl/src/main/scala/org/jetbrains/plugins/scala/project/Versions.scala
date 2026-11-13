@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator, ProgressManager}
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
+import consulo.application.util.concurrent.AppExecutorUtil
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.extensions.withProgressSynchronously
-import org.jetbrains.plugins.scala.{LatestScalaVersions, ScalaBundle, ScalaVersion, isInternalMode}
-import org.jetbrains.sbt.{MinorVersionGenerator, SbtVersion, SbtVersionCapabilities}
+import org.jetbrains.plugins.scala.{LatestScalaVersions, ScalaBundle, ScalaVersion}
+import org.jetbrains.plugins.scala.api.isInternalMode
+import org.jetbrains.sbt.api.{MinorVersionGenerator, SbtVersion, SbtVersionCapabilities}
 
 import java.net.URI
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
@@ -197,7 +198,7 @@ object Versions {
    *   Output : [2.13.17-RC1, 2.13.16, 2.12.21-M1, 2.12.20, 2.11.9, 2.11.8]
    * }}}
    */
-  @Internal
+  // upstream: @Internal
   @TestOnly
   def removeOldCandidateVersionsForEachMajor(versions: Seq[Version]): Seq[Version] = {
     val versionsByMajor = versions.groupBy(_.major(2))

@@ -1,17 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.codeInsight.daemon.impl.quickfix.EmptyExpression
-import com.intellij.codeInsight.highlighting.HighlightManager
-import com.intellij.codeInsight.template._
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColors
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.refactoring.RefactoringBundle
-import com.intellij.refactoring.rename.RenameHandler
+import consulo.language.editor.template.EmptyExpression
+import consulo.language.editor.highlight.HighlightManager
+import consulo.language.editor.template.{ExpressionContext, Template, TemplateManager, TextResult}
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.event.TemplateEditingAdapter
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.Editor
+import consulo.codeEditor.EditorColors
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.editor.refactoring.RefactoringBundle
+import consulo.language.editor.refactoring.rename.RenameHandler
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.plugins.scala.lang.psi.api.expr.xml.ScXmlPairedTag
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaRefactoringActionHandler

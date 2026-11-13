@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.util.TextRange
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.dependency.DependencyPath
 
 /**

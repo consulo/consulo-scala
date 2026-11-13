@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.lang.lexer;
 
-import com.intellij.psi.tree.IElementType;
+import consulo.language.ast.IElementType;
 
 public interface ScalaDirectiveTokenTypes {
     IElementType tDIRECTIVE_PREFIX = new ScalaDirectiveElementType("tDIRECTIVE_PREFIX");

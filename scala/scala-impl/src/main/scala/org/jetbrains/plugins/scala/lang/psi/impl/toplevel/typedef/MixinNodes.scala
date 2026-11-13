@@ -3,11 +3,13 @@ package impl
 package toplevel
 package typedef
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiMethod, PsiNamedElement}
-import com.intellij.util.containers.{ContainerUtil, SmartHashSet}
-import com.intellij.util.{AstLoadingFilter, SmartList}
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiNamedElement
+import consulo.util.collection.{ContainerUtil, SmartHashSet}
+import com.intellij.util.AstLoadingFilter
+import consulo.util.collection.SmartList
 import it.unimi.dsi.fastutil.Hash
 import it.unimi.dsi.fastutil.objects.{Object2ObjectMap, Object2ObjectMaps, Object2ObjectOpenCustomHashMap}
 import org.jetbrains.annotations.Nullable

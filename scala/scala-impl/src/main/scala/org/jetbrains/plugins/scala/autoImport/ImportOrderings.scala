@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.autoImport
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.{PsiDocCommentOwner, PsiElement, PsiPackage}
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.{PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.autoImport.quickFix.ElementToImport
 import org.jetbrains.plugins.scala.extensions.{ContainingFile, ObjectExt, PsiElementExt, cachify}
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder

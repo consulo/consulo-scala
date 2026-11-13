@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.impl.migration.PsiMigrationManager
-import com.intellij.psi.scope.{NameHint, PsiScopeProcessor}
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.plugins.scala.ScalaLowerCase
+import consulo.application.ApplicationManager
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.impl.psi.impl.migration.PsiMigrationManager
+import com.intellij.java.language.impl.psi.scope.NameHint
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import org.jetbrains.plugins.scala.api.ScalaLowerCase
 import org.jetbrains.plugins.scala.extensions.{StubBasedExt, _}
 import org.jetbrains.plugins.scala.externalLibraries.bm4.BetterMonadicForSupport
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.KindProjectorUtil

@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.scaladoc
 
-import com.intellij.codeInsight.editorActions.{CommentCompleteHandler, JavaLikeQuoteHandler, QuoteHandler, TypedHandler}
-import com.intellij.lang.{CodeDocumentationAwareCommenter, Language, LanguageParserDefinitions}
-import com.intellij.lexer.Lexer
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.editor.action.{CommentCompleteHandler, JavaLikeQuoteHandler, QuoteHandler}
+import com.intellij.codeInsight.editorActions.TypedHandler
+import consulo.language.{CodeDocumentationAwareCommenter, Language}
+import com.intellij.lang.LanguageParserDefinitions
+import consulo.language.lexer.Lexer
+import consulo.codeEditor.Editor
+import consulo.language.ast.IElementType
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.PsiFileExt
 
 class ScalaIsCommentComplete extends CommentCompleteHandler {

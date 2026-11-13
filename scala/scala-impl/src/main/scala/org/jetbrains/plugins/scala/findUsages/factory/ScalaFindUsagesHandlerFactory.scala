@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.find.findUsages.{FindUsagesHandler, FindUsagesHandlerFactory, JavaFindUsagesHandlerFactory}
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.find.{FindUsagesHandler, FindUsagesHandlerFactory}
+import com.intellij.java.impl.find.findUsages.JavaFindUsagesHandlerFactory
+import com.intellij.java.language.JavaLanguage
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.findUsages.SearchTargetExtractors.ShouldBeSearchedInBytecode
 import org.jetbrains.plugins.scala.findUsages.{ExternalSearchScopeChecker, UsageType}

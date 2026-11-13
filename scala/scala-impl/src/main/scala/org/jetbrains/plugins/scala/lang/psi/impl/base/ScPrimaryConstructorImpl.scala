@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiClass, PsiCodeBlock, PsiIdentifier, PsiMethod, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.source.HierarchicalMethodSignatureImpl
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import com.intellij.java.language.psi.util.MethodSignatureBackedByPsiMethod
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.psi.api.base._

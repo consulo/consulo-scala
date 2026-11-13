@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.valInTraitInspection
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScValueDeclaration, ScValueOrVariableDeclaration}

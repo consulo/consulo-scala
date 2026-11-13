@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.util;
 
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.psi.tree.TokenSet;
-import org.jetbrains.annotations.ApiStatus;
+import consulo.component.extension.ExtensionPointName;
+import consulo.language.ast.TokenSet;
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 abstract public class MemberElementTypesExtension {
   public static ExtensionPointName<MemberElementTypesExtension> EP_NAME = ExtensionPointName.create("org.intellij.scala.memberElementTypesExtension");
   

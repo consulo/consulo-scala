@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.extensions.{ConcurrentMapExt, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotationsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScValueOrVariable

@@ -3,13 +3,15 @@ package incremental
 
 import incremental.Updater._
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.editor.ex.{EditorEx, MarkupModelEx}
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.util.{Key, TextRange}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.disposer.Disposable
+import consulo.codeEditor.Editor
+import consulo.colorScheme.EditorColorsScheme
+import consulo.codeEditor.EditorEx
+import consulo.codeEditor.markup.MarkupModelEx
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.extensions.inReadAction
 
 import java.awt.Color

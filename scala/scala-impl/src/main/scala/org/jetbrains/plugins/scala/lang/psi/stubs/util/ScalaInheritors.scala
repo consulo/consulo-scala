@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.util
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope, SearchScope}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.Processor
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.content.scope.SearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope

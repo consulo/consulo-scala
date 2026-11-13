@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.refactoring.RefactoringBundle;
-import com.intellij.refactoring.ui.PackageNameReferenceEditorCombo;
-import com.intellij.refactoring.util.CommonRefactoringUtil;
-import com.intellij.ui.DocumentAdapter;
+import consulo.application.ApplicationManager;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.language.editor.refactoring.RefactoringBundle;
+import com.intellij.java.impl.refactoring.ui.PackageNameReferenceEditorCombo;
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
+import consulo.ui.ex.awt.event.DocumentAdapter;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition;
 

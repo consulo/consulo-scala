@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.scope.NameHint
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiMethod, PsiTypeParameter, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiNamedElement
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.scope.NameHint
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScFieldId
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern

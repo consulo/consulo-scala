@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
 import com.intellij.codeInsight.hint.actions.ShowExpressionTypeAction
-import com.intellij.openapi.actionSystem.{ActionPromoter, AnAction, DataContext}
+import consulo.ui.ex.action.{ActionPromoter, AnAction}
+import consulo.dataContext.DataContext
 
 import java.util
 import scala.jdk.CollectionConverters._

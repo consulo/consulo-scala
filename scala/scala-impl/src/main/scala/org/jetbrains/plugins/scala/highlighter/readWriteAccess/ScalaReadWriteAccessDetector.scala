@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.highlighter.readWriteAccess
 
-import com.intellij.codeInsight.highlighting.ReadWriteAccessDetector
-import com.intellij.codeInsight.highlighting.ReadWriteAccessDetector.Access
-import com.intellij.psi.{PsiElement, PsiNamedElement, PsiReference}
+import consulo.language.editor.highlight.ReadWriteAccessDetector
+import consulo.language.editor.highlight.ReadWriteAccessDetector.Access
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScAssignment, ScExpression, ScSugarCallExpr}

@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.psi.{PsiElement, PsiMethod, PsiNamedElement, PsiReference}
-import com.intellij.refactoring.changeSignature.{ChangeInfo, JavaChangeInfo}
-import com.intellij.usageView.UsageInfo
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.editor.refactoring.changeSignature.ChangeInfo
+import com.intellij.java.impl.refactoring.changeSignature.JavaChangeInfo
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScConstructorPattern, ScInfixPattern, ScInterpolationPattern, ScPattern}

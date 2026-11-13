@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import com.intellij.psi.PsiFile
-import org.jetbrains.annotations.ApiStatus
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait ScalaCompilerSettingsProfileProvider {
 
   def provide(file: PsiFile): Option[ScalaCompilerSettingsProfile]

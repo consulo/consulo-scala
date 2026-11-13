@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.components
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
+import consulo.project.Project
+import consulo.project.ui.wm.WindowManager
+import consulo.project.ui.wm.StatusBarWidgetsManager
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 
 object ScalaHighlightingModeWidgetUpdater {

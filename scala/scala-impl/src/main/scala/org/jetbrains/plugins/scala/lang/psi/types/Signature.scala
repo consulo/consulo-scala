@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi.{PsiModifierListOwner, PsiNamedElement}
+import com.intellij.java.language.psi.PsiModifierListOwner
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiModifierListOwnerExt}
 import org.jetbrains.plugins.scala.lang.psi.ScExportsHolder
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext

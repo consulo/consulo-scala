@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.implicits
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInsight.intention.types.ConvertImplicitBoundsToImplicitParameter._
 import org.jetbrains.plugins.scala.codeInspection.implicits.DeprecatedViewBoundInspection._

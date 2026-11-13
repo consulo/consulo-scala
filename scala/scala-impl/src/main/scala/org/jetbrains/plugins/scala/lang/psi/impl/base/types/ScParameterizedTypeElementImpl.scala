@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
+import consulo.language.ast.ASTNode
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.KindProjectorUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor

@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod
 
-import com.intellij.openapi.actionSystem.{DataContext, DataKey}
-import com.intellij.openapi.application.{ApplicationManager, ModalityState, ReadAction}
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.dataContext.DataContext
+import com.intellij.openapi.actionSystem.DataKey
+import consulo.application.{ApplicationManager, ReadAction}
+import consulo.ui.ModalityState
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.util.SlowOperations
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.{Nullable, TestOnly}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClause
@@ -32,7 +35,8 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil._
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import scala.util.Using
 

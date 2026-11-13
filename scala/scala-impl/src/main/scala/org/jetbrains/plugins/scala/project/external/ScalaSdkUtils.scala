@@ -1,18 +1,18 @@
 package org.jetbrains.plugins.scala.project.external
 
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.module.Module
+import consulo.project.Project
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.libraries.Library
+import consulo.content.library.Library
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.{EelProviderUtil, LocalEelDescriptor}
 import com.intellij.platform.workspace.jps.entities.{LibraryEntity, ModuleEntity}
 import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
 import org.jetbrains.plugins.scala.EelAwareDependencyManager
-import org.jetbrains.plugins.scala.project.{LibraryBase, LibraryEntityExt, LibraryExt, ModuleEntityExt, MutableEntityStorageExt, ReplClasspath, ScalaLibraryProperties, ScalaLibraryType, Version}
+import org.jetbrains.plugins.scala.project.{LibraryBase, LibraryEntityExt, LibraryExt, ModuleEntityExt, MutableEntityStorageExt, ReplClasspath, ScalaLibraryProperties, ScalaLibraryType}
+import org.jetbrains.plugins.scala.rt.project.Version
 
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.IteratorHasAsScala
@@ -200,7 +200,7 @@ object ScalaSdkUtils {
 
   @deprecated("Use resolveCompilerBridgeJar(EelDescriptor, String) instead", since = "2026.1")
   @Deprecated(since = "2026.1", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
   def resolveCompilerBridgeJar(scalaVersion: String): Option[Path] =
     resolveCompilerBridgeJar(LocalEelDescriptor.INSTANCE, scalaVersion)
 
@@ -215,7 +215,7 @@ object ScalaSdkUtils {
 
   @deprecated("Use resolveReplClasspath(EelDescriptor, ScalaVersion) instead", since = "2026.1")
   @Deprecated(since = "2026.1", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
   def resolveReplClasspath(scalaVersion: String): ReplClasspath =
     resolveReplClasspath(LocalEelDescriptor.INSTANCE, scalaVersion)
 

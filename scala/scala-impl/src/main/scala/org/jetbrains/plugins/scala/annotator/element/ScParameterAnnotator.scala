@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.project.DumbAware
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationHolder, isDumbMode}
 import org.jetbrains.plugins.scala.extensions._
@@ -11,7 +11,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScFunctionExpr
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtension
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParameter, ScParameter}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScGivenDefinition
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 object ScParameterAnnotator extends ElementAnnotator[ScParameter] with DumbAware {
   private val isVarOrVal = Set(ScalaTokenTypes.kVAR, ScalaTokenTypes.kVAL)

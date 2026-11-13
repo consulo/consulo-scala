@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.statistics
 
 import com.intellij.internal.statistic.eventLog.EventLogGroup
 import com.intellij.internal.statistic.service.fus.collectors.CounterUsagesCollector
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector.Group
 
 //noinspection UnstableApiUsage

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.documentation.DocumentationManagerUtil
-import com.intellij.extapi.psi.ASTWrapperPsiElement
-import com.intellij.lang.documentation.DocumentationMarkup
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.psi.{PsiDocCommentOwner, PsiElement}
+import consulo.language.editor.documentation.DocumentationManagerUtil
+import consulo.language.impl.psi.ASTWrapperPsiElement
+import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.application.dumb.IndexNotReadyException
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.editor.ScalaEditorBundle
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocContentWithSectionsGenerator.{ParamInfo, Section}

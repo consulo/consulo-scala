@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.template
 
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{AnnotatorPart, ScalaAnnotationHolder}
 import org.jetbrains.plugins.scala.annotator.quickfix.ModifierQuickFix.{MakeProtected, MakePublic}

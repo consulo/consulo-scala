@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.notification._
-import com.intellij.openapi.project.Project
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
+import com.intellij.notification.NotificationGroupManager
+import consulo.project.ui.notification.event.NotificationListener
+import consulo.project.Project
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.nowarn

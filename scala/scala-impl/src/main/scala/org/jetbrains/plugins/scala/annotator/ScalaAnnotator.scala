@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.lang.annotation._
-import com.intellij.lang.injection.InjectedLanguageManager
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
+import consulo.language.inject.InjectedLanguageManager
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.impl.psi.LightElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils._
 import org.jetbrains.plugins.scala.annotator.annotationHolder.ScalaAnnotationHolderAdapter

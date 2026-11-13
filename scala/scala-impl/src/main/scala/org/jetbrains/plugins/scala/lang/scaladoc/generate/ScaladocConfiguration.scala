@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
-import com.intellij.analysis.AnalysisScope
-import com.intellij.execution.Executor
-import com.intellij.execution.configurations.{ModuleRunProfile, RunProfileState}
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.language.editor.scope.AnalysisScope
+import consulo.execution.executor.Executor
+import consulo.execution.configuration.{ModuleRunProfile, RunProfileState}
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.module.Module
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 
 import javax.swing.Icon

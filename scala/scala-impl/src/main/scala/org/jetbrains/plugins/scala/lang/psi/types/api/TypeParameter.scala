@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi.PsiTypeParameter
+import com.intellij.java.language.psi.PsiTypeParameter
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScTypeParam, TypeParamIdOwner}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager

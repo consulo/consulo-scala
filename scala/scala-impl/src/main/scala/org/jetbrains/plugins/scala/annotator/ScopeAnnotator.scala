@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScopeAnnotator.Definitions
 import org.jetbrains.plugins.scala.annotator.element.ElementAnnotator

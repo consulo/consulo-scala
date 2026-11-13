@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.editor.colors.{CodeInsightColors, EditorColorsScheme}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.ui.ex.action.{ActionGroup, ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.EditorColorsScheme
+import consulo.project.Project
+import consulo.language.ast.TokenSet
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.Format.{InnerParentheses, OuterParentheses, Plain}

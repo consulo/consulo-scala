@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil.{findCommonContext, findFirstContext}
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiNamedElement, PsiPackage}
+import com.intellij.java.language.psi.{PsiMethod, PsiParameter}
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil.{findCommonContext, findFirstContext}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils.highlightImplicitView

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.psi.stubs.StubIndexKey
+import consulo.language.psi.stub.StubIndexKey
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
 final class ScAnnotatedMainFunctionIndex extends ScStringStubIndexExtension[ScFunction] {

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{ArrayExt, ObjectExt, OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTrait}

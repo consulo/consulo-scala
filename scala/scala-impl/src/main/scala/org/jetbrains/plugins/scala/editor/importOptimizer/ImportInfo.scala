@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
 import org.jetbrains.plugins.scala.editor.importOptimizer.ScalaImportOptimizer._root_prefix
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt, PsiMemberExt, PsiModifierListOwnerExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

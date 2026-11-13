@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.runner.view
 
-import com.intellij.execution.util.StringWithNewLinesCellEditor
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.table.TableView
-import com.intellij.util.ui.{ColumnInfo, JBUI, ListTableModel}
+import consulo.execution.ui.awt.StringWithNewLinesCellEditor
+import consulo.ui.ex.awt.JBScrollPane
+import consulo.ui.ex.awt.table.TableView
+import consulo.ui.ex.awt.{ColumnInfo, JBUI}
+import consulo.ui.ex.awt.table.ListTableModel
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.applyTo
 import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMethodParameters.CustomParameter

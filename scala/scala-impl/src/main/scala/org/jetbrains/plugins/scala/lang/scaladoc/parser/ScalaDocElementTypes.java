@@ -1,15 +1,20 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser;
 
-import com.intellij.lang.*;
-import com.intellij.lexer.Lexer;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.ILazyParseableElementType;
-import com.intellij.psi.tree.TokenSet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.plugins.scala.Scala3Language;
+import consulo.language.ast.ASTNode;
+import consulo.language.Language;
+import com.intellij.lang.LanguageParserDefinitions;
+import consulo.language.parser.ParserDefinition;
+import consulo.language.parser.PsiBuilder;
+import consulo.language.parser.PsiBuilderFactory;
+import consulo.language.parser.PsiParser;
+import consulo.language.lexer.Lexer;
+import consulo.project.Project;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import consulo.language.psi.PsiElement;
+import consulo.language.ast.ILazyParseableElementType;
+import consulo.language.ast.TokenSet;
+import org.jspecify.annotations.Nullable;
+import org.jetbrains.plugins.scala.api.Scala3Language;
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocElementType;
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.ScaladocMarkdownParsing;
@@ -23,11 +28,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface ScalaDocElementTypes {
-    @NotNull
     ILazyParseableElementType SCALA_DOC_REFERENCE_LINK = new ILazyParseableElementType("SCALA_DOC_REFERENCE_LINK", ScalaDocRefLinkLanguage.INSTANCE()) {
         @Override
         @Nullable
-        public ASTNode parseContents(@NotNull ASTNode lazyNode) {
+        public ASTNode parseContents(ASTNode lazyNode) {
             PsiElement psi = lazyNode.getTreeParent().getPsi();
 
             Project project = psi.getProject();
@@ -55,12 +59,11 @@ public interface ScalaDocElementTypes {
      * See similar element for Java: {@link com.intellij.psi.impl.source.tree.JavaDocElementType#DOC_COMMENT}
      * (though it's implemented slightly differently at the moment, e.g., there is no separate JavaDocLanguage)
      */
-    @NotNull
     ILazyParseableElementType SCALA_DOC_COMMENT = new ILazyParseableElementType("SCALA_DOC_COMMENT", ScalaDocLanguage.INSTANCE) {
 
         @Override
         @Nullable
-        public ASTNode parseContents(@NotNull ASTNode lazyNode) {
+        public ASTNode parseContents(ASTNode lazyNode) {
             Project project = JavaPsiFacade.getInstance(lazyNode.getTreeParent().getPsi().getProject()).getProject();
 
             Language language = getLanguage();
@@ -106,7 +109,7 @@ public interface ScalaDocElementTypes {
 
         private static final Pattern SYNTAX_TAG = Pattern.compile("^\\s*\\*?\\s*@syntax\\s+(\\S+)\\s*$", Pattern.MULTILINE);
 
-        private boolean isMarkdown(@NotNull ASTNode lazyNode) {
+        private boolean isMarkdown(ASTNode lazyNode) {
             Matcher syntaxMatcher = SYNTAX_TAG.matcher(lazyNode.getText());
             if (syntaxMatcher.find()) {
                 String syntaxType = syntaxMatcher.group(1);

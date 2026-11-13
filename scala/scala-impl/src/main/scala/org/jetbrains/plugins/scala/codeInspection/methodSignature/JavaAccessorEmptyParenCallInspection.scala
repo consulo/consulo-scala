@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElementVisitor, PsiMethod}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.codeInspection.methodSignature.JavaAccessorEmptyParenCallInspection.{createQuickFix, hasSameType, isNotOverloadedMethod}
 import org.jetbrains.plugins.scala.extensions._

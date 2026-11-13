@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.codeInspection.dependencies
 
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElement
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.AbstractFixOnPsiElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveBundle

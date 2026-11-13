@@ -1,20 +1,25 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
-import com.intellij.codeInsight.CodeInsightUtilCore
-import com.intellij.codeInsight.highlighting.HighlightManager
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.CodeInsightUtilCore
+import consulo.language.editor.highlight.HighlightManager
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInsight.template._
-import com.intellij.codeInsight.template.impl.{TemplateManagerImpl, TemplateState}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.{EditorColors, TextAttributesKey}
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.refactoring.rename.inplace.MyLookupExpression
+import consulo.language.editor.template.macro.Macro
+import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.event.TemplateEditingAdapter
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl
+import consulo.language.editor.template.TemplateState
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.codeEditor.EditorColors
+import consulo.colorScheme.TextAttributesKey
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.refactoring.rename.inplace.MyLookupExpression
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.project;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.projectRoots.ui.PathEditor;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.ide.ui.PathEditor;
 import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.virtualFileSystem.VirtualFile;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

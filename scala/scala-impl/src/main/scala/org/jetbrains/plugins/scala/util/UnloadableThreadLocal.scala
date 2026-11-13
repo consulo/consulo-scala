@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 
 import java.util.concurrent.ConcurrentMap
 

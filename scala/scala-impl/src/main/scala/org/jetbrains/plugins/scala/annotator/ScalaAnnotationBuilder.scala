@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.daemon.HighlightDisplayKey
+import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import com.intellij.codeInsight.intention.CommonIntentionAction
-import com.intellij.codeInspection.{LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
-import com.intellij.lang.ASTNode
-import com.intellij.lang.annotation.ProblemGroup
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.editor.markup.{GutterIconRenderer, TextAttributes}
-import com.intellij.openapi.util.{NlsContexts, TextRange}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.{LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
+import consulo.language.ast.ASTNode
+import consulo.language.editor.annotation.ProblemGroup
+import consulo.colorScheme.TextAttributesKey
+import consulo.codeEditor.markup.GutterIconRenderer
+import consulo.colorScheme.TextAttributes
+import com.intellij.openapi.util.NlsContexts
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 
 //noinspection ScalaDocParserErrorInspection
 object ScalaAnnotationBuilder {

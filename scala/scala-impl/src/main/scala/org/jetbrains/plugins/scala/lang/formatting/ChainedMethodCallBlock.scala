@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting.{Alignment, Indent, Wrap}
-import com.intellij.lang.ASTNode
-import com.intellij.psi.codeStyle.CodeStyleSettings
+import consulo.language.codeStyle.{Alignment, Indent, Wrap}
+import consulo.language.ast.ASTNode
+import consulo.language.codeStyle.CodeStyleSettings
 import org.jetbrains.annotations.Nullable
 
 /**

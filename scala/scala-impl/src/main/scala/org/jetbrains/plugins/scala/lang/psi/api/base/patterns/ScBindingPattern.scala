@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 package patterns
 
-import com.intellij.navigation.NavigationItem
-import com.intellij.psi._
-import com.intellij.psi.javadoc.PsiDocComment
+import consulo.navigation.NavigationItem
+import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner, PsiMember, PsiModifierList, PsiModifierListOwner}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.javadoc.PsiDocComment
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

@@ -1,29 +1,30 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.icons.AllIcons
-import com.intellij.lang.Language
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.diagnostic.Logger
+import consulo.application.AllIcons
+import consulo.language.Language
+import consulo.ui.ex.action.ActionManager
+import consulo.ui.ModalityState
+import consulo.logging.Logger
 import com.intellij.openapi.editor.colors.impl.DefaultColorsScheme
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.ex.util.LayeredLexerEditorHighlighter
-import com.intellij.openapi.editor.{EditorFactory, EditorSettings}
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory.getSyntaxHighlighter
-import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui._
+import consulo.codeEditor.EditorEx
+import consulo.language.editor.highlight.LayeredLexerEditorHighlighter
+import consulo.codeEditor.{EditorFactory, EditorSettings}
+import consulo.fileChooser.FileChooserDescriptorFactory
+import consulo.document.FileDocumentManager
+import consulo.language.editor.highlight.SyntaxHighlighterFactory.getSyntaxHighlighter
+import consulo.ui.ex.keymap.util.KeymapUtil
+import consulo.project.Project
+import com.intellij.openapi.ui.MessageType
+import consulo.ui.ex.awt.{TextComponentAccessor, TextFieldWithBrowseButton, VerticalFlowLayout}
 import com.intellij.openapi.ui.panel.ComponentPanelBuilder
-import com.intellij.openapi.ui.popup.{Balloon, JBPopupFactory}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.components.panels.HorizontalLayout
-import com.intellij.ui.components.{JBCheckBox, JBTextField}
+import consulo.ui.ex.popup.{Balloon, JBPopupFactory}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.ui.ex.RelativePoint
+import consulo.ui.ex.awt.HorizontalLayout
+import consulo.ui.ex.awt.{JBCheckBox, JBTextField}
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager, Spacer}
-import com.intellij.util.ui.JBUI
+import consulo.ui.ex.awt.JBUI
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle

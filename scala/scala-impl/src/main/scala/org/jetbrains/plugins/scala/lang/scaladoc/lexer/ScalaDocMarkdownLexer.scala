@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.lexer
 
-import com.intellij.lexer.MergingLexerAdapter
-import com.intellij.psi.tree.TokenSet
+import consulo.language.lexer.MergingLexerAdapter
+import consulo.language.ast.TokenSet
 
 
 /*final class ScalaDocMarkdownLexer extends MergingLexerAdapter(

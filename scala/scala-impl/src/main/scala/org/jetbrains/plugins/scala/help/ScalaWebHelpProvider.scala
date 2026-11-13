@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.help
 
-import com.intellij.openapi.application.{ApplicationInfo, ApplicationManager}
+import com.intellij.openapi.application.ApplicationInfo
+import consulo.application.ApplicationManager
 import com.intellij.openapi.help.{KeymapHelpIdPresenter, WebHelpProvider}
 import com.intellij.openapi.keymap.ex.KeymapManagerEx
-import com.intellij.util.{Url, Urls}
+import consulo.util.io.{Url, Urls}
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider._
 
 import scala.jdk.CollectionConverters.MapHasAsJava

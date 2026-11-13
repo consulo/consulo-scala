@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight
 
 import com.intellij.codeInsight.{TargetElementEvaluatorEx, TargetElementEvaluatorEx2}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.psi._
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifierListOwner, PsiReferenceExpression}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement, PsiReference}
 import org.jetbrains.plugins.scala.editor.ScalaEditorUtils
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

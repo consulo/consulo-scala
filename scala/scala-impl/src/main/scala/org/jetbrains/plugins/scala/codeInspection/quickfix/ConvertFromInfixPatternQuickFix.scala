@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
 import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
-import com.intellij.openapi.command.undo.UndoUtil.markPsiFileForUndo
-import com.intellij.openapi.project.Project
+import consulo.undoRedo.util.UndoUtil.markPsiFileForUndo
+import consulo.project.Project
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.quickfix.ConvertFromInfixPatternQuickFix.message
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScInfixPattern, ScParenthesisedPattern}

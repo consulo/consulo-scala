@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.lexer.DelegateLexer;
-import com.intellij.lexer.Lexer;
-import com.intellij.lexer.LexerPosition;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.lexer.DelegateLexer;
+import consulo.language.lexer.Lexer;
+import consulo.language.lexer.LexerPosition;
+import consulo.logging.Logger;
+import consulo.language.ast.IElementType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +67,7 @@ class LayeredLexer extends DelegateLexer {
   }
 
   @Override
-  public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
+  public void start(CharSequence buffer, int startOffset, int endOffset, int initialState) {
     LOG.assertTrue(initialState != OUT_OF_LAYER_STATE, "Restoring to layer is not supported.");
     myState = initialState;
     myCurrentLayerLexer = null;
@@ -156,14 +155,13 @@ class LayeredLexer extends DelegateLexer {
         : super.getTokenType() == null ? super.getState() : OUT_OF_LAYER_STATE;
   }
 
-  @NotNull
   @Override
   public LexerPosition getCurrentPosition() {
     return new LexerPositionImpl(getTokenStart(), getState());
   }
 
   @Override
-  public void restore(@NotNull LexerPosition position) {
+  public void restore(LexerPosition position) {
     start(getBufferSequence(), position.getOffset(), getBufferEnd(), position.getState());
   }
 

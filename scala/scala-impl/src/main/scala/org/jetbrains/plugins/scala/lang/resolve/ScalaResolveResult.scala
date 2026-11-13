@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ArrayFactory
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiPackage, ResolveResult}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.util.collection.ArrayFactory
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

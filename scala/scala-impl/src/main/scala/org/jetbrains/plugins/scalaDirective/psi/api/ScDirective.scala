@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.psi.api
 
-import com.intellij.psi.{PsiComment, PsiElement}
+import consulo.language.psi.{PsiComment, PsiElement}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 
 trait ScDirective extends ScalaPsiElement with PsiComment {

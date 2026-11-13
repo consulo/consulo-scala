@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent}
-import com.intellij.openapi.ui.{InputValidator, Messages}
-import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.ui._
-import com.intellij.ui.components.JBList
+import consulo.java.impl.JavaBundle
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import consulo.ui.InputValidator
+import consulo.ui.ex.awt.Messages
+import consulo.application.ui.wm.IdeFocusManager
+import consulo.ui.ex.awt.{AnActionButton, AnActionButtonRunnable, ScrollingUtil, ToolbarDecorator}
+import consulo.ui.ex.awt.JBList
 import com.intellij.util.IconUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

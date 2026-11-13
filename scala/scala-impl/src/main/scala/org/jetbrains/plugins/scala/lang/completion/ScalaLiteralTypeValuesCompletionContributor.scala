@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType, PrioritizedLookupElement}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.PrioritizedLookupElement
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.ScalaLiteralTypeValuesCompletionContributor.ScalaLiteralTypeValuesCompletionProvider
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

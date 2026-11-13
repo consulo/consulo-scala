@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.navigation
 
 import com.intellij.codeInsight.navigation.impl.PsiTargetPresentationRenderer
 import com.intellij.ide.util.PsiElementRenderingInfo
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 import javax.swing.Icon
 

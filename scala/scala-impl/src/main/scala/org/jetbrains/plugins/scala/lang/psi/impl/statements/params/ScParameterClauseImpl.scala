@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 package params
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.PsiImplUtil
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.PsiImplUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._

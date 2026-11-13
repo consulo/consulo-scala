@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
-import com.intellij.codeInspection._
-import com.intellij.ide.projectView.impl.ProjectRootsUtil
-import com.intellij.openapi.roots.{JavaProjectRootsUtil, ProjectRootManager}
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtil
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
+import consulo.language.content.ProjectRootsUtil
+import consulo.java.impl.util.JavaProjectRootsUtil
+import consulo.module.content.ProjectRootManager
+import consulo.document.util.TextRange
+import consulo.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.psi._
+import consulo.language.psi.{PsiDirectory, PsiFile}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle

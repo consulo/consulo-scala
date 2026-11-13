@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow
 
-import com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow
-import com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow.DeferredOffset
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.{DfaValueFactory, DfaVariableValue}
-import com.intellij.openapi.diagnostic.Logger
+import consulo.language.dataFlow.ir.ControlFlow
+import consulo.language.dataFlow.ir.ControlFlow.DeferredOffset
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.{DfaValueFactory, DfaVariableValue}
+import consulo.logging.Logger
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaDfaAnchor
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.AnalysedMethodInfo
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.InstructionBuilder.StackValue

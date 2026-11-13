@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 package params
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiParameter, PsiParameterList}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.types.ValueClassType.ImplicitValueClass
 

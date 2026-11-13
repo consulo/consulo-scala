@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.patterns.PlatformPatterns
+import consulo.language.editor.completion.CompletionType
+import consulo.language.pattern.PlatformPatterns
 
 class ScalaBasicCompletionContributor extends ScalaCompletionContributor {
 

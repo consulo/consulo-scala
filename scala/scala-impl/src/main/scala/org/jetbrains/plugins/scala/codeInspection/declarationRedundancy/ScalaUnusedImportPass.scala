@@ -1,16 +1,21 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.daemon.impl._
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightingLevelManager
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.util.{DocumentUtil, Processor, ThreeState}
+import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, DaemonListeners, ProgressableTextEditorHighlightingPass}
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.language.editor.impl.highlight.HighlightInfoProcessor
+import consulo.language.editor.highlight.HighlightingLevelManager
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.undoRedo.UndoManager
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
+import consulo.document.util.DocumentUtil
+import consulo.application.util.function.Processor
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.annotator.usageTracker.UsageTracker
 import org.jetbrains.plugins.scala.caches.CachesUtil.fileModCount
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.ScalaUnusedImportPass.scheduleOnTheFlyImportOptimizer

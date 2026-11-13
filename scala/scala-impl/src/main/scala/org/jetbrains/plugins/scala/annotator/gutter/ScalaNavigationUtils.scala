@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.navigation.PsiTargetNavigator
-import com.intellij.ide.util.PsiElementListCellRenderer
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{NavigatablePsiElement, PsiElement}
+import consulo.language.editor.ui.navigation.PsiTargetNavigator
+import consulo.language.editor.ui.PsiElementListCellRenderer
+import consulo.project.Project
+import consulo.language.psi.{NavigatablePsiElement, PsiElement}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.gutter.ScalaMarkerType.newCellRenderer

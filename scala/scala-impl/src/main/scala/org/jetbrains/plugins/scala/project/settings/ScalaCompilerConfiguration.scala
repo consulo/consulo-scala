@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import com.intellij.openapi.components._
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.{ModificationTracker, SimpleModificationTracker}
-import com.intellij.util.xmlb.{SkipDefaultValuesSerializationFilters, XmlSerializer}
+import consulo.component.persist.{PersistentStateComponent, Storage}
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
+import consulo.util.xml.serializer.{SkipDefaultValuesSerializationFilters, XmlSerializer}
 import org.jdom.Element
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerConfigurationAttributes.{IncrementalityTypeAttr, ModulesAttr, NameAttr, OptionAttr, ProfileAttr, SeparateProdTestSourcesAttr, ValueAttr}

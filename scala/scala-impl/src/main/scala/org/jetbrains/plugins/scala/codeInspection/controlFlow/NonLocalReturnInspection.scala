@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder, UpdateInspectionOptionFix}
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder, UpdateInspectionOptionFix}
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType

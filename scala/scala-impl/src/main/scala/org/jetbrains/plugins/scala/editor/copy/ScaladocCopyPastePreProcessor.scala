@@ -1,14 +1,14 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.plugins.scala.editor.copy
 
-import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
-import com.intellij.openapi.editor.{Editor, RawText}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.DocumentUtil
-import com.intellij.util.text.CharArrayUtil
+import consulo.language.editor.action.CopyPastePreProcessor
+import consulo.codeEditor.{Editor, RawText}
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.language.psi.PsiFile
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.document.util.DocumentUtil
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

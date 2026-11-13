@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.util.ui.distribution
 
-import com.intellij.openapi.Disposable
+import consulo.disposer.Disposable
 import com.intellij.openapi.roots.ui.distribution.{DistributionComboBox, DistributionInfo, LocalDistributionInfo}
-import com.intellij.openapi.ui.{ComponentValidator, ValidationInfo}
+import consulo.ui.ex.awt.{ComponentValidator, ValidationInfo}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PathExt

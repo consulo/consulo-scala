@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, SmartPsiElementPointer}
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, SmartPsiElementPointer}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.codeInsight.template.postfix.templates.NotPostfixTemplate
+import consulo.language.editor.refactoring.postfixTemplate.NotPostfixTemplate
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.AncestorSelector._
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.ScalaPostfixTemplatePsiInfo
 

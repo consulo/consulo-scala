@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.FileModificationService
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.refactoring.safeDelete.SafeDeleteProcessor
+import consulo.language.editor.FileModificationService
+import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.editor.refactoring.safeDelete.SafeDeleteProcessor
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.DeleteUnusedElementFix.definitionOfPatternList
 import org.jetbrains.plugins.scala.extensions._

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScType

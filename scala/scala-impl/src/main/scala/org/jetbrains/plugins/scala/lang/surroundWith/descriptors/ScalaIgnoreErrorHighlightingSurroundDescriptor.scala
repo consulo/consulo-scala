@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.descriptors
 
-import com.intellij.lang.surroundWith.{SurroundDescriptor, Surrounder}
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.surroundWith.{SurroundDescriptor, Surrounder}
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

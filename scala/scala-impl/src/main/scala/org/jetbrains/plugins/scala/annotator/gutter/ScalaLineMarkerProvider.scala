@@ -1,19 +1,22 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.daemon._
-import com.intellij.codeInsight.daemon.impl.GutterTooltipHelper
-import com.intellij.icons.AllIcons
-import com.intellij.icons.AllIcons.Gutter
-import com.intellij.ide.util.PsiNavigationSupport
-import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.colors.{CodeInsightColors, EditorColorsManager}
-import com.intellij.openapi.editor.markup.{GutterIconRenderer, SeparatorPlacement}
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.DaemonCodeAnalyzerSettings
+import consulo.language.editor.gutter.{GutterIconDescriptor, LineMarkerInfo, LineMarkerProviderDescriptor, MergeableLineMarkerInfo, NavigateAction}
+import com.intellij.java.impl.codeInsight.daemon.impl.GutterTooltipHelper
+import consulo.application.AllIcons
+import consulo.application.AllIcons.Gutter
+import consulo.language.psi.PsiNavigationSupport
+import consulo.ui.ex.action.IdeActions
+import consulo.application.ApplicationManager
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.EditorColorsManager
+import consulo.codeEditor.markup.{GutterIconRenderer, SeparatorPlacement}
+import consulo.application.progress.ProgressManager
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.util.{Function => IJFunction}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle

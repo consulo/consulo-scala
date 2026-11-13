@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings

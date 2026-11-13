@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
-import com.intellij.codeInsight.intention.AbstractIntentionAction
-import com.intellij.codeInsight.navigation.PsiTargetNavigator
-import com.intellij.java.JavaBundle
+import consulo.language.editor.intention.AbstractIntentionAction
+import consulo.language.editor.ui.navigation.PsiTargetNavigator
+import consulo.java.impl.JavaBundle
 import com.intellij.openapi.application.ex.ApplicationManagerEx
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi.PsiFile
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.util.ThrowableRunnable
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.Editor
+import consulo.application.progress.ProgressIndicator
+import consulo.project.{DumbService, Project}
+import consulo.language.psi.PsiFile
+import consulo.language.psi.resolve.PsiElementProcessor
+import consulo.util.lang.function.ThrowableRunnable
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaModifier.{ABSTRACT, OVERRIDE}
@@ -19,7 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScPatternDefinition,
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.refactoring.extractTrait.ScalaExtractMemberInfo
 import org.jetbrains.plugins.scala.lang.refactoring.memberPullUp.ScalaPullUpProcessor
-import org.jetbrains.plugins.scala.{ScalaBundle, isUnitTestMode}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 final class PullUpQuickFix private(member: ScMember, override val getText: String) extends AbstractIntentionAction {
 

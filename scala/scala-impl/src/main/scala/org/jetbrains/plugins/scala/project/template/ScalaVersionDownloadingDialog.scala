@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
-import com.intellij.openapi.ui.Messages
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
+import consulo.ui.ex.awt.Messages
 import scala.annotation.nowarn
 import org.apache.ivy.util.MessageLogger
 import org.jetbrains.annotations.VisibleForTesting
@@ -10,9 +11,10 @@ import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, withProgressSync
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
 import org.jetbrains.plugins.scala.project.template.Artifact.ScalaLibrary
 import org.jetbrains.plugins.scala.project.template.ScalaVersionDownloadingDialog.{ScalaVersionResolveResult, createScalaVersionResolveResult, preselectLatestStableScalaVersion}
-import org.jetbrains.plugins.scala.project.{ReplClasspath, Version, Versions}
+import org.jetbrains.plugins.scala.project.{ReplClasspath, Versions}
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.{DependencyManagerBase, ScalaBundle, ScalaVersion}
-import org.jetbrains.sbt.project.template.SComboBox
+import org.jetbrains.sbt.api.project.template.SComboBox
 
 import java.awt.Point
 import java.nio.file.Path

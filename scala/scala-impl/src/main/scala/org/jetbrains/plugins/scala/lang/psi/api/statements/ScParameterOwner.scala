@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, ResolveState}
-import com.intellij.psi.scope.PsiScopeProcessor
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import com.intellij.openapi.util.NlsContexts
-import com.intellij.psi.PsiReference
-import com.intellij.refactoring.HelpID
+import consulo.language.psi.PsiReference
+import com.intellij.java.impl.refactoring.HelpID
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

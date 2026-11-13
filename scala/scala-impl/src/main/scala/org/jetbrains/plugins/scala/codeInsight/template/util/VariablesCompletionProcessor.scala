@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.util
 
-import com.intellij.psi._
+import consulo.language.psi.PsiNamedElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.lang.resolve.processor.BaseProcessor
 import org.jetbrains.plugins.scala.lang.resolve.{ResolveTargets, ScalaResolveResult}
 import org.jetbrains.plugins.scala.project.ProjectContext

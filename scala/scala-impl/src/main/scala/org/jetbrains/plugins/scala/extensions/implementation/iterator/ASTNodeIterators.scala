@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions.implementation.iterator
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 
 class ASTNodeTreeNextIterator(node: ASTNode) extends Iterator[ASTNode] {
   private var current: ASTNode = if (node == null) null else node.getTreeNext

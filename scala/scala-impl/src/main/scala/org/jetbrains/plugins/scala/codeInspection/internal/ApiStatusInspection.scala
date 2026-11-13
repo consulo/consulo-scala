@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.internal
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.psi.{PsiDocCommentOwner, PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.util.ModuleUtilCore
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.codeInspection.internal.ApiStatusInspection._
 import org.jetbrains.plugins.scala.extensions._

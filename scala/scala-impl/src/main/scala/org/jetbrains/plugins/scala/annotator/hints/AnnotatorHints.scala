@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiElement, PsiManager}
-import com.intellij.testFramework.LightVirtualFile
+import consulo.codeEditor.EditorFactory
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiElement, PsiManager}
+import consulo.language.file.light.LightVirtualFile
 import org.jetbrains.plugins.scala.annotator.hints.AnnotatorHints.AnnotatorHintsKey
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode

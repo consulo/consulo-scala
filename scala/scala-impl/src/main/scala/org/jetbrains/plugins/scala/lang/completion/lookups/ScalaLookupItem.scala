@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
-import com.intellij.codeInsight.completion.{InsertionContext, JavaCompletionUtil}
-import com.intellij.codeInsight.lookup._
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil._
+import consulo.language.editor.completion.lookup.InsertionContext
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer, LookupItem}
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiParameterList, PsiTypeParameter, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiNamedElement, PsiPackage}
+import consulo.language.psi.util.PsiTreeUtil._
 import org.jetbrains.plugins.scala.autoImport.quickFix._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -20,14 +22,15 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumCase, ScFuncti
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.{ScImportSelectors, ScImportStmt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnum, ScObject, ScTemplateDefinition, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypeParametersOwner}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScPackage}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.ScPackage
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.ScSyntheticFunction
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil.escapeKeyword
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocResolvableCodeReference
-import org.jetbrains.plugins.scala.settings._
+import org.jetbrains.plugins.scala.compilersettings.settings._
 import org.jetbrains.plugins.scala.util.HashBuilder._
 
 import scala.annotation.{nowarn, tailrec}

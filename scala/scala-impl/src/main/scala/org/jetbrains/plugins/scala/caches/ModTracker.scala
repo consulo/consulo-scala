@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.{ModificationTracker, SimpleModificationTracker}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.compiled.ClsFileImpl
-import com.intellij.psi.util.PsiModificationTracker
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.compiled.ClsFileImpl
+import consulo.language.psi.PsiModificationTracker
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 object ModTracker {

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.psi.impl
 
-import com.intellij.psi.PsiReference
-import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import consulo.language.psi.PsiReference
+import consulo.language.psi.ReferenceProvidersRegistry
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScPsiDocToken
 

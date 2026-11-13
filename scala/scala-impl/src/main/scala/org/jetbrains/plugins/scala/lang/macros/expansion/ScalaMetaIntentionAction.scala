@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
-import com.intellij.codeInsight.intention.IntentionAction
+import consulo.language.editor.intention.IntentionAction
 import org.jetbrains.annotations.NonNls
 
 abstract class ScalaMetaIntentionAction extends IntentionAction {

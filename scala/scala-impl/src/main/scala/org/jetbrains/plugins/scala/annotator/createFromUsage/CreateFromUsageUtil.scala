@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
-import com.intellij.codeInsight.template.TemplateBuilder
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.collections.MethodRepr
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt, ResolvesTo}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns._

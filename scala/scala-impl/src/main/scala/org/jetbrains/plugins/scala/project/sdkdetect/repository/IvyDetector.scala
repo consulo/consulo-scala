@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.project.sdkdetect.repository
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.util.SystemProperties
+import consulo.logging.Logger
+import consulo.application.progress.ProgressIndicator
+import consulo.util.lang.SystemProperties
 import org.apache.ivy.util.{AbstractMessageLogger, Message, MessageLogger}
 import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, ResolveFailure, ResolvedDependency, Types, UnresolvedDependency}
 import org.jetbrains.plugins.scala.extensions.{LoggerExt, PathExt}
-import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.project.template.{IvySdkChoice, ScalaSdkDescriptor, SdkChoice}
 import org.jetbrains.plugins.scala.{DependencyManagerBase, ScalaBundle}
 

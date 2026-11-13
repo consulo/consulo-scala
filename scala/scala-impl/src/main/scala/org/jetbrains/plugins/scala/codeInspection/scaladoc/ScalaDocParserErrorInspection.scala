@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.{PsiElementVisitor, PsiErrorElement}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.{PsiElementVisitor, PsiErrorElement}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaElementVisitor, ScalaPsiElement}

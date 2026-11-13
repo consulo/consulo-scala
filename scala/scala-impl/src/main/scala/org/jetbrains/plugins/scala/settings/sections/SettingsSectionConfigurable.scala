@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import com.intellij.openapi.options.{Configurable, ConfigurationException}
+import consulo.configurable.{Configurable, ConfigurationException}
 
 import javax.swing.JComponent
 

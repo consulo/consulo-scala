@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScContextBound, ScTypeElement}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType}

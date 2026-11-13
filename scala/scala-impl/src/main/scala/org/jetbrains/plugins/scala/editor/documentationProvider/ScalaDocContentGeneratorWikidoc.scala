@@ -1,19 +1,19 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.documentation.DocumentationManagerUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.{PsiElement, PsiErrorElement}
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.dumb.IndexNotReadyException
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.{PsiElement, PsiErrorElement}
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocContentGeneratorWikidoc._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
-import com.intellij.lang.Language
-import com.intellij.openapi.fileTypes.{BinaryFileDecompiler, FileType}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.impl.compiled.ClassFileStubBuilder
-import com.intellij.psi.{FileViewProvider, FileViewProviderFactory, PsiManager}
+import consulo.language.Language
+import consulo.virtualFileSystem.BinaryFileDecompiler
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.impl.psi.impl.compiled.ClassFileStubBuilder
+import consulo.language.file.{FileViewProvider, FileViewProviderFactory}
+import consulo.language.psi.PsiManager
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import javax.swing._
 

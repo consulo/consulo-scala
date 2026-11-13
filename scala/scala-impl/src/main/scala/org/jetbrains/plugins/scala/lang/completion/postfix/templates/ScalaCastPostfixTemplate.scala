@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.codeInsight.template.impl.TextExpression
-import com.intellij.codeInsight.template.postfix.templates.{PostfixTemplateWithExpressionSelector, PostfixTemplatesUtils}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElement
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.template.TextExpression
+import consulo.language.editor.refactoring.postfixTemplate.PostfixTemplateWithExpressionSelector
+import consulo.language.editor.postfixTemplate.PostfixTemplatesUtils
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector.AncestorSelector.SelectAllAncestors
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 

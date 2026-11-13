@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.fileTemplates.{FileTemplate, TemplatePackagePropertyProvider}
-import com.intellij.psi.PsiDirectory
+import consulo.fileTemplate.FileTemplate
+import com.intellij.java.impl.ide.fileTemplates.TemplatePackagePropertyProvider
+import consulo.language.psi.PsiDirectory
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
 import java.util.Properties

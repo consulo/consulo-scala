@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.parser
 
 import com.intellij.lang.DefaultASTFactoryImpl
-import com.intellij.psi.impl.source.tree.LeafElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.impl.ast.LeafElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scalaDirective.psi.impl.ScDirectiveTokenImpl
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.impl.ScPsiDocTokenImpl

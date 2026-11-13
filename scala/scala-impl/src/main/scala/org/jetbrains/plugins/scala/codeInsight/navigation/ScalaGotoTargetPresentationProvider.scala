@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.navigation
 
-import com.intellij.codeInsight.navigation.GotoTargetPresentationProvider
+import consulo.ide.navigation.GotoTargetPresentationProvider
 import com.intellij.ide.util.{PsiClassRenderingInfo, PsiElementRenderingInfo}
-import com.intellij.platform.backend.presentation.TargetPresentation
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.navigation.TargetPresentation
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiPresentationUtils.{extensionMethodContainerText, extensionMethodPresentableText}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScExportStmt

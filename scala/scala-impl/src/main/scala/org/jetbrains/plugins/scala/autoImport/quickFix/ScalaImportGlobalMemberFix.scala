@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.codeInsight.intention.{IntentionAction, PriorityAction}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.java.stubs.index.JavaStaticMemberNameIndex
-import com.intellij.psi.{PsiEnumConstant, PsiMethod}
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.inspection.PriorityAction
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import com.intellij.java.indexing.impl.stubs.index.JavaStaticMemberNameIndex
+import com.intellij.java.language.psi.{PsiEnumConstant, PsiMethod}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.UnresolvedReferenceFixProvider

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.suppression
 
-import com.intellij.codeInsight.daemon.HighlightDisplayKey
-import com.intellij.codeInspection.{SuppressQuickFix, SuppressionUtil}
-import com.intellij.psi.{PsiComment, PsiDirectory, PsiElement, PsiFile}
+import consulo.language.editor.rawHighlight.HighlightDisplayKey
+import consulo.language.editor.inspection.{SuppressQuickFix, SuppressionUtil}
+import consulo.language.psi.{PsiComment, PsiDirectory, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScCommentOwner

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.navigation._
-import com.intellij.psi._
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.navigation.ItemPresentation
+import com.intellij.java.language.psi.{PsiClass, PsiClassOwner, PsiClassType, PsiMethod, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cached, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._
@@ -34,8 +35,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil.BacktickedName.stripBackticks
 import org.jetbrains.plugins.scala.projectView.FileKind
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.{PackageObjectClassName, PackageObjectClassPackageSuffix, PackageObjectSingletonClassPackageSuffix}
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.{PackageObjectClassName, PackageObjectClassPackageSuffix, PackageObjectSingletonClassPackageSuffix}
 
 import javax.swing.Icon
 import scala.annotation.tailrec

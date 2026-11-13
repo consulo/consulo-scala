@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.aot
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionResult, CompletionResultSet}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer}
-import com.intellij.openapi.util.text.StringUtil.{capitalize, decapitalize}
+import consulo.language.editor.completion.{CompletionParameters, CompletionResult, CompletionResultSet}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator, LookupElementPresentation, LookupElementRenderer}
+import consulo.util.lang.StringUtil.{capitalize, decapitalize}
 import com.intellij.util.{Consumer => IJConsumer}
 
 import scala.collection.mutable

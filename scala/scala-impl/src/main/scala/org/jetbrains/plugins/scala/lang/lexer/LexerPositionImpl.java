@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.lexer.LexerPosition;
+import consulo.language.lexer.LexerPosition;
 
 // Copy of the corresponding class in IDEA
 class LexerPositionImpl implements LexerPosition {

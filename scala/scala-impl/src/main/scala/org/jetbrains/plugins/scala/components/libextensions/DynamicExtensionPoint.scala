@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 
 import scala.reflect.ClassTag
 

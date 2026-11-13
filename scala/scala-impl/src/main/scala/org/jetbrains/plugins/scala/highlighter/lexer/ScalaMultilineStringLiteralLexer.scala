@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.highlighter.lexer
 
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.IElementType
 
 /**
  * Can parse a non-interpolated multiline string literal """..."""

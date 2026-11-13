@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiTypeParametersOwnerAdapter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScParameterOwner

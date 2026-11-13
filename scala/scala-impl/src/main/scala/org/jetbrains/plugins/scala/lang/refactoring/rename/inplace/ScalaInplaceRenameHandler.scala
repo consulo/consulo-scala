@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.refactoring.rename.inplace.InplaceRefactoring
-import com.intellij.refactoring.rename.{PsiElementRenameHandler, RenamePsiElementProcessor}
-import com.intellij.ui.components.JBList
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.language.editor.util.PsiUtilBase.getElementAtCaret
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.inplace.InplaceRefactoring
+import consulo.language.editor.refactoring.rename.{PsiElementRenameHandler, RenamePsiElementProcessor}
+import consulo.ui.ex.awt.JBList
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, invokeLaterInTransaction}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
@@ -22,7 +22,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.base.ScEndImpl.Target
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiClassWrapper, PsiMethodWrapper}
 import org.jetbrains.plugins.scala.lang.refactoring.rename.{RenameScalaPackageProcessor, ScalaRenameUtil}
 import org.jetbrains.plugins.scala.project.ProjectExt
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import scala.annotation.nowarn
 

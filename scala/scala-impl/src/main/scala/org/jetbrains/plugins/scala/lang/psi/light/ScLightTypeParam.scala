@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.impl.light.{LightReferenceListBuilder, LightTypeParameter}
-import com.intellij.psi.{PsiClassType, PsiReferenceList}
+import com.intellij.java.language.impl.psi.impl.light.{LightReferenceListBuilder, LightTypeParameter}
+import com.intellij.java.language.psi.{PsiClassType, PsiReferenceList}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.types.api.StdType
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor

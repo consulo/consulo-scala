@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.SimpleModificationTracker
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.component.util.SimpleModificationTracker
 
 package object synthetic {
 

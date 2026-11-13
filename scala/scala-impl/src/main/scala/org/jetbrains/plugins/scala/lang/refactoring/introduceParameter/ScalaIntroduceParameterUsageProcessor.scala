@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
-import com.intellij.openapi.editor.RangeMarker
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Ref, TextRange}
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.refactoring.changeSignature.{ChangeInfo, ChangeSignatureUsageProcessor}
-import com.intellij.refactoring.rename.ResolveSnapshotProvider
-import com.intellij.refactoring.rename.ResolveSnapshotProvider.ResolveSnapshot
-import com.intellij.usageView.UsageInfo
-import com.intellij.util.containers.MultiMap
+import consulo.document.RangeMarker
+import consulo.project.Project
+import consulo.util.lang.ref.Ref
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.language.editor.refactoring.changeSignature.{ChangeInfo, ChangeSignatureUsageProcessor}
+import consulo.language.editor.refactoring.ResolveSnapshotProvider
+import consulo.language.editor.refactoring.ResolveSnapshotProvider.ResolveSnapshot
+import consulo.usage.UsageInfo
+import consulo.util.collection.MultiMap
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
 
 import java.util

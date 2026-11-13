@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiDirectory, PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.refactoring.move.moveClassesOrPackages.MoveClassHandler
-import com.intellij.usageView.UsageInfo
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile}
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveClassHandler
+import consulo.usage.UsageInfo
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.editor.importOptimizer.ScalaImportOptimizer
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._

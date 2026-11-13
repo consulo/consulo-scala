@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.delete
 
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.safeDelete.usageInfo.SafeDeleteReferenceJavaDeleteUsageInfo
+import consulo.language.psi.PsiElement
+import com.intellij.java.impl.refactoring.safeDelete.usageInfo.SafeDeleteReferenceJavaDeleteUsageInfo
 import org.jetbrains.plugins.scala.extensions.{Parent, _}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScInfixExpr, ScMethodCall}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

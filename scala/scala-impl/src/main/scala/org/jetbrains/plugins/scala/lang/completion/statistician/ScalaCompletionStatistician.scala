@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.statistician
 
-import com.intellij.codeInsight.completion.{CompletionLocation, CompletionStatistician}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.statistics.StatisticsInfo
-import com.intellij.psi.{PsiClass, PsiMember}
+import consulo.language.editor.completion.{CompletionLocation, CompletionStatistician}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.language.statistician.StatisticsInfo
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
 import org.jetbrains.plugins.scala.lang.completion.ScalaTextLookupItem
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

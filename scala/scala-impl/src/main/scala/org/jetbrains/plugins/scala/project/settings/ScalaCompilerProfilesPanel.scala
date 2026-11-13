@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{ActionManager, ActionUpdateThread, AnActionEvent, ShortcutSet}
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.ui.{InputValidatorEx, Messages, Splitter}
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui._
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.treeStructure.Tree
-import com.intellij.util.ui.tree.TreeUtil
-import com.intellij.util.ui.{EditableTreeModel, JBUI}
+import consulo.application.AllIcons
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, ShortcutSet}
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.ui.ex.InputValidatorEx
+import consulo.ui.ex.awt.{Messages, Splitter}
+import consulo.util.dataholder.Key
+import consulo.util.lang.StringUtil
+import consulo.ui.ex.awt.{AnActionButton, ToolbarDecorator}
+import consulo.ui.ex.awt.tree.ColoredTreeCellRenderer
+import consulo.ui.ex.awt.speedSearch.{SpeedSearchComparator, TreeSpeedSearch}
+import consulo.ui.ex.RelativePoint
+import consulo.ui.ex.awt.tree.Tree
+import consulo.ui.ex.awt.tree.TreeUtil
+import consulo.ui.ex.awt.tree.EditableTreeModel
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt}
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerProfilesPanel._

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import com.thaiopensource.util.Service
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.types.api.{ParameterizedType, TypeParameter, TypeParameterType}
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.ScTypePolymorphicType

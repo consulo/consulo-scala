@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Condition, NlsContexts}
-import com.intellij.psi.PsiReference
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.refactoring.HelpID
-import com.intellij.util.FilteredQuery
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.util.lang.function.Condition
+import com.intellij.openapi.util.NlsContexts
+import consulo.language.psi.PsiReference
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import com.intellij.java.impl.refactoring.HelpID
+import consulo.application.util.query.FilteredQuery
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

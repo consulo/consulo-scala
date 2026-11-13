@@ -15,9 +15,9 @@
 
 package org.jetbrains.plugins.scala.lang.macros.evaluator
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiNamedElement
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.caches.cached
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager
 import org.jetbrains.plugins.scala.lang.macros.MacroDef

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.framework
 
-import com.intellij.psi.PsiElement
-import com.intellij.util.ThreeState
+import consulo.language.psi.PsiElement
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaDfaResult.ProblemOccurrence
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaConstants.DfaConstantValue
 

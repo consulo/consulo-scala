@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiReference}
-import com.intellij.refactoring.move.MoveCallback
-import com.intellij.refactoring.move.moveFilesOrDirectories.{JavaMoveFilesOrDirectoriesHandler, MoveFilesOrDirectoriesHandler}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.dataContext.DataContext
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.language.editor.refactoring.move.MoveCallback
+import com.intellij.java.impl.refactoring.move.moveFilesOrDirectories.JavaMoveFilesOrDirectoriesHandler
+import consulo.language.editor.refactoring.move.fileOrDirectory.MoveFilesOrDirectoriesHandler
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 
 // Basically just a wrapper around Java implementation that calls `ScalaFileImpl.performMoveRefactoring` on move

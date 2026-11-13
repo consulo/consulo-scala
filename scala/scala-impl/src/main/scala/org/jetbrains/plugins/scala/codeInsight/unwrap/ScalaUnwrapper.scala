@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.unwrap
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.codeInsight.unwrap.AbstractUnwrapper
-import com.intellij.psi.PsiElement
+import consulo.language.editor.CodeInsightBundle
+import consulo.language.editor.refactoring.unwrap.AbstractUnwrapper
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.StringExt
 
 abstract class ScalaUnwrapper extends AbstractUnwrapper[ScalaUnwrapContext]("") {

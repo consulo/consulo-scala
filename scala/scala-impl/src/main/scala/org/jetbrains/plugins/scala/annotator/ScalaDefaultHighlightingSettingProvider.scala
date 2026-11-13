@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.daemon.impl.analysis.{DefaultHighlightingSettingProvider, FileHighlightingSetting}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiJavaFile, PsiManager}
+import consulo.language.editor.{DefaultHighlightingSettingProvider, FileHighlightingSetting}
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.application.util.registry.Registry
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.PsiJavaFile
+import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 

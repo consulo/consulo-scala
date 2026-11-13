@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Pass
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.rename.RenameJavaMemberProcessor
-import com.intellij.refactoring.util.RefactoringUtil
-import com.intellij.usageView.UsageInfo
+import consulo.codeEditor.Editor
+import consulo.language.editor.Pass
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import com.intellij.java.impl.refactoring.rename.RenameJavaMemberProcessor
+import com.intellij.java.impl.refactoring.util.RefactoringUtil
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParameter, ScParameter}

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.RefactoringHelper
-import com.intellij.refactoring.util.MoveRenameUsageInfo
-import com.intellij.usageView.UsageInfo
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.RefactoringHelper
+import consulo.usage.MoveRenameUsageInfo
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.caches
 
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util._
-import com.intellij.psi._
-import com.intellij.psi.util._
+import consulo.project.Project
+import consulo.component.util.ModificationTracker
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.application.util.{CachedValue, CachedValueProvider, CachedValuesManager}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.caches.ProjectUserDataHolder._
 import org.jetbrains.plugins.scala.caches.stats.{CacheCapabilities, CacheTracker}
 import org.jetbrains.plugins.scala.extensions._

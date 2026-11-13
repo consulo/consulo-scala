@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.stub.StubIndexKey
 
 final class ScPackageObjectFqnIndex extends ScFqnHashStubIndexExtension[PsiClass] {
 

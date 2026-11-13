@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.LocalQuickFix
+import com.intellij.java.analysis.impl.codeInspection.RemoveAnnotationQuickFix
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.{superTypeSignatures, superValsSignatures}

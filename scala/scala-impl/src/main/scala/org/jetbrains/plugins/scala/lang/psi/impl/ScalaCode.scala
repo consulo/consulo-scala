@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.psi.{PsiElement, PsiFileFactory}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.psi.{PsiElement, PsiFileFactory}
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

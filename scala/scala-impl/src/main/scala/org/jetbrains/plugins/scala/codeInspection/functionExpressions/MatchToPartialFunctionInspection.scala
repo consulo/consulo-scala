@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.codeInspection.functionExpressions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.impl.source.tree.TreeElement
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil.{getParentOfType, isAncestor}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFixOnPsiElement, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.impl.ast.TreeElement
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil.{getParentOfType, isAncestor}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, AbstractFixOnTwoPsiElements, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.editor.DocumentExt

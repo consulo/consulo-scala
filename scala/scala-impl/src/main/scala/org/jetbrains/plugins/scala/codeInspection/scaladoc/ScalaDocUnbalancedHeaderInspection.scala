@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnTwoPsiElements, ScalaInspectionBundle}

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
-import com.intellij.refactoring.ui.ComboBoxVisibilityPanel
+import consulo.language.editor.refactoring.ui.ComboBoxVisibilityPanel
 import org.jetbrains.plugins.scala.lang.refactoring.ui.ScalaComboBoxVisibilityPanel._
 
 class ScalaComboBoxVisibilityPanel(additional: String*)

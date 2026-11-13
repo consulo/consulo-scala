@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector
 
-import com.intellij.codeInsight.template.postfix.templates.PostfixTemplatePsiInfo
-import com.intellij.psi.PsiElement
+import consulo.language.editor.postfixTemplate.PostfixTemplatePsiInfo
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.booleans.SimplifyBooleanUtil
 import org.jetbrains.plugins.scala.extensions.ParenthesizedElement.Ops
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

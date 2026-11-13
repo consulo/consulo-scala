@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural
 
-import com.intellij.codeInspection.dataFlow.interpreter.{DataFlowInterpreter, StandardDataFlowInterpreter}
-import com.intellij.codeInspection.dataFlow.jvm.JvmDfaMemoryStateImpl
-import com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow.DeferredOffset
-import com.intellij.codeInspection.dataFlow.lang.ir.{DfaInstructionState, SimpleAssignmentInstruction}
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory}
-import com.intellij.psi.{PsiModifier, PsiModifierListOwner}
+import consulo.language.dataFlow.interpreter.{DataFlowInterpreter, StandardDataFlowInterpreter}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.JvmDfaMemoryStateImpl
+import consulo.language.dataFlow.ir.ControlFlow.DeferredOffset
+import consulo.language.dataFlow.ir.{DfaInstructionState, SimpleAssignmentInstruction}
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory}
+import com.intellij.java.language.psi.{PsiModifier, PsiModifierListOwner}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiModifierListOwnerExt}
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.MethodEffect
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport.SpecialSupportUtils.{byNameParametersPresent, isImplicitParametersPresent}

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInspection.LocalQuickFixOnPsiElement
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.inspection.LocalQuickFixOnPsiElement
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.{Nls, NotNull}
 import org.jetbrains.plugins.scala.extensions.ValidSmartPointer
 

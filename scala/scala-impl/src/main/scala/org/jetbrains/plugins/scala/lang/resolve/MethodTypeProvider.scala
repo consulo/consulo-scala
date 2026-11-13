@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.psi._
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMethod, PsiParameter, PsiTypeParameter}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiMethodExt, PsiParameterExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base._

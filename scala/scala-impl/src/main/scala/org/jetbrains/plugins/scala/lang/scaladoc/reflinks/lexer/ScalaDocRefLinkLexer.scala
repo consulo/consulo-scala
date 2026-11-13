@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks.lexer
 
-import com.intellij.lexer.FlexAdapter
+import consulo.language.lexer.FlexAdapter
 
 /**
  * blub [[ScalaDocRefLinkLexer]]

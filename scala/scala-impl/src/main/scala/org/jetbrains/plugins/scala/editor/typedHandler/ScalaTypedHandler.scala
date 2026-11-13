@@ -1,19 +1,20 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate.Result
-import com.intellij.codeInsight.{AutoPopupController, CodeInsightSettings}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.{CodeStyleManager, CodeStyleSettings}
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.completion.CompletionType
+import consulo.language.editor.action.TypedHandlerDelegate
+import consulo.language.editor.action.TypedHandlerDelegate.Result
+import consulo.language.editor.{AutoPopupController, CodeInsightSettings}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiWhiteSpace}
+import consulo.language.codeStyle.{CodeStyleManager, CodeStyleSettings}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.ScalaFileType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.editor.typedHandler.AutoBraceInsertionTools._
 import org.jetbrains.plugins.scala.editor.typedHandler.ScalaTypedHandler._
 import org.jetbrains.plugins.scala.editor.{AutoBraceAdvertiser, DocumentExt, ScalaEditorUtils, adjustLineIndentIfNeeded, indentKeyword}

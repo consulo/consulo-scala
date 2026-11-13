@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.ui.IdeBorderFactory
-import com.intellij.ui.components.{JBCheckBox, JBPanel}
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.ui.ex.awt.IdeBorderFactory
+import consulo.ui.ex.awt.{JBCheckBox, JBPanel}
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
-import com.intellij.util.ui.JBUI
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.ScalaBundle
 
 import javax.swing.JPanel

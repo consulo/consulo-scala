@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template.TemplateBuilderFactory
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.psi.{PsiElement, PsiMember, PsiMethod}
-import com.intellij.ui.LayeredIcon
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.TemplateBuilderFactory
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMember, PsiMethod}
+import consulo.desktop.awt.ui.impl.image.LayeredIcon
+import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.NotImplementedError
+import org.jetbrains.plugins.scala.api.NotImplementedError
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.collectMethodInvocationArgClauses
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaInsertHandler.AssignmentText

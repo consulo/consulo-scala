@@ -1,22 +1,18 @@
 package org.jetbrains.plugins.scala.findUsages;
 
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.util.Query;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import consulo.component.extension.ExtensionPointName;
+import consulo.language.psi.PsiNamedElement;
+import consulo.language.psi.PsiReference;
+import consulo.application.util.query.Query;
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 public interface ExternalReferenceSearcher {
     ExtensionPointName<ExternalReferenceSearcher> EP_NAME =
             ExtensionPointName.create("org.intellij.scala.findUsages.externalReferenceSearcher");
 
-    @NotNull
-    Query<PsiReference> search(@NotNull PsiNamedElement target);
+    Query<PsiReference> search(PsiNamedElement target);
 
-    @NotNull
-    static Query<PsiReference> searchExternally(@NotNull PsiNamedElement target) {
+    static Query<PsiReference> searchExternally(PsiNamedElement target) {
         final var first = EP_NAME.getExtensions()[0];
         return first.search(target);
     }

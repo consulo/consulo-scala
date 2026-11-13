@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
-import com.intellij.debugger.{DebuggerManager, NameMapper}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
-import com.intellij.psi.PsiClass
+import com.intellij.java.debugger.{DebuggerManager, NameMapper}
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.project.startup.StartupActivity
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTemplateDefinition}
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScalaCompilerLoader._

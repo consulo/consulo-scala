@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
-import com.intellij.lang.refactoring.RefactoringSupportProvider
+import consulo.language.editor.refactoring.RefactoringSupportProvider
 import com.intellij.refactoring.actions.ExtractSuperActionBase
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaRefactoringSupportProvider

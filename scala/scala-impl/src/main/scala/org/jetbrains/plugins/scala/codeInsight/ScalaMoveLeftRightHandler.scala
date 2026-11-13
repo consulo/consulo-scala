@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight
 
-import com.intellij.codeInsight.editorActions.moveLeftRight.MoveElementLeftRightHandler
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElement
+import consulo.language.editor.moveLeftRight.MoveElementLeftRightHandler
+import consulo.util.lang.StringUtil
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, childOf}
 import org.jetbrains.plugins.scala.lang.parser.util.ParserUtils
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

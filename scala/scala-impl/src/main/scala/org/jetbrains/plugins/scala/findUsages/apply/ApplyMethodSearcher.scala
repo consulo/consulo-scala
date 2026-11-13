@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.findUsages.apply
 
-import com.intellij.psi._
+import consulo.language.psi.PsiReference
 import org.jetbrains.plugins.scala.extensions.{&, Parent}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScGenericCall, ScMethodCall, ScReferenceExpression}

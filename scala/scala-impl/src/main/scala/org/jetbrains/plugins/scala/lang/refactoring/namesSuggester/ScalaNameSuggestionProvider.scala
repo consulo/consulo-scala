@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester
 
-import com.intellij.psi.codeStyle.SuggestedNameInfo
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.refactoring.rename.NameSuggestionProvider
+import consulo.language.editor.refactoring.rename.SuggestedNameInfo
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.NameSuggestionProvider
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScNewTemplateDefinition}

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow
 
-import com.intellij.codeInsight.Nullability
-import com.intellij.codeInspection.dataFlow.jvm.descriptors.JvmVariableDescriptor
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.DfaVariableValue
-import com.intellij.psi.{PsiElement, PsiModifierListOwner, PsiNamedElement}
+import com.intellij.java.language.codeInsight.Nullability
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.descriptors.JvmVariableDescriptor
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.DfaVariableValue
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiModifierListOwner
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaTypeUtils.{elementNullabilityForRead, isStableElement, scTypeToDfType}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression

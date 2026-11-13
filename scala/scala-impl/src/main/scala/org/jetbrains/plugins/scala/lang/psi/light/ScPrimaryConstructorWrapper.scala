@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.{PsiElement, PsiModifierList, PsiParameter, PsiTypeParameter}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiModifierList, PsiParameter, PsiTypeParameter}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor

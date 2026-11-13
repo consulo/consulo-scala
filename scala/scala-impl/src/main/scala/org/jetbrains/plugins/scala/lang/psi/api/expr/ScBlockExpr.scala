@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScControlFlowOwner
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClauses

@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.find.findUsages.{AbstractFindUsagesDialog, FindUsagesHandler, FindUsagesOptions}
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.psi.{PsiElement, PsiMethod}
+import consulo.find.ui.AbstractFindUsagesDialog
+import consulo.find.{FindUsagesHandler, FindUsagesOptions}
+import consulo.dataContext.DataContext
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
 import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
-import com.intellij.codeInsight.completion.{CompletionResultSet, CompletionSorter}
-import com.intellij.icons.AllIcons
+import consulo.language.editor.completion.{CompletionResultSet, CompletionSorter}
+import consulo.application.AllIcons
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyDescriptor

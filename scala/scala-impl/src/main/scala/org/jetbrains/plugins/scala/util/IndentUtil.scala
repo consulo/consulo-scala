@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.apache.commons.lang3.{StringUtils => ApacheStringUtils}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, Whitespace}
 

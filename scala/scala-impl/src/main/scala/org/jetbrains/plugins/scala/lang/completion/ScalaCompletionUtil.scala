@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.JavaProjectCodeInsightSettings
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionUtil, PrefixMatcher}
-import com.intellij.lang.Language
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaFileType, ScalaLanguage}
+import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
+import consulo.language.editor.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionUtil
+import consulo.application.util.matcher.PrefixMatcher
+import consulo.language.Language
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiFileFactory, PsiManager, PsiWhiteSpace}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType, ScalaLanguage}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer._

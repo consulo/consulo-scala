@@ -15,13 +15,12 @@
 
 package org.jetbrains.plugins.scala.highlighter;
 
-import com.intellij.codeInsight.daemon.impl.JavaHighlightInfoTypes;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
-import com.intellij.openapi.editor.HighlighterColors;
-import com.intellij.openapi.editor.XmlHighlighterColors;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.java.analysis.impl.codeInsight.daemon.impl.JavaHighlightInfoTypes;
+import consulo.codeEditor.DefaultLanguageHighlighterColors;
+import consulo.codeEditor.HighlighterColors;
+import consulo.xml.editor.XmlHighlighterColors;
+import consulo.colorScheme.TextAttributesKey;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * NOTE: some non-default values are specified in predefined color schemes<br>
@@ -197,7 +196,7 @@ public class DefaultHighlighter {
   public static final TextAttributesKey SCALA_DIRECTIVE_KEY = createKey(SCALA_DIRECTIVE_KEY_ID, DefaultLanguageHighlighterColors.DOC_COMMENT_TAG_VALUE);
   public static final TextAttributesKey SCALA_DIRECTIVE_VALUE = createKey(SCALA_DIRECTIVE_VALUE_ID, DefaultLanguageHighlighterColors.DOC_COMMENT);
 
-  private static TextAttributesKey createKey(@NonNls @NotNull String externalName, TextAttributesKey prototype) {
+  private static TextAttributesKey createKey(@NonNls String externalName, TextAttributesKey prototype) {
     return TextAttributesKey.createTextAttributesKey(externalName, prototype);
   }
 }

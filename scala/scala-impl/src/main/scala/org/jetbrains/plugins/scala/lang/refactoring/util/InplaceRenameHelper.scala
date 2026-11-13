@@ -1,17 +1,21 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.codeInsight.CodeInsightUtilCore
-import com.intellij.codeInsight.highlighting.HighlightManager
-import com.intellij.codeInsight.template._
-import com.intellij.codeInsight.template.impl.{TemplateImpl, TemplateManagerImpl, TemplateState, TextExpression}
-import com.intellij.openapi.editor.colors.{EditorColors, TextAttributesKey}
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.editor.{Document, Editor, EditorFactory, RangeMarker}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement}
-import com.intellij.refactoring.rename.inplace.MyLookupExpression
-import org.jetbrains.annotations.NotNull
+import consulo.language.editor.CodeInsightUtilCore
+import consulo.language.editor.highlight.HighlightManager
+import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.event.TemplateEditingAdapter
+import com.intellij.codeInsight.template.impl.{TemplateImpl, TemplateManagerImpl}
+import consulo.language.editor.template.{TemplateState, TextExpression}
+import consulo.codeEditor.EditorColors
+import consulo.colorScheme.TextAttributesKey
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.document.{Document, RangeMarker}
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.inplace.MyLookupExpression
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 
 import scala.collection.immutable.ArraySeq

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches.stats
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.caches.ModTracker
 
 import java.util

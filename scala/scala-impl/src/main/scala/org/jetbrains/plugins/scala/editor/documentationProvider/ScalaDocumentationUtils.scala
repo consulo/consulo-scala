@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.DefaultLanguageHighlighterColors
+import consulo.colorScheme.TextAttributesKey
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.highlighter.DefaultHighlighter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParameter, ScParameter}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumClassCase, ScEnumSingletonCase, ScFunction, ScTypeAlias, ScValue, ScVariable}

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.ui.popup.JBPopup
-import com.intellij.openapi.util.Key
+import consulo.codeEditor.Editor
+import consulo.ui.ex.popup.JBPopup
+import consulo.util.dataholder.Key
 
 import java.awt.Point
 

@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.scope._
-import com.intellij.psi.util.PsiTreeUtil.getParentOfType
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import consulo.logging.Logger
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.language.psi.{PsiAnchor, PsiElement, PsiNamedElement, PsiWhiteSpace}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.util.PsiTreeUtil.getParentOfType
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil.{ScExportStmtFactory, ScImportStmtFactory}
 import org.jetbrains.plugins.scala.autoImport.quickFix.{ClassToImport, ElementToImport}

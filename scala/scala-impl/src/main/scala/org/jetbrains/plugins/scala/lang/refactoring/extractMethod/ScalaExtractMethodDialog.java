@@ -2,24 +2,23 @@ package org.jetbrains.plugins.scala.lang.refactoring.extractMethod;
 
 //import com.intellij.openapi.editor.event.DocumentEvent;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiElement;
-import com.intellij.refactoring.ui.MethodSignatureComponent;
-import com.intellij.refactoring.util.ParameterTablePanel;
-import com.intellij.refactoring.util.VariableData;
-import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.EditorTextField;
-import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ui.TitledSeparator;
+import consulo.application.ApplicationManager;
+import consulo.document.event.DocumentListener;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.util.lang.StringUtil;
+import consulo.language.psi.PsiElement;
+import consulo.language.editor.refactoring.ui.MethodSignatureComponent;
+import com.intellij.java.impl.refactoring.util.ParameterTablePanel;
+import com.intellij.java.analysis.impl.refactoring.util.VariableData;
+import consulo.ui.ex.awt.event.DocumentAdapter;
+import consulo.language.editor.ui.awt.EditorTextField;
+import consulo.ui.ex.awt.HyperlinkLabel;
+import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.ScalaFileType;
+import org.jetbrains.plugins.scala.api.ScalaFileType;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody;
 import org.jetbrains.plugins.scala.lang.psi.dataFlow.impl.reachingDefs.VariableInfo;
 import org.jetbrains.plugins.scala.lang.psi.types.ScType;
@@ -112,7 +111,6 @@ public class ScalaExtractMethodDialog extends DialogWrapper {
     return contentPane;
   }
 
-  @NotNull
   @Override
   protected JComponent createContentPane() {
     return contentPane;
@@ -136,7 +134,7 @@ public class ScalaExtractMethodDialog extends DialogWrapper {
     myNameLabel.setLabelFor(editorTextField);
     editorTextField.addDocumentListener(new DocumentListener() {
       @Override
-      public void documentChanged(@NotNull com.intellij.openapi.editor.event.DocumentEvent event) {
+      public void documentChanged(com.intellij.openapi.editor.event.DocumentEvent event) {
         if (isDefaultClassName) updateClassName(StringUtil.capitalize(editorTextField.getText()));
         updateSignature();
       }
@@ -168,7 +166,7 @@ public class ScalaExtractMethodDialog extends DialogWrapper {
 
     visibiltyTextField.getDocument().addDocumentListener(new DocumentAdapter() {
       @Override
-      protected void textChanged(@NotNull DocumentEvent e) {
+      protected void textChanged(DocumentEvent e) {
         updateSignature();
       }
     });
@@ -229,7 +227,7 @@ public class ScalaExtractMethodDialog extends DialogWrapper {
 
     multipleOutputTextField.getDocument().addDocumentListener(new DocumentAdapter() {
       @Override
-      protected void textChanged(@NotNull DocumentEvent e) {
+      protected void textChanged(DocumentEvent e) {
         if (!Objects.equals(multipleOutputCombobox.getSelectedItem(), outputs[0])) {
           isDefaultClassName = false;
         }

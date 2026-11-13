@@ -1,17 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace;
 
-import com.intellij.lang.Language;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.RangeMarker;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
-import com.intellij.psi.search.LocalSearchScope;
-import com.intellij.psi.search.SearchScope;
-import com.intellij.refactoring.RefactoringActionHandler;
-import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.Language;
+import consulo.codeEditor.Editor;
+import consulo.document.RangeMarker;
+import consulo.project.Project;
+import consulo.util.lang.Pair;
+import consulo.document.util.TextRange;
+import consulo.language.psi.PsiDocumentManager;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiNamedElement;
+import consulo.language.psi.PsiReference;
+import consulo.language.psi.scope.LocalSearchScope;
+import consulo.content.scope.SearchScope;
+import consulo.language.editor.refactoring.action.RefactoringActionHandler;
+import consulo.language.editor.refactoring.rename.inplace.VariableInplaceRenamer;
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator$;
 import org.jetbrains.plugins.scala.lang.refactoring.rename.ScalaRenameUtil;
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil;
@@ -19,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil;
 import java.util.Collection;
 import java.util.List;
 
-import static com.intellij.refactoring.util.TextOccurrencesUtil.processUsagesInStringsAndComments;
+import static consulo.language.editor.refactoring.util.TextOccurrencesUtil.processUsagesInStringsAndComments;
 
 /**
  * Implement this inheritance in Java until https://github.com/scala/scala3/issues/27208 is fixed in Scala 3.9.
@@ -36,7 +39,7 @@ public class ScalaLocalInplaceRenamer extends VariableInplaceRenamer {
         elementRange = editor.getDocument().createRangeMarker(elementToRename.getTextRange());
     }
 
-    public ScalaLocalInplaceRenamer(@NotNull PsiNamedElement elementToRename, Editor editor) {
+    public ScalaLocalInplaceRenamer(PsiNamedElement elementToRename, Editor editor) {
         this(elementToRename, editor, elementToRename.getProject(),
                 ScalaNamesUtil.scalaName(elementToRename), ScalaNamesUtil.scalaName(elementToRename));
     }

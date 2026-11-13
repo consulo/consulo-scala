@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.notification.{Notification, NotificationAction}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.project.ui.notification.{Notification, NotificationAction}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.navigation.OpenFileDescriptor
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nls
 
 class OpenFileNotificationActon(project: Project, vFile: VirtualFile, offset: Int, @Nls title: String)

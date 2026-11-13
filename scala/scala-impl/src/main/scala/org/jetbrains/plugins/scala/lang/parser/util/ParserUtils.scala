@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.parser.util
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.tree.TokenSet
+import consulo.language.parser.PsiBuilder
+import consulo.util.lang.StringUtil
+import consulo.language.ast.TokenSet
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.{IndentationRegion, ScalaPsiBuilder}

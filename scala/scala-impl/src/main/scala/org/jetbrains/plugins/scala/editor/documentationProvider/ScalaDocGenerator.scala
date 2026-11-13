@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.lang.documentation.DocumentationMarkup
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.IndexNotReadyException
+import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.dumb.IndexNotReadyException
 import com.intellij.openapi.vfs.VfsUtilCore
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.{PsiClass, PsiDocCommentOwner, PsiElement, PsiMethod}
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner, PsiMethod}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{&, PsiClassExt, PsiMemberExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter

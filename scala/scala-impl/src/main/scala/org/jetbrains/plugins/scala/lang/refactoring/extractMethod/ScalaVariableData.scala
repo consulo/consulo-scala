@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod
 
-import com.intellij.refactoring.util.VariableData
-import org.jetbrains.plugins.scala.ScalaLanguage
+import com.intellij.java.analysis.impl.refactoring.util.VariableData
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.fake.{FakePsiParameter, FakePsiType}
 import org.jetbrains.plugins.scala.lang.psi.types.ScType

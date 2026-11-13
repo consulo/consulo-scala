@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.highlighter.usages
 
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.highlighting.HighlightUsagesHandlerBase
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.highlight.usage.HighlightUsagesHandlerBase
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.util.Consumer
 import org.jetbrains.plugins.scala.extensions.Parent
 import org.jetbrains.plugins.scala.lang.psi.api.ScBegin

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 
 import java.awt.Point
 

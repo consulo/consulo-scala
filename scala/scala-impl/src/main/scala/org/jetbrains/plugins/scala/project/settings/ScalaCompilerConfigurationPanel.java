@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project.settings;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
+import consulo.project.Project;
+import consulo.util.lang.Pair;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.plugins.scala.compiler.data.IncrementalityType;

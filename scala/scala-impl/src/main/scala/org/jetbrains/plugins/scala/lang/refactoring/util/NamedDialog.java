@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface NamedDialog {
   public boolean isReplaceAllOccurrences();

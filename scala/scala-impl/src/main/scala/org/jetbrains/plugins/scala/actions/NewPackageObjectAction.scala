@@ -1,16 +1,22 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.actions.CreateFromTemplateAction.moveCaretAfterNameIdentifier
-import com.intellij.ide.fileTemplates.actions.AttributesDefaults
-import com.intellij.ide.fileTemplates.ui.CreateFromTemplateDialog
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager}
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.module.Module
-import com.intellij.psi.{JavaDirectoryService, PsiDirectory, PsiElement}
+import consulo.ide.action.CreateFromTemplateAction.moveCaretAfterNameIdentifier
+import consulo.fileTemplate.AttributesDefaults
+import consulo.ide.action.ui.CreateFromTemplateDialog
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.dataContext.DataContext
+import consulo.language.editor.LangDataKeys
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.module.Module
+import com.intellij.java.language.psi.JavaDirectoryService
+import consulo.language.psi.{PsiDirectory, PsiElement}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.icons.Icons
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 /**
  * @see [[NewScalaFileAction]]

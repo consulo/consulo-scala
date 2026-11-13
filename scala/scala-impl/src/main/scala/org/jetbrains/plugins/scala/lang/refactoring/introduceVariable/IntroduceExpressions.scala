@@ -1,18 +1,21 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.codeInspection.{InspectionManager, LocalQuickFixOnPsiElement, ProblemsHolder}
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Pass, TextRange}
-import com.intellij.psi.PsiModifier.PRIVATE
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.findElementOfClassAtOffset
-import com.intellij.refactoring.introduce.inplace.OccurrencesChooser
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalQuickFixOnPsiElement, ProblemsHolder}
+import consulo.dataContext.DataContext
+import consulo.application.ApplicationManager
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import consulo.language.editor.Pass
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiModifier.PRIVATE
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace, SmartPointerManager, SmartPsiElementPointer}
+import com.intellij.java.language.psi.PsiModifier
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.findElementOfClassAtOffset
+import consulo.language.editor.refactoring.introduce.inplace.OccurrencesChooser
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.parentheses.ScalaUnnecessaryParenthesesInspection

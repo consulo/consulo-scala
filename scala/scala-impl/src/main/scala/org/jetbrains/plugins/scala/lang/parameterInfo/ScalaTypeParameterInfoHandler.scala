@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.lang.parameterInfo._
-import com.intellij.psi._
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.CodeInsightBundle
+import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoUIContext, UpdateParameterInfoContext}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiType, PsiTypeParameter}
+import consulo.language.psi.PsiElement
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInsight.intention.{FileModifier, IntentionAction}
-import com.intellij.openapi.command.undo.UndoUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.intention.IntentionAction
+import consulo.undoRedo.util.UndoUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.ast.ASTNode
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.PsiFileExt
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

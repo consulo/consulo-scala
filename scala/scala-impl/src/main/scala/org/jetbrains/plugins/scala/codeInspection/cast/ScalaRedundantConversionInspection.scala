@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.cast
 
-import com.intellij.codeInspection.ex.ProblemDescriptorImpl
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiMethod}
+import consulo.language.editor.impl.inspection.ProblemDescriptorImpl
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnTwoPsiElements, PsiElementVisitorSimple, ScalaInspectionBundle, conformsToTypeFromClass}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScPostfixExpr, ScReferenceExpression, ScUnderscoreSection}

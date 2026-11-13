@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor.precedence
 
-import com.intellij.openapi.module.Module
-import com.intellij.psi.PsiElement
+import consulo.module.Module
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.Scala_2_12
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_12
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
 
 final class PrecedenceTypes private (val defaultImports: Seq[String]) {

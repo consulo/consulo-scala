@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.logging.Logger
+import consulo.module.Module
+import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.util.system.OS
 import org.jetbrains.plugins.scala.compiler.data.{CompileOrder, DebuggingInfoLevel, ScalaCompilerSettingsState, ScalaCompilerSettingsStateBuilder}
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin

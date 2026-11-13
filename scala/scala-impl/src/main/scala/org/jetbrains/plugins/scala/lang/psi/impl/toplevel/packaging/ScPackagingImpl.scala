@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package packaging
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.DumbService
-import com.intellij.psi._
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import consulo.project.DumbService
+import com.intellij.java.language.psi.JavaPsiFacade
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.JavaArrayFactoryUtil
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, ToNullSafe}

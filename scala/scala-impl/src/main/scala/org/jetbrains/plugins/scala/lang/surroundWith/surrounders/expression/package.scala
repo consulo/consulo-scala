@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders
 
-import com.intellij.codeInsight.CodeInsightUtilCore
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.editor.CodeInsightUtilCore
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.{ElementType, OptionExt, PsiElementExt, inWriteCommandActionIf}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.convertBlockToBraceless

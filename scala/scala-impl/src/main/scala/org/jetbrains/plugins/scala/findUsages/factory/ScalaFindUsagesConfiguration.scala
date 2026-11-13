@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
-import com.intellij.find.findUsages.{AbstractFindUsagesDialog, FindUsagesHandler, FindUsagesOptions}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.find.ui.AbstractFindUsagesDialog
+import consulo.find.{FindUsagesHandler, FindUsagesOptions}
+import com.thaiopensource.util.Service
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.findUsages.factory.ScalaFindUsagesConfiguration.FindUsagesOptionsResolver
 import org.jetbrains.plugins.scala.findUsages.factory.dialog.{ScalaOverridableMemberFindUsagesDialog, ScalaTypeDefinitionUsagesDialog}

@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.anonymousToInner
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
+import consulo.application.ApplicationManager
+import consulo.undoRedo.CommandProcessor
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import com.intellij.openapi.util.NlsContexts.{DialogMessage, DialogTitle}
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.RefactoringBundle
-import com.intellij.refactoring.util.CommonRefactoringUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.RefactoringBundle
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
@@ -18,7 +18,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScExtendsBlock
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnum, ScObject, ScTemplateDefinition, ScTrait}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaRecursiveElementVisitor}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createElementFromText
 import org.jetbrains.plugins.scala.lang.refactoring.extractMethod.ScalaVariableData
 import org.jetbrains.plugins.scala.project.ProjectContext

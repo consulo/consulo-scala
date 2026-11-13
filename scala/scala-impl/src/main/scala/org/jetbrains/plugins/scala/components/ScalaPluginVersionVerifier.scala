@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.components
 
-import com.intellij.ide.plugins.cl.PluginClassLoader
-import com.intellij.ide.plugins._
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.extensions.PluginId
+import consulo.container.classloader.PluginClassLoader
+import com.intellij.ide.plugins.{IdeaPluginDescriptorImpl, PluginManagerCore}
+import consulo.logging.Logger
+import consulo.container.plugin.PluginId
 
 object ScalaPluginVersionVerifier {
 

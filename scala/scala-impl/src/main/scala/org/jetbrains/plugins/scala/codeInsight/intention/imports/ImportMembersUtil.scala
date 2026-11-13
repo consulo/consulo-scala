@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.imports
 
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
+import com.intellij.java.language.psi.{PsiMember, PsiMethod, PsiModifier}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

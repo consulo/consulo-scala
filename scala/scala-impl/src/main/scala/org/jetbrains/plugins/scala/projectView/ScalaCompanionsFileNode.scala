@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.impl.nodes.PsiFileNode
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Queryable
+import consulo.project.ui.view.tree.PsiFileNode
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.Project
+import consulo.application.util.Queryable
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias

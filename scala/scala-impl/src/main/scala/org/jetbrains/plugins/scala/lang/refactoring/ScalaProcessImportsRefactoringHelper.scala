@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.refactoring.RefactoringHelper
-import com.intellij.usageView.UsageInfo
-import com.intellij.util.{IncorrectOperationException, SequentialModalProgressTask, SequentialTask}
+import consulo.logging.Logger
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
+import consulo.project.{DumbService, Project}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.refactoring.RefactoringHelper
+import consulo.usage.UsageInfo
+import consulo.language.util.IncorrectOperationException
+import consulo.application.progress.{SequentialModalProgressTask, SequentialTask}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.editor.importOptimizer.{OptimizeImportSettings, ScalaImportOptimizer}
 import org.jetbrains.plugins.scala.extensions.{OptionExt, PsiElementExt, PsiNamedElementExt, inWriteAction}

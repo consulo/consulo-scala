@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.scalastyle
 
-import com.intellij.codeInspection.{InspectionManager, ProblemDescriptor}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.psi.PsiFile
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.ProblemDescriptor
+import consulo.application.ApplicationManager
+import consulo.language.psi.PsiFile
 
 trait ScalastyleService {
 

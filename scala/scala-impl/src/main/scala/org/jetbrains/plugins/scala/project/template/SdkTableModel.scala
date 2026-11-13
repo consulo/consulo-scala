@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.util.ui.{ColumnInfo, ListTableModel}
+import consulo.ui.ex.awt.ColumnInfo
+import consulo.ui.ex.awt.table.ListTableModel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 
@@ -14,7 +15,7 @@ final class SdkTableModel extends ListTableModel[SdkChoice](
   },
   new ColumnInfo[SdkChoice, String](ScalaBundle.message("sdk.table.model.version")) {
 
-    import org.jetbrains.plugins.scala.project.Version._
+    import org.jetbrains.plugins.scala.rt.project.Version._
 
     override def valueOf(item: SdkChoice): String = {
       val sdk = item.sdk

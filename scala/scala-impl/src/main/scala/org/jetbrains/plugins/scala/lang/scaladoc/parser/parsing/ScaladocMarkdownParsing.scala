@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.lang.impl.PsiBuilderAdapter
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi.tree.IElementType
+import consulo.language.parser.PsiBuilder
+import consulo.language.parser.PsiBuilderAdapter
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
+import consulo.language.ast.IElementType
 import org.intellij.markdown.{IElementType => MarkdownIElementType}
 import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.flavours.gfm.{GFMElementTypes, GFMTokenTypes}

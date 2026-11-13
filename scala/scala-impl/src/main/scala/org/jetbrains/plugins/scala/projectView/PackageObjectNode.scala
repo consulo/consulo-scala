@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil.getNameWithoutExtension
-import com.intellij.ui.SimpleTextAttributes
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.Project
+import consulo.util.io.FileUtil.getNameWithoutExtension
+import consulo.ui.ex.SimpleTextAttributes
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings

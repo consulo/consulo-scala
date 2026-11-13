@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api.presentation
 
-import com.intellij.psi.PsiModifier
+import com.intellij.java.language.psi.PsiModifier
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAccessModifier
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.AccessModifierRenderer.AccessQualifierRenderer
 

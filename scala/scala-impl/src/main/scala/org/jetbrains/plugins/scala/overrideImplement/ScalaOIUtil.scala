@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.codeInsight.FileModificationService
-import com.intellij.codeInsight.generation.{ClassMember => JClassMember}
-import com.intellij.openapi.application.ApplicationManager
+import consulo.language.editor.FileModificationService
+import consulo.language.editor.generation.{ClassMember => JClassMember}
+import consulo.application.ApplicationManager
 import com.intellij.openapi.application.ex.ApplicationManagerEx
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi._
-import com.intellij.psi.util.{PsiTreeUtil, PsiUtilCore}
-import com.intellij.util.ThrowableRunnable
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.Editor
+import consulo.application.progress.ProgressIndicator
+import consulo.project.{DumbService, Project}
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiMethod, PsiModifierListOwner}
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiUtilCore
+import consulo.util.lang.function.ThrowableRunnable
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.{ApiStatus, VisibleForTesting}
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -88,7 +90,7 @@ object ScalaOIUtil {
   }
 
   @VisibleForTesting
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   def getTemplateDefinitionForOverrideImplementAction(
     file: PsiFile,
     editor: Editor

@@ -1,23 +1,28 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
-import com.intellij.application.options.CodeStyle
+import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.concurrency.{ConcurrencyUtils, JobLauncher}
-import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.lang.ImportOptimizer.CollectingInfoRunnable
-import com.intellij.lang.{ASTNode, ImportOptimizer, LanguageImportStatements}
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.{EmptyRunnable, TextRange}
-import com.intellij.psi.*
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.LightVirtualFile
+import com.intellij.concurrency.ConcurrencyUtils
+import consulo.application.util.concurrent.JobLauncher
+import consulo.language.editor.scratch.ScratchUtil
+import consulo.language.editor.refactoring.ImportOptimizer.CollectingInfoRunnable
+import consulo.language.ast.ASTNode
+import consulo.language.editor.refactoring.ImportOptimizer
+import com.intellij.lang.LanguageImportStatements
+import consulo.document.Document
+import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager}
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.util.lang.EmptyRunnable
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiAnchor, PsiComment, PsiDocumentManager, PsiElement, PsiErrorElement, PsiFile, PsiFileFactory, PsiPackage, PsiWhiteSpace}
+import com.intellij.java.language.psi.{PsiClass, PsiField}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.file.light.LightVirtualFile
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.annotator.usageTracker.RedundantImportUtils
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
@@ -45,8 +50,8 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
+import org.jetbrains.sbt.api.language.SbtFile
 
 import java.util
 import java.util.concurrent.atomic.AtomicInteger

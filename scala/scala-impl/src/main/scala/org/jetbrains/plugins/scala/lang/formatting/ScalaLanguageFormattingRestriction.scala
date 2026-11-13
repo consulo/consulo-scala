@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.lang.LanguageFormattingRestriction
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import consulo.language.codeStyle.LanguageFormattingRestriction
+import consulo.module.content.ProjectFileIndex
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
 class ScalaLanguageFormattingRestriction extends LanguageFormattingRestriction {
 

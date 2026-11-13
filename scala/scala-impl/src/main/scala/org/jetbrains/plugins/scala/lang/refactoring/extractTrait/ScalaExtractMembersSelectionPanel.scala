@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
-import com.intellij.refactoring.classMembers.MemberInfoModel
+import consulo.language.editor.refactoring.classMember.MemberInfoModel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 import org.jetbrains.plugins.scala.lang.refactoring.ui.{ScalaMemberSelectionPanelBase, ScalaMemberSelectionTableBase}

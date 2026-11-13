@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
-import com.intellij.navigation.ItemPresentation
-import com.intellij.openapi.application.{ApplicationManager, ReadAction}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressManager}
-import com.intellij.openapi.project.{Project, ProjectManagerListener}
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.IncorrectOperationException
+import consulo.navigation.ItemPresentation
+import consulo.application.{ApplicationManager, ReadAction}
+import com.thaiopensource.util.Service
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.project.event.ProjectManagerListener
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiClassType, PsiElementFinder, PsiIdentifier, PsiSubstitutor, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiElementVisitor, PsiFile, PsiFileFactory, PsiNameIdentifierOwner, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.LightElement
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.util.IncorrectOperationException
 import com.intellij.util.concurrency.ThreadingAssertions
-import com.intellij.util.containers.MultiMap
+import consulo.util.collection.MultiMap
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.{Nullable, TestOnly}
 import org.jetbrains.plugins.scala.caches.cachedInUserData
@@ -37,7 +41,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt
 import org.jetbrains.plugins.scala.lang.resolve.processor.{BaseProcessor, ResolveProcessor}
 import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectExt, ScalaFeatures}
-import org.jetbrains.plugins.scala.{NlsString, ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{NlsString, ScalaFileType, ScalaLanguage}
 
 import java.util.concurrent.Callable
 import javax.swing.Icon

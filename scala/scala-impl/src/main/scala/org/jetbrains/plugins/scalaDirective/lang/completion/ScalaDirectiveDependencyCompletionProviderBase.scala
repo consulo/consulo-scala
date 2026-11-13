@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import com.intellij.codeInsight.completion.CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion.positionFromParameters
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.BaseDependencyCompletionParameters
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveDependencyCompletionProviderBase._

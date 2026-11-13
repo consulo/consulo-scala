@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.rearranger
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.arrangement.ArrangementUtil
-import com.intellij.psi.codeStyle.arrangement.std.ArrangementSettingsToken
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.EntryType._
-import com.intellij.psi.codeStyle.arrangement.std.StdArrangementTokens.Modifier._
+import consulo.document.Document
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.codeStyle.arrangement.ArrangementUtil
+import consulo.language.codeStyle.arrangement.std.ArrangementSettingsToken
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.EntryType._
+import consulo.language.codeStyle.arrangement.std.StdArrangementTokens.Modifier._
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.{OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

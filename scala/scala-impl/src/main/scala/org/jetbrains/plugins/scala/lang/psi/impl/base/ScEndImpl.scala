@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiReference}
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiReference}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScBegin
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd

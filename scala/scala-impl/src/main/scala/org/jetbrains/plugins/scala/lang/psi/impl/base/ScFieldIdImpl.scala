@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.ifReadAllowed
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType.FIELD_ID

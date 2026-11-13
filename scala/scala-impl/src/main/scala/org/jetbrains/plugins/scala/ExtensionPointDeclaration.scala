@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.extensions.ExtensionPointName
+import consulo.component.extension.ExtensionPointName
 
 import scala.jdk.CollectionConverters._
 

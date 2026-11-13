@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
-import com.intellij.codeInsight.hint.HintManager
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.hint.HintManager
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.PsiElement
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.expression.ConvertParameterToUnderscoreIntention._
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle

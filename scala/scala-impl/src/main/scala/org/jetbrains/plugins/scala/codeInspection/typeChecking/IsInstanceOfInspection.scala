@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.typeChecking
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 
 class IsInstanceOfInspection extends LocalInspectionTool {

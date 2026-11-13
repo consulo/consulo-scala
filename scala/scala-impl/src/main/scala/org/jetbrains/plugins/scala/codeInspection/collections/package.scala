@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.util.CachedValueProvider.Result
-import com.intellij.psi.util.{CachedValueProvider, CachedValuesManager, PsiTreeUtil}
+import consulo.language.editor.PsiEquivalenceUtil
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.application.util.CachedValueProvider.Result
+import consulo.application.util.{CachedValueProvider, CachedValuesManager}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor

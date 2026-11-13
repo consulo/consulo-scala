@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.settings.annotations
 
-import com.intellij.openapi.roots.TestSourcesFilter.isTestSources
-import com.intellij.psi.search.GlobalSearchScope.moduleWithDependenciesAndLibrariesScope
-import com.intellij.psi.{FileViewProvider, PsiClass, PsiCodeFragment, PsiElement, PsiModifier}
+import consulo.project.content.TestSourcesFilter.isTestSources
+import consulo.language.psi.scope.GlobalSearchScope.moduleWithDependenciesAndLibrariesScope
+import consulo.language.file.FileViewProvider
+import com.intellij.java.language.psi.{PsiClass, PsiModifier}
+import consulo.language.psi.{PsiCodeFragment, PsiElement}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, ViewProviderExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.getModule
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -11,7 +13,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtensionBody
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScModifierListOwner
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
-import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScFileViewProvider, ScalaPsiUtil}
+import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
+import org.jetbrains.plugins.scala.api.lang.psi.ScFileViewProvider
 
 sealed trait Location {
   def isInLocalScope: Boolean

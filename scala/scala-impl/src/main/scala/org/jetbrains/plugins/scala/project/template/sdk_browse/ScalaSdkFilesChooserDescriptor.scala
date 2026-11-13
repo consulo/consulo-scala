@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.project.template.sdk_browse
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.logging.Logger
+import consulo.fileChooser.FileChooserDescriptor
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.project.sdkdetect.repository.{CompilerClasspathResolveFailure, SystemDetector}
 import org.jetbrains.plugins.scala.project.template.ScalaSdkDescriptor
 import org.jetbrains.plugins.scala.project.template.sdk_browse.ScalaSdkFilesChooserDescriptor._
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.ScalaBundle
 
 import scala.annotation.nowarn
 import scala.util.{Failure, Success, Try}

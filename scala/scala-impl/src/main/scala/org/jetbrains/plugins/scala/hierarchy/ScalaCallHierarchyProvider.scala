@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.hierarchy
 
-import com.intellij.ide.hierarchy.call.JavaCallHierarchyProvider
+import com.intellij.java.impl.ide.hierarchy.call.JavaCallHierarchyProvider
 import com.intellij.ide.hierarchy.{CallHierarchyBrowserBase, HierarchyBrowser}
-import com.intellij.psi.{PsiElement, PsiMethod}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMethod
 
 class ScalaCallHierarchyProvider extends JavaCallHierarchyProvider {
   override def browserActivated(hierarchyBrowser: HierarchyBrowser): Unit = {

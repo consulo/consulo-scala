@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.lookup.LookupElementPresentation
-import com.intellij.psi.PsiNamedElement
+import consulo.language.editor.completion.lookup.LookupElementPresentation
+import consulo.language.psi.PsiNamedElement
 import com.intellij.util.IconUtil.getEmptyIcon
 import com.siyeh.ig.psiutils.JavaDeprecationUtils.isDeprecated
 

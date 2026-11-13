@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala
 package incremental
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.editor.event.{EditorFactoryEvent, EditorFactoryListener, VisibleAreaEvent, VisibleAreaListener}
-import com.intellij.openapi.editor.ex.{EditorEx, FoldingListener, FoldingModelEx, MarkupModelEx, RangeHighlighterEx}
-import com.intellij.openapi.editor.impl.event.MarkupModelListener
-import com.intellij.openapi.editor.{Editor, EditorFactory, FoldRegion}
-import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Disposer, Key}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.codeEditor.event.{EditorFactoryEvent, EditorFactoryListener, VisibleAreaEvent, VisibleAreaListener}
+import consulo.codeEditor.{EditorEx, FoldingModelEx}
+import consulo.codeEditor.event.FoldingListener
+import consulo.codeEditor.markup.{MarkupModelEx, RangeHighlighterEx}
+import consulo.codeEditor.markup.MarkupModelListener
+import consulo.codeEditor.{Editor, EditorFactory, FoldRegion}
+import consulo.component.extension.ExtensionPointName
+import consulo.project.Project
+import consulo.disposer.Disposer
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.incremental.Listener.INCREMENTAL_HIGHLIGHTING_KEY
 
 import java.awt.event.{KeyAdapter, KeyEvent}

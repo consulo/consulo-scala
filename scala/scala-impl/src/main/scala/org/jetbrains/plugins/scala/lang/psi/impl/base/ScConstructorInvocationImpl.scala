@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiAnnotationMethod, PsiClass, PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.InferUtil.SafeCheckException

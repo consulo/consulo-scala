@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.impl.PsiVariableEx
-import com.intellij.psi.impl.light.{LightFieldBuilder, LightIdentifier}
-import com.intellij.psi.{JavaElementVisitor, JavaResolveResult, PsiElement, PsiElementVisitor, PsiEnumConstant, PsiEnumConstantInitializer, PsiExpression, PsiExpressionList, PsiIdentifier, PsiMethod, PsiModifier, PsiVariable}
-import com.intellij.util.IncorrectOperationException
+import com.intellij.java.language.impl.psi.impl.PsiVariableEx
+import com.intellij.java.language.impl.psi.impl.light.{LightFieldBuilder, LightIdentifier}
+import com.intellij.java.language.psi.{JavaElementVisitor, JavaResolveResult, PsiEnumConstant, PsiEnumConstantInitializer, PsiExpression, PsiExpressionList, PsiIdentifier, PsiMethod, PsiModifier, PsiVariable}
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScEnumSingletonCase
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScEnum
 import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt

@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.completion.global
 
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.completion.{InsertHandler, JavaCompletionUtil}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.{PsiClass, PsiNamedElement}
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.completion.lookup.InsertHandler
+import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
+import consulo.language.editor.completion.lookup.LookupElement
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.completion.LookupElementExt
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem

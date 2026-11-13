@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.builder
 
-import com.intellij.lang.{PsiBuilder, WhitespacesAndCommentsBinder}
-import com.intellij.psi.tree.IElementType
+import consulo.language.parser.{PsiBuilder, WhitespacesAndCommentsBinder}
+import consulo.language.ast.IElementType
 
 trait ErrorTrackingMarkerParent {
   def reportErrors(errorCount: Int): Unit

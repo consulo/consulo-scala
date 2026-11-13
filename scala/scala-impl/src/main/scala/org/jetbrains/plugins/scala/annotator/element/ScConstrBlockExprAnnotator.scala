@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.openapi.project.DumbAware
-import com.intellij.psi.PsiElement
+import consulo.application.dumb.DumbAware
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

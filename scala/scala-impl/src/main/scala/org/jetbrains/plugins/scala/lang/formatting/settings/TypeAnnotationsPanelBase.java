@@ -1,15 +1,14 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
+import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.language.codeStyle.CodeStyleSettings;
 import com.intellij.ui.ContextHelpLabel;
-import com.intellij.ui.TitledSeparator;
+import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.util.execution.ParametersListUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.process.cmd.ParametersListUtil;
 import org.jetbrains.plugins.scala.ScalaBundle;
 
 import javax.swing.*;
@@ -46,7 +45,7 @@ public abstract class TypeAnnotationsPanelBase extends ScalaCodeStylePanelBase {
     private ContextHelpLabel myDialectSourcesHelp;
     private ContextHelpLabel myStructuralTypeHelp;
 
-    protected TypeAnnotationsPanelBase(@NotNull CodeStyleSettings settings) {
+    protected TypeAnnotationsPanelBase(CodeStyleSettings settings) {
         super(settings, TAB_TITLE);
         $$$setupUI$$$();
     }

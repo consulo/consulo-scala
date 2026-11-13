@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.scope._
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiComment, PsiElement, PsiNamedElement, PsiWhiteSpace}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.extensions.{BooleanExt, IterableOnceExt, Model, ObjectExt, PsiElementExt, StringsExt}
@@ -21,7 +22,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.StdTypes
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.resolve.StdKinds
 import org.jetbrains.plugins.scala.lang.resolve.processor.CompletionProcessor
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 import scala.annotation.tailrec
 import scala.collection.mutable

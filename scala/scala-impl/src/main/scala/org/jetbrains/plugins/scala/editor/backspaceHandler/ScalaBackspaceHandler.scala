@@ -1,18 +1,19 @@
 package org.jetbrains.plugins.scala.editor.backspaceHandler
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.editorActions.BackspaceHandlerDelegate
-import com.intellij.codeInsight.highlighting.BraceMatchingUtil
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.highlighter.HighlighterIterator
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.action.BackspaceHandlerDelegate
+import consulo.language.editor.action.BraceMatchingUtil
+import consulo.codeEditor.EditorEx
+import consulo.codeEditor.HighlighterIterator
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
 import org.apache.commons.lang3.StringUtils
-import org.jetbrains.plugins.scala.ScalaFileType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.editor.Scala3IndentationBasedSyntaxUtils._
 import org.jetbrains.plugins.scala.editor._
 import org.jetbrains.plugins.scala.editor.typedHandler.ScalaDocTypedHandler.isInMarkdown
@@ -23,7 +24,8 @@ import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenTypes, ScalaXmlTokenTyp
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.xml.ScXmlStartTag
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaFile}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment

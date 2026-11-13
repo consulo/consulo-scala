@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.stubs._
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.stub.{NamedStub, StubBase, StubElement}
+import consulo.language.ast.IElementType
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.lang.psi.stubs.ScStubElement
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 
 abstract class ScNamedStubBase[E <: PsiNamedElement] protected[impl](parent: StubElement[? <: PsiElement],
                                                                      elementType: IElementType,

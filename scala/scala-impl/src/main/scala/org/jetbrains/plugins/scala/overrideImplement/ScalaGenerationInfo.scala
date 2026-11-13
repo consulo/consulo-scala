@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.codeInsight.generation.GenerationInfoBase
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.TextRange
-import com.intellij.pom.Navigatable
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.java.impl.codeInsight.generation.GenerationInfoBase
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.navigation.Navigatable
+import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner, PsiMember, PsiMethod, PsiParameter}
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.plugins.scala.actions.ScalaFileTemplateUtil
 import org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation.addTargetNameAnnotationIfNeeded
 import org.jetbrains.plugins.scala.extensions._

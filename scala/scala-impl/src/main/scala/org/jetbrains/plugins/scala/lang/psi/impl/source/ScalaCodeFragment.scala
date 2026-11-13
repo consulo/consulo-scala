@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.source
 
-import com.intellij.lang.Language
-import com.intellij.openapi.command.undo.{BasicUndoableAction, UndoManager}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.IntentionFilterOwner.IntentionActionsFilter
-import com.intellij.psi.JavaCodeFragment.{ExceptionHandler, VisibilityChecker}
-import com.intellij.psi._
+import consulo.language.Language
+import consulo.undoRedo.{BasicUndoableAction, UndoManager}
+import consulo.project.Project
+import consulo.language.editor.intention.IntentionFilterOwner.IntentionActionsFilter
+import com.intellij.java.language.psi.JavaCodeFragment.{ExceptionHandler, VisibilityChecker}
+import consulo.language.editor.intention.IntentionFilterOwner
+import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass, PsiType}
+import consulo.language.psi.{PsiElement, PsiManager}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.file.SingleRootFileViewProvider
 import com.intellij.psi.impl.PsiManagerEx
-import com.intellij.psi.impl.source.PsiFileImpl
-import com.intellij.psi.impl.source.tree.FileElement
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.search.{DelegatingGlobalSearchScope, GlobalSearchScope}
-import com.intellij.testFramework.LightVirtualFile
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.impl.psi.PsiFileImpl
+import consulo.language.impl.ast.FileElement
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
+import consulo.language.file.light.LightVirtualFile
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.ScDeclarationSequenceHolder
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder.ImportPath
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}

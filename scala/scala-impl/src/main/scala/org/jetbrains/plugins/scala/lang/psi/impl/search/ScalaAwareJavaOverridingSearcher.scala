@@ -1,15 +1,16 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
-import com.intellij.openapi.util.Pair
-import com.intellij.psi._
-import com.intellij.psi.impl.light.{LightMethod, LightParameter, LightParameterListBuilder}
-import com.intellij.psi.impl.search.JavaOverridingMethodsSearcher
-import com.intellij.psi.impl.source.PsiMethodImpl
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.search.searches.{AllOverridingMethodsSearch, ClassInheritorsSearch, OverridingMethodsSearch}
-import com.intellij.psi.util.{MethodSignature, MethodSignatureBackedByPsiMethod, PsiUtil}
-import com.intellij.util.{Processor, QueryExecutor}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.util.lang.Pair
+import com.intellij.java.language.psi.{PsiClass, PsiClassType, PsiMethod, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiSubstitutor, PsiType, PsiTypeParameter}
+import com.intellij.java.language.impl.psi.impl.light.{LightMethod, LightParameter, LightParameterListBuilder}
+import com.intellij.java.indexing.impl.search.JavaOverridingMethodsSearcher
+import com.intellij.java.language.impl.psi.impl.source.PsiMethodImpl
+import consulo.content.scope.SearchScope
+import com.intellij.java.indexing.search.searches.{AllOverridingMethodsSearch, ClassInheritorsSearch, OverridingMethodsSearch}
+import com.intellij.java.language.psi.util.{MethodSignature, MethodSignatureBackedByPsiMethod, PsiUtil}
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, PsiMemberExt, PsiNamedElementExt, PsiTypeExt, inReadAction}
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

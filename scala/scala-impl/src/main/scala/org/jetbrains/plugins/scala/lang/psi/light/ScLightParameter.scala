@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.openapi.project.Project
-import com.intellij.pom.java.LanguageLevel
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightParameter
-import com.intellij.psi.impl.source.PsiImmediateClassType
-import com.intellij.psi.util.PsiUtil
+import consulo.project.Project
+import com.intellij.java.language.LanguageLevel
+import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiEllipsisType, PsiParameter, PsiSubstitutor, PsiType}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.light.LightParameter
+import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}

@@ -2,10 +2,10 @@ package org.jetbrains.plugins.scala
 package incremental
 
 import settings.ScalaProjectSettings
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.project.ProjectExt
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
-import com.intellij.util.diff.Diff
+import consulo.application.util.diff.Diff
 
 import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag

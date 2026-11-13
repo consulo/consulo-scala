@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches.stats
 
-import com.intellij.util.containers.WeakList
+import consulo.util.collection.WeakList
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.jdk.CollectionConverters._

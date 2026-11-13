@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util.ui
 
-import com.intellij.util.ui.UIUtil
+import consulo.ui.ex.awt.UIUtil
 
 import javax.swing.AbstractButton
 

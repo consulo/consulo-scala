@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.deprecation
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.psi._
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import com.intellij.java.language.psi.{PsiAnnotationOwner, PsiDocCommentOwner, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiNamedElement}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.deprecation.ScalaDeprecationInspection._

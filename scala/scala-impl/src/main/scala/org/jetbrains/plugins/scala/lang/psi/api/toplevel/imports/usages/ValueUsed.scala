@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.usages
 
-import com.intellij.psi.{PsiElement, PsiNamedElement, SmartPsiElementPointer}
+import consulo.language.psi.{PsiElement, PsiNamedElement, SmartPsiElementPointer}
 import org.jetbrains.plugins.scala.extensions._
 
 sealed trait ValueUsed {

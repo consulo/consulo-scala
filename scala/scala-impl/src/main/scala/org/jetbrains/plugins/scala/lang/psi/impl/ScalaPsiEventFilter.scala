@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.ide.highlighter.JavaFileType
-import com.intellij.openapi.project.ProjectUtil
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.java.language.impl.JavaFileType
+import consulo.project.util.ProjectUtil
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.psi.impl.PsiTreeChangeEventImpl
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi._
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.ast.TokenSet
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement}
+import consulo.language.psi.event.PsiTreeChangeEvent
+import consulo.language.ast.TokenType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr

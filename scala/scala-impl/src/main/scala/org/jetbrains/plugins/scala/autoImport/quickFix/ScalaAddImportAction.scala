@@ -1,18 +1,19 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.codeInsight.FileModificationService
-import com.intellij.codeInsight.daemon.impl.actions.AddImportAction
-import com.intellij.codeInsight.hint.QuestionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorFontType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.PopupStep.FINAL_CHOICE
-import com.intellij.openapi.ui.popup._
-import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.ui.popup.list.ListPopupImpl
-import com.intellij.util.ui.JBUI
+import consulo.language.editor.FileModificationService
+import com.intellij.java.impl.codeInsight.daemon.impl.actions.AddImportAction
+import consulo.language.editor.hint.QuestionAction
+import consulo.codeEditor.Editor
+import consulo.colorScheme.EditorFontType
+import consulo.project.Project
+import consulo.ui.ex.popup.PopupStep.FINAL_CHOICE
+import consulo.ui.ex.popup.{JBPopup, JBPopupFactory, ListPopup, ListSeparator, PopupStep}
+import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
+import consulo.ui.ex.popup.BaseListPopupStep
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.desktop.awt.ui.popup.list.ListPopupImpl
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
@@ -104,7 +105,7 @@ sealed abstract class ScalaAddImportAction[Psi <: PsiElement, Elem <: ElementToI
 
         override def isSpeedSearchEnabled: Boolean = true
 
-        import com.intellij.openapi.ui.popup.PopupStep.FINAL_CHOICE
+        import consulo.ui.ex.popup.PopupStep.FINAL_CHOICE
 
         override def getSeparatorAbove(value: PresentablePopupElement): ListSeparator = separatorAbove(value.elem)
 

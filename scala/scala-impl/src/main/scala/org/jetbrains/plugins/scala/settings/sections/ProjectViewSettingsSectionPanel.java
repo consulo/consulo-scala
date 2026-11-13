@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import com.intellij.ide.projectView.ProjectView;
+import consulo.project.ui.view.ProjectView;
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
+import consulo.configurable.ConfigurationException;
+import consulo.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.util.ModificationTracker
-import com.intellij.psi.PsiElement
+import consulo.component.util.ModificationTracker
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.CacheInUserData._
 import org.jetbrains.plugins.scala.caches.CacheWithRecursionGuard.{cacheWithRecursionGuard0, cacheWithRecursionGuardN}
 import org.jetbrains.plugins.scala.caches.stats.Tracer

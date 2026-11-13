@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.impl.nodes.ClassTreeNode
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.openapi.project.Project
+import com.intellij.java.impl.ide.projectView.impl.nodes.ClassTreeNode
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 private[projectView] abstract class CustomDefinitionNode(definition: ScTypeDefinition)

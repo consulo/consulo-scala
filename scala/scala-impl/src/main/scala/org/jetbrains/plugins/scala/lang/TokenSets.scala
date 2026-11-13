@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang
 
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType._

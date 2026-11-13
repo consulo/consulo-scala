@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.lang.parser
 
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements._
 import org.jetbrains.plugins.scala.lang.psi.tree.IScalaElementType
 
 /**
  * Keeping for backward compatibility. Use [[IScalaElementType]] instead
  */
-@ApiStatus.Obsolete
+// upstream: @ApiStatus.Obsolete
 sealed class ScalaElementType(debugName: String) extends IScalaElementType(debugName)
 
 //noinspection TypeAnnotation

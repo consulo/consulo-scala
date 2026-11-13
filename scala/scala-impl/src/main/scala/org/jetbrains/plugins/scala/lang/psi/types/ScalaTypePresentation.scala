@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections.KindProjectorSimplifyTypeProjectionInspection
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType

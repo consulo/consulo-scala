@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
-import com.intellij.codeInsight.daemon._
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiWhiteSpace}
+import consulo.language.editor.gutter.{GutterIconNavigationHandler, RelatedItemLineMarkerInfo, RelatedItemLineMarkerProvider}
+import consulo.application.AllIcons
+import consulo.codeEditor.markup.GutterIconRenderer
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiWhiteSpace}
 import com.intellij.util.Function
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle

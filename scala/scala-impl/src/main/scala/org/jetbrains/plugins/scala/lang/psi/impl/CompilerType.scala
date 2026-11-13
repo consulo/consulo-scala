@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiElement
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiElement
 import com.intellij.util.messages
 
 object CompilerType {

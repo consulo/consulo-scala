@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.lexer.HtmlLexer
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.psi.xml.XmlTokenType
+import consulo.language.parser.PsiBuilder
+import consulo.xml.lexer.HtmlLexer
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.xml.language.psi.XmlTokenType
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicConfigService.ConfigResolveResult

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.{ScBegin, ScPackageLike}
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScOptionalBracesOwner, ScStableCodeReference}

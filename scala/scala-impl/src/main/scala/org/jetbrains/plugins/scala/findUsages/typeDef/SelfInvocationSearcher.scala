@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.findUsages.typeDef
 
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{LocalSearchScope, PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.{PsiElement, PsiReference}
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.{PsiElement, PsiReference}
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScSelfInvocation

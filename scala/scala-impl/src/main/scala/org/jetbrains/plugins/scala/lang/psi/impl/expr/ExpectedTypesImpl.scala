@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.{IterableExt, ObjectExt, PsiElementExt, PsiNamedElementExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.externalLibraries.kindProjector.KindProjectorUtil.{Lambda, LambdaSymbolic}
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
@@ -32,7 +33,7 @@ import org.jetbrains.plugins.scala.lang.resolve.ResolveUtils.PsiElementForExpect
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.lang.resolve.processor.DynamicResolveProcessor._
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.{Scala_2_12, Scala_2_13, Scala_3_0}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.{Scala_2_12, Scala_2_13, Scala_3_0}
 import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
 
 import scala.annotation.tailrec

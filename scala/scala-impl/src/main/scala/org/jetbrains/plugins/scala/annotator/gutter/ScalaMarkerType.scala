@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
-import com.intellij.codeInsight.daemon.impl.GutterTooltipHelper
-import com.intellij.ide.util.PsiElementListCellRenderer
-import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.presentation.java.ClassPresentationUtil
-import com.intellij.psi.search.searches.ClassInheritorsSearch
+import consulo.language.editor.gutter.GutterIconNavigationHandler
+import com.intellij.java.impl.codeInsight.daemon.impl.GutterTooltipHelper
+import consulo.language.editor.ui.PsiElementListCellRenderer
+import consulo.ui.ex.action.IdeActions
+import consulo.project.Project
+import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import com.intellij.java.language.impl.psi.presentation.java.ClassPresentationUtil
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.gutter.GutterUtil.namedParent
 import org.jetbrains.plugins.scala.extensions._

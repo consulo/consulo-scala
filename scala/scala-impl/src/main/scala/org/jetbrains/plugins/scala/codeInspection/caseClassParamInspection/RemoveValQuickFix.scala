@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.codeInspection.caseClassParamInspection
 
-import com.intellij.codeInsight.intention.{FileModifier, IntentionAction}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiFile
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.intention.IntentionAction
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiFile
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.types
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.lang.PsiBuilder.Marker
+import consulo.language.parser.PsiBuilder
+import consulo.language.parser.PsiBuilder.Marker
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilder

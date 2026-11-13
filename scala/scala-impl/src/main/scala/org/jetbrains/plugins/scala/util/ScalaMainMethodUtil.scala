@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.codeInsight.runner.JavaMainMethodProvider
-import com.intellij.psi.impl.PsiClassImplUtil
-import com.intellij.psi.util.PsiMethodUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod}
+import com.intellij.java.language.codeInsight.runner.JavaMainMethodProvider
+import com.intellij.java.language.impl.psi.impl.PsiClassImplUtil
+import com.intellij.java.language.psi.util.PsiMethodUtil
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

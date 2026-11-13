@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.execution.CantRunException
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaParameters, ModuleBasedConfiguration, RunConfigurationModule}
+import consulo.execution.CantRunException
+import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule}
+import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.target.java.{JavaLanguageRuntimeConfiguration, JavaLanguageRuntimeType}
 import com.intellij.execution.target.{LanguageRuntimeType, TargetEnvironmentAwareRunProfile, TargetEnvironmentConfiguration}
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.platform.eel.provider.utils.EelPathUtils
-import org.jetbrains.annotations.ApiStatus
 
 import java.nio.file.Path
 
@@ -16,7 +16,7 @@ import java.nio.file.Path
  * Implements the [[TargetEnvironmentAwareRunProfile]] interface following the same pattern
  * as `com.intellij.execution.junit.JUnitConfiguration`.
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 abstract class ScalaTargetAwareRunConfiguration[M <: RunConfigurationModule, S](
   name: String,
   module: M,

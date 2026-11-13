@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown
 
-import com.intellij.codeInsight.documentation.DocumentationManagerUtil
-import com.intellij.lang.Language
+import consulo.language.editor.documentation.DocumentationManagerUtil
+import consulo.language.Language
 import com.intellij.markdown.utils.CodeFenceSyntaxHighlighterGeneratingProvider
 import com.intellij.markdown.utils.lang.HtmlSyntaxHighlighter
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.HtmlChunk
+import consulo.project.Project
+import consulo.application.util.HtmlChunk
 import org.intellij.markdown.ast.{ASTNode, ASTUtilKt}
 import org.intellij.markdown.flavours.gfm.{GFMElementTypes, GFMFlavourDescriptor, GFMTokenTypes, StrikeThroughDelimiterParser}
 import org.intellij.markdown.html.*
@@ -14,7 +14,7 @@ import org.intellij.markdown.parser.sequentialparsers.impl.*
 import org.intellij.markdown.parser.sequentialparsers.{EmphasisLikeParser, SequentialParser, SequentialParserManager}
 import org.intellij.markdown.parser.{LinkMap, LookaheadText, MarkerProcessorFactory, ProductionHolder}
 import org.intellij.markdown.{IElementType, MarkdownElementTypes, MarkdownTokenTypes}
-import org.jetbrains.plugins.scala.Scala3Language
+import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.editor.documentationProvider.HtmlPsiUtils
 import org.jetbrains.plugins.scala.extensions.CharSeqExt
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.markdown._CustomGFMLexer

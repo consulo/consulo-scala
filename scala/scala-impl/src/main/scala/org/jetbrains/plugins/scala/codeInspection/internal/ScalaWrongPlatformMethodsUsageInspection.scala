@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.internal
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.psi.{PsiElementVisitor, PsiMethod}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.PsiElementVisitor
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression

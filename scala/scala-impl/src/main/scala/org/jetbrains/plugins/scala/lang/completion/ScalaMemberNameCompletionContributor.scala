@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionType}
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil.getChildrenOfTypeAsList
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionType}
+import consulo.language.editor.completion.lookup.LookupElementBuilder
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil.getChildrenOfTypeAsList
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging

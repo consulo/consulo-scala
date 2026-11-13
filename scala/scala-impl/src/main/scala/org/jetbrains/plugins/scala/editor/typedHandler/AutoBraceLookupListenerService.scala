@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
-import com.intellij.codeInsight.lookup.{Lookup, LookupEvent, LookupListener, LookupManagerListener}
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.editor.RangeMarker
-import com.intellij.openapi.project.Project
+import consulo.language.editor.completion.lookup.Lookup
+import consulo.language.editor.completion.lookup.event.{LookupEvent, LookupListener}
+import com.intellij.codeInsight.lookup.LookupManagerListener
+import consulo.disposer.Disposable
+import com.thaiopensource.util.Service
+import consulo.document.RangeMarker
+import consulo.project.Project
 import org.jetbrains.plugins.scala.editor.AutoBraceUtils._
 import org.jetbrains.plugins.scala.editor.typedHandler.AutoBraceInsertionTools._
 import org.jetbrains.plugins.scala.editor.typedHandler.AutoBraceLookupListenerService.AutoBraceLookupListener

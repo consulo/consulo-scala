@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.dfa.invocationInfo.arguments
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.InvokedElement
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.arguments.Argument.ProperArgument
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

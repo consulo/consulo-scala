@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubElement, StubInputStream, StubOutputStream}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{StubElement, StubInputStream, StubOutputStream}
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType.TYPE_LAMBDA
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamClause
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScTypeParamClauseImpl

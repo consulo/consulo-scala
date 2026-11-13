@@ -2,11 +2,11 @@ package org.jetbrains.plugins.scala
 package project
 package settings
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import consulo.language.editor.DaemonCodeAnalyzer
 import com.intellij.compiler.server.BuildManager
-import com.intellij.openapi.options.Configurable.Composite
-import com.intellij.openapi.options.{Configurable, SearchableConfigurable}
-import com.intellij.openapi.project.Project
+import consulo.configurable.Configurable.Composite
+import consulo.configurable.{Configurable, SearchableConfigurable}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.daemon.{LineMarkerInfo, LineMarkerProvider}
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.PsiElement
+import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
+import consulo.application.AllIcons
+import consulo.codeEditor.markup.GutterIconRenderer
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ChildOf, PsiElementExt}

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.compiler.impl.CompilerUtil
-import com.intellij.execution.ExecutionListener
-import com.intellij.execution.application.ApplicationConfiguration
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.compiler.CompilerPaths
+import consulo.compiler.util.CompilerUtil
+import consulo.execution.event.ExecutionListener
+import com.intellij.java.execution.impl.application.ApplicationConfiguration
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.compiler.CompilerPaths
 import org.jetbrains.plugins.scala.runner.ScalaApplicationConfigurationProducer.isScala3ApplicationConfiguration
 
 import java.util

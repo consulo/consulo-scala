@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi._
-import com.intellij.refactoring.move.moveFilesOrDirectories.MoveFileHandler
-import com.intellij.refactoring.util.MoveRenameUsageInfo
-import com.intellij.usageView.UsageInfo
-import com.intellij.util.IncorrectOperationException
+import consulo.logging.Logger
+import consulo.module.content.ProjectRootManager
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile}
+import consulo.language.editor.refactoring.move.MoveFileHandler
+import consulo.usage.MoveRenameUsageInfo
+import consulo.usage.UsageInfo
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.{NotNull, Unmodifiable}
 import org.jetbrains.plugins.scala.editor.importOptimizer.ScalaImportOptimizer
 import org.jetbrains.plugins.scala.extensions.ObjectExt

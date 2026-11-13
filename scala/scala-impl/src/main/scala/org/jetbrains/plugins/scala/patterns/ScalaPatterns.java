@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.patterns;
 
-import com.intellij.patterns.PsiJavaPatterns;
+import com.intellij.java.language.patterns.PsiJavaPatterns;
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral;
 
 public class ScalaPatterns extends PsiJavaPatterns {

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.filters.expression
 
-import com.intellij.psi._
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement}
+import consulo.language.psi.filter.ElementFilter
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.{NonNls, Nullable}
 import org.jetbrains.plugins.scala.lang.parser._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScStableReferencePattern

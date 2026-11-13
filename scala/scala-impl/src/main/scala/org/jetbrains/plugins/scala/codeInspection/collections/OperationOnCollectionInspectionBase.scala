@@ -2,10 +2,10 @@ package org.jetbrains.plugins.scala.codeInspection.collections
 
 import com.intellij.codeInspection.options.{OptPane, OptionController}
 import com.intellij.codeInspection.ui.StringValidatorWithSwingSelector
-import com.intellij.codeInspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.language.psi.PsiElementVisitor
 import one.util.streamex.StreamEx
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.collections.OperationOnCollectionInspectionBase._

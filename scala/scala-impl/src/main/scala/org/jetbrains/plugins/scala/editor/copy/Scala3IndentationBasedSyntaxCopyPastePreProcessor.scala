@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.editor.copy
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
-import com.intellij.openapi.editor.{Caret, Editor, RawText}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, TextRange, UserDataHolder}
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiErrorElement, PsiFile}
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.action.CopyPastePreProcessor
+import consulo.codeEditor.{Caret, Editor, RawText}
+import consulo.project.Project
+import consulo.util.dataholder.{Key, UserDataHolder}
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiFile}
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.editor.Scala3IndentationBasedSyntaxUtils.calcIndentationString
 import org.jetbrains.plugins.scala.editor.ScalaEditorUtils
@@ -23,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.util.IndentUtil
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaFileType}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType}
 
 import scala.collection.immutable.SortedMap
 

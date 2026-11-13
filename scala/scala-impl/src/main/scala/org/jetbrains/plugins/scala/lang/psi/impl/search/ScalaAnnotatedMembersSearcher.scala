@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.AnnotatedElementsSearch
-import com.intellij.psi.{PsiField, PsiMember, PsiModifier}
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.application.ReadAction
+import consulo.util.lang.StringUtil
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.indexing.search.searches.AnnotatedElementsSearch
+import com.intellij.java.language.psi.{PsiField, PsiMember, PsiModifier}
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotations

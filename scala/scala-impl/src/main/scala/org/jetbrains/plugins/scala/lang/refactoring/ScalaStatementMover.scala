@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.codeInsight.editorActions.moveUpDown.StatementUpDownMover.MoveInfo
-import com.intellij.codeInsight.editorActions.moveUpDown.{LineMover, LineRange}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.editor.moveUpDown.StatementUpDownMover.MoveInfo
+import consulo.language.editor.moveUpDown.{LineMover, LineRange}
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, _}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

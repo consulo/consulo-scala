@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform
 
-import com.intellij.codeInspection.dataFlow.java.JavaClassDef
-import com.intellij.codeInspection.dataFlow.java.inst.{BooleanBinaryInstruction, EnsureIndexInBoundsInstruction, NotInstruction, NumericBinaryInstruction, PrimitiveConversionInstruction, ThrowInstruction}
-import com.intellij.codeInspection.dataFlow.jvm.TrapTracker
-import com.intellij.codeInspection.dataFlow.jvm.problems.IndexOutOfBoundsProblem
-import com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow.{ControlFlowOffset, DeferredOffset, FixedOffset}
-import com.intellij.codeInspection.dataFlow.lang.ir._
-import com.intellij.codeInspection.dataFlow.lang.{DfaAnchor, UnsatisfiedConditionProblem}
-import com.intellij.codeInspection.dataFlow.rangeSet.LongRangeBinOp
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.codeInspection.dataFlow.value.{DfaControlTransferValue, DfaValueFactory, DfaVariableValue, RelationType}
-import com.intellij.psi.{CommonClassNames, PsiElement, PsiPrimitiveType}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.java.JavaClassDef
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.java.inst.{BooleanBinaryInstruction, EnsureIndexInBoundsInstruction, NotInstruction, NumericBinaryInstruction, PrimitiveConversionInstruction, ThrowInstruction}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.TrapTracker
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.problems.IndexOutOfBoundsProblem
+import consulo.language.dataFlow.ir.ControlFlow.{ControlFlowOffset, DeferredOffset, FixedOffset}
+import consulo.language.dataFlow.ir.{ConditionalGotoInstruction, ControlFlow, DupInstruction, EnsureInstruction, FinishElementInstruction, FlushFieldsInstruction, GotoInstruction, Instruction, PopInstruction, PushInstruction, PushValueInstruction, ResultOfInstruction, ReturnInstruction, SimpleAssignmentInstruction, SpliceInstruction}
+import consulo.language.dataFlow.ir.DfaAnchor
+import consulo.language.dataFlow.interpreter.UnsatisfiedConditionProblem
+import consulo.language.dataFlow.rangeSet.LongRangeBinOp
+import consulo.language.dataFlow.types.DfType
+import consulo.language.dataFlow.value.{DfaControlTransferValue, DfaValueFactory, DfaVariableValue, RelationType}
+import com.intellij.java.language.psi.{CommonClassNames, PsiPrimitiveType}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaStatementAnchor
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.ScalaInvocationInstruction

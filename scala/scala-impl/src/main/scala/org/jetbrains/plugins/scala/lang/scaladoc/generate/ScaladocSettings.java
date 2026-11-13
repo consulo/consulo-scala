@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.project.Project;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.project.Project;
+import consulo.util.xml.serializer.XmlSerializerUtil;
 
 
 @State(
@@ -26,7 +25,7 @@ public class ScaladocSettings implements PersistentStateComponent<ScaladocSettin
   }
 
   @Override
-  public void loadState(@NotNull ScaladocSettings state) {
+  public void loadState(ScaladocSettings state) {
     XmlSerializerUtil.copyBean(state, this); // TODO: from docs:  defensive copying is not required.
   }
 

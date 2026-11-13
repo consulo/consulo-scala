@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Pass
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.rename.RenamePsiElementProcessor
-import com.intellij.usageView.UsageInfo
+import consulo.codeEditor.Editor
+import consulo.language.editor.Pass
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import consulo.language.editor.refactoring.rename.RenamePsiElementProcessor
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiTypedDefinitionWrapper, ScFunctionWrapper, StaticPsiMethodWrapper, StaticPsiTypedDefinitionWrapper}
 

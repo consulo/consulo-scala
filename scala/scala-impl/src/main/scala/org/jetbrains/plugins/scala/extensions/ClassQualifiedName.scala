@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 
 object ClassQualifiedName {
   def unapply(clazz: PsiClass): Option[String] = clazz match {

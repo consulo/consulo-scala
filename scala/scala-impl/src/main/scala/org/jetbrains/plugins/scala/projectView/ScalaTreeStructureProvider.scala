@@ -1,24 +1,30 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.impl.{ModuleGroup, ProjectRootsUtil}
-import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode.canRealModuleNameBeHidden
-import com.intellij.ide.projectView.impl.nodes.{ProjectViewModuleGroupNode, ProjectViewModuleNode, ProjectViewProjectNode, PsiDirectoryNode, PsiFileSystemItemFilter}
-import com.intellij.ide.projectView.{PresentationData, TreeStructureProvider, ViewSettings}
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.{getExternalProjectPath, isExternalSystemAwareModule}
-import com.intellij.openapi.module.{Module, ModuleGrouper, ModuleManager}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.roots.{ModuleRootManager, ProjectRootManager}
+import consulo.project.ui.view.tree.ModuleGroup
+import consulo.language.content.ProjectRootsUtil
+import consulo.project.ui.view.tree.PsiDirectoryNode.canRealModuleNameBeHidden
+import com.intellij.ide.projectView.impl.nodes.{ProjectViewModuleGroupNode, ProjectViewModuleNode, ProjectViewProjectNode}
+import consulo.project.ui.view.tree.{PsiDirectoryNode, PsiFileSystemItemFilter}
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.{TreeStructureProvider, ViewSettings}
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.util.ExternalSystemApiUtil.{getExternalProjectPath, isExternalSystemAwareModule}
+import consulo.module.{Module, ModuleManager}
+import com.intellij.openapi.module.ModuleGrouper
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.module.content.{ModuleRootManager, ProjectRootManager}
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.{VfsUtilCore, VirtualFile}
-import com.intellij.psi.PsiDirectory
-import com.intellij.ui.SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
+import consulo.util.io.FileUtil
+import consulo.util.lang.StringUtil
+import com.intellij.openapi.vfs.VfsUtilCore
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiDirectory
+import consulo.ui.ex.SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
-import org.jetbrains.plugins.scala.util.SbtModuleType
+import org.jetbrains.plugins.scala.shared.util.SbtModuleType
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import java.util

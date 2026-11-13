@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.openapi.project.{Project, ProjectManagerListener}
-import com.intellij.openapi.startup.StartupActivity
+import consulo.project.Project
+import consulo.project.event.ProjectManagerListener
+import consulo.project.startup.StartupActivity
 
 //noinspection UsagesOfObsoleteApi
 class ScalafmtProjectListener extends StartupActivity.DumbAware with ProjectManagerListener {

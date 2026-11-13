@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.refactoring.RefactoringActionHandler
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.editor.refactoring.action.RefactoringActionHandler
 
 trait ScalaRefactoringActionHandler extends RefactoringActionHandler {
 

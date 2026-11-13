@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.api.ScControlFlowOwner
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

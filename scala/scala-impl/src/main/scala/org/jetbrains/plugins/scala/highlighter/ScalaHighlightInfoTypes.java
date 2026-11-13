@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.highlighter;
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
+import consulo.language.editor.rawHighlight.HighlightInfoType;
+import consulo.codeEditor.DefaultLanguageHighlighterColors;
+import consulo.colorScheme.TextAttributesKey;
 
 @SuppressWarnings("unused")
 public class ScalaHighlightInfoTypes {

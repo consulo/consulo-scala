@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.project.external
 
-import com.intellij.notification.NotificationGroup
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.externalSystem.model.project.ModuleData
-import com.intellij.openapi.externalSystem.model.{DataNode, Key, ProjectKeys, ProjectSystemId}
-import com.intellij.openapi.externalSystem.service.notification.{ExternalSystemNotificationManager, NotificationCategory, NotificationData, NotificationSource}
+import consulo.project.ui.notification.NotificationGroup
+import consulo.application.ApplicationManager
+import consulo.externalSystem.model.project.ModuleData
+import consulo.externalSystem.model.{DataNode, Key, ProjectKeys, ProjectSystemId}
+import consulo.externalSystem.service.notification.{ExternalSystemNotificationManager, NotificationCategory, NotificationData, NotificationSource}
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
 import com.intellij.openapi.externalSystem.service.project.manage.AbstractProjectDataService
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import consulo.project.Project
 import org.jetbrains.plugins.scala.project.ProjectContext
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.ScalaBundle
 
 abstract class ScalaAbstractProjectDataService[E, I](key: Key[E]) extends AbstractProjectDataService[E, I] {
 

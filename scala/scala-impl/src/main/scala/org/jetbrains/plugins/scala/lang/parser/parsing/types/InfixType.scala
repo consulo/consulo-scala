@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.types
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.parser.PsiBuilder
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

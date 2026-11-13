@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.util.Ref
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.editor.action.EnterHandlerDelegate.Result
+import consulo.language.editor.action.EnterHandlerDelegateAdapter
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.codeEditor.action.EditorActionHandler
+import consulo.util.lang.ref.Ref
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.{AutoBraceUtils, ScalaEditorUtils}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

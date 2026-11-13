@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.utils
 
-import com.intellij.codeInspection.dataFlow.rangeSet.LongRangeBinOp
-import com.intellij.codeInspection.dataFlow.value.RelationType
+import consulo.language.dataFlow.rangeSet.LongRangeBinOp
+import consulo.language.dataFlow.value.RelationType
 
 object ScalaDfaConstants {
 

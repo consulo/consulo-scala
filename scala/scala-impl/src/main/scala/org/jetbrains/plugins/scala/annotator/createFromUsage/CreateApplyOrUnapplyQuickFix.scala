@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
-import com.intellij.codeInsight.intention.IntentionAction
+import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInsight.template.{TemplateBuilder, TemplateBuilderImpl}
-import com.intellij.codeInsight.{CodeInsightUtilCore, FileModificationService}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.language.editor.template.TemplateBuilder
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.{CodeInsightUtilCore, FileModificationService}
+import consulo.codeEditor.Editor
+import consulo.fileEditor.history.IdeDocumentHistory
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

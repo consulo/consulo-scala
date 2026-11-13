@@ -1,23 +1,27 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.codeInsight.template.impl.{TemplateManagerImpl, TemplateState}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.command.WriteCommandAction.writeCommandAction
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl
+import consulo.language.editor.template.TemplateState
+import consulo.application.ApplicationManager
+import consulo.language.editor.WriteCommandAction.writeCommandAction
 import com.intellij.openapi.command.impl.StartMarkAction
-import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.editor.event.{DocumentEvent, DocumentListener}
+import consulo.undoRedo.UndoManager
+import consulo.document.event.{DocumentEvent, DocumentListener}
 import com.intellij.openapi.editor.ex.DocumentEx
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.search.{LocalSearchScope, SearchScope}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer
-import com.intellij.ui.{JBColor, NonFocusableCheckBox}
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import consulo.ui.ex.awt.VerticalFlowLayout
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement}
+import com.intellij.psi.Visibility
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.content.scope.SearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.introduce.inplace.InplaceVariableIntroducer
+import consulo.ui.ex.JBColor
+import consulo.ui.ex.awt.NonFocusableCheckBox
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, inWriteAction, invokeLater}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -33,7 +37,10 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.{BalloonConflictsReport
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.settings.annotations._
-import org.jetbrains.plugins.scala.util._
+import org.jetbrains.plugins.scala.api.util._
+import org.jetbrains.plugins.scala.language.util._
+import org.jetbrains.plugins.scala.rt.util._
+import org.jetbrains.plugins.scala.shared.util._
 
 import java.awt._
 import java.awt.event.ActionEvent

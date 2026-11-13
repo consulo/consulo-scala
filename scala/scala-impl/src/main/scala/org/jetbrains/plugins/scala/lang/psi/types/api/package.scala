@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.psi.{PsiClass, PsiNamedElement, PsiTypeParameter, PsiTypeParameterListOwner}
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter, PsiTypeParameterListOwner}
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScInterleavedClausesOwner, ScSignatureClause}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypeParametersOwner
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.DesignatorOwner

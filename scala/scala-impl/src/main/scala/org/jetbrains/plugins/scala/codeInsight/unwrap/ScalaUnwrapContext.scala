@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.unwrap
 
-import com.intellij.codeInsight.unwrap.AbstractUnwrapper
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.editor.refactoring.unwrap.AbstractUnwrapper
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition

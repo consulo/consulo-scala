@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.typeAnnotation
 
-import com.intellij.codeInsight.daemon.HighlightDisplayKey
+import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
@@ -13,7 +13,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScPatternDefinition, ScVariableDefinition}
 import org.jetbrains.plugins.scala.settings.annotations.ScalaTypeAnnotationSettings.TypeAnnotationReasons
 import org.jetbrains.plugins.scala.settings.annotations._
-import org.jetbrains.plugins.scala.util._
+import org.jetbrains.plugins.scala.api.util._
+import org.jetbrains.plugins.scala.language.util._
+import org.jetbrains.plugins.scala.rt.util._
+import org.jetbrains.plugins.scala.shared.util._
 
 
 class TypeAnnotationInspection extends LocalInspectionTool {

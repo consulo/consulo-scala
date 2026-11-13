@@ -1,18 +1,19 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.highlighter.HighlighterIterator
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.fileEditor.FileDocumentManager
+import consulo.codeEditor.EditorEx
+import consulo.codeEditor.HighlighterIterator
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
 import com.intellij.openapi.fileEditor.impl.FileDocumentManagerImpl
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.impl.psi.PsiWhiteSpaceImpl
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocElementType

@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.search.searches.OverridingMethodsSearch.SearchParameters
-import com.intellij.psi.search.searches.{ClassInheritorsSearch, OverridingMethodsSearch}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.content.scope.SearchScope
+import com.intellij.java.indexing.search.searches.OverridingMethodsSearch.SearchParameters
+import com.intellij.java.indexing.search.searches.{ClassInheritorsSearch, OverridingMethodsSearch}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtensionBody, ScFunction, ScTypeAlias}

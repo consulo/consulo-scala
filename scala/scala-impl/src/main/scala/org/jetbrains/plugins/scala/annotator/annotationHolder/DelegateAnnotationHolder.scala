@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.annotationHolder
 
-import com.intellij.lang.annotation.{AnnotationSession, HighlightSeverity}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.annotation.{AnnotationSession, HighlightSeverity}
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationBuilder, ScalaAnnotationHolder}
 
 abstract class DelegateAnnotationHolder(session: AnnotationSession)

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubElement, StubRegistry, StubRegistryExtension, StubSerializingElementFactory}
-import com.intellij.psi.tree.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.StubElement
+import com.intellij.psi.stubs.{StubRegistry, StubRegistryExtension, StubSerializingElementFactory}
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.parser.{Scala3ParserDefinition, ScalaElementType, ScalaParserDefinition}
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScStubFileElementType
 import org.jetbrains.plugins.scala.lang.psi.stubs.factories._

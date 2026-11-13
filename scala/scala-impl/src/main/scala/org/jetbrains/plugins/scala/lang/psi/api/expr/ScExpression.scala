@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.PsiAnnotationMemberValue
+import consulo.language.psi.{PsiElement, PsiInvalidElementAccessException, PsiNamedElement}
+import consulo.language.impl.psi.CodeEditUtil
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.{MethodValue, isAnonymousExpression}
@@ -22,10 +23,11 @@ import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.{Scala_2_11, Scala_2_13}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.{Scala_2_11, Scala_2_13}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.util.SAMUtil
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle, Tracing}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.{ScalaBundle, Tracing}
 
 import scala.annotation.tailrec
 

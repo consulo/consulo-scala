@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

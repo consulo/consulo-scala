@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.psi.PsiDocCommentOwner
-import com.intellij.psi.javadoc.{PsiDocComment, PsiDocTag}
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import com.intellij.java.language.psi.javadoc.{PsiDocComment, PsiDocTag}
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, PsiClassExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

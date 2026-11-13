@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.ide.fileTemplates.actions.CreateFromTemplateActionBase
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiDirectory
+import consulo.ide.action.CreateFromTemplateActionBase
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiDirectory
 import org.jetbrains.annotations.Nls
 
 import javax.swing.Icon

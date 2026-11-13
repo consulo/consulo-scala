@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.specialSupport
 
-import com.intellij.codeInspection.dataFlow.{HardcodedContracts, JavaMethodContractUtil, MethodContract, MutationSignature}
-import com.intellij.psi.PsiMethod
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.{HardcodedContracts, JavaMethodContractUtil, MethodContract, MutationSignature}
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.InvocationInfo
 

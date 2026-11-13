@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
-import com.intellij.psi.{PsiAnnotationMemberValue, PsiElement}
+import com.intellij.java.language.psi.PsiAnnotationMemberValue
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScAssignment, ScExpression, ScNameValuePair}

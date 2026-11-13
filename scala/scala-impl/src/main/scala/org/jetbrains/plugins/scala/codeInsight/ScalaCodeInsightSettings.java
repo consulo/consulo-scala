@@ -1,14 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.PersistentStateComponent;
+import consulo.application.ApplicationManager;
+import consulo.component.persist.PersistentStateComponent;
 import com.intellij.openapi.components.SettingsCategory;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
 import com.intellij.openapi.util.Getter;
 import com.intellij.openapi.util.Setter;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.util.xml.serializer.XmlSerializerUtil;
 
 @State(
         name = "ScalaCodeInsightSettings",
@@ -152,14 +151,13 @@ public class ScalaCodeInsightSettings implements PersistentStateComponent<ScalaC
         return value -> showExclusiveRangeHint = value;
     }
 
-    @NotNull
     @Override
     public ScalaCodeInsightSettings getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull ScalaCodeInsightSettings settings) {
+    public void loadState(ScalaCodeInsightSettings settings) {
         XmlSerializerUtil.copyBean(settings, this);
     }
 }

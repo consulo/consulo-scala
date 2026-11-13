@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightFieldBuilder
+import com.intellij.java.language.psi.PsiField
+import com.intellij.java.language.impl.psi.impl.light.LightFieldBuilder
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}
 

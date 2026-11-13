@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.autoImport.GlobalExtensionMethod
 import org.jetbrains.plugins.scala.autoImport.GlobalMember.findGlobalMembers
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
@@ -20,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{ConstraintSystem, Constraints
 import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.project.ProjectContext
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.AnyFqn
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.AnyFqn
 
 class ExtensionMethodData(val function: ScFunction,
                           rawExtensionTargetType: ScType,

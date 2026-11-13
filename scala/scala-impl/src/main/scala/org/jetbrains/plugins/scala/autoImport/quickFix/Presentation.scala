@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.psi.{PsiClass, PsiDocCommentOwner, PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.util.SlowOperations
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt}

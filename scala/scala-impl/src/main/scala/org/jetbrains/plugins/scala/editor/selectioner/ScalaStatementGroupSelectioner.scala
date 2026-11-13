@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
-import com.intellij.codeInsight.editorActions.ExtendWordSelectionHandlerBase
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.LineTokenizer
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.editor.action.ExtendWordSelectionHandlerBase
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.application.util.LineTokenizer
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScBlockStatement}

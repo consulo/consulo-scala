@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
 import com.intellij.openapi.module
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope, SearchScope, UseScopeEnlarger}
-import com.intellij.psi.{PsiElement, PsiMember}
-import org.jetbrains.annotations.ApiStatus
+import consulo.language.util.ModuleUtilCore
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.content.scope.SearchScope
+import consulo.language.psi.UseScopeEnlarger
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.project.ModuleExt
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ScalaSharedSourcesUseScopeEnlarger extends UseScopeEnlarger {
   override def getAdditionalUseScope(element: PsiElement): SearchScope = {
     val psiMember = element match {

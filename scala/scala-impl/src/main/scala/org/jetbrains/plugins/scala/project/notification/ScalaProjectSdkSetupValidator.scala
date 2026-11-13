@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.project.notification
 
 import com.intellij.codeInsight.daemon.ProjectSdkSetupValidator
 import com.intellij.codeInsight.daemon.impl.JavaProjectSdkSetupValidator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 
 final class ScalaProjectSdkSetupValidator extends ProjectSdkSetupValidator {

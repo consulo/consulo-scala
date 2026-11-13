@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.scope._
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr._

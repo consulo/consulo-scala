@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 object Valid {
   def unapply(element: PsiElement): Option[PsiElement] = Option(element).filter(_.isValid)

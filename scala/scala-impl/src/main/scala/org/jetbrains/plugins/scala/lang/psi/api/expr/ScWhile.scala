@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor
 
 trait ScWhile extends ScExpression {

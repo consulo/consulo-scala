@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.impl.light.LightReferenceListBuilder
-import com.intellij.psi.{PsiClassType, PsiManager, PsiNamedElement, PsiReferenceList}
+import com.intellij.java.language.impl.psi.impl.light.LightReferenceListBuilder
+import com.intellij.java.language.psi.{PsiClassType, PsiReferenceList}
+import consulo.language.psi.{PsiManager, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScAnnotationsHolder}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt}

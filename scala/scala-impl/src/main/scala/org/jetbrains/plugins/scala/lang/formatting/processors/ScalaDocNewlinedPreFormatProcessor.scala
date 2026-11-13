@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.impl.source.codeStyle.PreFormatProcessor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiErrorElement}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.PreFormatProcessor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiErrorElement}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ElementType, PsiElementExt, PsiNamedElementExt, inWriteAction}
 import org.jetbrains.plugins.scala.lang.formatting.ScalaFormatterUtil.isDocWhiteSpace
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

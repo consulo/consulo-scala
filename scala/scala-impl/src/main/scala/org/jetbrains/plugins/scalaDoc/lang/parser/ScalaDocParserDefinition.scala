@@ -2,14 +2,16 @@ package org.jetbrains.plugins.scalaDoc
 package lang
 package parser
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.extapi.psi.ASTWrapperPsiElement
-import com.intellij.lang.{ASTNode, ParserDefinition, PsiParser}
-import com.intellij.lexer.Lexer
-import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.{IFileElementType, TokenSet}
-import com.intellij.psi.{FileViewProvider, PsiElement, PsiFile}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.impl.psi.ASTWrapperPsiElement
+import consulo.language.ast.ASTNode
+import consulo.language.parser.{ParserDefinition, PsiParser}
+import consulo.language.lexer.Lexer
+import consulo.project.Project
+import consulo.language.ast.{IFileElementType, TokenSet}
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.{PsiElement, PsiFile}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.{ScalaDocLexer, ScalaDocMarkdownLexer, ScalaDocTokenType}

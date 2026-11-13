@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.lookup.{CharFilter, Lookup}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.completion.lookup.{CharFilter, Lookup}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr

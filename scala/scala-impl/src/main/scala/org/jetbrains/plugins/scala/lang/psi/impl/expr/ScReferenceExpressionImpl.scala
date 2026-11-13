@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
+import consulo.language.ast.TokenType
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaModifier, ScalaTokenTypes}
@@ -30,7 +32,8 @@ import org.jetbrains.plugins.scala.lang.resolve.MethodTypeProvider._
 import org.jetbrains.plugins.scala.lang.resolve._
 import org.jetbrains.plugins.scala.lang.resolve.processor.DynamicResolveProcessor.ScTypeForDynamicProcessorEx
 import org.jetbrains.plugins.scala.lang.resolve.processor._
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.{ScalaBundle, Tracing}
 
 import scala.collection.mutable

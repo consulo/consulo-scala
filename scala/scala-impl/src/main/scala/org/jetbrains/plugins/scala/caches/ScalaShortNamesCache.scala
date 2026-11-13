@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.{GlobalSearchScope, PsiShortNamesCache}
-import com.intellij.util.{ArrayUtil, Processor}
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.search.PsiShortNamesCache
+import consulo.util.collection.ArrayUtil
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTrait, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
 import scala.collection.mutable.ArrayBuffer
 

@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.project.external
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.EelProviderUtil
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.project.ReplClasspath
 
 import scala.collection.mutable
@@ -23,7 +22,7 @@ import scala.collection.mutable
  *       It does not offer any APIs for cleaning up the state.
  */
 //noinspection ApiStatus,UnstableApiUsage
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 private[jetbrains] final class ReplClasspathCachedResolver(descriptor: EelDescriptor) {
 
   def this(project: Project) = this(EelProviderUtil.getEelDescriptor(project))

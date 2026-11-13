@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.search.{GlobalSearchScope, GlobalSearchScopesCore, PsiSearchHelper}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.Processor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
+import consulo.language.psi.scope.{GlobalSearchScope, GlobalSearchScopesCore}
+import consulo.language.psi.search.PsiSearchHelper
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScTypeElement, ScTypeElementExt}

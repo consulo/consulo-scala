@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.impl
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.impl.ScDocResolvableCodeReferenceImpl
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.{ScDocRefQuery, ScDocRefQuerySegment}
 

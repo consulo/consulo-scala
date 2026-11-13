@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiFile, PsiNamedElement, ResolveState}
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil._

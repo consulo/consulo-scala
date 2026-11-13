@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.lang
 
-import com.intellij.patterns.PlatformPatterns.psiElement
+import consulo.language.pattern.PlatformPatterns.psiElement
 import org.jetbrains.plugins.scala.lang.completion.condition
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes
 import org.jetbrains.plugins.scalaDirective.psi.api.ScDirective

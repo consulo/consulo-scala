@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.execution.lineMarker.RunLineMarkerContributor.Info
-import com.intellij.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
-import com.intellij.icons.AllIcons
-import com.intellij.psi.PsiElement
+import consulo.execution.lineMarker.RunLineMarkerContributor.Info
+import consulo.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
+import consulo.application.AllIcons
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.runner.ScalaRunLineMarkerContributor.RunIcon

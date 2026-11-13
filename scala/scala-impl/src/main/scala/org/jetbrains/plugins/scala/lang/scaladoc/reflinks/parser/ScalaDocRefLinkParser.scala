@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks.parser
 
-import com.intellij.lang.{LightPsiParser, PsiBuilder, PsiParser}
-import com.intellij.psi.tree.IElementType
+import com.intellij.lang.LightPsiParser
+import consulo.language.parser.{PsiBuilder, PsiParser}
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._

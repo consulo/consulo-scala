@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.{State, Storage}
-import com.intellij.psi.codeStyle.CodeStyleScheme
+import consulo.application.ApplicationManager
+import consulo.component.persist.{State, Storage}
+import consulo.language.codeStyle.CodeStyleScheme
 import com.intellij.psi.impl.source.codeStyle.CodeStyleSchemesImpl
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.formatting.settings.migration.CodeStyleSettingsMigrationServiceBase.MigrationItem

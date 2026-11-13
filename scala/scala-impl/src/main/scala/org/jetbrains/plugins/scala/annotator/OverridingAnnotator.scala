@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala
 package annotator
 
-import com.intellij.psi._
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiModifierListOwner
 import org.jetbrains.plugins.scala.annotator.quickfix.PullUpQuickFix
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods

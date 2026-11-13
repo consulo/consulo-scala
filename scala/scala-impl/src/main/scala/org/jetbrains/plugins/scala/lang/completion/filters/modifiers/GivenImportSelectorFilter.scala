@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.filters.modifiers
 
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement}
+import consulo.language.psi.filter.ElementFilter
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement}
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference

@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.lang.html.HTMLLanguage
-import com.intellij.lang.{Language, LanguageParserDefinitions}
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{LanguageSubstitutors, PsiManager}
+import consulo.html.language.HTMLLanguage
+import consulo.language.Language
+import com.intellij.lang.LanguageParserDefinitions
+import consulo.language.editor.highlight.SyntaxHighlighterFactory
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{LanguageSubstitutors, PsiManager}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.highlighter.ScalaSyntaxHighlighterFactory.createScalaSyntaxHighlighter
 import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer
 import org.jetbrains.plugins.scala.project.{ScalaFeaturePusher, ScalaFeatures}
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
 import org.jetbrains.plugins.scalaDoc.ScalaDocLanguage
 

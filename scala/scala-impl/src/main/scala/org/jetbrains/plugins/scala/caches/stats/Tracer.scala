@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches.stats
 
-import com.intellij.openapi.application.ApplicationManager
+import consulo.application.ApplicationManager
 import org.jetbrains.plugins.scala.caches.stats.Tracer.{currentTracers, root, roundToMillis}
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 

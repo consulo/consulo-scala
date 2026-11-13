@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.project.DumbAware
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScNamingPattern, ScPattern, ScPatternArgumentList, ScSeqWildcardPattern}

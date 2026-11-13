@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting._
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
+import consulo.language.codeStyle.{Alignment, Block, Indent, Wrap, WrapType}
+import consulo.language.ast.ASTNode
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
 
 import java.util
-import com.intellij.psi.tree._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.TokenSet
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.ScalaBlockBuilder._
@@ -29,7 +30,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, ScPackaging, ScTypeParametersOwner}
 import org.jetbrains.plugins.scala.util.MultilineStringUtil
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
-import org.jetbrains.plugins.scala.{ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 import scala.annotation.tailrec
 

@@ -1,14 +1,18 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.execution._
-import com.intellij.execution.actions.{ConfigurationContext, ConfigurationFromContext, RunConfigurationProducer}
-import com.intellij.execution.application.{ApplicationConfiguration, ApplicationConfigurationProducer, ApplicationConfigurationType}
-import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
+import consulo.execution.action.Location
+import com.intellij.execution.RunManagerEx
+import consulo.execution.action.{ConfigurationContext, ConfigurationFromContext, RunConfigurationProducer}
+import com.intellij.java.execution.impl.application.{ApplicationConfiguration, ApplicationConfigurationProducer, ApplicationConfigurationType}
+import consulo.execution.configuration.ConfigurationFactory
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.execution.junit.JavaRunConfigurationProducerBase
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.util.{Key, Ref}
-import com.intellij.psi._
+import com.intellij.java.execution.impl.junit.JavaRunConfigurationProducerBase
+import consulo.module.Module
+import consulo.util.dataholder.Key
+import consulo.util.lang.ref.Ref
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories.signatures
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubElement, StubInputStream, StubOutputStream}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{StubElement, StubInputStream, StubOutputStream}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameters
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScParamClausesStub

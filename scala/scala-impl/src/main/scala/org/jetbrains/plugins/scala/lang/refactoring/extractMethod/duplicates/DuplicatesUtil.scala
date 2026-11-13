@@ -1,20 +1,21 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod.duplicates
 
-import com.intellij.codeInsight.folding.CodeFoldingManager
-import com.intellij.codeInsight.highlighting.HighlightManager
-import com.intellij.find.FindManager
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.openapi.application.{ApplicationManager, ApplicationNamesInfo}
-import com.intellij.openapi.editor.colors.EditorColors
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.editor.{Editor, FoldRegion, LogicalPosition, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
-import com.intellij.refactoring.RefactoringBundle
-import com.intellij.ui.ReplacePromptDialog
+import consulo.language.editor.folding.CodeFoldingManager
+import consulo.language.editor.highlight.HighlightManager
+import consulo.find.FindManager
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.application.ApplicationManager
+import com.intellij.openapi.application.ApplicationNamesInfo
+import consulo.codeEditor.EditorColors
+import consulo.codeEditor.markup.RangeHighlighter
+import consulo.codeEditor.{Editor, FoldRegion, LogicalPosition, ScrollType}
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.document.util.TextRange
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.editor.refactoring.RefactoringBundle
+import consulo.ui.ex.awt.ReplacePromptDialog
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

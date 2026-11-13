@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 
 package object preview {

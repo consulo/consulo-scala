@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.template
 
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme}
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{AnnotatorPart, ScalaAnnotationHolder}
 import org.jetbrains.plugins.scala.annotator.hints.onlyErrorStripeAttributes

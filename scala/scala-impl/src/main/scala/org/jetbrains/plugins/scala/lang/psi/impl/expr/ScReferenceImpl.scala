@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.PsiElement
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.completion.isInImport
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

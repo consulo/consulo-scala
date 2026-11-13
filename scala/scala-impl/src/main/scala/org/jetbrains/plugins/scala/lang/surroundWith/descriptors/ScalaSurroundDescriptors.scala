@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.descriptors
 
-import com.intellij.lang.surroundWith.SurroundDescriptor
+import consulo.language.editor.surroundWith.SurroundDescriptor
 import org.jetbrains.plugins.scala.lang.surroundWith.SurroundDescriptors
 
 object ScalaSurroundDescriptors extends SurroundDescriptors {

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.lang.Language
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.util.HashBuilder._
-import org.jetbrains.sbt.MinorVersionGenerator
+import org.jetbrains.sbt.api.MinorVersionGenerator
 
 /**
  * @see [[project.ScalaFeatures]] - represents the set of all parser features, calculated from a scala version and compiler options)

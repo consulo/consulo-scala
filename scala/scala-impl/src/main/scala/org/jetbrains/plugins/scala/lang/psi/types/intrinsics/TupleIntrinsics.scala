@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.intrinsics
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.types.api.{StdTypes, TupleType}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScOrType, ScParameterizedType, ScType, ScTypeExt}

@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline
 
-import com.intellij.lang.Language
-import com.intellij.lang.refactoring.InlineActionHandler
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.util.{Condition, NlsContexts}
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiReference}
-import com.intellij.refactoring.util.CommonRefactoringUtil
-import com.intellij.util.FilteredQuery
+import consulo.language.Language
+import consulo.language.editor.refactoring.inline.InlineActionHandler
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
+import consulo.util.lang.function.Condition
+import com.intellij.openapi.util.NlsContexts
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiReference}
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
+import consulo.application.util.query.FilteredQuery
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
@@ -22,7 +23,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScNamedElement, ScTypedDefinition}
 import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.chaining.scalaUtilChainingOps

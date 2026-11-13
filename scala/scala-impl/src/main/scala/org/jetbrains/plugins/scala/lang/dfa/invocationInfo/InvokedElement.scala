@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.dfa.invocationInfo
 
-import com.intellij.codeInsight.Nullability
-import com.intellij.codeInspection.dataFlow.types.DfType
-import com.intellij.psi.{PsiElement, PsiMember, PsiMethod, PsiModifierListOwner, PsiNamedElement}
+import com.intellij.java.language.codeInsight.Nullability
+import consulo.language.dataFlow.types.DfType
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.{PsiMember, PsiMethod, PsiModifierListOwner}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiMemberExt, PsiNamedElementExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.InvokedElement.ValueInfo
 import org.jetbrains.plugins.scala.lang.dfa.utils.ScalaDfaTypeUtils.{elementNullabilityForWrite, scTypeToDfType}

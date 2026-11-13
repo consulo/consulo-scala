@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
-import com.intellij.openapi.util.Condition
-import com.intellij.psi.PsiElement
+import consulo.util.lang.function.Condition
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
 
 class ScalaWordSelectionerFilter extends Condition[PsiElement] {

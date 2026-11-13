@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.lang.LanguageCodeInsightActionHandler
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiFile
+import consulo.language.editor.action.LanguageCodeInsightActionHandler
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiFile
 
 trait ScalaCodeInsightActionHandler extends LanguageCodeInsightActionHandler {
 

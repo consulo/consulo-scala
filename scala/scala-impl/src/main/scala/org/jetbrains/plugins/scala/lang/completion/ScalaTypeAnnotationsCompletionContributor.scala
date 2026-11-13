@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElementBuilder, LookupElementDecorator}
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.PsiElement
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElementBuilder, LookupElementDecorator}
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.PsiElement
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.codeInsight.intention.types.{AbstractTypeAnnotationIntention, AddOnlyStrategy, ChooseTypeTextExpression}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

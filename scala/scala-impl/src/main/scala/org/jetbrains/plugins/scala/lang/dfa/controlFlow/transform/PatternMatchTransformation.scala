@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform
 
-import com.intellij.codeInspection.dataFlow.types.DfTypes
-import com.intellij.codeInspection.dataFlow.value.RelationType
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.DfTypes
+import consulo.language.dataFlow.value.RelationType
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaPsiElementDfaAnchor
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.ScalaDfaControlFlowBuilder
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.InstructionBuilder.{DeferredLabel, StackValue}

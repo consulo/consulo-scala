@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.codeStyle.CodeStyle
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.editor.AutoBraceUtils.{canBeContinuedWith, continuesConstructAfterIndentationContext, couldBeContinuationAfterIndentationContext, indentationContextContinuation, isBeforeIndentationContext, nextExpressionInIndentationContext, previousExpressionInIndentationContext}
 import org.jetbrains.plugins.scala.editor.{AutoBraceAdvertiser, DocumentExt}
 import org.jetbrains.plugins.scala.extensions._

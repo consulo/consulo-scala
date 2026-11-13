@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scalaDirective.lang.parser
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import com.intellij.lang.LightPsiParser
-import com.intellij.lang.PsiBuilder
-import com.intellij.lang.PsiParser
-import com.intellij.psi.tree.IElementType
-import org.jetbrains.annotations.NotNull
+import consulo.language.parser.PsiBuilder
+import consulo.language.parser.PsiParser
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.tLINE_COMMENT
 

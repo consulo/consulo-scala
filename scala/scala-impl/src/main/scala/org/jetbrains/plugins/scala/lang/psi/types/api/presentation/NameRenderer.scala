@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api.presentation
 
-import com.intellij.psi.PsiNamedElement
+import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 
 trait NameRenderer extends TextEscaper {

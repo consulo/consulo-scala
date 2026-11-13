@@ -1,20 +1,22 @@
 package org.jetbrains.plugins.scala.editor.backspaceHandler
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.editorActions._
-import com.intellij.injected.editor.EditorWindow
-import com.intellij.lang.Language
-import com.intellij.lang.injection.InjectedLanguageManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.{CaretModel, Document, Editor}
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings.IndentOptions
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiFile, PsiWhiteSpace}
-import com.intellij.util.text.CharArrayUtil
-import org.jetbrains.plugins.scala.Scala3Language
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.action.{BackspaceHandlerDelegate, LanguageBackspaceModeOverride}
+import consulo.codeEditor.action.SmartBackspaceMode
+import consulo.language.editor.inject.EditorWindow
+import consulo.language.Language
+import consulo.language.inject.InjectedLanguageManager
+import consulo.logging.Logger
+import consulo.codeEditor.{CaretModel, Editor}
+import consulo.document.Document
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.codeStyle.CommonCodeStyleSettings.IndentOptions
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiFile, PsiWhiteSpace}
+import consulo.util.lang.CharArrayUtil
+import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.editor.backspaceHandler.Scala3IndentationBasedSyntaxBackspaceHandler._
 import org.jetbrains.plugins.scala.editor.enterHandler.EnterHandlerUtils
 import org.jetbrains.plugins.scala.editor.{ScalaEditorUtils, ScalaIndentationSyntaxUtils}

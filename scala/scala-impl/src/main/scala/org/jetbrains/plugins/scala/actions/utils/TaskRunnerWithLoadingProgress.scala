@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.actions.utils
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.application.{ModalityState, NonBlockingReadAction, ReadAction}
-import com.intellij.openapi.editor.Editor
+import consulo.disposer.Disposable
+import consulo.ui.ex.action.AnAction
+import consulo.ui.ModalityState
+import consulo.application.{NonBlockingReadAction, ReadAction}
+import consulo.codeEditor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.LoadingDecorator
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.{Disposer, NlsContexts}
-import com.intellij.ui.components.panels.NonOpaquePanel
-import com.intellij.ui.components.{JBLabel, JBLoadingPanel}
-import com.intellij.util.concurrency.{AppExecutorUtil, EdtScheduler}
-import com.intellij.util.ui.{AnimatedIcon, AsyncProcessIcon, EmptyIcon, UIUtil}
+import consulo.project.Project
+import consulo.ui.ex.awt.LoadingDecorator
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.disposer.Disposer
+import com.intellij.openapi.util.NlsContexts
+import consulo.ui.ex.awt.NonOpaquePanel
+import consulo.ui.ex.awt.{JBLabel, JBLoadingPanel}
+import consulo.application.util.concurrent.AppExecutorUtil
+import com.intellij.util.concurrency.EdtScheduler
+import consulo.desktop.awt.ui.impl.image.AnimatedIcon
+import consulo.ui.ex.awt.{AsyncProcessIcon, EmptyIcon, UIUtil}
 import org.jetbrains.annotations.{ApiStatus, Nullable}
 import org.jetbrains.concurrency.CancellablePromise
 
@@ -38,7 +42,7 @@ import scala.util.chaining.scalaUtilChainingOps
  * Copied from [[com.intellij.codeInsight.hint.ParameterInfoTaskRunnerUtil]] and converted to Scala.
  * No major significant changes were made in the initial commit.
  */
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Experimental
 private[actions] object TaskRunnerWithLoadingProgress {
   private val DefaultProgressPopupDelay: Duration = 1000.millis
 

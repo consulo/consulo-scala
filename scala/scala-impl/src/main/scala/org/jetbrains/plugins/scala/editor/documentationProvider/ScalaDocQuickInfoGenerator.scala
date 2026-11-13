@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.openapi.module.ModuleUtilCore
+import consulo.language.util.ModuleUtilCore
 import com.intellij.openapi.util.NlsContexts.HintText
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.editor.documentationProvider.renderers.{ScalaDocTypeRenderer, WithHtmlPsiLink}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

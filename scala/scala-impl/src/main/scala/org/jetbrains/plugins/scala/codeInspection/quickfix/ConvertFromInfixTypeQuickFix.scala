@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
 import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
-import com.intellij.openapi.command.undo.UndoUtil.markPsiFileForUndo
-import com.intellij.openapi.project.DumbAware
+import consulo.undoRedo.util.UndoUtil.markPsiFileForUndo
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.quickfix.ConvertFromInfixTypeQuickFix.message
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScInfixTypeElement, ScParenthesisedTypeElement}

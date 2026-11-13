@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightingLevelManager
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.util.TextRange
+import consulo.language.editor.highlight.HighlightingLevelManager
+import consulo.module.content.ProjectFileIndex
+import consulo.document.util.TextRange
 import com.intellij.psi.impl.IncompleteModelUtil
-import com.intellij.psi.impl.source.DummyHolder
-import com.intellij.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.impl.psi.DummyHolder
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.extensions._
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.settings.{ScalaHighlightingMode, ScalaProjectSettings}

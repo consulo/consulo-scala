@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiIdentifier, PsiMethod, PsiModifierList, PsiParameter, PsiTypeParameter}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

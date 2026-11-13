@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.completion._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{JavaPsiFacade, PsiElement, PsiPackage}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.project.Project
+import com.intellij.java.language.psi.JavaPsiFacade
+import consulo.language.psi.{PsiElement, PsiPackage}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.{PsiNamedElementExt, ResolvesTo, inReadAction}
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionUtil._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

@@ -1,17 +1,16 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.application.options.CodeStyleAbstractPanel;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.highlighter.EditorHighlighter;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
+import consulo.language.codeStyle.ui.setting.CodeStyleAbstractPanel;
+import consulo.colorScheme.EditorColorsScheme;
+import consulo.codeEditor.EditorHighlighter;
+import consulo.virtualFileSystem.fileType.FileType;
+import consulo.language.codeStyle.CodeStyleSettings;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public abstract class ScalaCodeStyleSubPanelBase extends CodeStyleAbstractPanel {
 
-    protected ScalaCodeStyleSubPanelBase(@NotNull CodeStyleSettings settings) {
+    protected ScalaCodeStyleSubPanelBase(CodeStyleSettings settings) {
         super(settings);
     }
 
@@ -26,7 +25,7 @@ public abstract class ScalaCodeStyleSubPanelBase extends CodeStyleAbstractPanel 
     }
 
     @Override
-    protected @NotNull FileType getFileType() {
+    protected FileType getFileType() {
         return null;
     }
 

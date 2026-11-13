@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import com.thaiopensource.util.Service
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.light.LightContextFunctionParameter
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType}

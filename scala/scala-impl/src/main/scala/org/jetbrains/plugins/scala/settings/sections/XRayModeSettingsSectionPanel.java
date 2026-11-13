@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import com.intellij.openapi.project.Project;
+import consulo.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

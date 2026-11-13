@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import consulo.language.psi.{PsiElement, PsiPackage}
+import com.intellij.java.language.psi.PsiMember
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}
 import org.jetbrains.plugins.scala.extensions._

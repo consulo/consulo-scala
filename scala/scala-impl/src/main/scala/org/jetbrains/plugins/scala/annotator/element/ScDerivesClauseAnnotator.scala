@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.lang.annotation.AnnotationSession
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.annotation.AnnotationSession
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.annotationHolder.DelegateAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.template.ImplicitParametersAnnotator

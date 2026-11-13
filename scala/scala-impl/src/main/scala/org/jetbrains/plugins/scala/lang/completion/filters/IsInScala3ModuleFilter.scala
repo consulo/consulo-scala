@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.filters
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.filters.ElementFilter
+import consulo.language.psi.PsiElement
+import consulo.language.psi.filter.ElementFilter
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 

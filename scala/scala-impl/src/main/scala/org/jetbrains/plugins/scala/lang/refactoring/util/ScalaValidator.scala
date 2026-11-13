@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator.isIdentifier
 
 class ValidationReporter(project: Project, conflictsReporter: ConflictsReporter, validator: ScalaValidator) {

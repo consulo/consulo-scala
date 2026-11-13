@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.problems.WolfTheProblemSolver;
+import consulo.project.Project;
+import consulo.util.lang.function.Condition;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.language.editor.wolfAnalyzer.WolfTheProblemSolver;
 
 import java.util.ArrayList;
 import java.util.List;

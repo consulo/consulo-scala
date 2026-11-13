@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.PsiClass
+import consulo.logging.Logger
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.ArrayExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScTypeArgs, ScTypeArgument, ScTypeElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, TypeParamId, TypeParamIdOwner}

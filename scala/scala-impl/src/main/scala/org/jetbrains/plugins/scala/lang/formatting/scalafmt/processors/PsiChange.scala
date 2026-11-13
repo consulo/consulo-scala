@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.processors
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.{PsiElement, PsiRecursiveElementVisitor}
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.psi.{PsiElement, PsiRecursiveElementVisitor}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inWriteAction}
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 

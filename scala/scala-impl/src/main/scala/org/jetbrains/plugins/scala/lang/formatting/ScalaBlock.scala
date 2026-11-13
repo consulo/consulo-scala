@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting._
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
+import consulo.language.codeStyle.{ASTBlock, Alignment, Block, ChildAttributes, Indent, Spacing, Wrap}
+import com.intellij.formatting.SpacingImpl
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiWhiteSpace}
+import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.formatting.processors._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

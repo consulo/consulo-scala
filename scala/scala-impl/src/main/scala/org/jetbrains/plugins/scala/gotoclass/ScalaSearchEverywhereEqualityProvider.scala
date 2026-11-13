@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.gotoclass
 
-import com.intellij.ide.actions.searcheverywhere.SEResultsEqualityProvider.SEEqualElementsActionType
-import com.intellij.ide.actions.searcheverywhere.{PSIPresentationBgRendererWrapper, SEResultsEqualityProvider, SearchEverywhereFoundElementInfo}
-import com.intellij.psi.PsiElement
+import consulo.searchEverywhere.SEResultsEqualityProvider.SEEqualElementsActionType
+import com.intellij.ide.actions.searcheverywhere.PSIPresentationBgRendererWrapper
+import consulo.searchEverywhere.{SEResultsEqualityProvider, SearchEverywhereFoundElementInfo}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.{ApiStatus, Nullable}
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 
@@ -13,7 +14,7 @@ import scala.jdk.CollectionConverters.IteratorHasAsScala
  * @see Java implementation [[com.intellij.ide.JavaClassAndFileEqualityProvider]]
  * @see Kotlin implementation `org.jetbrains.kotlin.idea.searcheverywhere.KtSearchEverywhereEqualityProvider`
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 // The legacy Search Everywhere still invokes this extension; its replacement uses a different API.
 @scala.annotation.nowarn("msg=(?s).*(SEResultsEqualityProvider|SearchEverywhereFoundElementInfo).*deprecated.*")
 final class ScalaSearchEverywhereEqualityProvider extends SEResultsEqualityProvider {

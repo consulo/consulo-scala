@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.builder
 
-import com.intellij.lang.PsiBuilder
+import consulo.language.parser.PsiBuilder
 import org.jetbrains.plugins.scala.lang.parser.{ErrMsg, IndentationWidth}
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.codeInsight.generation.{ClassMemberWithElement, PsiElementClassMember}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.language.editor.generation.ClassMemberWithElement
+import com.intellij.java.language.impl.codeInsight.generation.PsiElementClassMember
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiField, PsiMember, PsiMethod}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.extensions.{PsiNamedElementExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.{ScalaPsiPresentationUtils, types}
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

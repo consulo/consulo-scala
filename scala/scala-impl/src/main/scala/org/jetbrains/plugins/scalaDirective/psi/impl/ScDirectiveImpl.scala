@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.psi.impl
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LazyParseablePsiElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes
 import org.jetbrains.plugins.scalaDirective.psi.api.ScDirective

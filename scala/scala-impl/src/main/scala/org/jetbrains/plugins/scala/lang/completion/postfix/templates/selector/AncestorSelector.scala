@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector
 
-import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateExpressionSelectorBase
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.{Condition, Conditions}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.postfixTemplate.PostfixTemplateExpressionSelectorBase
+import consulo.document.Document
+import consulo.util.lang.function.{Condition, Conditions}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.types.api.ExtractClass

@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.annotator.usageTracker
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiClass, PsiNamedElement, PsiPackage, ResolveState}
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiNamedElement, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiClassExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
@@ -14,7 +16,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.imports.ScImportOrExpo
 import org.jetbrains.plugins.scala.lang.resolve.ResolveTargets
 import org.jetbrains.plugins.scala.lang.resolve.processor.ResolveProcessor
 import org.jetbrains.plugins.scala.lang.resolve.processor.precedence.PrecedenceTypes
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import scala.collection.mutable

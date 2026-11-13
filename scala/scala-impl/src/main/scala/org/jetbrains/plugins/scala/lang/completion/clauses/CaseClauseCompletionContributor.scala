@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementPresentation}
-import com.intellij.openapi.util.TextRange
-import com.intellij.patterns.{ElementPattern, PlatformPatterns}
-import com.intellij.psi.{PsiClass, PsiElement}
-import com.intellij.util.{Consumer, ProcessingContext}
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResult, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.InsertionContext
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementPresentation}
+import consulo.document.util.TextRange
+import consulo.language.pattern.{ElementPattern, PlatformPatterns}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import com.intellij.util.Consumer
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.{CaptureExt, DelegatingCompletionProvider, ScalaCompletionContributor, ScalaKeyword, aot, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

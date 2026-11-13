@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.{PsiClass, PsiModifierList}
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiManager, PsiPackage}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.LightElement
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.util.IncorrectOperationException
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd

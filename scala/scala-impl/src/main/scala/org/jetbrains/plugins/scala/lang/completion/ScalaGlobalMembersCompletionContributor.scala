@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.openapi.actionSystem.{ActionManager, IdeActions}
-import com.intellij.openapi.keymap.KeymapUtil.getFirstKeyboardShortcutText
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.patterns.{PatternCondition, PsiElementPattern, StandardPatterns}
-import com.intellij.psi.PsiElement
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.ui.ex.action.{ActionManager, IdeActions}
+import consulo.ui.ex.keymap.util.KeymapUtil.getFirstKeyboardShortcutText
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.pattern.{PatternCondition, PsiElementPattern, StandardPatterns}
+import consulo.language.psi.PsiElement
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.completion.filters.toplevel.IsTopLevelElementInProductionScalaFileFilter

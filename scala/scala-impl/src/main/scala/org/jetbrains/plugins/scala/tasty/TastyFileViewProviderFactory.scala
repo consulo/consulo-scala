@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.tasty
 
-import com.intellij.lang.Language
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{FileViewProvider, FileViewProviderFactory, PsiManager}
-import org.jetbrains.plugins.scala.Scala3Language
+import consulo.language.Language
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.file.{FileViewProvider, FileViewProviderFactory}
+import consulo.language.psi.PsiManager
+import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScClassFileDecompiler
 
 class TastyFileViewProviderFactory extends FileViewProviderFactory {

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi.PsiTypeParameter
+import com.intellij.java.language.psi.PsiTypeParameter
 import org.jetbrains.plugins.scala.lang.psi.light.DummyLightTypeParam
 import org.jetbrains.plugins.scala.lang.psi.types.api.TypeParameterType.isMaskedExtensionTypeParameter
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.ScTypePolymorphicType

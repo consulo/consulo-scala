@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.codeInsight.hint.{HintManager, HintManagerImpl, HintUtil}
-import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiFile
-import com.intellij.ui.LightweightHint
+import consulo.language.editor.hint.HintManager
+import com.intellij.codeInsight.hint.HintManagerImpl
+import consulo.language.editor.ui.awt.HintUtil
+import consulo.ui.ex.action.AnActionEvent
+import consulo.language.editor.CommonDataKeys
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiFile
+import consulo.ui.ex.awt.hint.LightweightHint
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.StartupUiUtil
 import org.jetbrains.annotations.Nls

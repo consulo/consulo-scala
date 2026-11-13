@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import com.intellij.modcommand.ActionContext
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, StringExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

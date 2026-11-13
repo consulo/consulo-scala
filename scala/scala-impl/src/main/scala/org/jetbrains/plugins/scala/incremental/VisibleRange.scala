@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala
 package incremental
 
-import com.intellij.openapi.editor.{Editor, LogicalPosition}
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.psi.PsiFile
+import consulo.codeEditor.{Editor, LogicalPosition}
+import consulo.application.util.registry.Registry
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
 
 import java.awt.Point
 

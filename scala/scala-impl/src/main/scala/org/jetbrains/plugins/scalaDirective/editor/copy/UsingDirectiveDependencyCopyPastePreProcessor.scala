@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scalaDirective.editor.copy
 
-import com.intellij.codeInsight.AutoPopupController
-import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
-import com.intellij.openapi.editor.{Editor, RawText}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.editor.AutoPopupController
+import consulo.language.editor.completion.CompletionType
+import consulo.language.editor.action.CopyPastePreProcessor
+import consulo.codeEditor.{Editor, RawText}
+import consulo.project.Project
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.ScalaEditorUtils.findElementAtCaret_WithFixedEOFAndWhiteSpace
 import org.jetbrains.plugins.scala.extensions.{&, ElementText, ObjectExt, Parent, PsiElementExt, invokeLater}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

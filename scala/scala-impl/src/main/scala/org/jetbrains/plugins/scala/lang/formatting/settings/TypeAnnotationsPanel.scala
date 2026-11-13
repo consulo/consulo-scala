@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.util.execution.ParametersListUtil
-import org.jetbrains.plugins.scala.NlsString
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.project.Project
+import consulo.ui.ex.awt.TextFieldWithBrowseButton
+import consulo.language.codeStyle.CodeStyleSettings
+import consulo.process.cmd.ParametersListUtil
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.extensions.Binding
 
 import java.util

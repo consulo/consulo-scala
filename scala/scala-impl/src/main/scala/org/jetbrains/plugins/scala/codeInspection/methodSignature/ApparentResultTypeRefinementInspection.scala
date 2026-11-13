@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.LocalQuickFix
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScCompoundTypeElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDeclaration}

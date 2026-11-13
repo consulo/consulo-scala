@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform
 package specialSupport
 
-import com.intellij.codeInspection.dataFlow.types.{DfBooleanType, DfTypes}
-import com.intellij.codeInspection.dataFlow.value.RelationType
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.{DfBooleanType, DfTypes}
+import consulo.language.dataFlow.value.RelationType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.ScalaDfaControlFlowBuilder
 import org.jetbrains.plugins.scala.lang.dfa.controlFlow.transform.InstructionBuilder.StackValue

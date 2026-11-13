@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.actions.implicitConversions
 
-import com.intellij.ide.util.PsiElementListCellRenderer
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.ui.PsiElementListCellRenderer
+import consulo.colorScheme.TextAttributes
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.util.TextWithIcon
 import org.jetbrains.plugins.scala.actions.Parameters
 import org.jetbrains.plugins.scala.extensions._

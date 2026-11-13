@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods.{isBeanProperty, isBooleanBeanProperty}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeArgument

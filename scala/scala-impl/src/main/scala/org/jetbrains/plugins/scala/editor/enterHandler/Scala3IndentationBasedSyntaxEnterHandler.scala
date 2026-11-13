@@ -1,19 +1,21 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
-import com.intellij.formatting.IndentInfo
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.{Document, Editor, EditorModificationUtilEx}
-import com.intellij.openapi.util.Ref
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings.IndentOptions
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.DocumentUtil
-import com.intellij.util.text.CharArrayUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.CodeInsightSettings
+import consulo.language.editor.action.EnterHandlerDelegate.Result
+import consulo.language.editor.action.EnterHandlerDelegateAdapter
+import consulo.language.codeStyle.IndentInfo
+import consulo.dataContext.DataContext
+import consulo.codeEditor.action.EditorActionHandler
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import com.intellij.openapi.editor.EditorModificationUtilEx
+import consulo.util.lang.ref.Ref
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiWhiteSpace}
+import consulo.language.codeStyle.CommonCodeStyleSettings.IndentOptions
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.document.util.DocumentUtil
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.editor.enterHandler.Scala3IndentationBasedSyntaxEnterHandler._
 import org.jetbrains.plugins.scala.editor.{DocumentExt, ScalaEditorUtils, ScalaIndentationSyntaxUtils}
 import org.jetbrains.plugins.scala.extensions._

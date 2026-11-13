@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.ResolveScopeEnlarger
-import com.intellij.psi.search.{GlobalSearchScope, SearchScope}
-import org.jetbrains.annotations.ApiStatus
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.ResolveScopeEnlarger
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.content.scope.SearchScope
 import org.jetbrains.plugins.scala.project.ModuleExt
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 final class ScalaSharedSourcesResolveScopeEnlarger extends ResolveScopeEnlarger {
 
   override def getAdditionalResolveScope(file: VirtualFile, project: Project): SearchScope = {

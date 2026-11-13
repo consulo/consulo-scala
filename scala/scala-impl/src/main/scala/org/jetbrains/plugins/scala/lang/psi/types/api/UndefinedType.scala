@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi.PsiTypeParameter
+import com.intellij.java.language.psi.PsiTypeParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.types.{ConstraintSystem, ConstraintsResult, Context, LeafType, ScType, ScalaTypeVisitor}
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.NonValueType

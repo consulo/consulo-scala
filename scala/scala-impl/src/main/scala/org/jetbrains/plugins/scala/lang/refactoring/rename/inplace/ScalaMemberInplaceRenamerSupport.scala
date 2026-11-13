@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace
 
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.editor.Editor
+import consulo.util.lang.ControlFlowException
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle
 
 private[inplace] object ScalaMemberInplaceRenamerSupport {

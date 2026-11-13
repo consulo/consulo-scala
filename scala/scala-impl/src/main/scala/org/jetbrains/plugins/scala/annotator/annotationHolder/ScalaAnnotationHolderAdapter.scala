@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.annotationHolder
 
-import com.intellij.lang.annotation.{AnnotationHolder, AnnotationSession, HighlightSeverity}
+import consulo.language.editor.annotation.{AnnotationHolder, AnnotationSession, HighlightSeverity}
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationBuilder, ScalaAnnotationBuilderAdapter, ScalaAnnotationHolder}
 
 class ScalaAnnotationHolderAdapter(innerHolder: AnnotationHolder) extends ScalaAnnotationHolder {

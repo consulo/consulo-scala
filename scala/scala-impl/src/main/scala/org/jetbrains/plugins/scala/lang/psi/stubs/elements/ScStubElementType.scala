@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.FileElement
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.language.psi.PsiElement
+import consulo.language.impl.ast.FileElement
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType.ScExpressionElementType
 import org.jetbrains.plugins.scala.lang.parser.{ScCodeBlockElementType, SelfPsiCreator}
 import org.jetbrains.plugins.scala.lang.psi.tree.IScalaElementType

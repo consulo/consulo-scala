@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.util.MethodSignatureUtil
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiMethod, PsiModifier, PsiModifierListOwner, PsiParameter}
+import consulo.language.psi.PsiNamedElement
+import com.intellij.java.language.psi.util.MethodSignatureUtil
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods

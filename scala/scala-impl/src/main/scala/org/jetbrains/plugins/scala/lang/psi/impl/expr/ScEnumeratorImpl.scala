@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiPolyVariantReference, PsiReference, ResolveResult}
-import com.intellij.util.IncorrectOperationException
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiPolyVariantReference, PsiReference, ResolveResult}
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClauses

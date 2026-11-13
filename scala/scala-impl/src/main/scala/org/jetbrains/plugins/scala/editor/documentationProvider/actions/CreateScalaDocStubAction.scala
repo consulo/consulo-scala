@@ -1,17 +1,19 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
-import com.intellij.application.options.CodeStyle
+import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiUtilBase
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.application.ApplicationManager
+import consulo.undoRedo.CommandProcessor
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.editor.util.PsiUtilBase
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.editor.ScalaEditorBundle
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocStubGenerator

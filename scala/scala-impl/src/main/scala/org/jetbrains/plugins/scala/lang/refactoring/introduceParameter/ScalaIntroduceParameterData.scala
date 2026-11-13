@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.refactoring.introduceParameter.{IntroduceParameterData, JavaExpressionWrapper}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiMethod, PsiType}
+import consulo.language.psi.PsiElement
+import com.intellij.java.impl.refactoring.introduceParameter.{IntroduceParameterData, JavaExpressionWrapper}
 import it.unimi.dsi.fastutil.ints.{IntList, IntLists}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}

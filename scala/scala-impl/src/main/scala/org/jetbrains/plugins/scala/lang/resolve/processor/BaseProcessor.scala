@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.scope._
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.scope.ElementClassHint
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
-import org.jetbrains.plugins.scala.lang.psi.api._
+import org.jetbrains.plugins.scala.api.lang.psi.api._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeProjection
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionExt, ScTypeAlias, ScTypeAliasDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
@@ -102,7 +105,7 @@ abstract class BaseProcessor(val kinds: Set[ResolveTargets.Value])
 
   //java compatibility
   private object MyElementClassHint extends ElementClassHint {
-    import com.intellij.psi.scope.ElementClassHint.DeclarationKind
+    import com.intellij.java.language.impl.psi.scope.ElementClassHint.DeclarationKind
     override def shouldProcess(kind: DeclarationKind): Boolean = {
       kind match {
         case null => true

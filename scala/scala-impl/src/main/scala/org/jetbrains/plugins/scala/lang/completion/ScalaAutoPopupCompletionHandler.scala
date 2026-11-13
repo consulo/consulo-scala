@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.AutoPopupController
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate.Result
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.AutoPopupController
+import consulo.language.editor.action.TypedHandlerDelegate
+import consulo.language.editor.action.TypedHandlerDelegate.Result
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AbstractTypeAnnotationIntention
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.ScalaAutoPopupCompletionHandler._

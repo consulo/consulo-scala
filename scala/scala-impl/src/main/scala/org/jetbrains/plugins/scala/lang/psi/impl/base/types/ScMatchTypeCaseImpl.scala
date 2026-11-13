@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base.types
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScMatchTypeCase, ScTypeElement, ScTypeVariableTypeElement}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementImpl

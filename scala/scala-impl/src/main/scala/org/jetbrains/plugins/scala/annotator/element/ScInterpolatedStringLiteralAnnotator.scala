@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.lang.annotation.AnnotationSession
-import com.intellij.openapi.util.TextRange
+import consulo.language.editor.inspection.ProblemHighlightType
+import consulo.language.editor.annotation.AnnotationSession
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.annotationHolder.DelegateAnnotationHolder

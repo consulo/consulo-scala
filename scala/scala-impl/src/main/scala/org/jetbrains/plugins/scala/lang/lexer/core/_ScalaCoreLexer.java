@@ -3,15 +3,14 @@
 
 package org.jetbrains.plugins.scala.lang.lexer.core;
 
-import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.util.containers.Stack;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.lexer.FlexLexer;
+import consulo.language.ast.IElementType;
+import consulo.util.collection.Stack;
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypesEx;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes;
-import com.intellij.openapi.util.text.StringUtil;
+import consulo.util.lang.StringUtil;
 
-import static com.intellij.openapi.util.text.StringUtil.endsWith;
+import static consulo.util.lang.StringUtil.endsWith;
 import static org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType.*;
 import static org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.*;
 
@@ -1375,7 +1374,6 @@ public class _ScalaCoreLexer implements FlexLexer {
       return !nestedString.isEmpty();
     }
 
-    @NotNull
     private IElementType processOutsideString() {
       return processOutsideString(tINTERPOLATED_STRING_END);
     }
@@ -1387,8 +1385,7 @@ public class _ScalaCoreLexer implements FlexLexer {
       return process(typ);
     }
 
-    @NotNull
-    private IElementType process(@NotNull final IElementType type){
+    private IElementType process(final IElementType type){
       if ((type == tIDENTIFIER || type == kTHIS)) {
         if (haveIdInString) {
           haveIdInString = false;
@@ -1415,7 +1412,6 @@ public class _ScalaCoreLexer implements FlexLexer {
       return typeAdjusted;
     }
 
-    @NotNull
     private IElementType processDollarInsideString(boolean isInsideMultiline) {
         final IElementType token;
 
@@ -1438,7 +1434,7 @@ public class _ScalaCoreLexer implements FlexLexer {
         return process(token);
     }
 
-    private IElementType processScala3(@NotNull IElementType type) {
+    private IElementType processScala3(IElementType type) {
         return process(isScala3 ? type : tIDENTIFIER);
     }
 

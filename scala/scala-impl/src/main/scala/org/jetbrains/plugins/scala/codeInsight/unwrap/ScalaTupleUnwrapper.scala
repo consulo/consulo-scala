@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.unwrap
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.childOf
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScTuple}
 

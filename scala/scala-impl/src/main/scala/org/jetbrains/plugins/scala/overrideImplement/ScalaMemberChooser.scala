@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
 import com.intellij.ide.util.MemberChooser
-import com.intellij.psi._
-import com.intellij.ui.{HyperlinkLabel, NonFocusableCheckBox}
-import com.intellij.util.ui.ThreeStateCheckBox
-import com.intellij.util.ui.ThreeStateCheckBox.State
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import consulo.ui.ex.awt.{HyperlinkLabel, NonFocusableCheckBox}
+import consulo.ui.ex.awt.ThreeStateCheckBox
+import consulo.ui.ex.awt.ThreeStateCheckBox.State
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt, invokeLater}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtension

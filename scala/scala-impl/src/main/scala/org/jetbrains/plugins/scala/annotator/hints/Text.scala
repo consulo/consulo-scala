@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.{CodeInsightColors, EditorColors}
-import com.intellij.openapi.editor.markup.{EffectType, TextAttributes}
-import com.intellij.pom.Navigatable
+import consulo.codeEditor.Editor
+import consulo.codeEditor.{CodeInsightColors, EditorColors}
+import consulo.colorScheme.{EffectType, TextAttributes}
+import consulo.navigation.Navigatable
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 case class Text(string: String,

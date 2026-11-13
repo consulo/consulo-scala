@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.lang.Language
-import com.intellij.openapi.util.{Key, Ref}
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.Language
+import consulo.util.dataholder.Key
+import consulo.util.lang.ref.Ref
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaVersion}
+import org.jetbrains.plugins.scala.api.Scala3Language
+import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.PsiFileExt
 import org.jetbrains.plugins.scala.util.BitMaskStorage
 

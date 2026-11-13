@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.findUsages.apply
 
-import com.intellij.psi.PsiReference
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.searches.ReferencesSearch.SearchParameters
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.language.psi.PsiReference
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.search.ReferencesSearch.SearchParameters
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.{&, ContainingClass, inReadAction}
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.openapi.options.{BoundConfigurable, SearchableConfigurable}
+import com.intellij.openapi.options.BoundConfigurable
+import consulo.configurable.SearchableConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.BuilderKt
 import org.jetbrains.plugins.scala.ScalaBundle

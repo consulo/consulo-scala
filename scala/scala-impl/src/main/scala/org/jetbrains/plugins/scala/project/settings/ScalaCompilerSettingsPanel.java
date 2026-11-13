@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.project.settings;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.util.Pair;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.util.lang.Pair;
 import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.ui.IdeBorderFactory;
-import com.intellij.ui.RawCommandLineEditor;
-import com.intellij.ui.TitledSeparator;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.execution.ui.awt.RawCommandLineEditor;
+import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.util.Function;

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis
 
-import com.intellij.codeInspection.{InspectionManager, ProblemHighlightType, ProblemsHolder}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{ProblemHighlightType, ProblemsHolder}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.expressionResultIsNotUsed
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework._

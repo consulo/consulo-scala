@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.filters.position.FilterPattern
-import com.intellij.psi.filters.{AndFilter, ElementFilter, NotFilter, OrFilter}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiErrorElement, PsiWhiteSpace}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.application.dumb.DumbAware
+import consulo.language.pattern.PlatformPatterns
+import consulo.language.pattern.FilterPattern
+import consulo.language.psi.filter.{AndFilter, ElementFilter, NotFilter, OrFilter}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiWhiteSpace}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.completion.filters.toplevel.IsTopLevelElementInProductionScalaFileFilter
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

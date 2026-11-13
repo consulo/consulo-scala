@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
-import com.intellij.formatting.Spacing
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.intellij.psi.impl.source.tree.{LeafPsiElement, PsiWhiteSpaceImpl}
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.codeStyle.Spacing
+import consulo.language.ast.ASTNode
+import consulo.logging.Logger
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiWhiteSpace}
+import consulo.language.ast.TokenType
+import consulo.language.codeStyle.CommonCodeStyleSettings
+import consulo.language.impl.psi.{LeafPsiElement, PsiWhiteSpaceImpl}
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.TokenSets
 import org.jetbrains.plugins.scala.lang.formatting.ScalaBlock

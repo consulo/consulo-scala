@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementWeigher}
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.PsiElement
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.pattern.PlatformPatterns
+import consulo.language.psi.PsiElement
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.completion.{ScalaCompletionContributor, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem

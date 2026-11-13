@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.dynamic
 
-import com.intellij.openapi.progress.ProcessCanceledException
+import consulo.component.ProcessCanceledException
 import org.apache.ivy.util.{AbstractMessageLogger, MessageLogger}
 import org.jetbrains.plugins.scala.DependencyManagerBase
 import org.jetbrains.plugins.scala.DependencyManagerBase._

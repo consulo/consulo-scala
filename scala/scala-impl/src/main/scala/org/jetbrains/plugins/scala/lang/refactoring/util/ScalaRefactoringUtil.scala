@@ -1,23 +1,29 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
-import com.intellij.codeInsight.highlighting.HighlightManager
-import com.intellij.codeInsight.navigation.PsiTargetNavigator
-import com.intellij.codeInsight.unwrap.ScopeHighlighter
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.colors.{EditorColors, EditorColorsScheme}
-import com.intellij.openapi.editor.markup._
-import com.intellij.openapi.editor.{Document, Editor, RangeMarker, SelectionModel}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.{JBPopup, JBPopupFactory, JBPopupListener, LightweightWindowEvent}
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.openapi.vfs.ReadonlyStatusHandler
-import com.intellij.platform.backend.presentation.TargetPresentation
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.util.CommonRefactoringUtil
+import consulo.language.editor.PsiEquivalenceUtil
+import consulo.language.editor.highlight.HighlightManager
+import consulo.language.editor.ui.navigation.PsiTargetNavigator
+import consulo.language.editor.refactoring.unwrap.ScopeHighlighter
+import consulo.application.ApplicationManager
+import consulo.codeEditor.EditorColors
+import consulo.colorScheme.EditorColorsScheme
+import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea, MarkupModel, RangeHighlighter}
+import consulo.colorScheme.TextAttributes
+import consulo.document.{Document, RangeMarker}
+import consulo.codeEditor.{Editor, SelectionModel}
+import consulo.project.Project
+import consulo.ui.ex.popup.{JBPopup, JBPopupFactory}
+import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.ReadonlyStatusHandler
+import consulo.navigation.TargetPresentation
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import com.intellij.util.{Consumer, SlowOperations}
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle

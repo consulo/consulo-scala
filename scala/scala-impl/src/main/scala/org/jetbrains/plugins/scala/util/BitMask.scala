@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.util.Ref
+import consulo.util.lang.ref.Ref
 import org.jetbrains.plugins.scala.util.BitMask.bitsNeededToRepresent
 
 import java.lang.{Integer => JInt}

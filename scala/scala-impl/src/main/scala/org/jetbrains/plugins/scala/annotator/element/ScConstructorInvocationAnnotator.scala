@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiComment, PsiNamedElement, PsiWhiteSpace}
+import consulo.document.util.TextRange
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiComment, PsiNamedElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils.registerTypeMismatchError
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder

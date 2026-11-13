@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiAnnotation, PsiType, PsiTypeVisitor}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{PsiAnnotation, PsiType, PsiTypeVisitor}
 
 //temporary placeholder for light method return type or parameter type of ScLightParameter
 private[light] object NullPsiType extends PsiType(PsiAnnotation.EMPTY_ARRAY) {

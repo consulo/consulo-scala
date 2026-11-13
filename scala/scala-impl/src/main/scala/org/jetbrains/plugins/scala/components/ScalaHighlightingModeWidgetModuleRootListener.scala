@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.components
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ModuleRootEvent, ModuleRootListener}
+import consulo.project.Project
+import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
 
 private final class ScalaHighlightingModeWidgetModuleRootListener(project: Project) extends ModuleRootListener {
   override def rootsChanged(event: ModuleRootEvent): Unit = {

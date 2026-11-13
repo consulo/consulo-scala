@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.apache.ivy.core.report.ResolveReport
 import org.jetbrains.plugins.scala.DependencyManagerBase
 import org.jetbrains.plugins.scala.DependencyManagerBase.{Resolver, stripScalaVersion}

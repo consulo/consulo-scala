@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.util.SofterReference
+import consulo.application.util.SofterReference
 
 trait ValueWrapper[A] {
   type Reference

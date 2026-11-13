@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import com.intellij.openapi.project.Project
-import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt, ScalaLanguageLevel}
+import consulo.project.Project
+import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 private object ScalaProjectUtil {
   def hasScala2(project: Project): Boolean = project.hasScala2

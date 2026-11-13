@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.copy
 
-import com.intellij.psi.{PsiDirectory, PsiElement}
-import com.intellij.refactoring.copy.{CopyFilesOrDirectoriesHandler, CopyHandlerDelegate, CopyHandlerDelegateBase}
+import consulo.language.psi.{PsiDirectory, PsiElement}
+import consulo.language.editor.refactoring.copy.{CopyFilesOrDirectoriesHandler, CopyHandlerDelegate, CopyHandlerDelegateBase}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.refactoring.copy.CopyScalaWorksheetHandler.{isScalaWorksheetFile, isSingleScalaWorksheetFile}

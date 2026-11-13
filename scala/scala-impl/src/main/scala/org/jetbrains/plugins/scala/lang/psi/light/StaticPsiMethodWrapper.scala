@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.impl.light.{LightMethod, LightModifierList}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifierList, PsiParameterList, PsiType}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.light.{LightMethod, LightModifierList}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 import _root_.scala.collection.immutable.HashMap

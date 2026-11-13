@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.impl.source.SourceTreeToPsiMap
-import com.intellij.psi.impl.source.tree.{CompositeElement, TreeCopyHandler, TreeElement}
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiNamedElement
+import consulo.language.impl.psi.SourceTreeToPsiMap
+import consulo.language.impl.ast.{CompositeElement, TreeElement}
+import consulo.language.ast.TreeCopyHandler
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

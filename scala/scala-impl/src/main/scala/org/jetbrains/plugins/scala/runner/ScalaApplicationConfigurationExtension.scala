@@ -1,9 +1,13 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.execution.application.ApplicationConfiguration
-import com.intellij.execution.configurations.{JavaParameters, ParametersList, RunConfigurationBase, RunnerSettings}
-import com.intellij.execution.{CantRunException, ExecutionException, RunConfigurationExtension}
-import com.intellij.openapi.project.Project
+import com.intellij.java.execution.impl.application.ApplicationConfiguration
+import com.intellij.execution.configurations.JavaParameters
+import consulo.process.cmd.ParametersList
+import consulo.execution.configuration.{RunConfigurationBase, RunnerSettings}
+import consulo.execution.CantRunException
+import consulo.process.ExecutionException
+import com.intellij.java.execution.impl.RunConfigurationExtension
+import consulo.project.Project
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, inReadAction, invokeLater}

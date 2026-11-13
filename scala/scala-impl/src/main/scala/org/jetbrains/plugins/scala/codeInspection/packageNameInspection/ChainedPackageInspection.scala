@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
-import com.intellij.codeInspection._
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemDescriptor, ProblemHighlightType}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

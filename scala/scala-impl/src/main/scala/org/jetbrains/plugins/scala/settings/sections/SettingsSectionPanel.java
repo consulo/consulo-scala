@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
+import consulo.configurable.ConfigurationException;
+import consulo.project.Project;
 
 import javax.swing.*;
 

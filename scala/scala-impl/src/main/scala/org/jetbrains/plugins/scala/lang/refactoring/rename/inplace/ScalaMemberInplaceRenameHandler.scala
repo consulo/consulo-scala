@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename.inplace
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.refactoring.rename.inplace.{InplaceRefactoring, MemberInplaceRenameHandler, MemberInplaceRenamer}
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiFile, PsiNameIdentifierOwner, PsiNamedElement}
+import consulo.language.editor.refactoring.rename.inplace.{InplaceRefactoring, MemberInplaceRenameHandler, MemberInplaceRenamer}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitionLike
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiClassWrapper, ScPrimaryConstructorWrapper}

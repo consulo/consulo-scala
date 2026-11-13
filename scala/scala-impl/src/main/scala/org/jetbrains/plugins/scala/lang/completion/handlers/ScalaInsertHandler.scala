@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion.handlers
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.{AutoPopupController, CodeInsightSettings}
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil.getParentOfType
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.{AutoPopupController, CodeInsightSettings}
+import com.intellij.java.language.psi.{CommonClassNames, PsiClass, PsiMethod}
+import consulo.language.psi.{PsiDocumentManager, PsiNamedElement, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil.getParentOfType
 import org.jetbrains.plugins.scala.codeInspection.redundantBlock.RedundantBlockInspection.isRedundantBlock
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem

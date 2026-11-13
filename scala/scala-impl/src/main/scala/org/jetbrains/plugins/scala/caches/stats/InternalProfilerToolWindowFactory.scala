@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.caches.stats
 
 import com.intellij.concurrency.JobScheduler
-import com.intellij.icons.AllIcons
-import com.intellij.notification.{NotificationGroup, NotificationType}
-import com.intellij.openapi.actionSystem.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.wm.{ToolWindow, ToolWindowFactory}
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.content.{Content, ContentFactory}
-import org.jetbrains.plugins.scala.NlsString
+import consulo.application.AllIcons
+import consulo.project.ui.notification.{NotificationGroup, NotificationType}
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
+import consulo.application.ApplicationManager
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.ui.ex.toolWindow.ToolWindow
+import consulo.project.ui.wm.ToolWindowFactory
+import consulo.ui.ex.awt.JBScrollPane
+import consulo.ui.ex.content.{Content, ContentFactory}
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 import org.jetbrains.plugins.scala.util.ui.extensions.ComponentExt
 

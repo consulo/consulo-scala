@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.editor.copy
 
-import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
-import com.intellij.openapi.editor.{Editor, RawText}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.{LineTokenizer, StringUtil}
-import com.intellij.psi.{PsiDocumentManager, PsiFile}
+import consulo.language.editor.action.CopyPastePreProcessor
+import consulo.codeEditor.{Editor, RawText}
+import consulo.project.Project
+import consulo.application.util.LineTokenizer
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

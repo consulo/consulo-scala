@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 package typedef
 
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiClassAdapter
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor

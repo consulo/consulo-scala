@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.util.Comparing
-import com.intellij.psi.search.searches.OverridingMethodsSearch
-import com.intellij.psi.{PsiElement, PsiMethod, PsiParameter}
-import com.intellij.refactoring.RefactoringBundle
-import com.intellij.refactoring.rename.naming.{AutomaticRenamer, AutomaticRenamerFactory}
-import com.intellij.usageView.UsageInfo
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import com.intellij.java.language.JavaLanguage
+import consulo.util.lang.Comparing
+import com.intellij.java.indexing.search.searches.OverridingMethodsSearch
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiMethod, PsiParameter}
+import consulo.language.editor.refactoring.RefactoringBundle
+import consulo.language.editor.refactoring.rename.{AutomaticRenamer, AutomaticRenamerFactory}
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScFunctionExt}

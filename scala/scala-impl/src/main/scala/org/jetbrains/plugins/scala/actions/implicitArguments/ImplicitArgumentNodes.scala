@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
-import com.intellij.ide.projectView.impl.nodes.AbstractPsiBasedNode
-import com.intellij.ide.projectView.{PresentationData, ViewSettings}
-import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.openapi.editor.colors.CodeInsightColors
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiNamedElement
-import com.intellij.ui.SimpleTextAttributes
-import com.intellij.ui.SimpleTextAttributes.{GRAYED_ATTRIBUTES, REGULAR_ATTRIBUTES, STYLE_WAVED}
+import consulo.project.ui.view.tree.AbstractPsiBasedNode
+import consulo.ui.ex.tree.PresentationData
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.ui.view.tree.AbstractTreeNode
+import consulo.codeEditor.CodeInsightColors
+import consulo.project.Project
+import consulo.language.psi.PsiNamedElement
+import consulo.ui.ex.SimpleTextAttributes
+import consulo.ui.ex.SimpleTextAttributes.{GRAYED_ATTRIBUTES, REGULAR_ATTRIBUTES, STYLE_WAVED}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.implicitArguments.ImplicitArgumentNodes.resolveResultNode

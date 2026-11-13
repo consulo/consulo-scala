@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.findUsages
 
-import com.intellij.openapi.application.QueryExecutorBase
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.search._
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.util.Processor
+import consulo.project.util.query.QueryExecutorBase
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
+import com.intellij.java.language.psi.PsiMember
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.{PsiSearchHelper, RequestResultProcessor, SearchRequestCollector, SearchSession, UsageSearchContext}
+import consulo.content.scope.SearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.application.util.function.Processor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias

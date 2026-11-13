@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiFile, PsiWhiteSpace}
+import consulo.language.editor.action.EnterHandlerDelegate.Result
+import consulo.language.editor.action.EnterHandlerDelegateAdapter
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.EditorExt
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ProjectFileIndex, ProjectRootManager}
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.platform.workspace.storage.WorkspaceEntityWithSymbolicId
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiClass, PsiFile}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTrait}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager

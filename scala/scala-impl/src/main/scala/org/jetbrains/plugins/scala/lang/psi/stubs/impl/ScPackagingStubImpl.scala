@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.stubs.StubBase
-import com.intellij.psi.tree.IElementType
+import consulo.language.psi.stub.StubBase
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.stubs.{RawStubElement, ScPackagingStub}
 

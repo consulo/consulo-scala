@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiSuperMethodImplUtil
-import com.intellij.psi.impl.light._
-import com.intellij.psi.util.{MethodSignature, MethodSignatureBackedByPsiMethod}
+import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiClass, PsiMethod, PsiModifier, PsiModifierList, PsiParameter, PsiParameterList, PsiReferenceList, PsiSubstitutor, PsiType, PsiTypeParameter, PsiTypeParameterList}
+import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNamedElement}
+import com.intellij.java.language.impl.psi.impl.PsiSuperMethodImplUtil
+import com.intellij.java.language.impl.psi.impl.light.{LightMethodBuilder, LightTypeParameterListBuilder}
+import com.intellij.java.language.psi.util.{MethodSignature, MethodSignatureBackedByPsiMethod}
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

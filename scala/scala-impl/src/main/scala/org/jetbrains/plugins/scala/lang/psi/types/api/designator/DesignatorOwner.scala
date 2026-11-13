@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api.designator
 
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScTypeAlias, ScTypeAliasDefinition}

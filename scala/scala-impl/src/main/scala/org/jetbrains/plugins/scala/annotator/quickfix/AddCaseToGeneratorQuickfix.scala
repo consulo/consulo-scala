@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
 import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
-import com.intellij.openapi.project.DumbAware
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScFor, ScGenerator}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

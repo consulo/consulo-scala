@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.RefactoringHelper
-import com.intellij.usageView.UsageInfo
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.RefactoringHelper
+import consulo.usage.UsageInfo
 
 import java.util
 

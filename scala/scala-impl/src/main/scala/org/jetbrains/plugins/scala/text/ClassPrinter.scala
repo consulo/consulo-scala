@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.text
 
-import com.intellij.psi.{PsiClass, PsiElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, Parent, PsiClassExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScModifierList, ScPrimaryConstructor}

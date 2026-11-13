@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package types
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.ast.ASTNode
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiTypeParameter, PsiTypeParameterListOwner}
+import consulo.language.psi.{PsiNamedElement, PsiPackage}
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedWithRecursionGuard}

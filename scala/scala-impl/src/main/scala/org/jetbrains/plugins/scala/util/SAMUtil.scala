@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifier}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
@@ -14,7 +15,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.TypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.api.{FunctionType, ParameterizedType, Variance}
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, PhysicalMethodSignature, ScExistentialArgument, ScExistentialType, ScParameterizedType, ScType, ScTypeExt}
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 
 object SAMUtil {

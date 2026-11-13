@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.finder
 
-import com.intellij.ide.highlighter.{JavaClassFileType, JavaFileType}
-import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.fileTypes.{FileType, FileTypeRegistry, LanguageFileType}
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.searches.{MethodReferencesSearch, ReferencesSearch}
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope, SearchScope}
+import com.intellij.java.language.impl.{JavaClassFileType, JavaFileType}
+import consulo.language.editor.scratch.ScratchUtil
+import consulo.virtualFileSystem.fileType.{FileType, FileTypeRegistry}
+import consulo.language.file.LanguageFileType
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.indexing.search.searches.MethodReferencesSearch
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.content.scope.SearchScope
 import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes
-import org.jetbrains.plugins.scala.{ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.compiled.SigFileType
 import org.jetbrains.plugins.scala.tasty.TastyFileType

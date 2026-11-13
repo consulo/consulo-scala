@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.project.template
 
-import org.jetbrains.plugins.scala.project.{ReplClasspath, Version}
+import org.jetbrains.plugins.scala.project.ReplClasspath
+import org.jetbrains.plugins.scala.rt.project.Version
 
 import java.nio.file.Path
 

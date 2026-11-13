@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable;
 
-import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.undo.UndoManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ScrollType;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.refactoring.RefactoringActionHandler;
+import consulo.application.WriteAction;
+import consulo.undoRedo.CommandProcessor;
+import consulo.undoRedo.UndoManager;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.ScrollType;
+import consulo.language.psi.PsiDocumentManager;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.editor.refactoring.action.RefactoringActionHandler;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement;

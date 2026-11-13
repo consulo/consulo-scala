@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline
 
-import com.intellij.codeInsight.TargetElementUtil
-import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
+import consulo.language.editor.TargetElementUtil
+import consulo.ui.ex.action.util.ActionUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import com.intellij.openapi.util.NlsContexts
-import com.intellij.psi.PsiReference
-import com.intellij.refactoring.BaseRefactoringProcessor
-import com.intellij.refactoring.inline.InlineOptionsDialog
-import com.intellij.refactoring.inline.InlineOptionsDialog.initOccurrencesNumber
+import consulo.language.psi.PsiReference
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
+import consulo.language.editor.refactoring.inline.InlineOptionsDialog
+import consulo.language.editor.refactoring.inline.InlineOptionsDialog.initOccurrencesNumber
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt, ToNullSafe}

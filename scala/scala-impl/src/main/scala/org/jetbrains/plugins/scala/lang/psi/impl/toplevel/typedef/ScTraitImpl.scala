@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType
@@ -15,8 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScTemplateDefinitionStub
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScTemplateDefinitionElementType
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.Scala_2_12
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_12
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
 import javax.swing.Icon
 
@@ -31,8 +31,10 @@ final class ScTraitImpl(stub: ScTemplateDefinitionStub[ScTrait],
 
   override def additionalClassJavaName: Option[String] = Option(getName).map(withImplementationClassSuffix)
 
-  import com.intellij.psi._
-  import com.intellij.psi.scope.PsiScopeProcessor
+  import com.intellij.java.language.psi.{PsiClass, PsiModifier, PsiTypeParameterList}
+  import consulo.language.psi.{PsiElement, PsiNamedElement}
+  import consulo.language.psi.resolve.ResolveState
+  import consulo.language.psi.resolve.PsiScopeProcessor
 
   override protected def targetTokenType: ScalaTokenType = ScalaTokenType.TraitKeyword
 

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
-import com.intellij.codeInsight.intention.IntentionAction
+import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiFile
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{Bin, Hex, Oct}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

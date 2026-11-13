@@ -2,26 +2,29 @@ package org.jetbrains.plugins.scala
 package lang
 package psi
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.AnnotationUtil
-import com.intellij.extapi.psi.{ASTDelegatePsiElement, StubBasedPsiElementBase}
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ProjectFileIndex, ProjectRootManager}
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiModifier.STATIC
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.light.LightModifierList
-import com.intellij.psi.impl.source.PsiFileImpl
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.stubs.StubElement
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.codeStyle.CodeStyle
+import com.intellij.java.language.codeInsight.AnnotationUtil
+import consulo.language.impl.psi.ASTDelegatePsiElement
+import consulo.language.impl.psi.stub.StubBasedPsiElementBase
+import consulo.language.ast.ASTNode
+import consulo.logging.Logger
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.PsiModifier.STATIC
+import com.intellij.java.language.psi.{CommonClassNames, PsiAnnotation, PsiClass, PsiEnumConstant, PsiField, PsiLiteral, PsiMember, PsiMethod, PsiModifier, PsiModifierList, PsiParameter, PsiSubstitutor, PsiType, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager, PsiNamedElement, PsiPackage, PsiWhiteSpace}
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.codeStyle.CodeStyleManager
+import com.intellij.java.language.impl.psi.impl.light.LightModifierList
+import consulo.language.impl.psi.PsiFileImpl
+import consulo.language.impl.psi.CodeEditUtil
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.stub.StubElement
+import consulo.language.ast.TokenSet
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.editor.typedHandler.ScalaTypedHandler
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiNamedElementExt, _}
@@ -61,7 +64,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt
 import org.jetbrains.plugins.scala.lang.resolve.processor._
-import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectExt, ProjectPsiElementExt, ScalaFeatures, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectExt, ProjectPsiElementExt, ScalaFeatures}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.util.{SAMUtil, ScEquivalenceUtil}
 
 import java.{util => ju}
@@ -1303,7 +1307,7 @@ object ScalaPsiUtil {
      *        ("automatically" means without using of underscore `_`, like `foo _`)
      */
     private def canBeAutoEtaExpanded(m: PsiMethod): Boolean = {
-      import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.Scala_2_11
+      import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_11
       lazy val isScala211 = m.scalaLanguageLevelOrDefault == Scala_2_11
 
       m match {

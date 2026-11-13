@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.AbstractFixOnPsiElement
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt

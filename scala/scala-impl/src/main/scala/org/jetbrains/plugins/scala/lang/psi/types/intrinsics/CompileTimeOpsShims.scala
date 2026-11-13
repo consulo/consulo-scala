@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.intrinsics
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.types.{ScLiteralType, ScType}
 

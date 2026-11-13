@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.template.{Template, TemplateManager}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.{FileEditorManager, FileEditorOpenRequest, OpenFileDescriptor}
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.template.{Template, TemplateManager}
+import consulo.codeEditor.Editor
+import consulo.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
+import consulo.navigation.OpenFileDescriptor
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.extensions.executeWriteActionCommand
 

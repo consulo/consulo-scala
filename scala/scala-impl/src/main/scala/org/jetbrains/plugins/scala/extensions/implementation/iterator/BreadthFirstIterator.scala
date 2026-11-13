@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions.implementation.iterator
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 import scala.collection.mutable
 

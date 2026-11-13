@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiTypeParameter}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike

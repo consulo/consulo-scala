@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.StubIndexKey
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.stub.StubIndexKey
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}
 
 final class ExtensionIndex extends ScStringStubIndexExtension[ScExtension] {

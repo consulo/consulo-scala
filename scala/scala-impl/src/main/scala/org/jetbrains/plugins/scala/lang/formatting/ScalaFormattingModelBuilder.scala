@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.formatting._
-import com.intellij.lang._
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util._
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.formatter.{FormattingDocumentModelImpl, PsiBasedFormattingModel, FormatterUtil => PsiFormatterUtil}
-import com.intellij.psi.impl.source.tree.TreeUtil
+import consulo.language.codeStyle.{FormattingContext, FormattingModel, FormattingModelBuilder, Indent}
+import consulo.language.ast.ASTNode
+import consulo.logging.Logger
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
+import consulo.language.ast.TokenType
+import consulo.language.codeStyle.CodeStyleManager
+import com.intellij.psi.formatter.FormattingDocumentModelImpl
+import consulo.language.codeStyle.{PsiBasedFormattingModel, FormatterUtil => PsiFormatterUtil}
+import consulo.language.impl.ast.TreeUtil
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
 final class ScalaFormattingModelBuilder extends FormattingModelBuilder {

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 
 final class ImportCBHSuggestionFix private(variants: Seq[CBHSuggestionToImport], place: PsiElement)

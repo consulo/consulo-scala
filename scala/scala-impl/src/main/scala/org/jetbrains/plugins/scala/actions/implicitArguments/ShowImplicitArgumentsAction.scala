@@ -1,20 +1,23 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
-import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.{JBPopup, JBPopupFactory, JBPopupListener, LightweightWindowEvent}
-import com.intellij.openapi.util.{Disposer, Ref}
-import com.intellij.psi.util.PsiUtilBase
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
-import com.intellij.ui.tree.{AsyncTreeModel, StructureTreeModel}
-import com.intellij.ui.treeStructure.Tree
-import com.intellij.ui.{ClickListener, ScrollPaneFactory}
-import com.intellij.util.ArrayUtil
+import consulo.project.ui.view.tree.AbstractTreeNode
+import consulo.disposer.Disposable
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, CustomShortcutSet, IdeActions, Shortcut}
+import consulo.language.editor.CommonDataKeys
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.Editor
+import consulo.fileEditor.history.IdeDocumentHistory
+import consulo.project.Project
+import consulo.ui.ex.popup.{JBPopup, JBPopupFactory}
+import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
+import consulo.disposer.Disposer
+import consulo.util.lang.ref.Ref
+import consulo.language.editor.util.PsiUtilBase
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.ui.ex.awt.tree.{AsyncTreeModel, StructureTreeModel}
+import consulo.ui.ex.awt.tree.Tree
+import consulo.ui.ex.awt.{ClickListener, ScrollPaneFactory}
+import consulo.util.collection.ArrayUtil
 import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil

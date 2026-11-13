@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
+import consulo.application.ApplicationManager
+import consulo.util.lang.ControlFlowException
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import com.intellij.openapi.util.registry.RegistryManager
-import com.intellij.util.SystemProperties
+import consulo.util.lang.SystemProperties
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import org.apache.ivy.core.report.{ArtifactDownloadReport, ResolveReport}
@@ -16,7 +16,7 @@ import org.apache.ivy.plugins.resolver.{ChainResolver, IBiblioResolver, Reposito
 import org.apache.ivy.util.{DefaultMessageLogger, MessageLogger}
 import org.jetbrains.plugins.scala.DependencyManagerBase.DependencyDescription.scalaArtifact
 import org.jetbrains.plugins.scala.extensions.IterableOnceExt
-import org.jetbrains.sbt.usingTempFile
+import org.jetbrains.sbt.api.usingTempFile
 
 import java.net.URL
 import java.nio.file.{Files, Path}

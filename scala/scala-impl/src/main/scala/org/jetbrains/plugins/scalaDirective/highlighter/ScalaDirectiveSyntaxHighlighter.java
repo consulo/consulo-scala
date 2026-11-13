@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scalaDirective.highlighter;
 
 import com.intellij.lang.LanguageParserDefinitions;
-import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.lexer.Lexer;
+import consulo.colorScheme.TextAttributesKey;
+import consulo.language.editor.highlight.SyntaxHighlighterBase;
+import consulo.language.ast.IElementType;
 import org.jetbrains.plugins.scala.highlighter.DefaultHighlighter;
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes;
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 public final class ScalaDirectiveSyntaxHighlighter extends SyntaxHighlighterBase {
 
-    @NotNull
     private static final Map<IElementType, TextAttributesKey> ATTRIBUTES;
 
     static {
@@ -31,7 +29,6 @@ public final class ScalaDirectiveSyntaxHighlighter extends SyntaxHighlighterBase
     }
 
     @Override
-    @NotNull
     public Lexer getHighlightingLexer() {
         return LanguageParserDefinitions.INSTANCE
                 .forLanguage(ScalaDirectiveLanguage.INSTANCE)
@@ -39,7 +36,6 @@ public final class ScalaDirectiveSyntaxHighlighter extends SyntaxHighlighterBase
     }
 
     @Override
-    @NotNull
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         return pack(ATTRIBUTES.get(tokenType));
     }

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
-import com.intellij.usages.rules.{ImportFilteringRule, PsiElementUsage}
-import com.intellij.usages.{Usage, UsageTarget}
+import consulo.usage.rule.{ImportFilteringRule, PsiElementUsage}
+import consulo.usage.{Usage, UsageTarget}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
 

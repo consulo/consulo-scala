@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.actions.internal
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.project.Project
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 //noinspection ScalaExtractStringToBundle,ScalaUnusedSymbol,ComponentNotRegistered

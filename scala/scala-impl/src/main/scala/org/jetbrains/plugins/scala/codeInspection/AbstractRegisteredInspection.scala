@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection
 
-import com.intellij.codeInspection._
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder}
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.annotations.Nls
 
 @deprecated("Implement com.intellij.codeInspection.LocalInspectionTool.LocalInspectionTool directly", "2022.3")

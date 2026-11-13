@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.lexer
 
-import com.intellij.lexer.{FlexAdapter, MergingLexerAdapter}
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.lexer.{FlexAdapter, MergingLexerAdapter}
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaPlainLexer.ScalaSplittingLayerLexer
 
 import java.lang

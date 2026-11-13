@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileListener, VirtualFileSystem}
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileSystem}
+import consulo.virtualFileSystem.event.VirtualFileListener
 
 class AbsentLocalFile(url: String, path: String) extends VirtualFile {
   override def getName: Nothing = throw new UnsupportedOperationException()

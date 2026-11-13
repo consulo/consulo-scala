@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection
 
-import com.intellij.codeInsight.template.TemplateBuilderFactory
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.template.TemplateBuilderFactory
+import consulo.language.editor.inspection.LocalQuickFix
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, executeWriteActionCommand}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScAnnotationsHolder}

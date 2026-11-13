@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
-import com.intellij.icons.AllIcons
-import com.intellij.psi.{PsiElement, PsiModifierList, PsiModifierListOwner}
-import com.intellij.refactoring.classMembers.MemberInfoModel
-import com.intellij.refactoring.ui.AbstractMemberSelectionTable
-import com.intellij.ui.RowIcon
-import com.intellij.util.{IconUtil, VisibilityIcons}
+import consulo.application.AllIcons
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiModifierList, PsiModifierListOwner}
+import consulo.language.editor.refactoring.classMember.MemberInfoModel
+import consulo.language.editor.refactoring.ui.AbstractMemberSelectionTable
+import consulo.desktop.awt.ui.impl.image.RowIcon
+import com.intellij.util.IconUtil
+import com.intellij.java.language.util.VisibilityIcons
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScObject}

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.{ASTNode, LanguageNamesValidation}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import com.intellij.lang.LanguageNamesValidation
+import consulo.logging.Logger
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
@@ -14,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.scalaMeta.QuasiquoteInferUtil.{getMetaQQExprType, isMetaQQ}
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames.StringContextCanonical
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.StringContextCanonical
 
 import scala.util.control.NonFatal
 

@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.gotoclass
 
-import com.intellij.navigation.{GotoClassContributor, NavigationItem}
-import com.intellij.openapi.project.{PossiblyDumbAware, Project}
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.StubIndex
-import com.intellij.util.indexing.DumbModeAccessType
+import com.intellij.navigation.GotoClassContributor
+import consulo.navigation.NavigationItem
+import consulo.application.dumb.PossiblyDumbAware
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.stub.StubIndex
+import consulo.language.psi.stub.DumbModeAccessType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys._

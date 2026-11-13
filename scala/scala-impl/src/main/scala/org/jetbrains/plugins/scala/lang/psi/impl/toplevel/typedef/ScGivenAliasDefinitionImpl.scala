@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.extensions.{PsiMemberExt, ifReadAllowed}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor

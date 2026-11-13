@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.openapi.editor.colors.{CodeInsightColors, EditorColors, EditorColorsScheme}
-import com.intellij.openapi.editor.markup.TextAttributes
+import consulo.codeEditor.{CodeInsightColors, EditorColors}
+import consulo.colorScheme.EditorColorsScheme
+import consulo.colorScheme.TextAttributes
 import com.intellij.util.ui.StartupUiUtil
 
 import java.awt.Color

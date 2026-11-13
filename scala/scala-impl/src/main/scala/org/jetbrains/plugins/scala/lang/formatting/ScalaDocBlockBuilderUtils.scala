@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 

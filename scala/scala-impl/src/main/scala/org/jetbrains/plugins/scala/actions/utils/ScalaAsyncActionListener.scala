@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.actions.utils
 
-import com.intellij.openapi.actionSystem.AnAction
+import consulo.ui.ex.action.AnAction
 import com.intellij.util.messages.Topic
 import org.jetbrains.annotations.TestOnly
 

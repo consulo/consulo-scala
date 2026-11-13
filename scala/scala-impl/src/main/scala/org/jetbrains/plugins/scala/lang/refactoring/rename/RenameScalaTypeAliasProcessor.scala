@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Pass
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.refactoring.rename.RenameJavaMemberProcessor
+import consulo.codeEditor.Editor
+import consulo.language.editor.Pass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.impl.refactoring.rename.RenameJavaMemberProcessor
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaOverridingMemberSearcher

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.{PsiAnnotationSupport, PsiElement, PsiLiteral}
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{PsiAnnotationSupport, PsiLiteral}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 

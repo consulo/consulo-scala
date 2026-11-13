@@ -1,13 +1,16 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 import com.intellij.openapi.application.ex.ApplicationManagerEx
-import com.intellij.openapi.diagnostic.{Attachment, Logger}
+import consulo.logging.attachment.Attachment
+import consulo.logging.Logger
 import com.intellij.openapi.progress.util.AbstractProgressIndicatorBase
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressManager, StandardProgressIndicator}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, Segment, TextRange}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.{ProgressManager, StandardProgressIndicator}
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.document.util.{Segment, TextRange}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle

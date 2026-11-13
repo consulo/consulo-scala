@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.patterns
 
-import com.intellij.patterns.{ElementPattern, PsiMethodPattern}
-import com.intellij.psi.{PsiElement, PsiMethod}
-import com.intellij.util.ProcessingContext
+import consulo.language.pattern.ElementPattern
+import com.intellij.java.language.patterns.PsiMethodPattern
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScConstructorInvocation, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScAssignment, ScGenericCall, ScMethodCall, ScPostfixExpr, ScReferenceExpression}

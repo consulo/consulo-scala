@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.implicits
 
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType

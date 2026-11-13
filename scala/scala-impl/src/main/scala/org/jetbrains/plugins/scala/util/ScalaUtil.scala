@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions.inReadAction
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
-import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 
 object ScalaUtil {
 

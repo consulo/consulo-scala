@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
-import com.intellij.codeInsight.completion.{CompletionLocation, CompletionWeigher}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.util.Key
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
+import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.util.dataholder.Key
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.util.text.EditDistance.optimalAlignment
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.{&, PsiNamedElementExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.completion.{insideTypePattern, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions.implementation.iterator
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 
 class ParentsIterator(@Nullable element: PsiElement, strict: Boolean = true) extends Iterator[PsiElement] {

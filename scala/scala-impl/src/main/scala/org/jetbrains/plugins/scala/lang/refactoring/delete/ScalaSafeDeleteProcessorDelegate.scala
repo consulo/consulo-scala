@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.delete
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Condition
-import com.intellij.psi._
-import com.intellij.refactoring.safeDelete.{JavaSafeDeleteProcessor, NonCodeUsageSearchInfo}
-import com.intellij.usageView.UsageInfo
+import consulo.project.Project
+import consulo.util.lang.function.Condition
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiTypeParameter
+import com.intellij.java.impl.refactoring.safeDelete.JavaSafeDeleteProcessor
+import consulo.language.editor.refactoring.safeDelete.NonCodeUsageSearchInfo
+import consulo.usage.UsageInfo
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

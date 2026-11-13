@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.settings.uiControls;
 
-import com.intellij.openapi.extensions.ExtensionPointName;
+import consulo.component.extension.ExtensionPointName;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 
 import javax.swing.*;

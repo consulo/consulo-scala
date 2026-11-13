@@ -2,10 +2,11 @@ package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptPane.{checkbox, dropdown, option, pane}
-import com.intellij.codeInspection.{LocalQuickFix, UpdateInspectionOptionFix}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.HtmlChunk
-import com.intellij.psi.{PsiAnnotationOwner, PsiElement}
+import consulo.language.editor.inspection.{LocalQuickFix, UpdateInspectionOptionFix}
+import consulo.project.Project
+import consulo.application.util.HtmlChunk
+import com.intellij.java.language.psi.PsiAnnotationOwner
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline
@@ -19,7 +20,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker

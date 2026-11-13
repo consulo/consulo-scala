@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
-import com.intellij.codeInspection.{ProblemHighlightType, ProblemsHolder}
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{ProblemHighlightType, ProblemsHolder}
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 
 import scala.collection.immutable.ArraySeq

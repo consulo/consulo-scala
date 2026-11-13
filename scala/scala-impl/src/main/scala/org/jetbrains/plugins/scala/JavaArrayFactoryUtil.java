@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.util.ArrayFactory;
+import consulo.language.psi.PsiElement;
+import consulo.util.collection.ArrayFactory;
 import org.jetbrains.plugins.scala.lang.psi.api.base.*;
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern;
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern;

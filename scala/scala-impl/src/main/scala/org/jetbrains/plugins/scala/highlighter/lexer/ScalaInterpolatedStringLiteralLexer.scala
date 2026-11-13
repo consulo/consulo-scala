@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter.lexer
 
-import com.intellij.psi.StringEscapesTokenTypes
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.StringEscapesTokenTypes
+import consulo.language.ast.IElementType
 
 /**
  * @param isRawLiteral true when the lexer is used to parse tokens from a single string,

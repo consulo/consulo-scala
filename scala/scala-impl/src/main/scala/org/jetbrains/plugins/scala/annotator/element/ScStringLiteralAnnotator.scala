@@ -1,15 +1,19 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.codeInsight.intention.{FileModifier, IntentionAction}
-import com.intellij.codeInspection.{IntentionAndQuickFixAction, ProblemHighlightType}
-import com.intellij.lang.ASTNode
-import com.intellij.lexer.StringLiteralLexer
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.util.{Segment, TextRange}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.{PsiDocumentManager, PsiFile, StringEscapesTokenTypes}
+import consulo.language.editor.inspection.FileModifier
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.editor.inspection.{IntentionAndQuickFixAction, ProblemHighlightType}
+import consulo.language.ast.ASTNode
+import consulo.language.lexer.StringLiteralLexer
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.document.util.{Segment, TextRange}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.ast.TokenSet
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
+import consulo.language.ast.StringEscapesTokenTypes
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.editor.DocumentExt
@@ -18,7 +22,9 @@ import org.jetbrains.plugins.scala.highlighter.lexer.{ScalaInterpolatedStringLit
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{tINTERPOLATED_MULTILINE_STRING, tINTERPOLATED_STRING, tMULTILINE_STRING, tSTRING}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScInterpolatedStringLiteral, ScLiteral}
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel, Version}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.{ScalaBundle, ScalaVersion}
 
 import scala.util.Try

@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo;
 
-import com.intellij.refactoring.changeSignature.JavaChangeInfo;
-import com.intellij.refactoring.changeSignature.JavaParameterInfo;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.java.impl.refactoring.changeSignature.JavaChangeInfo;
+import com.intellij.java.impl.refactoring.changeSignature.JavaParameterInfo;
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.ScalaParameterInfo;
 
 abstract class ScalaChangeInfoBase implements JavaChangeInfo {
@@ -12,7 +11,6 @@ abstract class ScalaChangeInfoBase implements JavaChangeInfo {
     myNewParams = newParams;
   }
 
-  @NotNull
   @Override
   public JavaParameterInfo[] getNewParameters() {
     return myNewParams;

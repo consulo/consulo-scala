@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.{PsiMember, PsiNamedElement}
+import com.intellij.java.language.psi.PsiMember
+import consulo.language.psi.PsiNamedElement
 
 object Member {
   def unapply(e: PsiMember & PsiNamedElement): Option[(String, String)] =

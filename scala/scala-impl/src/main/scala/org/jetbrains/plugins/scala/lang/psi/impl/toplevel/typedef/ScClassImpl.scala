@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.DumbService
-import com.intellij.psi._
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.component.ProcessCanceledException
+import consulo.project.DumbService
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiModifier, PsiTypeParameterList}
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.externalLibraries.contextApplied.{ContextApplied, ContextAppliedUtil}
@@ -52,8 +52,9 @@ class ScClassImpl(stub: ScTemplateDefinitionStub[ScClass],
   override def constructor: Option[ScPrimaryConstructor] =
     this.stubOrPsiChild(ScalaElementType.PRIMARY_CONSTRUCTOR)
 
-  import com.intellij.psi.scope.PsiScopeProcessor
-  import com.intellij.psi.{PsiElement, ResolveState}
+  import consulo.language.psi.resolve.PsiScopeProcessor
+  import consulo.language.psi.PsiElement
+  import consulo.language.psi.resolve.ResolveState
 
   override def syntheticContextAppliedDefs: Seq[ScalaPsiElement] =
     cachedInUserData("syntheticContextAppliedDefs", this, BlockModificationTracker(this)) {

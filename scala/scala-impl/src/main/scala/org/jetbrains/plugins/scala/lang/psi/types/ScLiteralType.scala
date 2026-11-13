@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.project.ProjectContext

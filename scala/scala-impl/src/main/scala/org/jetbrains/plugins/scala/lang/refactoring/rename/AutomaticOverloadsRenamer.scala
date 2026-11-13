@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.rename.naming.{AutomaticRenamer, AutomaticRenamerFactory}
-import com.intellij.usageView.UsageInfo
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.rename.{AutomaticRenamer, AutomaticRenamerFactory}
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScPackageLike
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}

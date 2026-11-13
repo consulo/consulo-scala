@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.{PsiClass, PsiType, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction.CommonNames
@@ -18,7 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.{AfterUpdate, 
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.project.{ProjectContext, _}
 import org.jetbrains.plugins.scala.util.ScEquivalenceUtil.areClassesEquivalent
-import org.jetbrains.plugins.scala.util.{CommonQualifiedNames, SAMUtil}
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.util.SAMUtil
 
 import scala.annotation.tailrec
 import scala.util.control.NoStackTrace

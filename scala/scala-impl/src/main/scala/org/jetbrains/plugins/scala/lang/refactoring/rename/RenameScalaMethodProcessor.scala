@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.CommonBundle
-import com.intellij.ide.IdeBundle
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{DialogWrapper, Messages}
-import com.intellij.openapi.util.Pass
-import com.intellij.psi.{PsiElement, PsiNamedElement}
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.rename.{RenameJavaMethodProcessor, RenamePsiElementProcessor}
-import com.intellij.usageView.UsageInfo
+import consulo.application.CommonBundle
+import consulo.ide.IdeBundle
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.ui.ex.awt.{DialogWrapper, Messages}
+import consulo.language.editor.Pass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import com.intellij.java.impl.refactoring.rename.RenameJavaMethodProcessor
+import consulo.language.editor.refactoring.rename.RenamePsiElementProcessor
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

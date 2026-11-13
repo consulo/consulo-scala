@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.util.internal
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.util.internal.I18nBundleContent._
 

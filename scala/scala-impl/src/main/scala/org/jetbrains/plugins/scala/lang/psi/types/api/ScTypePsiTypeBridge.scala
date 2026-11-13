@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiArrayType, PsiCapturedWildcardType, PsiClass, PsiDiamondType, PsiElementFactory, PsiIntersectionType, PsiPrimitiveType, PsiSubstitutor, PsiType, PsiTypeParameter}
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.PsiTypeExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass

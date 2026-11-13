@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.codeInspection.deadCode.UnusedDeclarationInspectionBase
-import com.intellij.openapi.roots.TestSourcesFilter
-import com.intellij.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.analysis.impl.codeInspection.deadCode.UnusedDeclarationInspectionBase
+import consulo.project.content.TestSourcesFilter
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.caches.ModTracker.anyScalaPsiChange
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline.{Conditions, ShouldProcess}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

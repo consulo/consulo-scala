@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.hierarchy
 
-import com.intellij.codeInsight.TargetElementUtil
+import consulo.language.editor.TargetElementUtil
 import com.intellij.ide.hierarchy.`type`.JavaTypeHierarchyProvider
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiClass
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.lang.psi.api.base.Constructor
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt

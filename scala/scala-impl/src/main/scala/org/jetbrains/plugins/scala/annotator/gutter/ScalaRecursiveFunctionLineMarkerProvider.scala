@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import com.intellij.codeInsight.daemon.{LineMarkerInfo, LineMarkerProvider}
-import com.intellij.openapi.editor.markup.GutterIconRenderer.Alignment
-import com.intellij.psi.PsiElement
+import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
+import consulo.codeEditor.markup.GutterIconRenderer.Alignment
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.icons.Icons

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
-import com.intellij.openapi.editor.colors.{EditorColorsManager, TextAttributesKey}
+import consulo.language.editor.documentation.DocumentationManagerProtocol
+import consulo.colorScheme.{EditorColorsManager, TextAttributesKey}
 import com.intellij.openapi.editor.richcopy.HtmlSyntaxInfoUtil
-import com.intellij.psi.{PsiClass, PsiElement}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import org.jetbrains.plugins.scala.extensions.PsiClassExt

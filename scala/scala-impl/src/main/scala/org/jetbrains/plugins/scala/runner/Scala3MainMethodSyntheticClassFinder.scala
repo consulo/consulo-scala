@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiElementFinder}
+import consulo.language.psi.PsiManager
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.lang.jvm.JvmModifier
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.jvm.JvmModifier
+import com.thaiopensource.util.Service
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

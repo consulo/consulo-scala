@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.startCommand
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

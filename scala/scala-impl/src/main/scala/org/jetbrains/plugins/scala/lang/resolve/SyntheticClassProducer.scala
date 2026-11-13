@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.search.GlobalSearchScope
-import org.jetbrains.annotations.ApiStatus.Internal
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
-@Internal
+// upstream: @Internal
 abstract class SyntheticClassProducer {
 
   def findClasses(fqn: String, scope: GlobalSearchScope): Array[PsiClass]

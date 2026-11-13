@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.notification.{NotificationGroup, NotificationGroupManager}
+import consulo.project.ui.notification.NotificationGroup
+import com.intellij.notification.NotificationGroupManager
 
 /**
  * Helper methods to replace deprecated [[com.intellij.notification.NotificationGroup]] static methods.

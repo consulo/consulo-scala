@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.quickfix.ReportHighlightingErrorQuickFix
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationHolder, TypeConstructorDiff, tooltipForDiffTrees}

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.{JavaCodeStyleSettings, ReferenceAdjuster}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.ast.ASTNode
+import consulo.project.Project
+import com.intellij.java.impl.psi.codeStyle.{JavaCodeStyleSettings, ReferenceAdjuster}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaPsiElement, ScalaRecursiveElementVisitor}
 

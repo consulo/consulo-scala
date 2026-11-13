@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection
 
-import com.intellij.codeInspection.{LocalQuickFix, ProblemsHolder}
-import com.intellij.openapi.util.TextRange
+import consulo.language.editor.inspection.{LocalQuickFix, ProblemsHolder}
+import consulo.document.util.TextRange
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 
@@ -13,7 +13,7 @@ package object parentheses {
                                      quickfix: LocalQuickFix,
                                      holder: ProblemsHolder,
                                      isOnTheFly: Boolean): Unit = {
-    import com.intellij.codeInspection.ProblemHighlightType._
+    import consulo.language.editor.inspection.ProblemHighlightType._
 
     if (isOnTheFly) {
       val left = TextRange.create(0, 1)

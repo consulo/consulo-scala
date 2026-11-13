@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.lang.documentation.DocumentationMarkup
-import com.intellij.lang.documentation.DocumentationMarkup.BOTTOM_ELEMENT
-import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.editor.markup.TextAttributes
+import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.language.editor.documentation.DocumentationMarkup.BOTTOM_ELEMENT
+import consulo.colorScheme.EditorColorsManager
+import consulo.colorScheme.TextAttributes
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.util.text.HtmlChunk
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.application.util.HtmlChunk
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import org.jetbrains.plugins.scala.editor.ScalaEditorBundle
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocumentationUtils.EmptyDoc

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.psi.PsiMethod
+import consulo.language.editor.inspection.LocalQuickFix
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
 sealed abstract class EmptyParenOverrideInspection extends AbstractMethodSignatureInspection {

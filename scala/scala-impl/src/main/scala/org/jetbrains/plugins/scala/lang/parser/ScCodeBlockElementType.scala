@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.parser
 
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.{ICompositeElementType, IErrorCounterReparseableElementType}
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.ast.{ICompositeElementType, IErrorCounterReparseableElementType}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaLexer, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScBlockExprImpl
 

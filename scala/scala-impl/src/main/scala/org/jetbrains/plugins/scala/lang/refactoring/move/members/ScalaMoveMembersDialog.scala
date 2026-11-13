@@ -1,18 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.members
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiMember}
-import com.intellij.refactoring.RefactoringBundle
-import com.intellij.refactoring.move.moveMembers.{MoveMembersOptions, MoveMembersProcessor}
-import com.intellij.refactoring.ui.RefactoringDialog
-import com.intellij.ui.EditorComboBox
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiDocumentManager
+import com.intellij.java.language.psi.PsiMember
+import consulo.language.editor.refactoring.RefactoringBundle
+import com.intellij.java.impl.refactoring.move.moveMembers.{MoveMembersOptions, MoveMembersProcessor}
+import consulo.language.editor.refactoring.ui.RefactoringDialog
+import consulo.language.editor.ui.awt.EditorComboBox
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScObject}
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle, ScalaFileType}
+import org.jetbrains.plugins.scala.api.{NlsString, ScalaFileType}
+import org.jetbrains.plugins.scala.ScalaBundle
 
 import java.awt.BorderLayout
 import javax.swing._

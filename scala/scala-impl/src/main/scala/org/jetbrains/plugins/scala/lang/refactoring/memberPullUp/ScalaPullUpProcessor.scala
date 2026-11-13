@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.memberPullUp
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.refactoring.{BaseRefactoringProcessor, RefactoringBundle}
-import com.intellij.usageView.{UsageInfo, UsageViewDescriptor}
+import consulo.project.Project
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.refactoring.{BaseRefactoringProcessor, RefactoringBundle}
+import consulo.usage.{UsageInfo, UsageViewDescriptor}
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

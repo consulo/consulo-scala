@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.tree
 
-import com.intellij.lang.Language
-import com.intellij.psi.tree.IElementType
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.Language
+import consulo.language.ast.IElementType
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 class IScalaElementType(debugName: String,
                         language: Language = ScalaLanguage.INSTANCE,

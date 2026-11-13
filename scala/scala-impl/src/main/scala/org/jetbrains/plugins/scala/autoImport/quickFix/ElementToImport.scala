@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiNamedElement, PsiPackage}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.autoImport.GlobalMemberOwner
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt}

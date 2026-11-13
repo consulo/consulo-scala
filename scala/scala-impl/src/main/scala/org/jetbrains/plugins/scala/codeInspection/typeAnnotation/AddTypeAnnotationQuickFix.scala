@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.typeAnnotation
 
-import com.intellij.codeInspection._
+import consulo.language.editor.intention.BatchQuickFix
+import consulo.language.editor.inspection.CommonProblemDescriptor
 import com.intellij.openapi.application.ex.ApplicationManagerEx
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AbstractTypeAnnotationIntention.complete
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOnlyStrategy
 import org.jetbrains.plugins.scala.codeInspection.typeAnnotation.AddTypeAnnotationQuickFix._

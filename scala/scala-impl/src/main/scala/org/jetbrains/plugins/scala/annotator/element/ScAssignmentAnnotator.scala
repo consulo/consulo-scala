@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.psi.{PsiClass, PsiField, PsiMethod}
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection.ValToVarQuickFix

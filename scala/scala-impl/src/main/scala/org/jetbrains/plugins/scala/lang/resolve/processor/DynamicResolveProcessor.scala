@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiReference, ResolveResult}
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.{PsiReference, ResolveResult}
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction.CommonNames

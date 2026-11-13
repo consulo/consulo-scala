@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.projectView
 
-import com.intellij.ide.projectView.ViewSettings
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtilRt.getNameWithoutExtension
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.Project
+import consulo.util.nodep.io.FileUtilRt.getNameWithoutExtension
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

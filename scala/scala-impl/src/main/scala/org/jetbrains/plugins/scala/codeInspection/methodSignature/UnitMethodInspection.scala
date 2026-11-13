@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection.{LocalQuickFix, ProblemHighlightType}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.inspection.{LocalQuickFix, ProblemHighlightType}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.ui.CompilerInspectionOptions
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

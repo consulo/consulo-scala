@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.extractSuperclass.ExtractSuperClassUtil
-import com.intellij.util.containers.MultiMap
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.impl.refactoring.extractSuperclass.ExtractSuperClassUtil
+import consulo.util.collection.MultiMap
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

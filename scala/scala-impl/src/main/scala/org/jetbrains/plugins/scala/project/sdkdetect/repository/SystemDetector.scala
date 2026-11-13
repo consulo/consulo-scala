@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.project.sdkdetect.repository
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{EmptyProgressIndicator, ProgressIndicator}
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.logging.Logger
+import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator}
+import consulo.application.util.SystemInfo
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PathExt}
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
 import org.jetbrains.plugins.scala.project.sdkdetect.repository.CompilerClasspathResolveFailure.{AmbiguousArtifactsResolved, CantReadClasspathFromManifest, UnresolvedArtifact}
 import org.jetbrains.plugins.scala.project.template.{ScalaSdkComponent, ScalaSdkDescriptor, SdkChoice, SystemSdkChoice}
-import org.jetbrains.plugins.scala.util.JarManifestUtils
+import org.jetbrains.plugins.scala.rt.util.JarManifestUtils
 
 import java.nio.charset.Charset
 import java.nio.file.{Files, Path, Paths}

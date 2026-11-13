@@ -1,18 +1,21 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.anonymousToInner
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
 import com.intellij.openapi.util.NlsContexts.DialogMessage
-import com.intellij.psi.{PsiManager, PsiNameHelper}
-import com.intellij.refactoring.HelpID
-import com.intellij.refactoring.ui.NameSuggestionsField
-import com.intellij.refactoring.util.{CommonRefactoringUtil, ParameterTablePanel, RefactoringMessageUtil, VariableData}
-import com.intellij.ui.IdeBorderFactory
-import com.intellij.util.ui.FormBuilder
+import consulo.language.psi.PsiManager
+import com.intellij.java.language.psi.PsiNameHelper
+import com.intellij.java.impl.refactoring.HelpID
+import consulo.language.editor.refactoring.ui.NameSuggestionsField
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil
+import com.intellij.java.impl.refactoring.util.{ParameterTablePanel, RefactoringMessageUtil}
+import com.intellij.java.analysis.impl.refactoring.util.VariableData
+import consulo.ui.ex.awt.IdeBorderFactory
+import consulo.ui.ex.awt.FormBuilder
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScExtendsBlock
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScParameterizedType

@@ -1,11 +1,16 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeHighlighting._
-import com.intellij.codeInsight.daemon.ProblemHighlightFilter
-import com.intellij.codeInsight.daemon.impl.{FileStatusMap, HighlightInfoProcessor}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.language.editor.impl.highlight.MainHighlightingPassFactory
+import consulo.language.editor.Pass
+import consulo.language.editor.highlight.TextEditorHighlightingPassFactory
+import com.intellij.codeHighlighting.{TextEditorHighlightingPassFactoryRegistrar, TextEditorHighlightingPassRegistrar}
+import consulo.language.editor.ProblemHighlightFilter
+import consulo.language.editor.FileStatusMap
+import consulo.language.editor.impl.highlight.HighlightInfoProcessor
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
 
 final class ScalaUnusedImportsPassFactory
   extends TextEditorHighlightingPassFactory

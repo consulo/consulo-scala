@@ -1,15 +1,16 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.compiler.impl.CompilerUtil
-import com.intellij.openapi.compiler.CompilerPaths
-import com.intellij.openapi.externalSystem.model.project.ExternalSystemSourceType
-import com.intellij.openapi.externalSystem.model.{ProjectKeys, ProjectSystemId}
-import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
+import consulo.compiler.util.CompilerUtil
+import consulo.compiler.CompilerPaths
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
+import consulo.externalSystem.model.{ProjectKeys, ProjectSystemId}
+import consulo.externalSystem.service.project.manage.ProjectDataManager
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.ModuleManager
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.virtualFileSystem.LocalFileSystem
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.project.ModuleExt
 

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.bm4
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 

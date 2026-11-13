@@ -1,19 +1,25 @@
 package org.jetbrains.plugins.scala.lang.parser.util;
 
-import com.intellij.lang.*;
-import com.intellij.lang.impl.PsiBuilderAdapter;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.Ref;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.impl.source.DummyHolderElement;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.xml.XmlTokenType;
-import com.intellij.util.diff.FlyweightCapableTreeStructure;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.language.ast.ASTNode;
+import consulo.language.parser.ITokenTypeRemapper;
+import consulo.language.ast.LighterASTNode;
+import com.intellij.lang.Marker;
+import consulo.language.parser.PsiBuilder;
+import consulo.language.parser.PsiParser;
+import consulo.language.parser.WhitespaceSkippedCallback;
+import consulo.language.parser.WhitespacesAndCommentsBinder;
+import consulo.language.parser.PsiBuilderAdapter;
+import consulo.logging.Logger;
+import consulo.util.lang.Couple;
+import consulo.util.lang.Pair;
+import consulo.util.lang.ref.Ref;
+import consulo.language.ast.TokenType;
+import consulo.language.impl.psi.DummyHolderElement;
+import consulo.language.ast.IElementType;
+import consulo.language.ast.TokenSet;
+import consulo.xml.language.psi.XmlTokenType;
+import consulo.language.util.FlyweightCapableTreeStructure;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -33,9 +39,8 @@ public abstract class LayeredParser implements PsiParser {
   private ConflictResolver myResolver = new DefaultConflictResolver();
 
 
-  @NotNull
   @Override
-  public ASTNode parse(IElementType root, @NotNull PsiBuilder builder) { //WARNING: DON'T ADD NotNull ANNOTATION TO 'root' PARAMETER
+  public ASTNode parse(IElementType root, PsiBuilder builder) { //WARNING: DON'T ADD NotNull ANNOTATION TO 'root' PARAMETER
     LayeredParserPsiBuilder delegateBuilder = new LayeredParserPsiBuilder(builder);
     if (isDebug) delegateBuilder.setDebugMode(true);
     
@@ -305,20 +310,18 @@ public abstract class LayeredParser implements PsiParser {
       return originalTokens.get(filteredTokens.get(lookup)).getTokenType(); //todo furhter bugs in the parser can be caused by this fix
     }
 
-    @NotNull
     @Override
     public ASTNode getTreeBuilt() {
       return fakeTreeBuilt;
     }
 
-    @NotNull
     @Override
     public FlyweightCapableTreeStructure<LighterASTNode> getLightTree() {
       throw new UnsupportedOperationException();//todo
     }
 
     @Override
-    public void enforceCommentTokens(@NotNull TokenSet tokens) {
+    public void enforceCommentTokens(TokenSet tokens) {
       commentTokens = tokens;
     }
 
@@ -328,7 +331,6 @@ public abstract class LayeredParser implements PsiParser {
       return getCurrentTokenInfo().getTokenStart();//todo getValidTokenInfo?
     }
 
-    @NotNull
     @Override
     public Marker mark() {
       FakeStartMarker marker = eof() ? new FakeStartMarker(myDelegate.getOriginalText().length(), originalTokens.size())
@@ -439,7 +441,7 @@ public abstract class LayeredParser implements PsiParser {
           if (endIndex > 0) {
             Collections.sort(eofMarkers.subList(0, endIndex), new Comparator<FakeMarker>() {
               @Override
-              public int compare(@NotNull FakeMarker o1, @NotNull FakeMarker o2) {
+              public int compare(FakeMarker o1, FakeMarker o2) {
                 return o2.getStartOffset() - o1.getStartOffset();
               }
             });
@@ -534,7 +536,7 @@ public abstract class LayeredParser implements PsiParser {
       return stateFlushedNums != null && !stateFlushedNums.isEmpty() ? Math.min(index, stateFlushedNums.peekFirst()) : index;
     }
 
-    private FakeEndMarker createEndMarker(FakeStartMarker startMarker, @NotNull IElementType astElementType, int endTokenNum,
+    private FakeEndMarker createEndMarker(FakeStartMarker startMarker, IElementType astElementType, int endTokenNum,
                                           @Nullable String errorMessage) {
       final int originalNum = endTokenNum < filteredTokens.size() ? filteredTokens.get(endTokenNum) : filteredTokens.get(filteredTokens.size() - 1);
       final int tokenEndOffset = originalNum >= originalTokens.size() - 2 ? myDelegate.getOriginalText().length()
@@ -865,7 +867,6 @@ public abstract class LayeredParser implements PsiParser {
       }
 
       @Override
-      @NotNull
       public PsiBuilder.Marker precede() {
         throw new UnsupportedOperationException();
       }
@@ -876,22 +877,22 @@ public abstract class LayeredParser implements PsiParser {
       }
 
       @Override
-      public void done(@NotNull IElementType type) {
+      public void done(IElementType type) {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public void collapse(@NotNull IElementType type) {
+      public void collapse(IElementType type) {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public void doneBefore(@NotNull IElementType type, @NotNull Marker before) {
+      public void doneBefore(IElementType type, Marker before) {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public void doneBefore(@NotNull IElementType type, @NotNull PsiBuilder.Marker before, String errorMessage) {
+      public void doneBefore(IElementType type, PsiBuilder.Marker before, String errorMessage) {
         throw new UnsupportedOperationException();
       }
 
@@ -901,7 +902,7 @@ public abstract class LayeredParser implements PsiParser {
       }
 
       @Override
-      public void errorBefore(String message, @NotNull PsiBuilder.Marker before) {
+      public void errorBefore(String message, PsiBuilder.Marker before) {
         throw new UnsupportedOperationException();
       }
 
@@ -984,29 +985,28 @@ public abstract class LayeredParser implements PsiParser {
         LayeredParserPsiBuilder.this.rollbackTo(this);
       }
 
-      @NotNull
       @Override
       public Marker precede() {
         return LayeredParserPsiBuilder.this.precede(this);
       }
 
       @Override
-      public void done(@NotNull IElementType type) {
+      public void done(IElementType type) {
         LayeredParserPsiBuilder.this.done(this, type, null);
       }
 
       @Override
-      public void collapse(@NotNull IElementType type) {
+      public void collapse(IElementType type) {
         LayeredParserPsiBuilder.this.collapse(this, type);
       }
 
       @Override
-      public void doneBefore(@NotNull IElementType type, @NotNull Marker before) {
+      public void doneBefore(IElementType type, Marker before) {
         LayeredParserPsiBuilder.this.doneOrErrorBefore(type, this, (FakeStartMarker) before, null);
       }
 
       @Override
-      public void doneBefore(@NotNull IElementType type, @NotNull Marker before, String errorMessage) {
+      public void doneBefore(IElementType type, Marker before, String errorMessage) {
         LayeredParserPsiBuilder.this.doneBefore(type, this, (FakeStartMarker) before, errorMessage);
       }
 
@@ -1016,7 +1016,7 @@ public abstract class LayeredParser implements PsiParser {
       }
 
       @Override
-      public void errorBefore(String message, @NotNull Marker before) {
+      public void errorBefore(String message, Marker before) {
         LayeredParserPsiBuilder.this.errorBefore(this, (FakeStartMarker) before, message);
       }
 
@@ -1184,7 +1184,7 @@ public abstract class LayeredParser implements PsiParser {
 
     CustomTokenChooser myTokenChooser;
 
-    RegisteredInfo(@NotNull E myParser, @NotNull List<Class<? extends IElementType>> myRegisteredTokens,
+    RegisteredInfo(E myParser, List<Class<? extends IElementType>> myRegisteredTokens,
                    @Nullable StateFlusher myStateFlusher, @Nullable T myReferenceElement,
                    @Nullable TokenSet myIgnoredTokens, @Nullable AstElementRemapper elementRemapper) {
       this.myParser = myParser;
@@ -1236,7 +1236,7 @@ public abstract class LayeredParser implements PsiParser {
       if (myTokenChooser != null) myTokenChooser.processToken(tokenType);
     }
 
-    abstract void parse(@NotNull PsiBuilder builder);
+    abstract void parse(PsiBuilder builder);
   }
   
   public class RegisteredParserInfo extends RegisteredInfo<PsiParser, IElementType> {
@@ -1247,7 +1247,7 @@ public abstract class LayeredParser implements PsiParser {
     }
 
     @Override
-    void parse(@NotNull PsiBuilder builder) {
+    void parse(PsiBuilder builder) {
       getMyParser().parse(getMyReferenceElement(), builder);
     }
   }
@@ -1260,7 +1260,7 @@ public abstract class LayeredParser implements PsiParser {
     }
 
     @Override
-    void parse(@NotNull PsiBuilder builder) {
+    void parse(PsiBuilder builder) {
       getMyParser().parseContents(getMyReferenceElement(), builder);
     }
   }
@@ -1312,7 +1312,7 @@ public abstract class LayeredParser implements PsiParser {
       return tokenType;
     }
 
-    public void setTokenType(@NotNull IElementType newTokenType) {
+    public void setTokenType(IElementType newTokenType) {
       tokenType = newTokenType;
     }
     

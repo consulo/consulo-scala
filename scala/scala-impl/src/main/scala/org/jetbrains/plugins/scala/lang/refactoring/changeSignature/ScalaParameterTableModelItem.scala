@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
-import com.intellij.refactoring.changeSignature.ParameterTableModelItemBase
+import consulo.language.editor.refactoring.changeSignature.ParameterTableModelItemBase
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

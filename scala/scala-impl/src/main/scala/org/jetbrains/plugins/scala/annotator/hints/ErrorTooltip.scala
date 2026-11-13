@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
 import com.intellij.codeInsight.hint.TooltipGroup
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.psi.PsiElement
+import consulo.language.editor.intention.IntentionAction
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
 
 import scala.language.implicitConversions

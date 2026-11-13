@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.editor.smartEnter.fixers
 
-import com.intellij.openapi.editor.{Document, Editor}
+import consulo.document.Document
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.editor.smartEnter.ScalaSmartEnterProcessor
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScFor

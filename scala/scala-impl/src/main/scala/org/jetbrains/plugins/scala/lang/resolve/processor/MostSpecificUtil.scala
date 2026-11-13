@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.resolve.processor
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern

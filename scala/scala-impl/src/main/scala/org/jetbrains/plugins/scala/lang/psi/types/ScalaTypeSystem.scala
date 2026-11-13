@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.intellij.openapi.roots.ProjectRootManager
+import consulo.module.content.ProjectRootManager
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.project.ProjectContext
 

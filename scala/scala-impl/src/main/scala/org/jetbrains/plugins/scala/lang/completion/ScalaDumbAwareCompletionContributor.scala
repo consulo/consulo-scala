@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.CompletionInitializationContext
-import com.intellij.openapi.project.DumbAware
+import consulo.language.editor.completion.CompletionInitializationContext
+import consulo.application.dumb.DumbAware
 
 final class ScalaDumbAwareCompletionContributor extends ScalaCompletionContributor with DumbAware {
 

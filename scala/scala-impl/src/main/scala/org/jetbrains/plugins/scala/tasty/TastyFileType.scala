@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.tasty
 
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.plugins.scala.api.ScalaFileType
 
 import javax.swing.Icon
 

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.psi._
-import com.intellij.psi.search.{GlobalSearchScope, PsiShortNamesCache}
+import com.thaiopensource.util.Service
+import consulo.project.{DumbService, Project}
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.search.PsiShortNamesCache
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScValueOrVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}

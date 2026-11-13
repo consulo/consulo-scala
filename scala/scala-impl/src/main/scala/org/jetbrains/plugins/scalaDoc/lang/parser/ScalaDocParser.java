@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scalaDoc.lang.parser;
 
-import com.intellij.lang.ASTNode;
+import consulo.language.ast.ASTNode;
 import com.intellij.lang.LightPsiParser;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.parser.PsiBuilder;
+import consulo.language.parser.PsiParser;
+import consulo.language.ast.IElementType;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsing;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.ScaladocMarkdownParsing;
 
@@ -19,7 +18,7 @@ public class ScalaDocParser implements PsiParser, LightPsiParser {
   }
 
   @Override
-  public void parseLight(@NotNull IElementType root, @NotNull PsiBuilder builder) {
+  public void parseLight(IElementType root, PsiBuilder builder) {
     if (isMarkdown) {
       ScaladocMarkdownParsing.parse(builder, root);
     } else {
@@ -28,8 +27,7 @@ public class ScalaDocParser implements PsiParser, LightPsiParser {
   }
 
   @Override
-  @NotNull
-  public ASTNode parse(@NotNull IElementType root, @NotNull PsiBuilder builder) {
+  public ASTNode parse(IElementType root, PsiBuilder builder) {
     parseLight(root, builder);
     return builder.getTreeBuilt();
   }

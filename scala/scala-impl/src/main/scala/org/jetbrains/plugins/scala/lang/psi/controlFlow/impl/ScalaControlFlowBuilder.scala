@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.controlFlow.impl
 
 import _root_.org.jetbrains.plugins.scala.lang.psi.api.{ScalaPsiElement, ScalaRecursiveElementVisitor}
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiNamedElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScLiteral, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScCaseClause, ScCaseClauses, ScPattern}

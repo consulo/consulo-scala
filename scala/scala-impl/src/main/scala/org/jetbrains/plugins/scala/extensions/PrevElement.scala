@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.extensions
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 object PrevElement {
   def unapply(e: PsiElement): Option[PsiElement] = e.prevElement

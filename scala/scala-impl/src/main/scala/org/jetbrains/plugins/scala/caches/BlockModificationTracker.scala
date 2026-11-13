@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.{Key, ModificationTracker, SimpleModificationTracker}
-import com.intellij.psi.PsiElement
+import consulo.module.content.ProjectRootManager
+import consulo.util.dataholder.Key
+import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

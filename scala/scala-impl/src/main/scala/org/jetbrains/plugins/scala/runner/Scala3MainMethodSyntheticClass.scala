@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiFile, PsiIdentifier, PsiManager, PsiNameIdentifierOwner, ResolveState}
-import com.intellij.psi.impl.light.LightElement
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile, PsiManager, PsiNameIdentifierOwner}
+import com.intellij.java.language.psi.PsiIdentifier
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.impl.psi.LightElement
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.util.IncorrectOperationException
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiClassAdapter
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.PsiClassFake
 import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMethodParameters

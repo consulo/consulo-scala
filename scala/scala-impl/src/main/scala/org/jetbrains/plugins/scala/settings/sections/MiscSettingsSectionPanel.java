@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.ui.EnumComboBoxModel;
+import consulo.configurable.ConfigurationException;
+import consulo.project.Project;
+import consulo.util.lang.Pair;
+import consulo.ui.ex.awt.EnumComboBoxModel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

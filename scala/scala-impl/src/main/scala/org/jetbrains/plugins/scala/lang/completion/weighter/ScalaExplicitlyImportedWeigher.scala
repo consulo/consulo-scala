@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.proximity.ProximityWeigher
-import com.intellij.psi.util.{ProximityLocation, PsiTreeUtil}
+import consulo.language.util.ModuleUtilCore
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiElement, PsiFile, PsiPackage}
+import consulo.language.util.proximity.ProximityWeigher
+import consulo.language.util.proximity.ProximityLocation
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern

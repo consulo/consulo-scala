@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.editor.RangeMarker
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiNamedElement, PsiReference}
-import com.intellij.refactoring.listeners.RefactoringElementListener
-import com.intellij.refactoring.rename.RenameUtil
-import com.intellij.usageView.UsageInfo
+import consulo.document.RangeMarker
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
+import consulo.language.editor.refactoring.event.RefactoringElementListener
+import consulo.language.editor.refactoring.rename.RenameUtil
+import consulo.usage.UsageInfo
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, Parent, PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.{ScBegin, ScalaPsiElement}

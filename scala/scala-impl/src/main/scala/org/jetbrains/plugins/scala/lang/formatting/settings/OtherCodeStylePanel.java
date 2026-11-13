@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
-import com.intellij.openapi.util.Disposer;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
+import consulo.disposer.Disposer;
+import consulo.language.codeStyle.CodeStyleSettings;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.ScalaBundle;
 
 import javax.swing.*;
@@ -37,7 +36,7 @@ public final class OtherCodeStylePanel extends ScalaCodeStylePanelBase {
     private final Scala3SettingsPanel scala3SettingsPanel = new Scala3SettingsPanel(getSettings());
     private JPanel scala3SettingsInnerPanel;
 
-    OtherCodeStylePanel(@NotNull CodeStyleSettings settings) {
+    OtherCodeStylePanel(CodeStyleSettings settings) {
         super(settings, ScalaBundle.message("other.panel.title"));
 
         $$$setupUI$$$();

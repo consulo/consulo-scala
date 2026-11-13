@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiElementBase
-import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, PsiReferenceBase}
+import consulo.language.impl.psi.PsiElementBase
+import consulo.language.psi.util.PsiTreeUtil
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.codeInspection.collections.MethodRepr
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightImplicitUsagesHandler.TargetKind._

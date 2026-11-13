@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.lexer;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
+import consulo.language.ast.IElementType;
+import consulo.language.ast.TokenSet;
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType;
 
 // TODO: rename to ScalaDocTokenTypes (with S in the end)

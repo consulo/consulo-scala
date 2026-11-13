@@ -15,17 +15,16 @@
 
 package org.jetbrains.plugins.scala.lang.lexer;
 
-import com.intellij.lexer.Lexer;
-import com.intellij.lexer.LexerPosition;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.xml.IXmlLeafElementType;
-import com.intellij.psi.xml.XmlTokenType;
-import com.intellij.util.containers.Stack;
-import com.intellij.util.text.CharArrayUtil;
+import consulo.language.lexer.Lexer;
+import consulo.language.lexer.LexerPosition;
+import consulo.project.Project;
+import consulo.language.ast.IElementType;
+import consulo.xml.language.psi.IXmlLeafElementType;
+import consulo.xml.language.psi.XmlTokenType;
+import consulo.util.collection.Stack;
+import consulo.util.lang.CharArrayUtil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.Tracing;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 
@@ -76,7 +75,7 @@ public final class ScalaLexer extends Lexer {
   }
 
   @Override
-  public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
+  public void start(CharSequence buffer, int startOffset, int endOffset, int initialState) {
     myCurrentLexer = myScalaPlainLexer;
     myCurrentLexer.start(buffer, startOffset, endOffset, initialState & MASK);
     myBraceStack.clear();
@@ -175,7 +174,7 @@ public final class ScalaLexer extends Lexer {
   private LocateXmlTokenResult doLocateTokenInsideXml(
       final int start,
       @Nullable final IElementType type,
-      @NotNull final CharSequence tokenText
+      final CharSequence tokenText
   ) {
     --xmlSteps;
 
@@ -399,7 +398,6 @@ public final class ScalaLexer extends Lexer {
   }
 
   @Override
-  @NotNull
   public LexerPosition getCurrentPosition() {
     return new MyPosition(
         myTokenStart,
@@ -413,7 +411,7 @@ public final class ScalaLexer extends Lexer {
   }
 
   @Override
-  public void restore(@NotNull LexerPosition position) {
+  public void restore(LexerPosition position) {
     MyPosition pos = (MyPosition) position;
     myBraceStack = pos.state.braceStack;
     myCurrentLexer = pos.state.currentLexer;
@@ -429,7 +427,6 @@ public final class ScalaLexer extends Lexer {
   }
 
   @Override
-  @NotNull
   public CharSequence getBufferSequence() {
     return myBuffer;
   }

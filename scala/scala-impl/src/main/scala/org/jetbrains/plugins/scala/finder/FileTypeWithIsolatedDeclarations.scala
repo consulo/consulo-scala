@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.finder
 
-import com.intellij.openapi.fileTypes.FileType
+import consulo.virtualFileSystem.fileType.FileType
 
 /**
  * Marker trait which means that file type can't export any declarations outside the file scope.

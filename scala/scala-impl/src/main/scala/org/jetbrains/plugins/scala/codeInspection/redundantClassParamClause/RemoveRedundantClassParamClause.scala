@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.redundantClassParamClause
 
-import com.intellij.openapi.project.{DumbAware, Project}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameters
 

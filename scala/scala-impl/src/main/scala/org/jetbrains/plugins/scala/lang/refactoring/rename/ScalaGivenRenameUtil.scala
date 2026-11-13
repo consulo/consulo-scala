@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.{PsiElement, PsiReference}
+import consulo.document.util.TextRange
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.{PsiElement, PsiReference}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

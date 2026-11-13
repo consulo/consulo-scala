@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.ide.projectView.ViewSettings
-import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtilRt
+import consulo.project.ui.view.tree.ViewSettings
+import consulo.project.ui.view.tree.AbstractTreeNode
+import consulo.project.Project
+import consulo.util.nodep.io.FileUtilRt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScValueOrVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

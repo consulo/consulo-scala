@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.util
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes
 
 sealed trait ScalaDirectiveValueKind {

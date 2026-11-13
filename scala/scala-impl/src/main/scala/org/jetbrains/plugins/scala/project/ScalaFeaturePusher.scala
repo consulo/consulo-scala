@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala.project
 
-import com.intellij.openapi.fileTypes.{FileType, LanguageFileType}
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.roots.impl.PushedFilePropertiesUpdater
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{FilePropertyKey, FilePropertyKeyImpl, PsiFile}
-import com.intellij.util.indexing.IndexingDataKeys
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.language.file.LanguageFileType
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ProjectFileIndex
+import consulo.module.content.PushedFilePropertiesUpdater
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.psi.{FilePropertyKey, FilePropertyKeyImpl}
+import consulo.language.psi.PsiFile
+import consulo.language.psi.stub.IndexingDataKeys
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.scala.{ScalaLanguage, ScalaVersion}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.lang.parser.ScalaLanguageSubstitutor
 import org.jetbrains.plugins.scala.project.ScalaFeaturePusher.{SerializedScalaFeatures, isScalaLike}
 import org.jetbrains.plugins.scala.project.ScalaFeatures.SerializableScalaFeatures

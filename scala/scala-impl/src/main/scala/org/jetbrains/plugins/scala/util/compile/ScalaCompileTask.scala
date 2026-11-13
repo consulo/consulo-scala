@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util.compile
 
-import com.intellij.openapi.compiler.{CompileContext, CompileTask}
-import com.intellij.openapi.diagnostic.Logger
+import consulo.compiler.{CompileContext, CompileTask}
+import consulo.logging.Logger
 
 import scala.concurrent.duration._
 

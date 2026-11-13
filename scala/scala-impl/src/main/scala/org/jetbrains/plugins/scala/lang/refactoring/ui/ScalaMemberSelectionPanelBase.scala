@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.ui.AbstractMemberSelectionPanel
-import com.intellij.ui.{ScrollPaneFactory, SeparatorFactory}
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.ui.AbstractMemberSelectionPanel
+import consulo.ui.ex.awt.{ScrollPaneFactory, SeparatorFactory}
 import org.jetbrains.annotations.Nls
 
 import java.awt.BorderLayout

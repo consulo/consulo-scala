@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.semantic
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
+import consulo.language.editor.rawHighlight.HighlightInfo
 import com.intellij.codeInsight.intention.CommonIntentionAction
-import com.intellij.lang.annotation.{AnnotationSession, HighlightSeverity}
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
+import consulo.language.editor.annotation.{AnnotationSession, HighlightSeverity}
+import consulo.colorScheme.TextAttributesKey
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.annotator.{DummyScalaAnnotationBuilder, ScalaAnnotationBuilder, ScalaAnnotationHolder}
 import org.jetbrains.plugins.scala.extensions.IterableOnceExt

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 object ScalaWithTryCatchSurrounder extends ScalaWithTryCatchSurrounderBase {
   override def getTemplateAsString(elements: Array[PsiElement]): String =

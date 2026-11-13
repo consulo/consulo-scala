@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
-import com.intellij.codeInsight.CodeInsightUtilCore
+import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import com.intellij.codeInsight.navigation.{PsiTargetNavigator, TargetPresentationProvider}
-import com.intellij.codeInsight.template.{Template, TemplateBuilder, TemplateBuilderImpl}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.platform.backend.presentation.TargetPresentation
-import com.intellij.psi._
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.editor.ui.navigation.{PsiTargetNavigator, TargetPresentationProvider}
+import consulo.language.editor.template.{Template, TemplateBuilder}
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.navigation.TargetPresentation
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
+import consulo.language.psi.resolve.PsiElementProcessor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.annotator.createFromUsage.CreateFromUsageUtil._
 import org.jetbrains.plugins.scala.extensions._
@@ -22,7 +23,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBod
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTemplateDefinition, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaDirectoryService
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaFileType, isUnitTestMode}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.{ScalaFileType, isUnitTestMode}
 
 abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
   extends CreateFromUsageQuickFixBase(ref) {

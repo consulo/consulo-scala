@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.stubs.NamedStub
-import com.intellij.util.SofterReference
+import consulo.language.psi.PsiNamedElement
+import consulo.language.psi.stub.NamedStub
+import consulo.application.util.SofterReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScContextBound, ScTypeElement}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.{createContextBoundFromText, createTypeElementFromText}
-import org.jetbrains.plugins.scala.lang.psi.stubs.ScStubElement
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 
 trait ScBoundsOwnerStub[E <: PsiNamedElement] extends NamedStub[E] with ScStubElement[E] with PsiOwner[E] {
 

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod.duplicates
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.PsiEquivalenceUtil
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScInterpolatedStringLiteral, ScLiteral, ScReference}

@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.folding
 
-import com.intellij.lang.ASTNode
-import com.intellij.lang.folding.{CustomFoldingBuilder, FoldingDescriptor}
-import com.intellij.openapi.editor.{Document, FoldingGroup}
-import com.intellij.openapi.project.PossiblyDumbAware
-import com.intellij.openapi.util._
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import consulo.language.editor.folding.{CustomFoldingBuilder, FoldingDescriptor}
+import consulo.document.Document
+import consulo.codeEditor.FoldingGroup
+import consulo.application.dumb.PossiblyDumbAware
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiWhiteSpace}
+import consulo.language.ast.TokenType
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.folding.ScalaFoldingBuilder.{FoldingInfo, MatchExprOrMatchType}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.builder
 
-import com.intellij.lang.PsiBuilder
-import com.intellij.lang.impl.PsiBuilderAdapter
-import com.intellij.openapi.util.text.StringUtil.isWhiteSpace
-import com.intellij.psi.impl.source.resolve.FileContextUtil.CONTAINING_FILE_KEY
+import consulo.language.parser.PsiBuilder
+import consulo.language.parser.PsiBuilderAdapter
+import consulo.util.lang.StringUtil.isWhiteSpace
+import consulo.language.psi.FileContextUtil.CONTAINING_FILE_KEY
 import org.jetbrains.plugins.scala.lang.parser.{IndentationWidth, PsiBuilderExt, ScalaPsiBuilderExt}
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilderImpl.IndentationRegionHolder
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt.enableFeaturesCheckInTests
-import org.jetbrains.plugins.scala.project._
-import org.jetbrains.plugins.scala.{ScalaVersion, isUnitTestMode}
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
+import org.jetbrains.plugins.scala.ScalaVersion
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 import scala.collection.mutable
 

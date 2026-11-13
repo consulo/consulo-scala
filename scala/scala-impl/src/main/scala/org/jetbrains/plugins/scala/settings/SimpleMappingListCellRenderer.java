@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.settings;
 
-import com.intellij.openapi.util.Pair;
-import com.intellij.ui.SimpleListCellRenderer;
+import consulo.util.lang.Pair;
+import consulo.ui.ex.awt.SimpleListCellRenderer;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -17,7 +16,7 @@ public final class SimpleMappingListCellRenderer<T extends Enum<T>> extends Simp
     }
 
     @Override
-    public void customize(@NotNull JList<? extends T> list, T value, int index, boolean selected, boolean hasFocus) {
+    public void customize(JList<? extends T> list, T value, int index, boolean selected, boolean hasFocus) {
         @Nls String displayText = value == null ? null : mapping.getOrDefault(value, "");
         setText(displayText);
     }

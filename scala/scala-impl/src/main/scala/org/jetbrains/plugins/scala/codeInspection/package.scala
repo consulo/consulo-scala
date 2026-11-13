@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.{FileEditorManager, TextEditor}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiElementVisitor}
+import consulo.language.editor.inspection.ProblemsHolder
+import consulo.codeEditor.Editor
+import consulo.fileEditor.{FileEditorManager, TextEditor}
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.application.dumb.DumbAware
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.quickfix.NumberLiteralQuickFix._
 import org.jetbrains.plugins.scala.annotator.{Bin, IntegerKind, Oct, ScalaAnnotationHolder}
 import org.jetbrains.plugins.scala.extensions.ElementText
@@ -12,8 +12,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral.Numeric
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScFloatingPointLiteral.FloatingPointParseResult
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.{ScDoubleLiteral, ScFloatLiteral, ScFloatingPointLiteral, ScIntegerLiteral, ScLongLiteral}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScPrefixExpr}
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, ScalaLanguageLevel}
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle, project}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.{ScalaBundle, project}
 
 sealed abstract class ScNumericLiteralAnnotator[L <: Numeric : reflect.ClassTag](isLong: Boolean)
   extends ElementAnnotator[L]

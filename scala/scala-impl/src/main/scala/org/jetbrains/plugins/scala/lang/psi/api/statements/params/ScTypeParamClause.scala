@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 package params
 
-import com.intellij.psi.{PsiTypeParameter, PsiTypeParameterList}
+import com.intellij.java.language.psi.{PsiTypeParameter, PsiTypeParameterList}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaElementVisitor, ScalaPsiElement}
 
 trait ScTypeParamClause extends ScalaPsiElement with PsiTypeParameterList {

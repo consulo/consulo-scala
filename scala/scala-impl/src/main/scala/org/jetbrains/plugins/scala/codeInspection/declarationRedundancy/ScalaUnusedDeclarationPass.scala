@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.profile.codeInspection.InspectionProjectProfileManager
+import consulo.document.Document
+import consulo.project.Project
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 final class ScalaUnusedDeclarationPass(file: ScalaFile, doc: Option[Document])

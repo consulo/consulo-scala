@@ -1,19 +1,21 @@
 package org.jetbrains.plugins.scala.editor.smartEnter
 
 import com.intellij.codeInsight.CodeInsightFrontbackUtil
-import com.intellij.codeInsight.editorActions.smartEnter._
-import com.intellij.codeInsight.lookup.LookupManager
-import com.intellij.featureStatistics.FeatureUsageTracker
-import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actionSystem.{EditorActionHandler, EditorActionManager}
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import com.intellij.java.impl.codeInsight.editorActions.smartEnter.EnterProcessor
+import consulo.language.editor.action.SmartEnterProcessor
+import consulo.language.editor.completion.lookup.LookupManager
+import consulo.externalService.statistic.FeatureUsageTracker
+import consulo.ui.ex.action.IdeActions
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.codeEditor.action.{EditorActionHandler, EditorActionManager}
+import consulo.codeEditor.EditorEx
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiArrayInitializerExpression, PsiBlockStatement, PsiClass, PsiMethod, PsiStatement}
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.editor.smartEnter.fixers._
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition

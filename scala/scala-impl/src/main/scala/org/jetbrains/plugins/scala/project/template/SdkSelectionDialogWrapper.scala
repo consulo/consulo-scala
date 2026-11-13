@@ -1,19 +1,20 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.CommonBundle
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.ui.{DialogWrapper, Messages}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.table.TableView
+import consulo.application.CommonBundle
+import consulo.logging.Logger
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.ui.ex.awt.{DialogWrapper, Messages}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.ui.ex.awt.JBScrollPane
+import consulo.ui.ex.awt.table.TableView
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
 import org.jetbrains.plugins.scala.project.sdkdetect.ScalaSdkProvider
 import org.jetbrains.plugins.scala.project.sdkdetect.repository.ScalaSdkDetector
 import org.jetbrains.plugins.scala.project.template.ScalaVersionDownloadingDialog.ScalaVersionResolveResult
 import org.jetbrains.plugins.scala.project.template.SdkSelectionDialogWrapper.{showDuplicatedFilesError, validateSdk}
 import org.jetbrains.plugins.scala.project.template.sdk_browse.ExplicitSdkSelection
-import org.jetbrains.plugins.scala.{NlsString, ScalaBundle}
+import org.jetbrains.plugins.scala.api.NlsString
+import org.jetbrains.plugins.scala.ScalaBundle
 
 import java.awt.Dimension
 import java.awt.event.ActionEvent

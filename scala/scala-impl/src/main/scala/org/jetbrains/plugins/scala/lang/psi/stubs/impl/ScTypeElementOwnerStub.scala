@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.StubElement
-import com.intellij.util.SofterReference
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.StubElement
+import consulo.application.util.SofterReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createTypeElementFromText
 

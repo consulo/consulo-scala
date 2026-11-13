@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.logging.Logger
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{Model, ObjectExt, StringsExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

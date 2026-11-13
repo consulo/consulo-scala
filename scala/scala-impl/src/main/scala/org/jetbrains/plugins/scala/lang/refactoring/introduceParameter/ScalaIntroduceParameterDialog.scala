@@ -1,18 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
-import com.intellij.openapi.editor.event.{DocumentEvent, DocumentListener}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{ComboBox, ValidationInfo}
-import com.intellij.refactoring.BaseRefactoringProcessor
-import com.intellij.ui.table.{JBTable, TableView}
-import com.intellij.ui.{EditorTextField, ToolbarDecorator}
-import com.intellij.util.ui.JBUI
+import consulo.document.event.{DocumentEvent, DocumentListener}
+import consulo.project.Project
+import consulo.ui.ex.awt.{ComboBox, ValidationInfo}
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
+import consulo.ui.ex.awt.table.{JBTable, TableView}
+import consulo.language.editor.ui.awt.EditorTextField
+import consulo.ui.ex.awt.ToolbarDecorator
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring._
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature._
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo.ScalaChangeInfo
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaFileType}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaFileType
 
 import java.awt._
 import java.util

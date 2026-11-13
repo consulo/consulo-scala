@@ -1,15 +1,16 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
 import com.intellij.codeInsight.hint.LineTooltipRenderer
-import com.intellij.codeInsight.intention.IntentionAction
+import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.impl.ShowIntentionActionsHandler
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 import com.intellij.openapi.editor.ex.{EditorMarkupModel, TooltipAction}
-import com.intellij.openapi.ui.popup.{JBPopup, JBPopupFactory, JBPopupListener, LightweightWindowEvent}
-import com.intellij.openapi.util.Ref
-import com.intellij.psi.PsiElement
-import com.intellij.ui.HintHint
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.ui.ex.popup.{JBPopup, JBPopupFactory}
+import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
+import consulo.util.lang.ref.Ref
+import consulo.language.psi.PsiElement
+import consulo.ui.ex.awt.hint.HintHint
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.plugins.scala.autoImport.quickFix.PopupPosition
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 

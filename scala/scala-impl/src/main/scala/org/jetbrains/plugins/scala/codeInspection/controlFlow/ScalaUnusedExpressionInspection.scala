@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
-import com.intellij.codeInspection._
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import com.intellij.modcommand.{ActionContext, ModCommandAction, ModPsiUpdater, PsiUpdateModCommandAction}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiComment, PsiElementVisitor, PsiWhiteSpace}
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiElementVisitor, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInspection.controlFlow.ScalaUnusedExpressionInspection.{HasSideEffects, NoSideEffects, OnlyThrows, RangeCollector, SideEffectKind, createQuickFixes}
 import org.jetbrains.plugins.scala.codeInspection.quickfix.RemoveExpressionQuickFix
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle, expressionResultIsNotUsed, findDefiningFunction, isUnitFunction}

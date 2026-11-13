@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 package wrappers
 
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.{LeafElement, TreeElement, TreeElementVisitor}
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.ast.ASTNode
+import consulo.language.psi.PsiElement
+import consulo.language.impl.ast.{LeafElement, TreeElement, TreeElementVisitor}
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenType
 
 object DummyASTNode extends TreeElement(new ScalaTokenType("Dummy Element")) {

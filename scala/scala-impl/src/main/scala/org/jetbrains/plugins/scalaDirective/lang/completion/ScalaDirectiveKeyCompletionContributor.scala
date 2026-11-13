@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
-import com.intellij.openapi.project.DumbAware
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.application.dumb.DumbAware
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionContributor
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyKeys
 import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirectiveLookupItem

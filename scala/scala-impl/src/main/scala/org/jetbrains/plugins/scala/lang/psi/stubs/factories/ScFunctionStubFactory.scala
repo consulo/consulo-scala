@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{IndexSink, StubElement, StubInputStream, StubOutputStream}
-import com.intellij.util.ArrayUtil.EMPTY_STRING_ARRAY
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{IndexSink, StubElement, StubInputStream, StubOutputStream}
+import consulo.util.collection.ArrayUtil.EMPTY_STRING_ARRAY
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlockExpr

@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Comparing
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiClass
-import com.intellij.psi.search.SearchScope
-import com.intellij.psi.search.searches.DirectClassInheritorsSearch
-import com.intellij.psi.util.PsiUtil
-import com.intellij.util.{Processor, QueryExecutor}
+import consulo.application.progress.ProgressManager
+import consulo.util.lang.Comparing
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.content.scope.SearchScope
+import com.intellij.java.indexing.search.searches.DirectClassInheritorsSearch
+import com.intellij.java.language.psi.util.PsiUtil
+import consulo.application.util.function.Processor
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTemplateDefinition, ScTypeDefinition}

@@ -1,21 +1,23 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.processors
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.lang.ASTNode
-import com.intellij.notification._
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.progress.ProgressIndicatorProvider
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, TextRange}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.impl.source.codeStyle.PreFormatProcessor
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.javadoc.PsiDocComment
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.ast.ASTNode
+import consulo.project.ui.notification.Notification
+import consulo.project.ui.notification.event.NotificationListener
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.document.Document
+import consulo.navigation.OpenFileDescriptor
+import consulo.application.progress.ProgressIndicatorProvider
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiRecursiveElementVisitor, PsiWhiteSpace}
+import consulo.language.codeStyle.PreFormatProcessor
+import consulo.language.impl.psi.LeafPsiElement
+import com.intellij.java.language.psi.javadoc.PsiDocComment
+import consulo.language.psi.util.PsiTreeUtil
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.{NonNls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -34,7 +36,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaFile}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScBlockImpl
 import org.jetbrains.plugins.scala.lang.psi.{ScalaPsiUtil, TypeAdjuster}

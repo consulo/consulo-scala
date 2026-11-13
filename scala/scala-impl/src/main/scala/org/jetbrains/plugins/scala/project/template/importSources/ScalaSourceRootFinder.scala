@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.project.template.importSources
 
-import com.intellij.ide.util.projectWizard.importSources.JavaSourceRootDetector
-import com.intellij.openapi.util.text.StringUtil
+import consulo.java.impl.library.JavaSourceRootDetector
+import consulo.util.lang.StringUtil
 import com.intellij.util.NullableFunction
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaLexer, ScalaTokenType, ScalaTokenTypes}
 
@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 
 final class ScalaSourceRootFinder extends JavaSourceRootDetector {
 
-  import org.jetbrains.plugins.scala.ScalaFileType.{INSTANCE => scalaFileType}
+  import org.jetbrains.plugins.scala.api.ScalaFileType.{INSTANCE => scalaFileType}
 
   override def getLanguageName: String = scalaFileType.getName
 

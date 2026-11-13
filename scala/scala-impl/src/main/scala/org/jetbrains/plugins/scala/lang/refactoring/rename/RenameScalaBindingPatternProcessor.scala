@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
-import com.intellij.psi.PsiElement
-import com.intellij.refactoring.rename.RenamePsiElementProcessor
+import consulo.language.psi.PsiElement
+import consulo.language.editor.refactoring.rename.RenamePsiElementProcessor
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScValue, ScVariable}

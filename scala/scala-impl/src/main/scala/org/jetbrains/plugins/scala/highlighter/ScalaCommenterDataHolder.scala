@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeInsight.generation.CommenterDataHolder
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiFile
+import consulo.language.CommenterDataHolder
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiFile
 
 private[highlighter]
 class ScalaCommenterDataHolder(file: PsiFile) extends CommenterDataHolder {

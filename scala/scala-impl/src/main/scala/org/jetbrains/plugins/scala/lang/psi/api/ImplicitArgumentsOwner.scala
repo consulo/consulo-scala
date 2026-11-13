@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ImplicitArgumentsOwner.IMPLICIT_ARGS_KEY
 import org.jetbrains.plugins.scala.lang.psi.api.InferUtil.ImplicitArgumentsClause

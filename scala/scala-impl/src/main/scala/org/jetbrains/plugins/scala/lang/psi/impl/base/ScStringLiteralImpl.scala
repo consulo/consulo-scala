@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafElement
-import com.intellij.psi.tree.IElementType
+import consulo.language.ast.ASTNode
+import consulo.project.Project
+import com.intellij.java.language.psi.CommonClassNames
+import consulo.language.psi.{LiteralTextEscaper, PsiReference, PsiReferenceService}
+import consulo.language.impl.ast.LeafElement
+import consulo.language.ast.IElementType
 import org.apache.commons.text.StringEscapeUtils
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

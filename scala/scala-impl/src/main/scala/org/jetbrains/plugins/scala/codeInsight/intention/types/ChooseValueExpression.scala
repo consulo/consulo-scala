@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
-import com.intellij.codeInsight.completion.InsertionContext
-import com.intellij.codeInsight.lookup._
+import consulo.language.editor.completion.lookup.InsertionContext
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import com.intellij.codeInsight.template.impl.TemplateManagerImpl
-import com.intellij.codeInsight.template.{Expression, ExpressionContext, Result, TextResult}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
+import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiDocumentManager
 import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.ScTypeText

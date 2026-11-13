@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
-import com.intellij.codeInsight.intention.PriorityAction.Priority
-import com.intellij.codeInsight.intention.{FileModifier, PriorityAction, PsiElementBaseIntentionAction}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.{PsiElement, PsiFile}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.editor.inspection.PriorityAction.Priority
+import consulo.language.editor.inspection.{FileModifier, PriorityAction}
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.editor.ScalaEditorBundle
 import org.jetbrains.plugins.scala.extensions.{&, ElementType, Parent}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

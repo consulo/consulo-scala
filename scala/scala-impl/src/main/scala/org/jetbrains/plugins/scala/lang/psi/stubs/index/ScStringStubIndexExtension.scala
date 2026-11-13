@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.{StringStubIndexExtension, StubIndex}
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.stub.{StringStubIndexExtension, StubIndex}
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 
 import java.{util => ju}

@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.matcher
 
-import com.intellij.codeInsight.FileModificationService
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.FileModificationService
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.codeEditor.Editor
+import consulo.fileEditor.history.IdeDocumentHistory
+import consulo.project.Project
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, _}

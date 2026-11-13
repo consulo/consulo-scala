@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.openapi.util.Iconable
-import com.intellij.psi.PsiModifierListOwner
+import consulo.component.util.Iconable
+import com.intellij.java.language.psi.PsiModifierListOwner
 
 import javax.swing.Icon
 

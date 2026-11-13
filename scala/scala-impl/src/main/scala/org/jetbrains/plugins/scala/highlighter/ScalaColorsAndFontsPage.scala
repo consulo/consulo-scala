@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeHighlighting.RainbowHighlighter
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.fileTypes.{SyntaxHighlighter, SyntaxHighlighterFactory}
-import com.intellij.openapi.options.colors.{AttributesDescriptor, ColorDescriptor, RainbowColorSettingsPage}
+import consulo.language.editor.rawHighlight.RainbowHighlighter
+import consulo.colorScheme.TextAttributesKey
+import consulo.language.editor.highlight.{SyntaxHighlighter, SyntaxHighlighterFactory}
+import consulo.colorScheme.setting.{AttributesDescriptor, ColorDescriptor}
+import consulo.language.editor.colorScheme.setting.RainbowColorSettingsPage
 import org.jetbrains.plugins.scala.highlighter.DefaultHighlighter._
-import org.jetbrains.plugins.scala.{NlsString, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{NlsString, ScalaLanguage}
 
 import java.util
 import javax.swing.Icon

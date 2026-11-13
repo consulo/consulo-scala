@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.actions
 
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.project.Project
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.ScalaHighlightingModeAction.perform
 import org.jetbrains.plugins.scala.settings.ShowSettingsUtilImplExt

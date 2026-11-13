@@ -2,9 +2,9 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.codeVision
 
 import com.intellij.codeInsight.daemon.impl.JavaCodeVisionUsageCollector.{CLASS_LOCATION, METHOD_LOCATION, logCodeAuthorClicked}
-import com.intellij.codeInsight.hints.VcsCodeVisionLanguageContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
+import consulo.versionControlSystem.codeVision.VcsCodeVisionLanguageContext
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.{getParentOfType, isAncestor}
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement}
-import com.intellij.usages.impl.rules.UsageType._
-import com.intellij.usages.impl.rules.{UsageType, UsageTypeProviderEx}
-import com.intellij.usages.{PsiElementUsageTarget, UsageTarget}
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.{getParentOfType, isAncestor}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.usage.UsageType._
+import consulo.usage.{UsageType, UsageTypeProviderEx}
+import consulo.usage.{PsiElementUsageTarget, UsageTarget}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

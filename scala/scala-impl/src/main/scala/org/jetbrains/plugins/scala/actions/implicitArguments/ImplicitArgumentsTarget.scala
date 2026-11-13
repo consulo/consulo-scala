@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil

@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
 import com.intellij.codeInsight.intention.impl.preview.IntentionPreviewEditor
-import com.intellij.codeInsight.template.{Template, TemplateEditingAdapter}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiMethod}
+import consulo.language.editor.template.Template
+import consulo.language.editor.template.event.TemplateEditingAdapter
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOnlyStrategy._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil

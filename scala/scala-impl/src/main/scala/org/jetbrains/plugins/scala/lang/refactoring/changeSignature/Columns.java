@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature;
 
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.refactoring.changeSignature.ParameterInfo;
-import com.intellij.refactoring.changeSignature.ParameterTableModelBase;
-import com.intellij.refactoring.changeSignature.ParameterTableModelItemBase;
-import com.intellij.util.ui.ColumnInfo;
+import consulo.virtualFileSystem.fileType.FileType;
+import consulo.project.Project;
+import consulo.language.psi.PsiElement;
+import consulo.language.editor.refactoring.changeSignature.ParameterInfo;
+import consulo.language.editor.refactoring.changeSignature.ParameterTableModelBase;
+import consulo.language.editor.refactoring.changeSignature.ParameterTableModelItemBase;
+import consulo.ui.ex.awt.ColumnInfo;
 
 //sole purpose of this class is to expose protected static classes of ParameterTableModelBase
 public abstract class Columns extends ParameterTableModelBase {

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{StubBase, StubElement}
-import com.intellij.psi.tree.IElementType
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{StubBase, StubElement}
+import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.{ScExportStmt, ScImportOrExportStmt, ScImportStmt}
 import org.jetbrains.plugins.scala.lang.psi.stubs.{ScExportStmtStub, ScImportOrExportStmtStub, ScImportStmtStub}
 

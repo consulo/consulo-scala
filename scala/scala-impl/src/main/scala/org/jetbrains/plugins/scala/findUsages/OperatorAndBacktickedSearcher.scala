@@ -1,19 +1,23 @@
 package org.jetbrains.plugins.scala.findUsages
 
 import com.intellij.codeInsight.TargetElementUtilBase.TARGET_ELEMENT_EVALUATOR
-import com.intellij.openapi.application.ReadActionProcessor
-import com.intellij.openapi.project.{IndexNotReadyException, Project}
-import com.intellij.openapi.util.Condition
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.impl.cache.impl.id.{IdIndex, IdIndexEntry}
+import consulo.application.util.ReadActionProcessor
+import consulo.application.dumb.IndexNotReadyException
+import consulo.project.Project
+import consulo.util.lang.function.Condition
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.psi.impl.cache.impl.id.IdIndex
+import consulo.language.psi.stub.IdIndexEntry
 import com.intellij.psi.impl.search.PsiSearchHelperImpl
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{GlobalSearchScope, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.{PsiElement, PsiReference}
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.{PsiElement, PsiReference}
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.intellij.util.containers.ContainerUtil
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.{CommonProcessors, Processor, QueryExecutor}
+import consulo.util.collection.ContainerUtil
+import consulo.language.psi.stub.FileBasedIndex
+import consulo.application.util.function.{CommonProcessors, Processor}
+import consulo.application.util.query.QueryExecutor
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

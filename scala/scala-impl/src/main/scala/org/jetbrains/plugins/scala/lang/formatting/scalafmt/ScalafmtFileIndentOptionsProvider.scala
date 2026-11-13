@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.PsiFile
-import com.intellij.psi.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings, PsiBasedFileIndentOptionsProvider}
+import consulo.logging.Logger
+import consulo.language.psi.PsiFile
+import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
+import com.intellij.psi.codeStyle.PsiBasedFileIndentOptionsProvider
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtFileIndentOptionsProvider.Log
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtNotifications.FmtVerbosity.Silent
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.dynamic.ScalafmtIndents

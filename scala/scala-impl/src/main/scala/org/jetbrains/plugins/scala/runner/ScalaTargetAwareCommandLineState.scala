@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.runner
 
-import com.intellij.execution.configurations.JavaCommandLineState
-import com.intellij.execution.process.{KillableColoredProcessHandler, OSProcessHandler, ProcessTerminatedListener}
-import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.java.execution.configurations.JavaCommandLineState
+import com.intellij.execution.process.{KillableColoredProcessHandler, OSProcessHandler}
+import consulo.execution.process.ProcessTerminatedListener
+import consulo.execution.runner.ExecutionEnvironment
 import com.intellij.execution.target.TargetProgressIndicator
-import com.intellij.openapi.progress.EmptyProgressIndicator
-import org.jetbrains.annotations.ApiStatus
+import consulo.application.progress.EmptyProgressIndicator
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 abstract class ScalaTargetAwareCommandLineState(env: ExecutionEnvironment) extends JavaCommandLineState(env) {
 
   /**

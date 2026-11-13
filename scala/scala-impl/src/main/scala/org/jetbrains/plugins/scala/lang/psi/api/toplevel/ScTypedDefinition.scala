@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.lang.psi.api.PropertyMethods.DefinitionRole
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

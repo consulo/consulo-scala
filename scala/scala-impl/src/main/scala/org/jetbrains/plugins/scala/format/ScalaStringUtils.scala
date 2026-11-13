@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.format
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.util.text.CharSequenceSubSequence
+import consulo.util.lang.StringUtil
+import consulo.util.lang.CharSequenceSubSequence
 import org.jetbrains.plugins.scala.lang.psi.impl.base.literals.escapers.ScalaStringParser
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 

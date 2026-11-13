@@ -1,21 +1,26 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
-import com.intellij.extapi.psi.PsiFileBase
-import com.intellij.lang.Language
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.impl.light.LightPsiClassBuilder
-import com.intellij.psi.impl.source.{PostprocessReformattingAspect, codeStyle}
-import com.intellij.psi.impl.{DebugUtil, ResolveScopeManager}
-import com.intellij.psi.search.{GlobalSearchScope, SearchScope}
-import com.intellij.psi.util.PsiUtilCore
-import com.intellij.psi.{FileResolveScopeProvider, FileViewProvider, PsiClass, PsiDocumentManager, PsiElement, PsiReference}
-import com.intellij.util.ThrowableRunnable
+import consulo.language.impl.psi.PsiFileBase
+import consulo.language.Language
+import consulo.logging.Logger
+import consulo.document.Document
+import consulo.language.file.LanguageFileType
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.nodep.io.FileUtilRt
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.impl.psi.impl.light.LightPsiClassBuilder
+import consulo.language.codeStyle.PostprocessReformattingAspect
+import com.intellij.psi.impl.source.codeStyle
+import consulo.language.impl.DebugUtil
+import consulo.language.impl.psi.ResolveScopeManager
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.content.scope.SearchScope
+import consulo.language.psi.PsiUtilCore
+import consulo.language.psi.{FileResolveScopeProvider, PsiDocumentManager, PsiElement, PsiReference}
+import consulo.language.file.FileViewProvider
+import com.intellij.java.language.psi.PsiClass
+import consulo.util.lang.function.ThrowableRunnable
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
@@ -23,7 +28,7 @@ import org.jetbrains.plugins.scala.finder.{ResolveFilterScope, WorksheetResolveF
 import org.jetbrains.plugins.scala.lang.TokenSets._
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType._
 import org.jetbrains.plugins.scala.lang.psi.ScDeclarationSequenceHolder
-import org.jetbrains.plugins.scala.lang.psi.api._
+import org.jetbrains.plugins.scala.api.lang.psi.api._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScPatternDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt
@@ -33,8 +38,9 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScFileStub
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.tasty.reader.CompilerOptions
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TopLevelDefinitionsClassNameSuffix
-import org.jetbrains.plugins.scala.{JavaArrayFactoryUtil, ScalaFileType}
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TopLevelDefinitionsClassNameSuffix
+import org.jetbrains.plugins.scala.JavaArrayFactoryUtil
+import org.jetbrains.plugins.scala.api.ScalaFileType
 
 import java.{util => ju}
 import scala.annotation.tailrec

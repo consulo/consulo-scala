@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 package typedef
 
-import com.intellij.navigation.NavigationItem
-import com.intellij.psi._
-import com.intellij.psi.impl.PsiClassImplUtil
+import consulo.navigation.NavigationItem
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.impl.psi.impl.PsiClassImplUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.adapters.PsiClassAdapter
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaElementVisitor

@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.factories
 
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.stubs.{IndexSink, StubElement, StubOutputStream, StubSerializingElementFactory}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.language.psi.PsiElement
+import consulo.language.psi.stub.{IndexSink, StubElement, StubOutputStream}
+import com.intellij.psi.stubs.StubSerializingElementFactory
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScStubElementType
 import org.jetbrains.plugins.scala.lang.psi.tree.IScalaElementType
 

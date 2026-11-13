@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
-import com.intellij.codeInsight.template._
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.template.{Expression, TemplateManager}
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.event.TemplateEditingListener
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 
 package object types {
 

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo
 
-import com.intellij.lang.Language
-import com.intellij.psi._
-import com.intellij.refactoring.util.CanonicalTypes
-import com.intellij.refactoring.util.CanonicalTypes.Type
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.language.Language
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiCallExpression, PsiExpression, PsiIdentifier, PsiMethod}
+import com.intellij.java.impl.refactoring.util.CanonicalTypes
+import com.intellij.java.impl.refactoring.util.CanonicalTypes.Type
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScMethodLike, ScalaConstructor}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction

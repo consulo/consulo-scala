@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.project.sdkdetect.repository
 
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.plugins.scala.project.sdkdetect.repository.CompilerClasspathResolveFailure.NotSupportedForScalaVersion
 import org.jetbrains.plugins.scala.project.template.ScalaSdkDescriptor
 

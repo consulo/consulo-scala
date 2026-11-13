@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
-import com.intellij.psi.impl.light.LightMethod
-import com.intellij.psi.scope.{ElementClassHint, NameHint, PsiScopeProcessor}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.isContextAncestor
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiElementFactory, PsiField, PsiMethod}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.impl.light.LightMethod
+import com.intellij.java.language.impl.psi.scope.{ElementClassHint, NameHint}
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.isContextAncestor
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil._
@@ -24,7 +27,8 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveState.ResolveStateExt
 import org.jetbrains.plugins.scala.lang.resolve.{ScalaResolveResult, StdKinds}
 import org.jetbrains.plugins.scala.lang.resolve.processor._
-import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectPsiElementExt, ScalaFeatures, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectPsiElementExt, ScalaFeatures}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
 import java.{util => ju}

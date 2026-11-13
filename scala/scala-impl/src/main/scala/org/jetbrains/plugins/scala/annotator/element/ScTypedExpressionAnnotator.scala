@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.openapi.util.TextRange
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.{ScalaAnnotationHolder, TypeDiff}
 import org.jetbrains.plugins.scala.annotator.TypeDiff.{Mismatch, asString}

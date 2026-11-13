@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionContributor, CompletionParameters, CompletionType, CompletionUtilCore, InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType, CompletionUtilCore}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import com.intellij.codeInsight.template.TemplateBuilderImpl
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.ProcessingContext
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.completion.ScalaNamedTupleCompletionContributor.ScalaNamedTupleCompletionProvider
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScNamedTuple, ScNamedTupleExprComponent, ScParenthesisedExpr, ScReferenceExpression}

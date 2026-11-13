@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.filters.toplevel
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.impl.source.tree.{LeafElement, LeafPsiElement}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.filter.ElementFilter
+import consulo.language.impl.ast.LeafElement
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

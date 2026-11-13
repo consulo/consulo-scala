@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
-import com.intellij.codeInsight.completion.{InsertHandler, InsertionContext}
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil.{getContextOfType, getNextSiblingOfType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiDocumentManager
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil.{getContextOfType, getNextSiblingOfType}
 import org.jetbrains.plugins.scala.lang.completion.InsertionContextExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScCaseClause, ScCaseClauses}

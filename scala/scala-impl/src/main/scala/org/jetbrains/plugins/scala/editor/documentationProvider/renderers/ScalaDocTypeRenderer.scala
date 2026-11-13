@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.renderers
 
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.{PsiClass, PsiElement, PsiNamedElement, PsiPackage}
+import consulo.colorScheme.TextAttributesKey
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
 import org.apache.commons.text.StringEscapeUtils.escapeHtml4
 import org.jetbrains.plugins.scala.editor.documentationProvider.renderers.ScalaDocTypeRenderer.StaticJavaClassHolder
 import org.jetbrains.plugins.scala.editor.documentationProvider.{HtmlBuilderWrapper, HtmlPsiUtils}

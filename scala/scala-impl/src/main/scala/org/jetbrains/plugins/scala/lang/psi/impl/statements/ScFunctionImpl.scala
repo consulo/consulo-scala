@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.DumbService
-import com.intellij.psi.PsiReferenceList.Role
-import com.intellij.psi._
-import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.{MethodSignatureBackedByPsiMethod, PsiTreeUtil}
+import consulo.language.ast.ASTNode
+import consulo.project.DumbService
+import com.intellij.java.language.psi.PsiReferenceList.Role
+import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiClass, PsiClassType, PsiCodeBlock, PsiElementFactory, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMethod, PsiReferenceList, PsiSubstitutor, PsiType}
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import com.intellij.java.language.impl.psi.impl.source.HierarchicalMethodSignatureImpl
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.ast.TokenSet
+import com.intellij.java.language.psi.util.MethodSignatureBackedByPsiMethod
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.ui.{IconManager, PlatformIcons}
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions._
@@ -25,7 +28,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.{ScExtendsBlock, ScTemplateBody}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScMember, ScTrait, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypeParametersOwner}
-import org.jetbrains.plugins.scala.lang.psi.api.{ScFile, ScalaFile, ScalaPsiElement}
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiReferenceList
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createIdentifier
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaStubBasedElementImpl

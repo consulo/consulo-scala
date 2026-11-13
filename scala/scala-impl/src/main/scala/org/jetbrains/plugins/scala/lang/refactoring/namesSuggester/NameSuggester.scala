@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester
 
-import com.intellij.openapi.util.text.{LiteralNameSuggester, StringUtil}
+import com.intellij.java.impl.psi.impl.source.codeStyle.LiteralNameSuggester
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

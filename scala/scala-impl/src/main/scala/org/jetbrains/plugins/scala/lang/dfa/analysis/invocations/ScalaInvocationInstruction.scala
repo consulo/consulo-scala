@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations
 
-import com.intellij.codeInsight.Nullability
-import com.intellij.codeInspection.dataFlow.interpreter.DataFlowInterpreter
-import com.intellij.codeInspection.dataFlow.java.JavaDfaHelpers
-import com.intellij.codeInspection.dataFlow.lang.ir.{DfaInstructionState, ExpressionPushingInstruction}
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.types.{DfType, DfTypes}
-import com.intellij.codeInspection.dataFlow.value.{DfaControlTransferValue, DfaValue, DfaValueFactory, DfaVariableValue}
-import com.intellij.codeInspection.dataFlow.{ContractValue, DfaCallArguments, DfaCallState, DfaNullability, MethodContract}
-import com.intellij.util.ThreeState
+import com.intellij.java.language.codeInsight.Nullability
+import consulo.language.dataFlow.interpreter.DataFlowInterpreter
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.java.JavaDfaHelpers
+import consulo.language.dataFlow.ir.{DfaInstructionState, ExpressionPushingInstruction}
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.types.DfType
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.DfTypes
+import consulo.language.dataFlow.value.{DfaControlTransferValue, DfaValue, DfaValueFactory, DfaVariableValue}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.{ContractValue, DfaCallArguments, DfaCallState, MethodContract}
+import consulo.language.dataFlow.types.DfaNullability
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.ScalaNullAccessProblem
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.AnalysedMethodInfo
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.InterproceduralAnalysis.tryInterpretExternalMethod

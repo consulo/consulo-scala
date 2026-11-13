@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.codeInsight.hint.{HintManager, HintManagerImpl, HintUtil}
-import com.intellij.openapi.editor.Editor
-import com.intellij.ui.LightweightHint
-import com.intellij.util.ui.JBUI
+import consulo.language.editor.hint.HintManager
+import com.intellij.codeInsight.hint.HintManagerImpl
+import consulo.language.editor.ui.awt.HintUtil
+import consulo.codeEditor.Editor
+import consulo.ui.ex.awt.hint.LightweightHint
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 

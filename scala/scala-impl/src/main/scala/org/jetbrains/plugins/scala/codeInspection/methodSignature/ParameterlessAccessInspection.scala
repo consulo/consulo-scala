@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
-import com.intellij.codeInspection._
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiFile, PsiMethod}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile}
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.annotator.quickfix.AddCallParenthesesQuickFix
 import org.jetbrains.plugins.scala.codeInspection.PsiElementVisitorSimple
 import org.jetbrains.plugins.scala.lang.psi.api.expr._

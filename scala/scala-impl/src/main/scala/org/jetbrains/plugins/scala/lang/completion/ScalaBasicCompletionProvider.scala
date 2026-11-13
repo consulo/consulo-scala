@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, InsertionContext}
-import com.intellij.codeInsight.lookup.{InsertHandlerDecorator, LookupElement, LookupElementDecorator}
-import com.intellij.lang.jvm.JvmClassKind
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiTreeUtil.{findElementOfClassAtOffset, getContextOfType}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
+import consulo.language.editor.completion.lookup.InsertionContext
+import com.intellij.codeInsight.lookup.InsertHandlerDecorator
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator}
+import com.intellij.java.language.jvm.JvmClassKind
+import consulo.application.progress.ProgressManager
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiNamedElement}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil.{findElementOfClassAtOffset, getContextOfType}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion

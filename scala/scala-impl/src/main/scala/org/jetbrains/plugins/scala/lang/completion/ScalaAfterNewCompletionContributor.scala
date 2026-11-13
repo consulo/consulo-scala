@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup._
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope}
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.AutoCompletionPolicy
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation, LookupElementRenderer}
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaConstructorInsertHandler
 import org.jetbrains.plugins.scala.lang.completion.lookups.{PresentationExt, ScalaLookupItem}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings

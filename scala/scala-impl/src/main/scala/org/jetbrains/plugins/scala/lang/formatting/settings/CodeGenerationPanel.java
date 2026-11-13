@@ -1,15 +1,14 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings;
 
 import com.intellij.application.options.codeStyle.CommenterForm;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable;
-import com.intellij.ui.IdeBorderFactory;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.codeStyle.CodeStyleSettings;
+import consulo.language.codeStyle.setting.CodeStyleSettingsCustomizable;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.util.collection.ContainerUtil;
 import com.intellij.util.containers.ImmutableList;
-import com.intellij.util.ui.JBInsets;
-import org.jetbrains.annotations.NotNull;
+import consulo.ui.ex.awt.JBInsets;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.ScalaLanguage;
+import org.jetbrains.plugins.scala.api.ScalaLanguage;
 
 import javax.swing.*;
 import java.util.List;
@@ -19,7 +18,7 @@ public final class CodeGenerationPanel extends ScalaCodeStylePanelBase {
     private final JPanel panel;
     private final CommenterForm myCommenterForm;
 
-    CodeGenerationPanel(@NotNull CodeStyleSettings settings) {
+    CodeGenerationPanel(CodeStyleSettings settings) {
         super(settings, ScalaBundle.message("codegeneration.panel.title"));
 
         myCommenterForm = new CommenterForm(ScalaLanguage.INSTANCE);
@@ -39,7 +38,7 @@ public final class CodeGenerationPanel extends ScalaCodeStylePanelBase {
     );
 
     @Override
-    public void apply(@NotNull CodeStyleSettings settings) {
+    public void apply(CodeStyleSettings settings) {
         if (isModified(settings)) myCommenterForm.apply(settings);
     }
 
@@ -54,7 +53,7 @@ public final class CodeGenerationPanel extends ScalaCodeStylePanelBase {
     }
 
     @Override
-    protected void resetImpl(@NotNull CodeStyleSettings settings) {
+    protected void resetImpl(CodeStyleSettings settings) {
         myCommenterForm.reset(settings);
     }
 }

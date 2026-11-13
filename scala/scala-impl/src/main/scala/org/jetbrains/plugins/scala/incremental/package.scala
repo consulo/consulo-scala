@@ -1,12 +1,14 @@
 package org.jetbrains.plugins
 package scala
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, DaemonCodeAnalyzerImpl, FileStatusMap}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.language.editor.DaemonCodeAnalyzer
+import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, DaemonCodeAnalyzerImpl}
+import consulo.language.editor.FileStatusMap
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nullable
 
 package object incremental {

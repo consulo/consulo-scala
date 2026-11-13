@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.lexer
 
-import com.intellij.lexer.{LexerBase, MergingLexerAdapter}
-import com.intellij.psi.tree.{IElementType, TokenSet}
-import com.intellij.util.text.CharArrayUtil
+import consulo.language.lexer.{LexerBase, MergingLexerAdapter}
+import consulo.language.ast.{IElementType, TokenSet}
+import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType._
 
 import java.io.IOException

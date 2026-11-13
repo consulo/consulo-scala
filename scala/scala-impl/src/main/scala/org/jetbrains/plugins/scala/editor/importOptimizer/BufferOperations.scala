@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
-import com.intellij.lang.ASTNode
+import consulo.language.ast.ASTNode
 
 import scala.annotation.tailrec
 import scala.collection.mutable

@@ -4,15 +4,14 @@ package org.jetbrains.plugins.scala
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.LocalEelDescriptor
 import com.intellij.platform.eel.provider.utils.EelPathUtils
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, ivyHome}
 import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.nio.file.{Files, Path}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 private[scala] class EelAwareDependencyManager extends DependencyManagerBase {
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   def resolveSafeAndTransferToRemoteEel(eelDescriptor: EelDescriptor, dependencies: DependencyDescription*): Seq[Path] = {
     val resolvedPaths = resolveSafe(dependencies*).toOption.getOrElse(Seq.empty).map(_.file)
     eelDescriptor match {

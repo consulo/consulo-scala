@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
-import com.intellij.lang.cacheBuilder.WordsScanner
-import com.intellij.lang.findUsages.FindUsagesProvider
-import com.intellij.psi._
-import com.intellij.psi.util.{PsiFormatUtil, PsiFormatUtilBase}
+import consulo.language.cacheBuilder.WordsScanner
+import consulo.language.findUsage.FindUsagesProvider
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiSubstitutor, PsiVariable}
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.language.psi.util.{PsiFormatUtil, PsiFormatUtilBase}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._

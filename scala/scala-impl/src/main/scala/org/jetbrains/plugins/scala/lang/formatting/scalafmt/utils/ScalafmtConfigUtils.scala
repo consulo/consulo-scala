@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.utils
 
-import com.intellij.openapi.project.{Project, ProjectUtil}
-import com.intellij.openapi.vfs.{StandardFileSystems, VirtualFile}
-import com.intellij.vcsUtil.VcsUtil
+import consulo.project.Project
+import consulo.project.util.ProjectUtil
+import consulo.virtualFileSystem.{StandardFileSystems, VirtualFile}
+import consulo.versionControlSystem.util.VcsUtil
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicConfigService.DefaultConfigurationFileName

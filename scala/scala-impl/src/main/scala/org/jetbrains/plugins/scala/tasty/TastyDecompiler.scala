@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.tasty
 
-import com.intellij.openapi.fileTypes.BinaryFileDecompiler
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.virtualFileSystem.BinaryFileDecompiler
+import consulo.virtualFileSystem.VirtualFile
 
 /**
  * Implementation of IntelliJ decompiler interface ([[BinaryFileDecompiler]])

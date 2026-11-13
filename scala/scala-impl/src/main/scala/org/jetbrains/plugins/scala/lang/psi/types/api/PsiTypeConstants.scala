@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.intellij.psi.PsiTypes
+import com.intellij.java.language.psi.PsiTypes
 
 /**
  * Scala constants referencing [[com.intellij.psi.PsiType]] deprecated constants, for use

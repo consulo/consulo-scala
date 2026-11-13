@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.codeInsight.editorActions.enter.{EnterHandlerDelegate, EnterHandlerDelegateAdapter}
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.util.{Ref, TextRange}
-import com.intellij.psi.PsiFile
+import consulo.language.editor.action.EnterHandlerDelegate.Result
+import consulo.language.editor.action.{EnterHandlerDelegate, EnterHandlerDelegateAdapter}
+import consulo.dataContext.DataContext
+import consulo.codeEditor.action.EditorActionHandler
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.util.lang.ref.Ref
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.editor.enterHandler.PackageSplitEnterHandler._
 
 import scala.util.matching.Regex

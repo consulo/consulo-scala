@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
-import com.intellij.codeInsight.lookup.{Lookup, LookupActionProvider, LookupElement, LookupElementAction}
-import com.intellij.psi.{PsiClass, PsiNamedElement}
-import com.intellij.util.ui.EmptyIcon
+import consulo.language.editor.completion.lookup.{Lookup, LookupActionProvider, LookupElement, LookupElementAction}
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiNamedElement
+import consulo.ui.ex.awt.EmptyIcon
 import com.intellij.util.{Consumer, PlatformIcons}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt

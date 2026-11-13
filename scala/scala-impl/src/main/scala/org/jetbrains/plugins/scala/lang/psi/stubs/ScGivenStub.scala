@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
-import com.intellij.psi.stubs.IndexSink
+import consulo.language.psi.stub.IndexSink
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenAlias, ScGivenDefinition}
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScGivenIndex
 

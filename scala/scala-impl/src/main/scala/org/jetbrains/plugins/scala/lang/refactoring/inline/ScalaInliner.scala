@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.usageView.UsageInfo
+import consulo.language.psi.PsiElement
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.usage.UsageInfo
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.format.{AnyStringParser, Injection, InterpolatedStringFormatter, InterpolatedStringParser, StringPart}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral

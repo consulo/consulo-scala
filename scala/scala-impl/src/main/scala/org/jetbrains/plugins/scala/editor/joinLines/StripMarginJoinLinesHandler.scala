@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.editor.joinLines
 
-import com.intellij.codeInsight.editorActions.{JoinLinesHandlerDelegate, JoinRawLinesHandlerDelegate}
-import com.intellij.openapi.editor.Document
-import com.intellij.psi._
+import consulo.language.editor.action.{JoinLinesHandlerDelegate, JoinRawLinesHandlerDelegate}
+import consulo.document.Document
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.Parent
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

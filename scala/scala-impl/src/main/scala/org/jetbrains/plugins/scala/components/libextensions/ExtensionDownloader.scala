@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
 import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
-import com.intellij.openapi.vfs.{JarFileSystem, VirtualFile}
-import com.intellij.psi.search.{FilenameIndex, GlobalSearchScope}
+import consulo.logging.Logger
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.content.library.LibraryTablesRegistrar
+import com.intellij.openapi.vfs.JarFileSystem
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.search.FilenameIndex
+import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.util.download.DownloadableFileService
 import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, IvyResolver, MavenResolver}
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager._

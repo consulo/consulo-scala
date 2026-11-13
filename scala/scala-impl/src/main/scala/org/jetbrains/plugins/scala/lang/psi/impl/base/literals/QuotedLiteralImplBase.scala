@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 package literals
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
 import com.intellij.psi.util
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.lexer
 
-import com.intellij.lexer.LexerBase
-import com.intellij.psi.tree.IElementType
+import consulo.language.lexer.LexerBase
+import consulo.language.ast.IElementType
 import org.intellij.markdown.MarkdownTokenTypes
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.ScalaDocMarkdownFlavour

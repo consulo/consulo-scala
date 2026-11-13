@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
-import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.util.IncorrectOperationException
+import consulo.language.ast.ASTNode
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiComment, PsiElement, PsiReference}
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

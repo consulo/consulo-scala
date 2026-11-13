@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis
 
-import com.intellij.codeInspection.dataFlow.interpreter.{ReachabilityCountingInterpreter, RunnerResult}
-import com.intellij.codeInspection.dataFlow.jvm.JvmDfaMemoryStateImpl
-import com.intellij.codeInspection.dataFlow.lang.ir.{ControlFlow, DfaInstructionState}
-import com.intellij.codeInspection.dataFlow.value.DfaValueFactory
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.Project
+import consulo.language.dataFlow.interpreter.{ReachabilityCountingInterpreter, RunnerResult}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.JvmDfaMemoryStateImpl
+import consulo.language.dataFlow.ir.{ControlFlow, DfaInstructionState}
+import consulo.language.dataFlow.value.DfaValueFactory
+import com.thaiopensource.util.Service
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.project.Project
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.lang.dfa.analysis.framework.{ScalaDfaListener, ScalaDfaResult}
 import org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.interprocedural.AnalysedMethodInfo

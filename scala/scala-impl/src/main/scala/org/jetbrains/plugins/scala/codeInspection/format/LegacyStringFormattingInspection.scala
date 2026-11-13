@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.format
 
-import com.intellij.codeInspection._
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.format.LegacyStringFormattingInspection._
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.format._

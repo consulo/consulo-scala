@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiDocCommentOwner, PsiElement, PsiNamedElement}
+import consulo.language.editor.intention.IntentionAction
+import consulo.codeEditor.Editor
+import com.intellij.java.language.psi.PsiDocCommentOwner
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.UnresolvedReferenceFixProvider
 import org.jetbrains.plugins.scala.autoImport.quickFix.ScalaImportElementFix.isExcluded

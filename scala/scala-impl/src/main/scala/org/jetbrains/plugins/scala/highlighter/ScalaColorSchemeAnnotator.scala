@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType
+import consulo.language.editor.rawHighlight.HighlightInfoType
 import com.intellij.codeInspection.util.InspectionMessage
-import com.intellij.lang.annotation.{AnnotationHolder, Annotator}
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
+import consulo.colorScheme.TextAttributesKey
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder

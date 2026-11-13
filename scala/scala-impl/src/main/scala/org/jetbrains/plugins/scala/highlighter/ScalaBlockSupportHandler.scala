@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import com.intellij.codeInsight.highlighting.CodeBlockSupportHandler
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
+import consulo.language.editor.highlight.CodeBlockSupportHandler
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScBegin
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd

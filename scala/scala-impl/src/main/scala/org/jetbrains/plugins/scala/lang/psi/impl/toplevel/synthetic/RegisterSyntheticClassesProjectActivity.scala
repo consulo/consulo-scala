@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.{DumbModeTask, DumbService, Project}
+import consulo.application.ApplicationManager
+import consulo.application.progress.ProgressIndicator
+import consulo.project.{DumbModeTask, DumbService, Project}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 

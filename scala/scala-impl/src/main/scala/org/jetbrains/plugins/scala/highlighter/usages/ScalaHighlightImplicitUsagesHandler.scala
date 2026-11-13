@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.highlighter.usages
 
-import com.intellij.codeInsight.highlighting.{HighlightUsagesHandler, HighlightUsagesHandlerBase}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, ReferenceRange}
+import com.intellij.codeInsight.highlighting.HighlightUsagesHandler
+import consulo.language.editor.highlight.usage.HighlightUsagesHandlerBase
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, ReferenceRange}
 import com.intellij.util.Consumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightImplicitUsagesHandler.TargetKind

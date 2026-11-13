@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.editor.colors.{EditorColorsScheme, EditorFontType}
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.psi.PsiElement
+import consulo.ui.ex.action.ActionGroup
+import consulo.colorScheme.{EditorColorsScheme, EditorFontType}
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.annotator.hints.Hint.{HintPosition, MenuProvider}
 import org.jetbrains.plugins.scala.extensions.ObjectExt

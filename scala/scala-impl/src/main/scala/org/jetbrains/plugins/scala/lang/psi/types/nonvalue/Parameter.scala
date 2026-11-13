@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.types.nonvalue
 
-import com.intellij.psi.PsiParameter
+import com.intellij.java.language.psi.PsiParameter
 import org.jetbrains.plugins.scala.extensions.PsiParameterExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.types._

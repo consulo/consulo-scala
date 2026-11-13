@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractTrait
 
-import com.intellij.openapi.roots.{ProjectFileIndex, ProjectRootManager}
-import com.intellij.openapi.util.Comparing
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.util.RefactoringMessageUtil
+import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
+import consulo.util.lang.Comparing
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
+import consulo.language.psi.{PsiDirectory, PsiPackage}
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.impl.refactoring.util.RefactoringMessageUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScalaConstructor

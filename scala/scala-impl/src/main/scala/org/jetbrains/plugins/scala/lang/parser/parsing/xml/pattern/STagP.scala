@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.parser.parsing.xml.pattern
 
-import com.intellij.psi.xml.XmlTokenType
+import consulo.xml.language.psi.XmlTokenType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaXmlTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.{ErrMsg, ScalaElementType}
 import org.jetbrains.plugins.scala.lang.parser.parsing.ParsingRule

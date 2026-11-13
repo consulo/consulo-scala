@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.runner.view
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMethodParameters.CustomParameter
 

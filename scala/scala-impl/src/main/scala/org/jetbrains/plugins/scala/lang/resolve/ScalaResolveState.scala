@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.resolve
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiClass, ResolveState}
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtension
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.usages.ImportUsed

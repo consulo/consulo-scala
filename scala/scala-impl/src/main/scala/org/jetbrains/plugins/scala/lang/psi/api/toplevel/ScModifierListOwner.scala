@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.psi._
+import com.intellij.java.language.psi.PsiModifier
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions.{StubBasedExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType

@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis.invocations.specialSupport
 
-import com.intellij.codeInspection.dataFlow.jvm.SpecialField
-import com.intellij.codeInspection.dataFlow.memory.DfaMemoryState
-import com.intellij.codeInspection.dataFlow.rangeSet.LongRangeSet
-import com.intellij.codeInspection.dataFlow.types.{DfIntConstantType, DfIntegralType, DfReferenceType, DfType}
-import com.intellij.codeInspection.dataFlow.value.{DfaValue, DfaValueFactory}
-import com.intellij.psi.{PsiClass, PsiElement, PsiMember}
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.SpecialField
+import consulo.language.dataFlow.memory.DfaMemoryState
+import consulo.language.dataFlow.rangeSet.LongRangeSet
+import com.intellij.java.analysis.impl.codeInspection.dataFlow.types.{DfIntConstantType, DfReferenceType}
+import consulo.language.dataFlow.types.{DfIntegralType, DfType}
+import consulo.language.dataFlow.value.{DfaValue, DfaValueFactory}
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.InvocationInfo
 import org.jetbrains.plugins.scala.lang.dfa.invocationInfo.arguments.Argument

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScFor, ScIf, ScWhile}

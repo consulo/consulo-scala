@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.ScalaCodeInsightActionHandler
 import org.jetbrains.plugins.scala.overrideImplement.ScalaOIUtil.invokeOverrideImplement
 

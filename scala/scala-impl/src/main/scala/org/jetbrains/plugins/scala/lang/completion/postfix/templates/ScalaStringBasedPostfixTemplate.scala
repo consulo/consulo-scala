@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
-import com.intellij.codeInsight.template.postfix.templates.{PostfixTemplateExpressionSelectorBase, StringBasedPostfixTemplate}
-import com.intellij.psi.PsiElement
+import consulo.language.editor.refactoring.postfixTemplate.PostfixTemplateExpressionSelectorBase
+import com.intellij.codeInsight.template.postfix.templates.StringBasedPostfixTemplate
+import consulo.language.psi.PsiElement
 
 abstract class ScalaStringBasedPostfixTemplate(name: String,
                                                example: String,

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.format
 
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{&, ContainingClass, ObjectExt, PsiClassExt, PsiReferenceEx}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

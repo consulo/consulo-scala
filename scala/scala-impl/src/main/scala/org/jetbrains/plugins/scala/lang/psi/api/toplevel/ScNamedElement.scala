@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
-import com.intellij.extapi.psi.StubBasedPsiElementBase
-import com.intellij.navigation.ItemPresentation
+import consulo.language.impl.psi.stub.StubBasedPsiElementBase
+import consulo.navigation.ItemPresentation
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.stubs.{NamedStub, StubElement}
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.util.lang.StringUtil
+import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNameIdentifierOwner, PsiNamedElement}
+import com.intellij.java.language.psi.PsiIdentifier
+import com.intellij.psi.PsiNamedElementWithCustomPresentation
+import consulo.language.psi.stub.{NamedStub, StubElement}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached}
 import org.jetbrains.plugins.scala.extensions.ObjectExt

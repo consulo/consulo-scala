@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
 import com.intellij.modcommand.{ActionContext, ModCommand, ModPsiUpdater, PsiBasedModCommandAction}
-import com.intellij.openapi.project.DumbAware
+import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScGenericCall, ScInfixExpr, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

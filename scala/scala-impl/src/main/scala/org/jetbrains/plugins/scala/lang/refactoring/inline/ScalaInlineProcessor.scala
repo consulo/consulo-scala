@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.module.UnloadedModuleDescription
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.{PsiElement, PsiFile, PsiReference}
-import com.intellij.refactoring.{BaseRefactoringProcessor, RefactoringBundle}
-import com.intellij.usageView.{UsageInfo, UsageViewBundle, UsageViewDescriptor, UsageViewUtil}
+import consulo.java.impl.refactoring.JavaRefactoringBundle
+import consulo.document.Document
+import consulo.document.FileDocumentManager
+import consulo.module.UnloadedModuleDescription
+import consulo.project.Project
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.{PsiElement, PsiFile, PsiReference}
+import consulo.language.editor.refactoring.{BaseRefactoringProcessor, RefactoringBundle}
+import consulo.usage.{UsageInfo, UsageViewBundle, UsageViewDescriptor, UsageViewUtil}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.{&, inReadAction}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
