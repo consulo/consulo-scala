@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala
 
+import consulo.platform.Platform
 
 import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
@@ -932,10 +933,11 @@ package object project {
   }
 
   private def withPathsRelativeTo(baseDirectory: String, options: Seq[String], project: Project): Seq[String] = {
+    val platform = project.getPlatform
     options.map { option =>
       if (option.startsWith("-Xplugin:")) {
         val compoundPath = option.substring(9)
-        val compoundPathAbsolute = toAbsoluteCompoundPath(baseDirectory, compoundPath)
+        val compoundPathAbsolute = toAbsoluteCompoundPath(baseDirectory, compoundPath, platform)
         "-Xplugin:" + compoundPathAbsolute
       } else {
         option
@@ -944,24 +946,25 @@ package object project {
   }
 
   // SCL-11861, SCL-18534
-  private def toAbsoluteCompoundPath(baseDirectory: String, compoundPath: String): String = {
+  private def toAbsoluteCompoundPath(baseDirectory: String, compoundPath: String, platform: Platform): String = {
     // according to https://docs.scala-lang.org/overviews/compiler-options/index.html
     // `,` is used as plugins separator: `-Xplugin PATHS1,PATHS2`
     // but in SCL-11861 `;` is used
     val pluginSeparator = if (compoundPath.contains(";")) ';' else ','
 
     val paths = compoundPath.split(pluginSeparator)
-    val pathsAbsolute = paths.map(toAbsolutePath(baseDirectory, _))
+    val pathsAbsolute = paths.map(toAbsolutePath(baseDirectory, _, platform))
     pathsAbsolute.mkString(pluginSeparator.toString)
   }
 
   /**
-   * Converts `rawPath` to an absolute local path: relative paths are resolved against `baseDirectory`.
-   * (upstream also handles paths of remote eel environments, Consulo runs on the local platform)
+   * Converts `rawPath` to a path which can be used inside the target machine (project's [[Platform]]):
+   * relative paths are resolved against `baseDirectory`, paths are parsed by the platform file system,
+   * so OS rules of the target machine apply.
    */
-  private def toAbsolutePath(baseDirectory: String, rawPath: String): String = {
-    val path = Path.of(rawPath)
+  private def toAbsolutePath(baseDirectory: String, rawPath: String, platform: Platform): String = {
+    val path = platform.fs().getPath(rawPath)
     if (path.isAbsolute) rawPath
-    else Path.of(baseDirectory).resolve(rawPath).toString
+    else platform.fs().getPath(baseDirectory).resolve(path).toString
   }
 }

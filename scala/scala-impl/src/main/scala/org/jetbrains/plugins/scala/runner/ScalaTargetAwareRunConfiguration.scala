@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.content.bundle.{Sdk, SdkTable}
+import consulo.platform.Platform
 import consulo.execution.CantRunException
 import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule}
 import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.target.java.{JavaLanguageRuntimeConfiguration, JavaLanguageRuntimeType}
 import com.intellij.execution.target.{LanguageRuntimeType, TargetEnvironmentAwareRunProfile, TargetEnvironmentConfiguration}
-import com.intellij.openapi.projectRoots.ProjectJdkTable
 
 import java.nio.file.Path
 
@@ -51,24 +52,19 @@ abstract class ScalaTargetAwareRunConfiguration[M <: RunConfigurationModule, S](
    * Same as `com.intellij.execution.JavaRunConfigurationBase#runsUnderRemoteJdk`.
    */
   private def runsUnderRemoteJdk(): Boolean = {
-    // upstream: !EelPathUtils.isPathLocal(path) - all paths of Consulo platform are local
-    val pathNotLocal: Path => Boolean = _ => false
-    val stringToPath: String => Path = Path.of(_)
-    jdkHomeSatisfies(stringToPath andThen pathNotLocal)
+    // upstream: !EelPathUtils.isPathLocal(path); in Consulo a remote JDK belongs to a remote platform
+    jdkSatisfies(sdk => sdk.getPlatform != Platform.current())
   }
 
   /**
-   * Same as `com.intellij.execution.JavaRunConfigurationBase#jdkHomeSatisfies`.
+   * Same as `com.intellij.execution.JavaRunConfigurationBase#jdkHomeSatisfies`, but checks the SDK itself
+   * (its platform), a JRE path without registered SDK is local.
    */
-  private def jdkHomeSatisfies(predicate: String => Boolean): Boolean = {
+  private def jdkSatisfies(predicate: Sdk => Boolean): Boolean = {
     alternativeJrePath match {
       case Some(path) =>
-        val sdk = ProjectJdkTable.getInstance().findJdk(path)
-        if (sdk != null) {
-          val homePath = sdk.getHomePath
-          if (homePath != null) return predicate(homePath)
-        }
-        return predicate(path)
+        val sdk = SdkTable.getInstance().findSdk(path)
+        return sdk != null && predicate(sdk)
       case None =>
     }
 
@@ -79,8 +75,7 @@ abstract class ScalaTargetAwareRunConfiguration[M <: RunConfigurationModule, S](
       } catch {
         case _: CantRunException => return false
       }
-      val sdkHomePath = sdk.getHomePath
-      return sdkHomePath != null && predicate(sdkHomePath)
+      return sdk != null && predicate(sdk)
     }
 
     false

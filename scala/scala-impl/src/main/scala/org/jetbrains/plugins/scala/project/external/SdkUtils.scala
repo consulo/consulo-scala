@@ -22,20 +22,25 @@ object SdkUtils {
     findProjectSdk(sdkRef, Platform.current())
 
   def findProjectSdk(sdkRef: SdkReference, project: Project): Option[Sdk] =
-    findProjectSdk(sdkRef, Platform.current())
+    findProjectSdk(sdkRef, project.getPlatform)
 
   def findProjectSdk(sdkRef: SdkReference, platform: Platform): Option[Sdk] =
     sdkRef match {
       case JdkByVersion(version) => findMostRecentJdkConfiguredInIde(sdk => Option(sdk.getVersionString).exists(_.contains(version)), platform)
       case JdkByName(version)    => findMostRecentJdkConfiguredInIde(_.getName == version, platform).orElse(findMostRecentJdkConfiguredInIde(_.getName.contains(version), platform))
       case JdkByHome(homeFile)   => findMostRecentJdkConfiguredInIde(
-        sdk => {
-          // Based on the commit history, this sophisticated comparison was added to cover some
-          // edge case (although not much detail is available), so let's keep it as it is for safety.
-          val canonicalHomePath = Try(homeFile.toRealPath()).getOrElse(homeFile.toAbsolutePath.normalize()).toString
-          FileUtil.comparePaths(canonicalHomePath, sdk.getHomePath) == 0 ||
-            FileUtil.pathsEqual(homeFile.toAbsolutePath.toString, sdk.getHomePath)
-        },
+        sdk =>
+          if (platform == Platform.current()) {
+            // Based on the commit history, this sophisticated comparison was added to cover some
+            // edge case (although not much detail is available), so let's keep it as it is for safety.
+            val canonicalHomePath = Try(homeFile.toRealPath()).getOrElse(homeFile.toAbsolutePath.normalize()).toString
+            FileUtil.comparePaths(canonicalHomePath, sdk.getHomePath) == 0 ||
+              FileUtil.pathsEqual(homeFile.toAbsolutePath.toString, sdk.getHomePath)
+          } else {
+            // remote SDK: compare NIO paths of the SDK's platform file system
+            val sdkHome = sdk.getHomeNioPath
+            sdkHome != null && sdkHome == platform.fs().getPath(homeFile.toString)
+          },
         platform
       )
       case _                     => None
@@ -55,7 +60,7 @@ object SdkUtils {
       val jdks = ProjectJdkTable.getInstance()
         .getSdksOfType(JavaSdk.getInstance())
         .asScala
-        .filter(sdk => condition(sdk))
+        .filter(sdk => sdk.getPlatform.getId == platform.getId && condition(sdk))
 
       if (jdks.isEmpty) None
       else Option(jdks.max(using comparatorToOrdering(using sdkType.versionComparator())))
@@ -72,7 +77,7 @@ object SdkUtils {
     findMostRecentJdkConfiguredInIde(_ => true, platform)
 
   def mostRecentRegisteredJdk(project: Project): Option[Sdk] =
-    findMostRecentJdkConfiguredInIde(_ => true, Platform.current())
+    findMostRecentJdkConfiguredInIde(_ => true, project.getPlatform)
 
   def defaultJavaLanguageLevelIn(jdk: Sdk): Option[LanguageLevel] =
     Option(LanguageLevel.parse(jdk.getVersionString))

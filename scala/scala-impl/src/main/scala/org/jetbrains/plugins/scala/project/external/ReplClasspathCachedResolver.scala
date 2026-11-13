@@ -24,7 +24,7 @@ import scala.collection.mutable
 // upstream: @ApiStatus.Internal
 private[jetbrains] final class ReplClasspathCachedResolver(platform: Platform) {
 
-  def this(project: Project) = this(Platform.current())
+  def this(project: Project) = this(project.getPlatform)
 
   private val cache: mutable.HashMap[String, ReplClasspath] = mutable.HashMap.empty
 

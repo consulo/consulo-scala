@@ -204,7 +204,7 @@ object ScalaSdkUtils {
     resolveCompilerBridgeJar(Platform.current(), scalaVersion)
 
   def resolveCompilerBridgeJar(project: Project, scalaVersion: String): Option[Path] =
-    resolveCompilerBridgeJar(Platform.current(), scalaVersion)
+    resolveCompilerBridgeJar(project.getPlatform, scalaVersion)
 
   def resolveCompilerBridgeJar(platform: Platform, scalaVersion: String): Option[Path] =
     compilerBridgeName(scalaVersion)
@@ -219,7 +219,7 @@ object ScalaSdkUtils {
     resolveReplClasspath(Platform.current(), scalaVersion)
 
   def resolveReplClasspath(project: Project, scalaVersion: String): ReplClasspath =
-    resolveReplClasspath(Platform.current(), scalaVersion)
+    resolveReplClasspath(project.getPlatform, scalaVersion)
 
   def resolveReplClasspath(platform: Platform, scalaVersion: String): ReplClasspath = {
     val version = Version(scalaVersion)
