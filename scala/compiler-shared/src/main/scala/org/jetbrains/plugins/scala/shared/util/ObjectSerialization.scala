@@ -1,9 +1,8 @@
-package org.jetbrains.plugins.scala.util
-
+package org.jetbrains.plugins.scala.shared.util
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.util.Base64
 
-import com.intellij.openapi.util.io.FileUtil
+import consulo.util.io.FileUtil
 
 import scala.util.Using
 object ObjectSerialization {

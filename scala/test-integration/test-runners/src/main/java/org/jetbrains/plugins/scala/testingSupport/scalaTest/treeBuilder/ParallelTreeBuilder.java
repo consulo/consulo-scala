@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.scalaTest.treeBuilder;
 
-import org.jetbrains.plugins.scala.testingSupport.MyJavaConverters;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.MyJavaConverters;
 import org.scalatest.events.Ordinal;
 import org.scalatest.events.RunStarting;
 import org.scalatest.events.SuiteCompleted;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
 import static org.jetbrains.plugins.scala.testingSupport.scalaTest.TeamcityReporter.reportMessage;
 
 public class ParallelTreeBuilder implements TreeBuilder {

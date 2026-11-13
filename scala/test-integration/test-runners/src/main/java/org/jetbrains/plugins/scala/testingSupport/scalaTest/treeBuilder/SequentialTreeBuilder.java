@@ -7,7 +7,7 @@ import org.scalatest.events.SuiteStarting;
 
 import java.util.Stack;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
 import static org.jetbrains.plugins.scala.testingSupport.scalaTest.TeamcityReporter.reportMessage;
 
 public class SequentialTreeBuilder implements TreeBuilder {

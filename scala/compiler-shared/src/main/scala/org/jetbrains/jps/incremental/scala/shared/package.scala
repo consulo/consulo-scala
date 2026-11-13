@@ -1,4 +1,4 @@
-package org.jetbrains.jps.incremental
+package org.jetbrains.jps.incremental.scala
 
 import _root_.java.io.{BufferedInputStream, IOException, InputStream}
 import _root_.java.net.{URL, URLClassLoader}
@@ -6,7 +6,8 @@ import _root_.java.nio.file.Path
 import _root_.java.util.Properties
 import _root_.scala.util.Using
 
-package object scala {
+// upstream: package object org.jetbrains.jps.incremental.scala (split package, see PACKAGE_RENAMES.tsv)
+package object shared {
 
   trait Extractor[A, B] extends (A => B) {
     def unapply(a: A): Some[B] = Some(apply(a))

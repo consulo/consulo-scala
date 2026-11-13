@@ -1,5 +1,4 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 /**
  * Custom JPS build parameters set for all JPS builds running inside the Scala Compile Server
  * when compiler-based highlighting is enabled.

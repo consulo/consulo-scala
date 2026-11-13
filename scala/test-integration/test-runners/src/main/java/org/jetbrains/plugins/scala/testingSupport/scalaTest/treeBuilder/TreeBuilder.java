@@ -7,7 +7,7 @@ import org.scalatest.events.SuiteStarting;
 
 import java.util.Stack;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
 
 public interface TreeBuilder {
   void openScope(String message, Ordinal ordinal, String suiteId, boolean isTestStarted);

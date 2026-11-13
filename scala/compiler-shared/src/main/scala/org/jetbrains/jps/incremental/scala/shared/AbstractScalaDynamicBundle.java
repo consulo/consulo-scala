@@ -1,11 +1,11 @@
-package org.jetbrains.jps.incremental.scala;
+package org.jetbrains.jps.incremental.scala.shared;
 
-import com.intellij.AbstractBundle;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.ReflectionUtil;
-import org.jetbrains.annotations.ApiStatus;
+import consulo.component.util.localize.AbstractBundle;
+import consulo.logging.Logger;
+import consulo.util.lang.reflect.ReflectionUtil;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
+
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -13,10 +13,10 @@ import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 public abstract class AbstractScalaDynamicBundle extends AbstractBundle {
 
-    protected AbstractScalaDynamicBundle(@NonNls @NotNull String pathToBundle) {
+    protected AbstractScalaDynamicBundle(@NonNls String pathToBundle) {
         super(pathToBundle);
     }
 
@@ -28,8 +28,8 @@ public abstract class AbstractScalaDynamicBundle extends AbstractBundle {
 
     private static final Logger LOG = Logger.getInstance(AbstractScalaDynamicBundle.class);
 
-    private static final Method SET_PARENT = getSetParentMethod();
-    private static final ClassLoader ourLangBundleLoader;
+    private static final @Nullable Method SET_PARENT = getSetParentMethod();
+    private static final @Nullable ClassLoader ourLangBundleLoader;
     static {
         ClassLoader loader = null;
         try {
@@ -47,7 +47,7 @@ public abstract class AbstractScalaDynamicBundle extends AbstractBundle {
     }
 
     @SuppressWarnings("deprecation")
-    private static Method getSetParentMethod() {
+    private static @Nullable Method getSetParentMethod() {
         try {
             return ReflectionUtil.getDeclaredMethod(ResourceBundle.class, "setParent", ResourceBundle.class);
         }
@@ -56,33 +56,35 @@ public abstract class AbstractScalaDynamicBundle extends AbstractBundle {
         }
     }
 
-    /**
-     * A base class for resource bundles used in JPS build process
-     * This class provides support for "dynamic" resource bundles provided by {@link com.intellij.DynamicBundle.LanguageBundleEP} extension.
-     * if JPS plugin inherits the ResourceBundle from this class, IDE's language pack's localized resources will be automatically available for the JPS process launched by the IDE.
-     */
-
-    @Override
-    protected @NotNull ResourceBundle findBundle(
-            @NotNull @NonNls String pathToBundle,
-            @NotNull ClassLoader loader,
-            @NotNull ResourceBundle.Control control
-    ) {
-        final ResourceBundle base = super.findBundle(pathToBundle, loader, control);
-        final ClassLoader languageBundleLoader = ourLangBundleLoader;
-        if (languageBundleLoader != null) {
-            ResourceBundle languageBundle = super.findBundle(pathToBundle, languageBundleLoader, control);
-            try {
-                if (SET_PARENT != null) {
-                    SET_PARENT.invoke(languageBundle, base);
-                }
-                return languageBundle;
-            }
-            catch (Throwable e) {
-                LOG.warn(e);
-            }
-        }
-
-        return base;
-    }
+    // Consulo: there is no JPS build process and AbstractBundle has no findBundle(String, ClassLoader, ResourceBundle.Control)
+    // hook (localization is done by LocalizeValue), so language bundle support of upstream is not applicable:
+    // /**
+    //  * A base class for resource bundles used in JPS build process
+    //  * This class provides support for "dynamic" resource bundles provided by {@link com.intellij.DynamicBundle.LanguageBundleEP} extension.
+    //  * if JPS plugin inherits the ResourceBundle from this class, IDE's language pack's localized resources will be automatically available for the JPS process launched by the IDE.
+    //  */
+    //
+    // @Override
+    // protected ResourceBundle findBundle(
+    //         @NonNls String pathToBundle,
+    //         ClassLoader loader,
+    //         ResourceBundle.Control control
+    // ) {
+    //     final ResourceBundle base = super.findBundle(pathToBundle, loader, control);
+    //     final ClassLoader languageBundleLoader = ourLangBundleLoader;
+    //     if (languageBundleLoader != null) {
+    //         ResourceBundle languageBundle = super.findBundle(pathToBundle, languageBundleLoader, control);
+    //         try {
+    //             if (SET_PARENT != null) {
+    //                 SET_PARENT.invoke(languageBundle, base);
+    //             }
+    //             return languageBundle;
+    //         }
+    //         catch (Throwable e) {
+    //             LOG.warn(e);
+    //         }
+    //     }
+    //
+    //     return base;
+    // }
 }

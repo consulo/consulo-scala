@@ -1,5 +1,4 @@
-package org.jetbrains.plugins.scala.compiler
-
+package org.jetbrains.plugins.scala.shared.compiler
 object CompilerEventType
   extends Enumeration {
 

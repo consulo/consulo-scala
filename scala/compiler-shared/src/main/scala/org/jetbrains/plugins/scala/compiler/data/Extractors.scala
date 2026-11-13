@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.data
 
-import org.jetbrains.jps.incremental.scala.Extractor
+import org.jetbrains.jps.incremental.scala.shared.Extractor
 import org.jetbrains.plugins.scala.compiler.data.serialization.SerializationUtils
 
 import java.nio.file.{Path, Paths}

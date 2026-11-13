@@ -1,6 +1,5 @@
-package org.jetbrains.plugins.scala.compiler
-
-import org.jetbrains.plugins.scala.compiler.CompilationUnitId.ModuleId
+package org.jetbrains.plugins.scala.shared.compiler
+import org.jetbrains.plugins.scala.shared.compiler.CompilationUnitId.ModuleId
 
 case class CompilationUnitId(moduleId: ModuleId,
                              testScope: Boolean)

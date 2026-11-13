@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.data
 
-import org.jetbrains.jps.incremental.scala.Extractor
-import org.jetbrains.jps.incremental.scala.remote.PathTranslator
+import org.jetbrains.jps.incremental.scala.shared.Extractor
+import org.jetbrains.jps.incremental.scala.shared.remote.PathTranslator
 
 import java.nio.file.Path
 

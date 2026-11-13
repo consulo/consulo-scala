@@ -1,10 +1,9 @@
-package org.jetbrains.jps.incremental.scala
+package org.jetbrains.jps.incremental.scala.shared
 package remote
-
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.diagnostics.Action
-import org.jetbrains.plugins.scala.util.ObjectSerialization
+import org.jetbrains.plugins.scala.shared.util.ObjectSerialization
 
 sealed abstract class Event extends Serializable {
   def toBytes: Array[Byte] =

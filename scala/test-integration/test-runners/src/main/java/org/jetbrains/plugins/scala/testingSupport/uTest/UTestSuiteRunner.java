@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.uTest;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.testingSupport.MyJavaConverters;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.MyJavaConverters;
 import org.jetbrains.plugins.scala.testingSupport.uTest.utils.UTestTreeUtils;
 import org.jetbrains.plugins.scala.testingSupport.uTest.utils.UTestUtils;
 import scala.Function2;
@@ -143,7 +142,6 @@ public final class UTestSuiteRunner  {
     return result;
   }
 
-  @NotNull
   private Class<?> getTestClass(String className) throws UTestRunExpectedError {
     try {
       return Class.forName(className);

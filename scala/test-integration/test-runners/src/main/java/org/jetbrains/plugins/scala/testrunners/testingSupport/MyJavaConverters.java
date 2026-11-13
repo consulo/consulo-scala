@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.testingSupport;
+package org.jetbrains.plugins.scala.testrunners.testingSupport;
 
 import scala.collection.Iterator;
 import scala.collection.immutable.$colon$colon; //NOTE: $colon$colon is highlighted red but it is actually resolved

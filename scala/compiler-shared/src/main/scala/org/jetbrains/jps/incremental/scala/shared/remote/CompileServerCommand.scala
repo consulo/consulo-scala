@@ -1,6 +1,5 @@
-package org.jetbrains.jps.incremental.scala.remote
-
-import org.jetbrains.jps.incremental.scala.ScalaJpsProjectMetadata
+package org.jetbrains.jps.incremental.scala.shared.remote
+import org.jetbrains.jps.incremental.scala.shared.ScalaJpsProjectMetadata
 import org.jetbrains.plugins.scala.compiler.data.{Arguments, ComputeStampsArguments, DocumentCompilationArguments, ExpressionEvaluationArguments}
 
 import java.nio.file.Path

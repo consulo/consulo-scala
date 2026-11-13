@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.compiler.data
 
-import org.jetbrains.jps.incremental.scala.{compilerVersionIn, containsScala3}
-import org.jetbrains.plugins.scala.util.JarUtil
-import org.jetbrains.plugins.scala.util.JarUtil.JarFileWithName
+import org.jetbrains.jps.incremental.scala.shared.{compilerVersionIn, containsScala3}
+import org.jetbrains.plugins.scala.shared.util.JarUtil
+import org.jetbrains.plugins.scala.shared.util.JarUtil.JarFileWithName
 
 import java.nio.file.Path
 

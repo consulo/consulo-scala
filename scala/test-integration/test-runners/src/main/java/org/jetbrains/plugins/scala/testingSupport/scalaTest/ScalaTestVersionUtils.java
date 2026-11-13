@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.scalaTest;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -58,7 +57,6 @@ public class ScalaTestVersionUtils {
         return readManifestAttribute(jar, "Bundle-Version");
     }
 
-    @NotNull
     private static String detectScalatestJarFromInClasspath() throws ClassNotFoundException {
         Class<?> suiteClass = Class.forName("org.scalatest.Suite");
         URL location = suiteClass.getResource('/' + suiteClass.getName().replace('.', '/') + ".class");

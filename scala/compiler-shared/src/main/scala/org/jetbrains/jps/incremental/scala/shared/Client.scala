@@ -1,8 +1,7 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.incremental.scala.Client.{ClientMsg, PosInfo}
-import org.jetbrains.jps.incremental.scala.remote.{CompileServerMetrics, NioPathTranslator, PathTranslator, SerializablePath}
+import org.jetbrains.jps.incremental.scala.shared.Client.{ClientMsg, PosInfo}
+import org.jetbrains.jps.incremental.scala.shared.remote.{CompileServerMetrics, NioPathTranslator, PathTranslator, SerializablePath}
 import org.jetbrains.plugins.scala.compiler.diagnostics.Action
 
 import java.nio.file.Path

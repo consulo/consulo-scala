@@ -54,8 +54,10 @@
         <module>scala/decompiler</module>
         <module>scala/scala-api</module>
         <module>scala/runners</module>
+        <module>scala/test-integration/test-runners</module>
         <module>scala/test-integration/scalatest-finders</module>
         <module>scala/compiler-settings-definition</module>
+        <module>scala/compiler-shared</module>
         <module>scala/scala-impl</module>
     </modules>
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.uTest.utils;
 
-import org.jetbrains.plugins.scala.testingSupport.MyJavaConverters;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.MyJavaConverters;
 import org.jetbrains.plugins.scala.testingSupport.uTest.UTestPath;
 import org.jetbrains.plugins.scala.testingSupport.uTest.UTestRunExpectedError;
 import utest.framework.Tree;

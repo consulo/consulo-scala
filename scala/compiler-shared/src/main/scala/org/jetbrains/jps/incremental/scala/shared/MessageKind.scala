@@ -1,5 +1,4 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 /**
  * Corresponds to [[org.jetbrains.jps.incremental.messages.BuildMessage.Kind]], but avoids linking against JPS code.
  */

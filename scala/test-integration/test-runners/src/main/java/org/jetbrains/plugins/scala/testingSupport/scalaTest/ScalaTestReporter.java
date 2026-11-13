@@ -11,8 +11,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.formatTimestamp;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.formatTimestamp;
 import static org.jetbrains.plugins.scala.testingSupport.scalaTest.TeamcityReporter.reportMessage;
 
 /*

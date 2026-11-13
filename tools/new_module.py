@@ -10,6 +10,8 @@ usage: new_module.py <module dir> --artifact <suffix> --jpms <module name>
   --scala    compile with scala-maven-plugin (and binding scalac plugin)
   --bundle   unpack classes of dependency into this module (for jars without valid JPMS name / split packages)
   --generate maven-consulo-plugin generate goal (generate-icon, generate-localize, ...)
+  --automatic no module-info.java, jar gets Automatic-Module-Name (for code running outside IDE, e.g. in user test JVM,
+              compiled against libraries without valid JPMS names)
 """
 import argparse
 import os
@@ -70,6 +72,10 @@ def packages(module_dir):
                             clauses.append(m.group(1))
                             continue
                         break
+                    package_object = re.search(r'^package\s+object\s+(\w+)', text, re.M)
+                    if package_object and package_object.group(1) not in clauses:
+                        # package object may follow imports - it belongs to package <clauses>.<object name>
+                        clauses.append(package_object.group(1))
                     if clauses:
                         result.add('.'.join(clauses))
     return sorted(result)
@@ -85,6 +91,8 @@ def main():
     p.add_argument('--requires', action='append', default=[])
     p.add_argument('--bundle', action='append', default=[])
     p.add_argument('--generate', action='append', default=[])
+    p.add_argument('--automatic', action='store_true')
+    p.add_argument('--java-level', help='bytecode level (default.java.level), e.g. 8 for code running in user JVM')
     a = p.parse_args()
 
     depth = len(os.path.normpath(a.module).split(os.sep))
@@ -132,9 +140,29 @@ def main():
                     </execution>
                 </executions>
             </plugin>''')
+    if a.automatic:
+        plugins.append(f'''            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>{a.jpms}</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>''')
     build = ''
     if plugins:
         build = '\n    <build>\n        <plugins>\n' + '\n'.join(plugins) + '\n        </plugins>\n    </build>\n'
+    properties = ''
+    if a.java_level:
+        properties = f'''
+    <properties>
+        <!-- runs outside IDE process (user JVM) - upstream: withOutOfIDEAProcessSettings -->
+        <default.java.level>{a.java_level}</default.java.level>
+    </properties>
+'''
     pom = LICENSE + f'''<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -148,13 +176,17 @@ def main():
 
     <artifactId>org.intellij.scala-{a.artifact}</artifactId>
     <packaging>jar</packaging>
-{build}
+{properties}{build}
     <dependencies>
 ''' + '\n'.join(dependency(d) for d in a.dep) + '''
     </dependencies>
 </project>
 '''
     open(os.path.join(a.module, 'pom.xml'), 'w').write(pom)
+
+    if a.automatic:
+        print('generated', a.module, '(automatic module)')
+        return
 
     requires = '\n'.join(f'    requires {r};' if r else '' for r in a.requires)
     exports = '\n'.join(f'    exports {p};' for p in packages(a.module))

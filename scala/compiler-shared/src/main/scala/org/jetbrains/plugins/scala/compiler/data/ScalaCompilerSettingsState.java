@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.data;
 
-import com.intellij.util.xmlb.annotations.Tag;
-import com.intellij.util.xmlb.annotations.XCollection;
+import consulo.util.xml.serializer.annotation.Tag;
+import consulo.util.xml.serializer.annotation.AbstractCollection;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -37,7 +37,8 @@ public final class ScalaCompilerSettingsState {
 
     // Why serialization doesn't work when elementTag is "option"?
     @Tag("parameters")
-    @XCollection(elementName = "parameter")
+    // upstream: @XCollection(elementName = "parameter")
+    @AbstractCollection(surroundWithTag = false, elementTag = "parameter")
     public String[] additionalCompilerOptions = new String[]{};
 
     /**
@@ -50,7 +51,8 @@ public final class ScalaCompilerSettingsState {
      * @see org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin
      */
     @Tag("plugins")
-    @XCollection(elementName = "plugin", valueAttributeName = "path")
+    // upstream: @XCollection(elementName = "plugin", valueAttributeName = "path")
+    @AbstractCollection(surroundWithTag = false, elementTag = "plugin", elementValueAttribute = "path")
     public String[] pluginsClasspath = new String[]{};
 
     @Override

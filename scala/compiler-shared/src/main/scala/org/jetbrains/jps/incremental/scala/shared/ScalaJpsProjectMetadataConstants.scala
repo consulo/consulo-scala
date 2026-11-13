@@ -1,5 +1,4 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 object ScalaJpsProjectMetadataConstants {
   final val RootElement = "scala-jps-project-metadata"
   final val ModulesWithScalaSdkElement = "modulesWithScalaSdk"

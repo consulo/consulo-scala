@@ -28,6 +28,27 @@
     <artifactId>org.intellij.scala-runners</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <!-- runs outside IDE process (user JVM) - upstream: withOutOfIDEAProcessSettings -->
+        <default.java.level>8</default.java.level>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>org.intellij.scala.runners</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
 
     </dependencies>

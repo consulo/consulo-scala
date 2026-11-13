@@ -1,7 +1,7 @@
-package org.jetbrains.jps.incremental.scala.remote
-
+package org.jetbrains.jps.incremental.scala.shared.remote
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.jps.incremental.scala.*
+import org.jetbrains.jps.incremental.scala.shared.*
 import org.jetbrains.plugins.scala.server.CompileServerPort
 
 import java.io.{BufferedInputStream, BufferedOutputStream, DataInputStream, DataOutputStream}

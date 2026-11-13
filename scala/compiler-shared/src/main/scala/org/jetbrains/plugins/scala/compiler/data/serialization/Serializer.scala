@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.data.serialization
 
-import org.jetbrains.jps.incremental.scala.remote.PathTranslator
+import org.jetbrains.jps.incremental.scala.shared.remote.PathTranslator
 
 trait Serializer {
   type From

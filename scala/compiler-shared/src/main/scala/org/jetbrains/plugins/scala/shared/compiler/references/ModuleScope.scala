@@ -1,5 +1,4 @@
-package org.jetbrains.plugins.scala.compiler.references
-
+package org.jetbrains.plugins.scala.shared.compiler.references
 sealed trait ModuleScope {
   val suffix: String
 

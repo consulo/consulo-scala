@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.uTest;
 
-import org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil;
 
 public class UTestRunner {
 

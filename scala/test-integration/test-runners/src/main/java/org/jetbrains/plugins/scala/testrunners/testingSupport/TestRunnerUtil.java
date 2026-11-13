@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.testingSupport;
+package org.jetbrains.plugins.scala.testrunners.testingSupport;
 
 import org.specs2.execute.Details;
 import org.specs2.execute.FailureDetails;

@@ -1,9 +1,8 @@
-package org.jetbrains.plugins.scala.compiler
-
-import org.jetbrains.jps.incremental.scala.Client
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
-import org.jetbrains.plugins.scala.compiler.CompilerEventType.CompilerEventType
-import org.jetbrains.plugins.scala.util.CompilationId
+package org.jetbrains.plugins.scala.shared.compiler
+import org.jetbrains.jps.incremental.scala.shared.Client
+import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
+import org.jetbrains.plugins.scala.shared.compiler.CompilerEventType.CompilerEventType
+import org.jetbrains.plugins.scala.shared.util.CompilationId
 
 import java.util.UUID
 

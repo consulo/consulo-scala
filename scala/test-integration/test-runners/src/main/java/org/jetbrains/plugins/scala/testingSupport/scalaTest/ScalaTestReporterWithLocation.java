@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.scalaTest;
 
-import org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil;
 import org.jetbrains.plugins.scala.testingSupport.scalaTest.treeBuilder.ParallelTreeBuilder;
 import org.jetbrains.plugins.scala.testingSupport.scalaTest.treeBuilder.TreeBuilder;
 import org.scalatest.Reporter;
@@ -15,8 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.formatTimestamp;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.formatTimestamp;
 
 /**
  * Reporter for sequential execution of scalaTest test suites.<br>

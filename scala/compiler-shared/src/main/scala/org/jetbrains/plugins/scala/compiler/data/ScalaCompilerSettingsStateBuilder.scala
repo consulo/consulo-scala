@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.data
 
-import com.intellij.openapi.util.io.FileUtil
+import consulo.util.io.FileUtil
 
 /**
  * @see [[ScalaCompilerSettingsState]]

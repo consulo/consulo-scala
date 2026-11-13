@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.testingSupport.uTest.utils;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.testingSupport.uTest.UTestPath;
 import org.jetbrains.plugins.scala.testingSupport.uTest.UTestRunExpectedError;
 import utest.Tests;
@@ -16,7 +15,6 @@ public class UTestUtils {
     /**
      * @return test node matching `override val tests: Tests` method of a test suite
      */
-    @NotNull
     public static UTestPath findTestsNode(Class<?> testClass, String testClassFqn) throws UTestRunExpectedError {
         Method method = findTestDefinitionMethod(testClass);
         return new UTestPath(testClassFqn, method);

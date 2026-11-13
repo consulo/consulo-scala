@@ -1,7 +1,6 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 import org.jdom.Element
-import org.jetbrains.jps.incremental.scala.ScalaJpsProjectMetadataConstants.*
+import org.jetbrains.jps.incremental.scala.shared.ScalaJpsProjectMetadataConstants.*
 import spray.json.DefaultJsonProtocol.{jsonFormat2, given}
 import spray.json.{JsValue, JsonFormat, given}
 

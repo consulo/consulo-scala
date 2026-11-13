@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.data
 
-import org.jetbrains.jps.incremental.scala.containsScala3
+import org.jetbrains.jps.incremental.scala.shared.containsScala3
 
 import java.nio.file.Path
 

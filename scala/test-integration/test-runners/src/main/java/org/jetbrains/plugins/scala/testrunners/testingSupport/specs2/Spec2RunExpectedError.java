@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.testingSupport.specs2;
+package org.jetbrains.plugins.scala.testrunners.testingSupport.specs2;
 
 public class Spec2RunExpectedError extends Exception {
 

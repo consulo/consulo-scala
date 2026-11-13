@@ -1,10 +1,10 @@
-package org.jetbrains.plugins.scala.project;
+package org.jetbrains.plugins.scala.shared.project;
 
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.xmlb.Constants;
-import com.intellij.util.xmlb.annotations.Tag;
-import com.intellij.util.xmlb.annotations.XCollection;
-import org.jetbrains.annotations.Nullable;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.xml.serializer.Constants;
+import consulo.util.xml.serializer.annotation.Tag;
+import consulo.util.xml.serializer.annotation.AbstractCollection;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,10 +16,8 @@ import java.util.Objects;
 public abstract class ScalaLibraryPropertiesStateSharedInIdeaAndJps {
 
     @Tag("compiler-classpath")
-    @XCollection(
-            elementName = "root",
-            valueAttributeName = "url"
-    )
+    // upstream: @XCollection( elementName = "root", valueAttributeName = "url" )
+    @AbstractCollection(surroundWithTag = false, elementTag = "root", elementValueAttribute = "url")
     protected final String[] compilerClasspath;
 
     @Tag("compiler-bridge-binary-jar")
@@ -27,10 +25,8 @@ public abstract class ScalaLibraryPropertiesStateSharedInIdeaAndJps {
     protected final String compilerBridgeBinaryJar;
 
     @Tag("repl-classpath")
-    @XCollection(
-            elementName = Constants.ENTRY,
-            valueAttributeName = "url"
-    )
+    // upstream: @XCollection( elementName = Constants.ENTRY, valueAttributeName = "url" )
+    @AbstractCollection(surroundWithTag = false, elementTag = Constants.ENTRY, elementValueAttribute = "url")
     protected final String[] replClasspath;
 
     public ScalaLibraryPropertiesStateSharedInIdeaAndJps() {

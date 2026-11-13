@@ -1,6 +1,5 @@
-package org.jetbrains.jps.incremental.scala
+package org.jetbrains.jps.incremental.scala.shared
 package remote
-
 /**
  * @see `org.jetbrains.jps.incremental.scala.remote.EventGeneratingClient`
  */

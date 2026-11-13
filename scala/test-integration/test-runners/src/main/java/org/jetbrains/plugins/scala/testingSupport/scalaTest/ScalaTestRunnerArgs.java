@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.scalaTest;
 
-import org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil;
 
 import java.util.*;
 

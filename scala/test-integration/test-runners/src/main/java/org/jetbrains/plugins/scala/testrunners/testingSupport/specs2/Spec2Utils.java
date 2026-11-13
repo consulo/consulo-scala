@@ -1,9 +1,9 @@
-package org.jetbrains.plugins.scala.testingSupport.specs2;
+package org.jetbrains.plugins.scala.testrunners.testingSupport.specs2;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
 
 public class Spec2Utils {
 

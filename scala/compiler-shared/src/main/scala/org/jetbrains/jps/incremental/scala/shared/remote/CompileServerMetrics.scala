@@ -1,5 +1,4 @@
-package org.jetbrains.jps.incremental.scala.remote
-
+package org.jetbrains.jps.incremental.scala.shared.remote
 /**
  * @param heapUsed used heap memory in bytes
  * @param currentHeapSize current heap size in bytes

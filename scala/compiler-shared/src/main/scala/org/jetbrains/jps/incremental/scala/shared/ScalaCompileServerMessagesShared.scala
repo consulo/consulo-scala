@@ -1,6 +1,5 @@
-package org.jetbrains.jps.incremental.scala
-
-import com.intellij.AbstractBundle
+package org.jetbrains.jps.incremental.scala.shared
+import consulo.component.util.localize.AbstractBundle
 import org.jetbrains.annotations.{Nls, PropertyKey}
 import org.jetbrains.plugins.scala.server.CompileServerProperties
 

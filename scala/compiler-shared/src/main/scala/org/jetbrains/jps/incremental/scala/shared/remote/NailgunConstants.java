@@ -1,4 +1,4 @@
-package org.jetbrains.jps.incremental.scala.remote;
+package org.jetbrains.jps.incremental.scala.shared.remote;
 
 /**
  * Contains the same constants as defined in com.facebook.nailgun.NGConstants. Should be kept in sync,

@@ -1,7 +1,6 @@
-package org.jetbrains.jps.incremental.scala
-
+package org.jetbrains.jps.incremental.scala.shared
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.incremental.scala.remote.CompileServerMetrics
+import org.jetbrains.jps.incremental.scala.shared.remote.CompileServerMetrics
 
 import java.nio.file.Path
 

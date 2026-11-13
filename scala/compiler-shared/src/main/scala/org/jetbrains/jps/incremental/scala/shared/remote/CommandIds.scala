@@ -1,5 +1,4 @@
-package org.jetbrains.jps.incremental.scala.remote
-
+package org.jetbrains.jps.incremental.scala.shared.remote
 /** ATTENTION!! don't forget to update commands list in `org.jetbrains.plugins.scala.nailgun.NailgunRunner#COMMANDS` */
 object CommandIds {
 

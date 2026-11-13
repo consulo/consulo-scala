@@ -1,5 +1,4 @@
-package org.jetbrains.plugins.scala.util
-
+package org.jetbrains.plugins.scala.shared.util
 object SbtModuleType {
   val sbtSourceSetModuleType =  "sbtSourceSet"
   /*
