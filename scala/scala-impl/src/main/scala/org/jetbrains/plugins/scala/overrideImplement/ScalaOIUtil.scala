@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
+import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.FileModificationService
 import consulo.language.editor.generation.{ClassMember => JClassMember}
 import consulo.application.ApplicationManager
-import com.intellij.openapi.application.ex.ApplicationManagerEx
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.Editor
 import consulo.application.progress.ProgressIndicator
@@ -190,8 +190,7 @@ object ScalaOIUtil {
 
     val runnable: Runnable = { () =>
       //noinspection ApiStatus
-      ApplicationManagerEx.getApplicationEx.runWriteActionWithCancellableProgressInDispatchThread(
-        title, project, null, performUnderProgress)
+      WriteActionWithProgress.run(performUnderProgress)
     }
     if (commandName eq null) {
       CommandProcessor.getInstance().executeCommand(project, runnable, title, null)

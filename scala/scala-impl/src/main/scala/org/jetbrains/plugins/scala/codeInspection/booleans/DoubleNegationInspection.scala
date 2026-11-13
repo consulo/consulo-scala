@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.booleans
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -14,25 +14,25 @@ import scala.collection.mutable
 final class DoubleNegationInspection extends LocalInspectionTool with DumbAware {
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case expr: ScExpression if DoubleNegationUtil.hasDoubleNegation(expr) =>
-      val fix = LocalQuickFix.from(new DoubleNegationQuickFix(expr))
+      val fix = (new DoubleNegationQuickFix(expr))
       holder.registerProblem(expr, ScalaInspectionBundle.message("displayname.double.negation"), fix)
     case _ =>
   }
 }
 
 final class DoubleNegationQuickFix(expr: ScExpression)
-  extends PsiBasedModCommandAction[ScExpression](expr)
+  extends PsiUpdateFix[ScExpression](expr)
     with DumbAware {
   override def getFamilyName: String = ScalaInspectionBundle.message("remove.double.negation")
 
-  override def perform(context: ActionContext, expr: ScExpression): ModCommand = {
+  override def invoke(context: PsiUpdateContext, expr: ScExpression): Unit = {
     if (DoubleNegationUtil.hasDoubleNegation(expr)) {
-      ModCommand.psiUpdate(expr, (expr: ScExpression) => {
+      {
         val newExpr = DoubleNegationUtil.removeDoubleNegation(expr)
         expr.replaceExpression(newExpr, removeParenthesis = true)
         ()
-      })
-    } else ModCommand.nop()
+      }
+    } else ()
   }
 }
 

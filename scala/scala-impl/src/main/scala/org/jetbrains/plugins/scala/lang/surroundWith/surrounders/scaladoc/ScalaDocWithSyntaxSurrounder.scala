@@ -1,19 +1,19 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.scaladoc
 
-import com.intellij.modcommand.ActionContext
+import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createScalaDocSimpleData
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
-import org.jetbrains.plugins.scala.lang.surroundWith.ScalaModCommandSurrounder
+import org.jetbrains.plugins.scala.lang.surroundWith.ScalaPsiSurrounder
 
-trait ScalaDocWithSyntaxSurrounder extends ScalaModCommandSurrounder {
+trait ScalaDocWithSyntaxSurrounder extends ScalaPsiSurrounder {
   override def isApplicable(elements: Array[PsiElement]): Boolean = elements != null && elements.nonEmpty
 
-  override def surroundElements(elements: Array[PsiElement], context: ActionContext): Option[TextRange] = {
-    val selection = context.selection()
-    val startOffset = selection.getStartOffset
-    val endOffset = selection.getEndOffset
+  override def surroundElements(elements: Array[PsiElement], editor: Editor): Option[TextRange] = {
+    val selection = editor.getSelectionModel
+    val startOffset = selection.getSelectionStart
+    val endOffset = selection.getSelectionEnd
 
     val element = elements(0)
     val offset = element.getTextOffset

@@ -4,7 +4,6 @@ import consulo.application.progress.ProgressManager
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
-import com.intellij.util.SlowOperations
 import org.jetbrains.plugins.scala.caches.measure
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.macros.evaluator.{MacroContext, ScalaMacroEvaluator}
@@ -90,7 +89,7 @@ object ImplicitCollector {
       implicit val tpc: TypePresentationContext = TypePresentationContext(place)
       implicit val context: Context = Context(place)
 
-      Using.resource(SlowOperations.knownIssue("SCL-23054"))(_ => tpe.presentableText)
+      (tpe.presentableText)
     }
   }
 

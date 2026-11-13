@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.parentheses
 
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalInspectionToolSession, LocalQuickFix, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
-import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.codeInsight.intention.RemoveBracesIntention
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.ParenthesizedElement.Ops
@@ -18,8 +17,16 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker.checkInspec
 
 abstract class ScalaUnnecessaryParenthesesInspectionBase extends LocalInspectionTool {
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
-    case parenthesized: ScParenthesizedElement if isProblem(parenthesized) =>
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
+    buildVisitor(holder, isOnTheFly, settingsOf(state))
+
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
+    buildVisitor(holder, isOnTheFly, UnnecessaryParenthesesSettings.default)
+
+  protected def settingsOf(state: Object): UnnecessaryParenthesesSettings
+
+  private def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, currentSettings: UnnecessaryParenthesesSettings): PsiElementVisitor = PsiElementVisitorSimple(holder) {
+    case parenthesized: ScParenthesizedElement if isProblem(parenthesized, currentSettings) =>
       val quickFix = new RemoveParenthesesFix(parenthesized)
       registerProblem(parenthesized, quickFix, holder, isOnTheFly)
     case functionExpr: ScFunctionExpr if hasSingleParenthesizedParam(functionExpr) && !currentSettings.ignoreAroundFunctionExprParam =>
@@ -30,11 +37,6 @@ abstract class ScalaUnnecessaryParenthesesInspectionBase extends LocalInspection
     case _ =>
   }
 
-  def currentSettings: UnnecessaryParenthesesSettings
-
-  @TestOnly
-  def setSettings(settings: UnnecessaryParenthesesSettings): Unit
-
   private def hasSingleParenthesizedParam(functionExpr: ScFunctionExpr): Boolean = {
     // In the case of a single untyped formal parameter, (x) => e can be abbreviated to x => e
     def hasNoParamType = functionExpr.parameters.headOption.exists(_.typeElement.isEmpty)
@@ -44,10 +46,7 @@ abstract class ScalaUnnecessaryParenthesesInspectionBase extends LocalInspection
     functionExpr.parameters.sizeIs == 1 && hasParenthesizedClause && hasNoParamType
   }
 
-  protected[scala] def isParenthesesRedundant(elem: ScParenthesizedElement): Boolean =
-    isParenthesesRedundant(elem, currentSettings)
-
-  private def isParenthesesRedundant(elem: ScParenthesizedElement, settings: UnnecessaryParenthesesSettings): Boolean = {
+  protected[scala] def isParenthesesRedundant(elem: ScParenthesizedElement, settings: UnnecessaryParenthesesSettings): Boolean = {
     if (elem.isParenthesisNeeded) return false
 
     elem match {
@@ -58,10 +57,10 @@ abstract class ScalaUnnecessaryParenthesesInspectionBase extends LocalInspection
     }
   }
 
-  private def isProblem(elem: ScParenthesizedElement): Boolean =
+  private def isProblem(elem: ScParenthesizedElement, settings: UnnecessaryParenthesesSettings): Boolean =
     !elem.isNestedParenthesis &&
       checkInspection(this, elem) &&
-      isParenthesesRedundant(elem)
+      isParenthesesRedundant(elem, settings)
 
   private def registerProblem(elt: ScalaPsiElement, qf: LocalQuickFix, holder: ProblemsHolder, isOnTheFly: Boolean): Unit =
     registerRedundantParensProblem(ScalaInspectionBundle.message("displayname.unnecessary.parentheses"), elt, qf, holder, isOnTheFly)

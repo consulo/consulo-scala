@@ -1,18 +1,18 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.errorHighlighting
 
-import com.intellij.modcommand.ActionContext
+import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
-import org.jetbrains.plugins.scala.lang.surroundWith.ScalaModCommandSurrounder
+import org.jetbrains.plugins.scala.lang.surroundWith.ScalaPsiSurrounder
 
-class IgnoreErrorHighlightingSurrounder extends ScalaModCommandSurrounder {
+class IgnoreErrorHighlightingSurrounder extends ScalaPsiSurrounder {
   //noinspection ScalaExtractStringToBundle
   override def getTemplateDescription: String = "/*_*/.../*_*/"
 
   override def isApplicable(elements: Array[PsiElement]): Boolean = elements.nonEmpty
 
-  override def surroundElements(elements: Array[PsiElement], context: ActionContext): Option[TextRange] = {
+  override def surroundElements(elements: Array[PsiElement], editor: Editor): Option[TextRange] = {
     val firstElement = elements.head
     firstElement.containingFile.map { file =>
       val text = "/*_*/"

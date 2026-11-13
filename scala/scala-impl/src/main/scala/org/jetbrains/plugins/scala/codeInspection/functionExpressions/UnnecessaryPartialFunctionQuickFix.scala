@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.functionExpressions
 
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.project.Project
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
@@ -15,11 +15,11 @@ object UnnecessaryPartialFunctionQuickFix {
   val hint: String = ScalaInspectionBundle.message("convert.to.anonymous.function")
 }
 
-final class UnnecessaryPartialFunctionQuickFix(expression: ScBlockExpr) extends PsiUpdateModCommandAction[ScBlockExpr](expression) {
+final class UnnecessaryPartialFunctionQuickFix(expression: ScBlockExpr) extends PsiUpdateFix[ScBlockExpr](expression) {
   override def getFamilyName: String = hint
 
-  override protected def invoke(context: ActionContext, expr: ScBlockExpr, updater: ModPsiUpdater): Unit = {
-    implicit val project: Project = context.project()
+  override protected def invoke(context: PsiUpdateContext, expr: ScBlockExpr): Unit = {
+    implicit val project: Project = context.project
     var expressionCopy = expr.copy().asInstanceOf[ScBlockExpr]
     expressionCopy.caseClauses.map(_.caseClauses).foreach {
       case Seq(singleCaseClause) =>
@@ -33,7 +33,7 @@ final class UnnecessaryPartialFunctionQuickFix(expression: ScBlockExpr) extends 
         val prevWs = expr.prevLeaf.filter(_.isWhitespace)
         val exprRange = expr.getTextRange
         val documentManager = PsiDocumentManager.getInstance(project)
-        val document = updater.getDocument
+        val document = documentManager.getDocument(expr.getContainingFile)
         document.replaceString(exprRange.getStartOffset, exprRange.getEndOffset, expressionCopy.getText)
         documentManager.commitDocument(document)
         prevWs.foreach(_.delete())

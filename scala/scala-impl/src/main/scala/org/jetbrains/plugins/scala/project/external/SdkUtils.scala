@@ -4,10 +4,8 @@ import consulo.project.Project
 import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable}
 import consulo.content.bundle.Sdk
 import consulo.util.io.FileUtil
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.{EelMachineProviderUtil, EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor, LocalEelMachine}
+import consulo.platform.Platform
 import com.intellij.java.language.LanguageLevel
-import com.intellij.util.EelUtilsKt
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.plugins.scala.extensions.{inReadAction, inWriteAction}
 
@@ -17,70 +15,64 @@ import scala.util.Try
 
 object SdkUtils {
 
-  @deprecated(message = "Use findProjectSdk(SdkReference, EelDescriptor)", since = "2026.2")
+  @deprecated(message = "Use findProjectSdk(SdkReference, Platform)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
   // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def findProjectSdk(sdkRef: SdkReference): Option[Sdk] =
-    findProjectSdk(sdkRef, LocalEelDescriptor.INSTANCE)
+    findProjectSdk(sdkRef, Platform.current())
 
   def findProjectSdk(sdkRef: SdkReference, project: Project): Option[Sdk] =
-    findProjectSdk(sdkRef, EelProviderUtil.getEelDescriptor(project))
+    findProjectSdk(sdkRef, Platform.current())
 
-  def findProjectSdk(sdkRef: SdkReference, eelDescriptor: EelDescriptor): Option[Sdk] =
+  def findProjectSdk(sdkRef: SdkReference, platform: Platform): Option[Sdk] =
     sdkRef match {
-      case JdkByVersion(version) => findMostRecentJdkConfiguredInIde(sdk => Option(sdk.getVersionString).exists(_.contains(version)), eelDescriptor)
-      case JdkByName(version)    => findMostRecentJdkConfiguredInIde(_.getName == version, eelDescriptor).orElse(findMostRecentJdkConfiguredInIde(_.getName.contains(version), eelDescriptor))
+      case JdkByVersion(version) => findMostRecentJdkConfiguredInIde(sdk => Option(sdk.getVersionString).exists(_.contains(version)), platform)
+      case JdkByName(version)    => findMostRecentJdkConfiguredInIde(_.getName == version, platform).orElse(findMostRecentJdkConfiguredInIde(_.getName.contains(version), platform))
       case JdkByHome(homeFile)   => findMostRecentJdkConfiguredInIde(
-        sdk =>
-          if (eelDescriptor == LocalEelDescriptor.INSTANCE) {
-            // Based on the commit history, this sophisticated comparison was added to cover some
-            // edge case (although not much detail is available), so let's keep it as it is for safety.
-            val canonicalHomePath = Try(homeFile.toRealPath()).getOrElse(homeFile.toAbsolutePath.normalize()).toString
-            FileUtil.comparePaths(canonicalHomePath, sdk.getHomePath) == 0 ||
-              FileUtil.pathsEqual(homeFile.toAbsolutePath.toString, sdk.getHomePath)
-          } else {
-            val sdkPath = EelNioBridgeServiceKt.asEelPath(Path.of(sdk.getHomePath))
-            val homeFilePath = EelNioBridgeServiceKt.asEelPath(homeFile)
-            sdkPath == homeFilePath
-          },
-        eelDescriptor
+        sdk => {
+          // Based on the commit history, this sophisticated comparison was added to cover some
+          // edge case (although not much detail is available), so let's keep it as it is for safety.
+          val canonicalHomePath = Try(homeFile.toRealPath()).getOrElse(homeFile.toAbsolutePath.normalize()).toString
+          FileUtil.comparePaths(canonicalHomePath, sdk.getHomePath) == 0 ||
+            FileUtil.pathsEqual(homeFile.toAbsolutePath.toString, sdk.getHomePath)
+        },
+        platform
       )
       case _                     => None
     }
 
-  @deprecated(message = "Use findMostRecentJdkConfiguredInIde(Sdk => Boolean, EelDescriptor)", since = "2026.2")
+  @deprecated(message = "Use findMostRecentJdkConfiguredInIde(Sdk => Boolean, Platform)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
   // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def findMostRecentJdkConfiguredInIde(condition: Sdk => Boolean): Option[Sdk] =
-    findMostRecentJdkConfiguredInIde(condition, LocalEelDescriptor.INSTANCE)
+    findMostRecentJdkConfiguredInIde(condition, Platform.current())
 
-  def findMostRecentJdkConfiguredInIde(condition: Sdk => Boolean, eelDescriptor: EelDescriptor): Option[Sdk] = {
+  def findMostRecentJdkConfiguredInIde(condition: Sdk => Boolean, platform: Platform): Option[Sdk] = {
     import scala.math.Ordering.comparatorToOrdering
     val sdkType = JavaSdk.getInstance()
-    val eelMachine = Option(EelMachineProviderUtil.getResolvedEelMachine(eelDescriptor)).getOrElse(LocalEelMachine.INSTANCE)
 
     inReadAction {
       val jdks = ProjectJdkTable.getInstance()
         .getSdksOfType(JavaSdk.getInstance())
         .asScala
-        .filter(sdk => EelUtilsKt.ownsSdk(eelMachine, sdk) && condition(sdk))
+        .filter(sdk => condition(sdk))
 
       if (jdks.isEmpty) None
       else Option(jdks.max(using comparatorToOrdering(using sdkType.versionComparator())))
     }
   }
 
-  @deprecated(message = "Use mostRecentRegisteredJdk(EelDescriptor)", since = "2026.2")
+  @deprecated(message = "Use mostRecentRegisteredJdk(Platform)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
   // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   def mostRecentRegisteredJdk: Option[Sdk] =
     findMostRecentJdkConfiguredInIde(_ => true)
 
-  def mostRecentRegisteredJdk(eelDescriptor: EelDescriptor): Option[Sdk] =
-    findMostRecentJdkConfiguredInIde(_ => true, eelDescriptor)
+  def mostRecentRegisteredJdk(platform: Platform): Option[Sdk] =
+    findMostRecentJdkConfiguredInIde(_ => true, platform)
 
   def mostRecentRegisteredJdk(project: Project): Option[Sdk] =
-    findMostRecentJdkConfiguredInIde(_ => true, EelProviderUtil.getEelDescriptor(project))
+    findMostRecentJdkConfiguredInIde(_ => true, Platform.current())
 
   def defaultJavaLanguageLevelIn(jdk: Sdk): Option[LanguageLevel] =
     Option(LanguageLevel.parse(jdk.getVersionString))

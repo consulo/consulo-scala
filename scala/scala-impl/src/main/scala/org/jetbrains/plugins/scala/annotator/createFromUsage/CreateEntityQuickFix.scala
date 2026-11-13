@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
@@ -118,7 +120,7 @@ abstract class CreateEntityQuickFix(ref: ScReferenceExpression, keyword: String)
 
   private def buildAndRunTemplate(entity: PsiElement, entityType: Option[String])
                                  (originalEditor: Editor): Unit = {
-    val builder = new TemplateBuilderImpl(entity)
+    val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(entity)
 
     for (aType <- entityType;
          typeElement <- entity.children.findByType[ScSimpleTypeElement]) {

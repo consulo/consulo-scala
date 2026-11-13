@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.booleans
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.booleans.SimplifyBooleanUtil.isOfBooleanType
@@ -21,23 +21,23 @@ class SimplifyBooleanMatchInspection extends LocalInspectionTool {
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case stmt: ScMatch if stmt.isValid && SimpleBooleanMatchUtil.isSimpleBooleanMatchStmt(stmt) =>
       val toHighlight = stmt.findFirstChildByType(ScalaTokenTypes.kMATCH).getOrElse(stmt)
-      val fix = LocalQuickFix.from(new SimplifyBooleanMatchToIfStmtQuickFix(stmt))
+      val fix = (new SimplifyBooleanMatchToIfStmtQuickFix(stmt))
       holder.registerProblem(toHighlight, getDisplayName, fix)
     case _ =>
   }
 }
 
-class SimplifyBooleanMatchToIfStmtQuickFix(stmt: ScMatch) extends PsiBasedModCommandAction[ScMatch](stmt) {
+class SimplifyBooleanMatchToIfStmtQuickFix(stmt: ScMatch) extends PsiUpdateFix[ScMatch](stmt) {
   override def getFamilyName: String = ScalaInspectionBundle.message("simplify.match.to.if.statement")
 
-  override def perform(context: ActionContext, scStmt: ScMatch): ModCommand = {
+  override def invoke(context: PsiUpdateContext, scStmt: ScMatch): Unit = {
     if (SimpleBooleanMatchUtil.isSimpleBooleanMatchStmt(scStmt)) {
-      ModCommand.psiUpdate(scStmt, (scStmt: ScMatch) => {
+      {
         val newExpr = SimpleBooleanMatchUtil.simplifyMatchStmt(scStmt)(using context.project, scStmt)
         scStmt.replaceExpression(newExpr, removeParenthesis = false)
         ()
-      })
-    } else ModCommand.nop()
+      }
+    } else ()
   }
 }
 

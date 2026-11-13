@@ -6,7 +6,6 @@ import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.LanguageSubstitutor
 import consulo.language.file.light.LightVirtualFile
-import com.intellij.util.SlowOperations
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.parser.ScalaLanguageSubstitutor.looksLikeScala3LibSourcesJar
 import org.jetbrains.plugins.scala.project.ModuleExt
@@ -35,7 +34,7 @@ final class ScalaLanguageSubstitutor extends LanguageSubstitutor {
     val substituted = if (assignedLanguage != null && assignedLanguage.isKindOf(ScalaLanguage.INSTANCE))
       assignedLanguage
     else if (ScalaFileType.INSTANCE.isMyFileType(file)) {
-      val module = Using.resource(SlowOperations.knownIssue("SCL-21147")) { _ =>
+      val module = {
         ModuleUtilCore.findModuleForFile(file, project)
       }
       if (module != null && module.hasScala3)

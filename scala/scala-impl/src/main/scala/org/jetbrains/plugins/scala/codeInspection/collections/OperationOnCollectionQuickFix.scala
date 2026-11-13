@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
@@ -9,9 +9,9 @@ class OperationOnCollectionQuickFix(
   @Nls override val getFamilyName: String,
   expression: ScExpression,
   replacementText: String,
-) extends PsiUpdateModCommandAction[ScExpression](expression) {
-  override def invoke(context: ActionContext, expression: ScExpression, updater: ModPsiUpdater): Unit = {
-    val replacement = createExpressionFromText(replacementText, expression)(using context.project())
+) extends PsiUpdateFix[ScExpression](expression) {
+  override def invoke(context: PsiUpdateContext, expression: ScExpression): Unit = {
+    val replacement = createExpressionFromText(replacementText, expression)(using context.project)
     expression.replaceExpression(replacement, removeParenthesis = true)
   }
 }

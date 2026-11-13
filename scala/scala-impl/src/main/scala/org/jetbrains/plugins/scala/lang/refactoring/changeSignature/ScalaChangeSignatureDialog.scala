@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
+import consulo.ui.style.StyleManager
 import consulo.language.editor.FileHighlightingSetting
 import consulo.language.editor.highlight.HighlightLevelUtil
 import consulo.java.impl.refactoring.JavaRefactoringBundle
@@ -19,7 +20,6 @@ import com.intellij.ui.{util => _, _}
 import java.util.function.Consumer
 import consulo.ui.ex.awt.table.{JBListTable, JBTableRowEditor}
 import com.intellij.util.ui.table.JBTableRowRenderer
-import com.intellij.util.ui.StartupUiUtil
 import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.icons.Icons
@@ -491,7 +491,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
   def clauseSeparatorColor: Color = {
     val background = getContentPane.getBackground
-    if (StartupUiUtil.INSTANCE.isDarkTheme) background.brighter.brighter else background.darker()
+    if (StyleManager.get().getCurrentStyle.isDark) background.brighter.brighter else background.darker()
   }
 
   private def editingColumn(table: JTable) = if (table.isEditing) Some(table.getEditingColumn) else None

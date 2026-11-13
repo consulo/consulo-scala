@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala
+import consulo.ui.style.StyleManager
 package incremental
 
 import extensions.{&, FirstChild, PsiElementExt}
@@ -8,7 +9,6 @@ import startup.ProjectActivity
 import consulo.language.editor.Pass
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
 import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea, RangeHighlighter}
 import consulo.colorScheme.TextAttributes
 import consulo.codeEditor.{Editor, EditorFactory}
@@ -21,7 +21,6 @@ import consulo.virtualFileSystem.VirtualFile
 import consulo.project.ui.wm.WindowManager
 import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
 import consulo.ui.ex.{Gray, JBColor}
-import com.intellij.util.ui.StartupUiUtil
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import java.awt.Color
@@ -49,7 +48,7 @@ object Tracing {
   private val RESOLVE_COLOR = lighter(JBColor.RED)
   private val INFERENCE_COLOR = lighter(JBColor.YELLOW)
 
-  private def lighter(color: Color): Color = if (StartupUiUtil.INSTANCE.isDarkTheme) color.darker() else color.brighter()
+  private def lighter(color: Color): Color = if (StyleManager.get().getCurrentStyle.isDark) color.darker() else color.brighter()
 
   private def isHighlightingTracingEnabled: Boolean = Registry.is("scala.highlighting.tracing")
 
@@ -180,7 +179,7 @@ object Tracing {
     if (psiFile == null)
       return
 
-    val dirtyRange = Option(DaemonCodeAnalyzer.getInstance(editor.getProject).asInstanceOf[DaemonCodeAnalyzerEx].getFileStatusMap
+    val dirtyRange = Option(DaemonCodeAnalyzer.getInstance(editor.getProject).getFileStatusMap
       .getFileDirtyScope(editor.getDocument, psiFile, Pass.UPDATE_ALL)).getOrElse(TextRange.EMPTY_RANGE)
 
     psiFile.elements(_.getTextRange.intersects(dirtyRange)).foreach { e =>

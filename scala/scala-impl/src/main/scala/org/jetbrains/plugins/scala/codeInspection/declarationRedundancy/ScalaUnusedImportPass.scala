@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, DaemonListeners, ProgressableTextEditorHighlightingPass}
+import consulo.language.editor.DaemonCodeAnalyzer
+import com.intellij.codeInsight.daemon.impl.{DaemonListeners, ProgressableTextEditorHighlightingPass}
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.editor.impl.highlight.HighlightInfoProcessor
 import consulo.language.editor.highlight.HighlightingLevelManager
@@ -114,7 +115,7 @@ object ScalaUnusedImportPass {
 
   private def timeToOptimizeImports(file: PsiFile): Boolean =
     ScalaApplicationSettings.getInstance.OPTIMIZE_IMPORTS_ON_THE_FLY && {
-      val codeAnalyzer = DaemonCodeAnalyzerEx.getInstanceEx(file.getProject)
+      val codeAnalyzer = DaemonCodeAnalyzer.getInstance(file.getProject)
       file match {
         case _: ScalaFile if codeAnalyzer.isHighlightingAvailable(file) && codeAnalyzer.isErrorAnalyzingFinished(file) =>
           !containsErrorsPreventingOptimize(file) && DaemonListeners.canChangeFileSilently(file, true, ThreeState.UNSURE)
@@ -126,7 +127,7 @@ object ScalaUnusedImportPass {
     PsiDocumentManager.getInstance(file.getProject).getDocument(file) match {
       case null => true
       case document: Document =>
-        !DaemonCodeAnalyzerEx.processHighlights(
+        !DaemonCodeAnalyzer.processHighlights(
           document,
           file.getProject,
           HighlightSeverity.ERROR,

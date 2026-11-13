@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingAdapter
-import com.intellij.codeInsight.template.impl.{TemplateImpl, TemplateManagerImpl}
+import com.intellij.codeInsight.template.impl.{TemplateImpl}
 import consulo.language.editor.template.{TemplateState, TextExpression}
 import consulo.codeEditor.EditorColors
 import consulo.colorScheme.TextAttributesKey
@@ -25,8 +28,8 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
 class InplaceRenameHelper(@NotNull private val parent: PsiElement) {
-  private val builder: TemplateBuilderImpl = TemplateBuilderFactory.getInstance().
-          createTemplateBuilder(parent).asInstanceOf[TemplateBuilderImpl]
+  private val builder: TemplateBuilder = TemplateBuilderFactory.getInstance().
+          createTemplateBuilder(parent)
   private val primaries = mutable.ArrayBuffer[PsiElement]()
   private val primaryNames = mutable.HashMap[PsiElement, String]()
   private val dependentNames = mutable.HashMap[PsiElement, Seq[String]]()
@@ -112,7 +115,7 @@ class InplaceRenameHelper(@NotNull private val parent: PsiElement) {
       }
 
       private def markCurrentVariables(groupIndex: Int): Unit = {
-        val templateState: TemplateState = TemplateManagerImpl.getTemplateState(editor)
+        val templateState: TemplateState = TemplateManager.getInstance(editor.getProject).getTemplateState(editor)
         val document = editor.getDocument
         val primary = primaries(groupIndex)
 

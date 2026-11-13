@@ -26,10 +26,6 @@ import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import consulo.content.library.{Library, LibraryTablesRegistrar}
 import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.path.EelPath
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.platform.eel.provider.utils.EelPathUtils
 import consulo.module.content.layer.orderEntry.DependencyScope
 import com.intellij.platform.workspace.jps.entities.*
 import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
@@ -936,11 +932,10 @@ package object project {
   }
 
   private def withPathsRelativeTo(baseDirectory: String, options: Seq[String], project: Project): Seq[String] = {
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
     options.map { option =>
       if (option.startsWith("-Xplugin:")) {
         val compoundPath = option.substring(9)
-        val compoundPathAbsolute = toAbsoluteCompoundPath(baseDirectory, compoundPath, eelDescriptor)
+        val compoundPathAbsolute = toAbsoluteCompoundPath(baseDirectory, compoundPath)
         "-Xplugin:" + compoundPathAbsolute
       } else {
         option
@@ -949,45 +944,24 @@ package object project {
   }
 
   // SCL-11861, SCL-18534
-  private def toAbsoluteCompoundPath(baseDirectory: String, compoundPath: String, eelDescriptor: EelDescriptor): String = {
+  private def toAbsoluteCompoundPath(baseDirectory: String, compoundPath: String): String = {
     // according to https://docs.scala-lang.org/overviews/compiler-options/index.html
     // `,` is used as plugins separator: `-Xplugin PATHS1,PATHS2`
     // but in SCL-11861 `;` is used
     val pluginSeparator = if (compoundPath.contains(";")) ';' else ','
 
     val paths = compoundPath.split(pluginSeparator)
-    val pathsAbsolute = paths.map(toAbsolutePath(baseDirectory, _, eelDescriptor))
+    val pathsAbsolute = paths.map(toAbsolutePath(baseDirectory, _))
     pathsAbsolute.mkString(pluginSeparator.toString)
   }
 
   /**
-   * Converts `rawPath` to a local path which can be used inside the target machine.
-   *
-   * @param baseDirectory project's base directory; may have an eel environment prefix, e.g., `$devcontainer.ij/home/user/project`.
-   * @param rawPath       path to convert; may be:
-   *                       - a relative path (e.g., `target/plugins/foo.jar`),
-   *                       - a local absolute path (e.g., `/root/.cache/...` or `C:/Users/...`),
-   *                       - an eel-prefixed path (e.g., `$devcontainer.ij/...`).
-   * @todo add eel path tests for this method
+   * Converts `rawPath` to an absolute local path: relative paths are resolved against `baseDirectory`.
+   * (upstream also handles paths of remote eel environments, Consulo runs on the local platform)
    */
-  private def toAbsolutePath(baseDirectory: String, rawPath: String, eelDescriptor: EelDescriptor): String = {
-    // 1) First case: `rawPath` is already absolute and belongs to the target eel descriptor. It can be .e.g, an eel-prefixed path.
-    // `Path#isAbsolute` uses host-OS rules, so a path like `/usr/lib/...` in WSL is non-absolute by this method, even though in practice it is.
-    // That case is handled by the `EelPath.parse` below.
+  private def toAbsolutePath(baseDirectory: String, rawPath: String): String = {
     val path = Path.of(rawPath)
-    val isAbsoluteNio = path.isAbsolute && EelProviderUtil.getEelDescriptor(path) == eelDescriptor
-    if (isAbsoluteNio) {
-      EelPathUtils.renderAsEelPath(path)
-    } else {
-      // 2) second case: `EelPath.parse` throws an exception for paths that are not absolute in the target environment, so if it succeeds, we know that
-      // `rawPath` is absolute in the target environment and can be returned as-is.
-      val isAbsoluteInTargetEnv = Try(EelPath.parse(rawPath, eelDescriptor)).isSuccess
-      if (isAbsoluteInTargetEnv) rawPath
-      else {
-        // 2) Third case: `rawPath` is relative — resolve against `baseDirectory`.
-        val resolved = Path.of(baseDirectory).resolve(rawPath)
-        EelPathUtils.renderAsEelPath(resolved)
-      }
-    }
+    if (path.isAbsolute) rawPath
+    else Path.of(baseDirectory).resolve(rawPath).toString
   }
 }

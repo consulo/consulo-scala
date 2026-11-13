@@ -2,7 +2,7 @@ package org.jetbrains.plugins
 package scala
 
 import consulo.language.editor.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerEx, DaemonCodeAnalyzerImpl}
+import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerImpl}
 import consulo.language.editor.FileStatusMap
 import consulo.document.Document
 import consulo.codeEditor.Editor
@@ -29,7 +29,7 @@ package object incremental {
   private[incremental] implicit class DaemonCodeAnalyzerExt(private val daemon: DaemonCodeAnalyzer) extends AnyVal {
     // com.intellij.codeInsight.daemon.impl.FileStatusMap.combineDirtyScopes
     def combineDirtyScopes(document: Document, scope: TextRange): Unit = {
-      combineDirtyScopesMethod.invoke(daemon.asInstanceOf[DaemonCodeAnalyzerEx].getFileStatusMap, document, scope, REASON)
+      combineDirtyScopesMethod.invoke(daemon.getFileStatusMap, document, scope, REASON)
     }
 
     // com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl.stopProcess

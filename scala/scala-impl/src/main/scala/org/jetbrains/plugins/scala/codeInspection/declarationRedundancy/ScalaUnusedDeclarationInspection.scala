@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInspection.options.OptPane
-import com.intellij.codeInspection.options.OptPane.{checkbox, dropdown, option, pane}
-import consulo.language.editor.inspection.{LocalQuickFix, UpdateInspectionOptionFix}
+import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
+import consulo.language.editor.inspection.{InspectionToolState, UpdateInspectionOptionFix}
+import consulo.localize.LocalizeValue
+import consulo.ui.{ComboBox, Label}
+import consulo.util.xml.serializer.XmlSerializerUtil
 import consulo.project.Project
 import consulo.application.util.HtmlChunk
 import com.intellij.java.language.psi.PsiAnnotationOwner
@@ -36,34 +39,17 @@ final class ScalaUnusedDeclarationInspection extends HighlightingPassInspection 
 
   override def isEnabledByDefault: Boolean = true
 
-  @BooleanBeanProperty
-  var reportPublicDeclarations: Boolean = true
+  override def createStateProvider(): InspectionToolState[?] = new ScalaUnusedDeclarationInspectionState
 
-  @BeanProperty
-  var reportLocalDeclarations: Int = 0
-
-  @BooleanBeanProperty
-  var enableInScala3: Boolean = true //TODO
-
-  @BooleanBeanProperty
-  var disableIfCBHIsUsed: Boolean = true
-
-  override def getOptionsPane: OptPane = pane(
-    checkbox(reportPublicDeclarationsPropertyName, ScalaInspectionBundle.message("name.unused.declaration.report.public.declarations")),
-    checkbox(enableInScala3PropertyName, ScalaInspectionBundle.message("enable.in.scala.3")), //TODO
-    checkbox(disableIfCBHIsUsedPropertyName, ScalaInspectionBundle.message("disable.when.compiler.based.highlighting.is.used")),
-    dropdown(
-      reportLocalDeclarationsPropertyName,
-      ScalaInspectionBundle.message("name.unused.declaration.report.local.declarations"),
-      option(AlwaysEnabled.toString, ScalaInspectionBundle.message("inspection.option.enabled")),
-      option(ComplyToCompilerOption.toString, ScalaInspectionBundle.message("inspection.option.check.compiler.unnamed")),
-      option(AlwaysDisabled.toString, ScalaInspectionBundle.message("inspection.option.disabled")),
-    )
-  )
+  // the inspection is also invoked by InspectionBasedHighlightingPass, so options are taken from the current profile
+  private def stateFor(element: PsiElement): ScalaUnusedDeclarationInspectionState =
+    Option(InspectionProjectProfileManager.getInstance(element.getProject).getCurrentProfile
+      .getToolState[ScalaUnusedDeclarationInspectionState](getShortName, element))
+      .getOrElse(new ScalaUnusedDeclarationInspectionState)
 
   override def invoke(element: PsiElement, isOnTheFly: Boolean): Seq[ProblemInfo] = {
 
-    val pipeline = getPipeline(element.getProject, reportPublicDeclarations)
+    val pipeline = getPipeline(element.getProject, stateFor(element).reportPublicDeclarations)
 
     def isFunctionDeclarationOfUsedSAMableClass: Boolean = element match {
       case functionDeclaration: ScFunctionDeclaration =>
@@ -88,12 +74,11 @@ final class ScalaUnusedDeclarationInspection extends HighlightingPassInspection 
   protected def unusedProblemInfoFor(named: ScNamedElement, isOnTheFly: Boolean): ProblemInfo = {
     val dontReportPublicDeclarationsQuickFix = if (isOnlyVisibleInLocalFile(named)) None
     else Some(
-      LocalQuickFix.from(
-        new UpdateInspectionOptionFix(
+      (
+        new UpdateInspectionOptionFix[ScalaUnusedDeclarationInspection, ScalaUnusedDeclarationInspectionState](
           this,
-          reportPublicDeclarationsPropertyName,
-          ScalaInspectionBundle.message("fix.unused.declaration.report.public.declarations"),
-          false
+          LocalizeValue.of(ScalaInspectionBundle.message("fix.unused.declaration.report.public.declarations")),
+          _.reportPublicDeclarations = false
         )
       )
     )
@@ -121,6 +106,8 @@ final class ScalaUnusedDeclarationInspection extends HighlightingPassInspection 
   }
 
   override def shouldProcessElement(element: PsiElement): Boolean = {
+    val state = stateFor(element)
+    import state._
 
     def isTopLevelDefinitionInWorksheetFile(m: ScMember): Boolean = {
       val isWorksheetFile = m.getContainingFile.asOptionOf[ScalaFile].exists(_.isWorksheetFile)
@@ -168,18 +155,6 @@ object ScalaUnusedDeclarationInspection {
   @Nls
   val annotationDescription: String = ScalaInspectionBundle.message("declaration.is.never.used")
 
-  @NonNls
-  private val reportPublicDeclarationsPropertyName: String = "reportPublicDeclarations"
-
-  @NonNls
-  private val enableInScala3PropertyName: String = "enableInScala3"
-
-  @NonNls
-  private val disableIfCBHIsUsedPropertyName: String = "disableIfCBHIsUsed"
-
-  @NonNls
-  private val reportLocalDeclarationsPropertyName: String = "reportLocalDeclarations"
-
   private[declarationRedundancy] def hasUnusedAnnotation(holder: PsiAnnotationOwner): Boolean =
     holder.hasAnnotation("scala.annotation.unused") ||
       // not entirely correct, but if we find @nowarn here in this situation
@@ -202,4 +177,42 @@ object ScalaUnusedDeclarationInspection {
 
     new Pipeline(localSearch ++ globalSearch :+ extensionPointImplementationSearch, canExit)
   }
+}
+
+final class ScalaUnusedDeclarationInspectionState extends InspectionToolState[ScalaUnusedDeclarationInspectionState] {
+
+  import org.jetbrains.plugins.scala.codeInspection.ui.CompilerInspectionOptions._
+
+  @BooleanBeanProperty
+  var reportPublicDeclarations: Boolean = true
+
+  @BeanProperty
+  var reportLocalDeclarations: Int = 0
+
+  @BooleanBeanProperty
+  var enableInScala3: Boolean = true //TODO
+
+  @BooleanBeanProperty
+  var disableIfCBHIsUsed: Boolean = true
+
+  override def createConfigurable(): UnnamedConfigurable =
+    ConfigurableBuilder.newBuilder()
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("name.unused.declaration.report.public.declarations")), () => reportPublicDeclarations, reportPublicDeclarations = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("enable.in.scala.3")), () => enableInScala3, enableInScala3 = _) //TODO
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("disable.when.compiler.based.highlighting.is.used")), () => disableIfCBHIsUsed, disableIfCBHIsUsed = _)
+      .component(() => Label.create(LocalizeValue.of(ScalaInspectionBundle.message("name.unused.declaration.report.local.declarations"))))
+      .valueComponent[Integer, ComboBox[Integer]](
+        () => ComboBox.builder[Integer]()
+          .add(Integer.valueOf(AlwaysEnabled), LocalizeValue.of(ScalaInspectionBundle.message("inspection.option.enabled")))
+          .add(Integer.valueOf(ComplyToCompilerOption), LocalizeValue.of(ScalaInspectionBundle.message("inspection.option.check.compiler.unnamed")))
+          .add(Integer.valueOf(AlwaysDisabled), LocalizeValue.of(ScalaInspectionBundle.message("inspection.option.disabled")))
+          .build(),
+        () => Integer.valueOf(reportLocalDeclarations),
+        (value: Integer) => reportLocalDeclarations = value.intValue()
+      )
+      .buildUnnamed()
+
+  override def getState: ScalaUnusedDeclarationInspectionState = this
+
+  override def loadState(state: ScalaUnusedDeclarationInspectionState): Unit = XmlSerializerUtil.copyBean(state, this)
 }

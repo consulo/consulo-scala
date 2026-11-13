@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.completion.lookup.InsertionContext
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiDocumentManager
@@ -20,7 +20,7 @@ abstract class ChooseValueExpression[T](lookupItems: Seq[T], defaultItem: T) ext
   def calcLookupElements(): Seq[LookupElementBuilder] = lookupItems.map { elem =>
     LookupElementBuilder.create(elem, lookupString(elem)).withInsertHandler((context: InsertionContext, item: LookupElement) => {
       val topLevelEditor = InjectedLanguageEditorUtil.getTopLevelEditor(context.getEditor)
-      val templateState = TemplateManagerImpl.getTemplateState(topLevelEditor)
+      val templateState = TemplateManager.getInstance(topLevelEditor.getProject).getTemplateState(topLevelEditor)
       if (templateState != null) {
         val range = templateState.getCurrentVariableRange
         if (range != null) {

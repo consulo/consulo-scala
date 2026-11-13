@@ -5,8 +5,7 @@ import consulo.module.Module
 import consulo.project.Project
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import consulo.content.library.Library
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.{EelProviderUtil, LocalEelDescriptor}
+import consulo.platform.Platform
 import com.intellij.platform.workspace.jps.entities.{LibraryEntity, ModuleEntity}
 import com.intellij.platform.workspace.storage.{EntitySource, MutableEntityStorage}
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
@@ -198,35 +197,35 @@ object ScalaSdkUtils {
     setProperties(properties)
   }
 
-  @deprecated("Use resolveCompilerBridgeJar(EelDescriptor, String) instead", since = "2026.1")
+  @deprecated("Use resolveCompilerBridgeJar(Platform, String) instead", since = "2026.1")
   @Deprecated(since = "2026.1", forRemoval = true)
   // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
   def resolveCompilerBridgeJar(scalaVersion: String): Option[Path] =
-    resolveCompilerBridgeJar(LocalEelDescriptor.INSTANCE, scalaVersion)
+    resolveCompilerBridgeJar(Platform.current(), scalaVersion)
 
   def resolveCompilerBridgeJar(project: Project, scalaVersion: String): Option[Path] =
-    resolveCompilerBridgeJar(EelProviderUtil.getEelDescriptor(project), scalaVersion)
+    resolveCompilerBridgeJar(Platform.current(), scalaVersion)
 
-  def resolveCompilerBridgeJar(eelDescriptor: EelDescriptor, scalaVersion: String): Option[Path] =
+  def resolveCompilerBridgeJar(platform: Platform, scalaVersion: String): Option[Path] =
     compilerBridgeName(scalaVersion)
       .map(name => "org.scala-lang" % name % scalaVersion)
-      .map(dep => new EelAwareDependencyManager().resolveSafeAndTransferToRemoteEel(eelDescriptor, dep))
+      .map(dep => new EelAwareDependencyManager().resolveSafeAndTransferToRemoteEel(platform, dep))
       .flatMap(_.headOption)
 
-  @deprecated("Use resolveReplClasspath(EelDescriptor, ScalaVersion) instead", since = "2026.1")
+  @deprecated("Use resolveReplClasspath(Platform, ScalaVersion) instead", since = "2026.1")
   @Deprecated(since = "2026.1", forRemoval = true)
   // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
   def resolveReplClasspath(scalaVersion: String): ReplClasspath =
-    resolveReplClasspath(LocalEelDescriptor.INSTANCE, scalaVersion)
+    resolveReplClasspath(Platform.current(), scalaVersion)
 
   def resolveReplClasspath(project: Project, scalaVersion: String): ReplClasspath =
-    resolveReplClasspath(EelProviderUtil.getEelDescriptor(project), scalaVersion)
+    resolveReplClasspath(Platform.current(), scalaVersion)
 
-  def resolveReplClasspath(eelDescriptor: EelDescriptor, scalaVersion: String): ReplClasspath = {
+  def resolveReplClasspath(platform: Platform, scalaVersion: String): ReplClasspath = {
     val version = Version(scalaVersion)
     if (version.major(2) < Version("3.8")) return ReplClasspath.Bundled
     val dep = ("org.scala-lang" % "scala3-repl_3" % scalaVersion).transitive()
-    val paths = new EelAwareDependencyManager().resolveSafeAndTransferToRemoteEel(eelDescriptor, dep)
+    val paths = new EelAwareDependencyManager().resolveSafeAndTransferToRemoteEel(platform, dep)
     ReplClasspath.Provided(paths)
   }
 

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.booleans
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
@@ -18,23 +18,23 @@ final class SimplifyBooleanInspection extends LocalInspectionTool {
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case _: ScParenthesisedExpr => //do nothing to avoid many similar expressions
     case expr: ScExpression if SimplifyBooleanUtil.canBeSimplified(expr) =>
-      val fix = LocalQuickFix.from(new SimplifyBooleanQuickFix(expr))
+      val fix = (new SimplifyBooleanQuickFix(expr))
       holder.registerProblem(expr, ScalaInspectionBundle.message("displayname.simplify.boolean.expression"), fix)
     case _ =>
   }
 }
 
-final class SimplifyBooleanQuickFix(expr: ScExpression) extends PsiBasedModCommandAction[ScExpression](expr) {
+final class SimplifyBooleanQuickFix(expr: ScExpression) extends PsiUpdateFix[ScExpression](expr) {
   override def getFamilyName: String = ScalaInspectionBundle.message("simplify.with.text", getShortText(expr))
 
-  override def perform(context: ActionContext, expr: ScExpression): ModCommand = {
+  override def invoke(context: PsiUpdateContext, expr: ScExpression): Unit = {
     if (SimplifyBooleanUtil.canBeSimplified(expr)) {
-      ModCommand.psiUpdate(expr, (expr: ScExpression) => {
+      {
         val simplified = SimplifyBooleanUtil.simplify(expr)
         expr.replaceExpression(simplified, removeParenthesis = true)
         ()
-      })
-    } else ModCommand.nop()
+      }
+    } else ()
   }
 }
 

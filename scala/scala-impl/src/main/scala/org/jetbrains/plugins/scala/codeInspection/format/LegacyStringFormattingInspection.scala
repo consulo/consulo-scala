@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.format
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInspection.format.LegacyStringFormattingInspection._
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -13,7 +13,7 @@ class LegacyStringFormattingInspection extends LocalInspectionTool {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case element@ConcatenationOrFormattingTopmostStringParts(parts) if parts.sizeIs > 1 =>
-      val fix = LocalQuickFix.from(new FormattingQuickFix(element))
+      val fix = (new FormattingQuickFix(element))
       holder.registerProblem(element, ScalaInspectionBundle.message("legacy.string.formatting.use.interpolated.string"), fix)
     case _ =>
   }
@@ -27,12 +27,12 @@ object LegacyStringFormattingInspection {
       StringConcatenationParser.parse(element).orElse(FormattedStringParser.parse(element))
   }
 
-  private class FormattingQuickFix(element: PsiElement) extends PsiUpdateModCommandAction[PsiElement](element) {
+  private class FormattingQuickFix(element: PsiElement) extends PsiUpdateFix[PsiElement](element) {
     override def getFamilyName: String = ScalaInspectionBundle.message("convert.to.interpolated.string")
 
-    override protected def invoke(context: ActionContext, element: PsiElement, updater: ModPsiUpdater): Unit =
+    override protected def invoke(context: PsiUpdateContext, element: PsiElement): Unit =
       AnyStringParser.parse(element).foreach { parts =>
-        val expression = createExpressionFromText(InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard).format(parts), element)(using context.project())
+        val expression = createExpressionFromText(InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard).format(parts), element)(using context.project)
         element.replace(expression)
       }
   }

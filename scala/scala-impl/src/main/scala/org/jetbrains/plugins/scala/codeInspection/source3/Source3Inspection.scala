@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.source3
 
-import com.intellij.codeInspection.options.OptPane
-import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, ProblemsHolder}
+import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
+import consulo.localize.LocalizeValue
+import consulo.util.xml.serializer.XmlSerializerUtil
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile}
 import org.jetbrains.annotations.Nls
@@ -25,13 +26,6 @@ import org.jetbrains.sbt.api.language.SbtLanguage
 import scala.beans.BeanProperty
 
 class Source3Inspection extends LocalInspectionTool {
-  @BeanProperty final var convertWildcardUnderscore: Boolean = true
-  @BeanProperty final var addGeneratorCase: Boolean = true
-  @BeanProperty final var convertWildcardImport: Boolean = true
-  @BeanProperty final var convertImportAlias: Boolean = true
-  @BeanProperty final var convertVarArgSplices: Boolean = true
-  @BeanProperty final var convertNamedWildcardPattern: Boolean = true
-  @BeanProperty final var convertCompoundTypes: Boolean = true
 
   override def isAvailableForFile(file: PsiFile): Boolean = {
     file.isSource3Enabled && {
@@ -42,7 +36,14 @@ class Source3Inspection extends LocalInspectionTool {
     }
   }
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) { element =>
+  override def createStateProvider(): InspectionToolState[?] = new Source3InspectionState
+
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
+    buildVisitor(holder, state.asInstanceOf[Source3InspectionState])
+
+  private def buildVisitor(holder: ProblemsHolder, state: Source3InspectionState): PsiElementVisitor = PsiElementVisitorSimple(holder) { element =>
+    import state._
+
     lazy val scala3ImportsAllowed = !ScalaCodeStyleSettings.getInstance(element.getProject).isForceScala2ImportSyntaxInSource3
 
     val features = element.features
@@ -51,7 +52,7 @@ class Source3Inspection extends LocalInspectionTool {
       case ScWildcardTypeElementUnderscore(wildcardTypeElement, underscore) if convertWildcardUnderscore && features.`? as wildcard marker` =>
         holder.registerProblem(
           underscore,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(wildcardTypeElement, ScalaInspectionBundle.message("replace.with.questionmark")) { e =>
             ScalaPsiElementFactory.createTypeElementFromText(e.getText.replaceFirst("_", "?"), e, null)
           }
@@ -60,13 +61,13 @@ class Source3Inspection extends LocalInspectionTool {
         generatorType(gen).exists(ty => !pattern.isIrrefutableFor(ty)) =>
         holder.registerProblem(
           pattern,
-          getDisplayName,
-          LocalQuickFix.from(new AddCaseToGeneratorQuickfix(gen)),
+          getDisplayName.get,
+          (new AddCaseToGeneratorQuickfix(gen)),
         )
       case ElementType(ScalaTokenTypes.tUNDER) if scala3ImportsAllowed && convertWildcardImport && isUpgradableImportWildcard(element) =>
         holder.registerProblem(
           element,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(element, ScalaInspectionBundle.message("replace.with.star")) { underscore =>
             ScalaPsiElementFactory.createImportFromText("import a.*", underscore.getContext, null).lastLeaf
           }
@@ -74,7 +75,7 @@ class Source3Inspection extends LocalInspectionTool {
       case ElementType(ScalaTokenTypes.tFUNTYPE) if scala3ImportsAllowed && convertImportAlias && features.`Scala 3 renaming imports` && element.getParent.is[ScImportSelector] =>
         holder.registerProblem(
           element,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(element, ScalaInspectionBundle.message("replace.with.as")) { arrow =>
             ScalaPsiElementFactory.createImportFromText("import a.{x as y}", arrow.getContext, null)
               .importExprs.head.selectors.head.findFirstChildByType(ScalaTokenType.AsKeyword).get
@@ -84,7 +85,7 @@ class Source3Inspection extends LocalInspectionTool {
         seqArg.getFirstChild.elementType == ScalaTokenTypes.tUNDER =>
         holder.registerProblem(
           seqArg,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(typed, ScalaInspectionBundle.message("replace.with.star")) { typed =>
             val innerText = typed.expr match {
               case _: ScInfixExpr | _: ScPostfixExpr | _: ScPrefixExpr => s"(${typed.expr.getText})"
@@ -99,7 +100,7 @@ class Source3Inspection extends LocalInspectionTool {
         features.`Scala 3 vararg splice syntax` && seqWildcard.isWildcard =>
         holder.registerProblem(
           named,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(named, ScalaInspectionBundle.message("replace.with.name.followed.by.star", named.name)) { named =>
             ScalaPsiElementFactory.createPatternFromTextWithContext(s"Seq(${named.name}*)", named.getContext, named)
               .asInstanceOf[ScConstructorPattern].args.patterns.head
@@ -109,7 +110,7 @@ class Source3Inspection extends LocalInspectionTool {
         features.`& instead of with` && !compoundType.getParent.is[ScTypePattern] =>
         holder.registerProblem(
           withKw,
-          getDisplayName,
+          getDisplayName.get,
           createReplacingQuickFix(withKw, ScalaInspectionBundle.message("replace.with.and.char")) { withKw =>
             ScalaPsiElementFactory.createIdentifier("&")(using withKw).getPsi
           }
@@ -117,16 +118,6 @@ class Source3Inspection extends LocalInspectionTool {
       case _ =>
     }
   }
-
-  override def getOptionsPane: OptPane = pane(
-    checkbox("convertWildcardUnderscore", ScalaInspectionBundle.message("suggest.converting.wildcards")),
-    checkbox("addGeneratorCase", ScalaInspectionBundle.message("suggest.adding.case.in.for.comprehensions")),
-    checkbox("convertWildcardImport", ScalaInspectionBundle.message("suggest.using.star.instead.of.underscore")),
-    checkbox("convertImportAlias", ScalaInspectionBundle.message("suggest.using.as.instead.of.arrow")),
-    checkbox("convertVarArgSplices", ScalaInspectionBundle.message("suggest.converting.vararg.splices")),
-    checkbox("convertNamedWildcardPattern", ScalaInspectionBundle.message("suggest.converting.named.wildcard.patterns")),
-    checkbox("convertCompoundTypes", ScalaInspectionBundle.message("suggest.using.and.instead.of.with")),
-  )
 }
 
 object Source3Inspection {
@@ -164,4 +155,29 @@ object Source3Inspection {
       (_, param) <- desugared.analogMethodCall.matchedParameters.headOption
       ty <- Some(param.expectedType).collect { case ParameterizedType(_, Seq(p, _)) => p }
     } yield ty
+}
+
+final class Source3InspectionState extends InspectionToolState[Source3InspectionState] {
+  @BeanProperty var convertWildcardUnderscore: Boolean = true
+  @BeanProperty var addGeneratorCase: Boolean = true
+  @BeanProperty var convertWildcardImport: Boolean = true
+  @BeanProperty var convertImportAlias: Boolean = true
+  @BeanProperty var convertVarArgSplices: Boolean = true
+  @BeanProperty var convertNamedWildcardPattern: Boolean = true
+  @BeanProperty var convertCompoundTypes: Boolean = true
+
+  override def createConfigurable(): UnnamedConfigurable =
+    ConfigurableBuilder.newBuilder()
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.converting.wildcards")), () => convertWildcardUnderscore, convertWildcardUnderscore = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.adding.case.in.for.comprehensions")), () => addGeneratorCase, addGeneratorCase = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.using.star.instead.of.underscore")), () => convertWildcardImport, convertWildcardImport = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.using.as.instead.of.arrow")), () => convertImportAlias, convertImportAlias = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.converting.vararg.splices")), () => convertVarArgSplices, convertVarArgSplices = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.converting.named.wildcard.patterns")), () => convertNamedWildcardPattern, convertNamedWildcardPattern = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("suggest.using.and.instead.of.with")), () => convertCompoundTypes, convertCompoundTypes = _)
+      .buildUnnamed()
+
+  override def getState: Source3InspectionState = this
+
+  override def loadState(state: Source3InspectionState): Unit = XmlSerializerUtil.copyBean(state, this)
 }

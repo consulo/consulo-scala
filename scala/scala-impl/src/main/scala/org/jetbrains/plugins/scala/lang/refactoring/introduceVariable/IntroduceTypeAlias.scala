@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.codeInsight.template.impl.TemplateManagerImpl
+import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateState
 import consulo.dataContext.DataContext
 import consulo.application.ApplicationManager
@@ -134,9 +134,7 @@ trait IntroduceTypeAlias {
         //need open modal dialog in inplace mode
         if ((StartMarkAction.canStart(editor) != null) && (currentScope != null)) {
           currentDataObject.isCallModalDialogInProgress = true
-          val templateState: TemplateState = TemplateManagerImpl.getTemplateState(
-            InjectedLanguageEditorUtil.getTopLevelEditor(editor)
-          )
+          val templateState: TemplateState = TemplateManager.getInstance(InjectedLanguageEditorUtil.getTopLevelEditor(editor).getProject).getTemplateState(InjectedLanguageEditorUtil.getTopLevelEditor(editor))
 
           if (templateState != null) {
             templateState.gotoEnd()

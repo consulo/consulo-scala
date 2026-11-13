@@ -2,10 +2,10 @@ package org.jetbrains.plugins.scala.codeInspection.shadow
 
 import consulo.language.editor.intention.{HighPriorityAction, LowPriorityAction}
 import consulo.language.editor.inspection.scheme.InspectionManager
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder, UpdateInspectionOptionFix}
-import com.intellij.codeInspection.ex.DisableInspectionToolAction
-import com.intellij.codeInspection.options.OptPane
-import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
+import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
+import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder, UpdateInspectionOptionFix}
+import consulo.localize.LocalizeValue
+import consulo.util.xml.serializer.XmlSerializerUtil
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.util.PsiTreeUtil
@@ -29,7 +29,14 @@ final class PrivateShadowInspection extends LocalInspectionTool {
 
   import PrivateShadowInspection._
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = new PsiElementVisitor {
+  override def createStateProvider(): InspectionToolState[?] = new PrivateShadowInspectionState
+
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
+    buildVisitor(holder, isOnTheFly, state.asInstanceOf[PrivateShadowInspectionState])
+
+  private def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, state: PrivateShadowInspectionState): PsiElementVisitor = new PsiElementVisitor {
+    import state._
+
     override def visitElement(element: PsiElement): Unit = {
       if (!element.isVisible(holder.getProject, holder.getFile)) return
 
@@ -37,25 +44,26 @@ final class PrivateShadowInspection extends LocalInspectionTool {
         case elem: ScNamedElement if
           isInspectionAllowed(elem, privateShadowCompilerOption, "-Xlint:private-shadow") &&
             isClassParamWithoutAccessModsAndOverride(elem) && isElementShadowing(elem) =>
-          holder.registerProblem(createProblemDescriptor(elem, annotationDescription)(using holder.getManager, isOnTheFly))
+          holder.registerProblem(createProblemDescriptor(elem, annotationDescription, state)(using holder.getManager, isOnTheFly))
         case _ =>
       }
     }
   }
 
-  private def createProblemDescriptor(elem: ScNamedElement, @Nls description: String)
+  private def createProblemDescriptor(elem: ScNamedElement, @Nls description: String, state: PrivateShadowInspectionState)
                                      (implicit manager: InspectionManager, isOnTheFly: Boolean): ProblemDescriptor = {
+    import state._
     val showAsError =
       fatalWarningsCompilerOption &&
         (isCompilerOptionPresent(elem, "-Xfatal-warnings") || isCompilerOptionPresent(elem, "-Werror"))
 
     val fixes = mutable.ArrayBuilder.make[LocalQuickFix]
     fixes.addOne(new RenameElementQuickfix(elem, renameQuickFixDescription) with HighPriorityAction)
-    fixes.addOne(new DisableInspectionToolAction(this) with LowPriorityAction)
+    // upstream: DisableInspectionToolAction - Consulo offers disabling of inspection itself
     if (!privateShadowCompilerOption)
-      fixes.addOne(LocalQuickFix.from(new UpdateInspectionOptionFix(this, privateShadowPropertyName, ScalaInspectionBundle.message("fix.private.shadow.compiler.option.label"), true)))
+      fixes.addOne(new UpdateInspectionOptionFix[PrivateShadowInspection, PrivateShadowInspectionState](this, LocalizeValue.of(ScalaInspectionBundle.message("fix.private.shadow.compiler.option.label")), _.privateShadowCompilerOption = true))
     if (!fatalWarningsCompilerOption)
-      fixes.addOne(LocalQuickFix.from(new UpdateInspectionOptionFix(this, fatalWarningsPropertyName, ScalaInspectionBundle.message("fix.private.shadow.fatal.warnings.label"), true)))
+      fixes.addOne(new UpdateInspectionOptionFix[PrivateShadowInspection, PrivateShadowInspectionState](this, LocalizeValue.of(ScalaInspectionBundle.message("fix.private.shadow.fatal.warnings.label")), _.fatalWarningsCompilerOption = true))
     manager.createProblemDescriptor(
       elem.nameId,
       description,
@@ -93,20 +101,6 @@ final class PrivateShadowInspection extends LocalInspectionTool {
           case _ => false
         }
     }
-
-  @BooleanBeanProperty
-  private[shadow] var privateShadowCompilerOption: Boolean = true
-
-  @BooleanBeanProperty
-  private[shadow] var fatalWarningsCompilerOption: Boolean = true
-
-  override def getOptionsPane: OptPane = pane(
-    checkbox(
-      privateShadowPropertyName,
-      ScalaInspectionBundle.message("private.shadow.compiler.option.label"),
-      checkbox(fatalWarningsPropertyName, ScalaInspectionBundle.message("private.shadow.fatal.warnings.label"))
-    )
-  )
 }
 
 private[shadow] object PrivateShadowInspection {
@@ -115,10 +109,19 @@ private[shadow] object PrivateShadowInspection {
 
   @Nls
   private val renameQuickFixDescription: String = ScalaInspectionBundle.message("private.shadow.rename.identifier")
+}
 
-  @NonNls
-  private val privateShadowPropertyName = "privateShadowCompilerOption"
+final class PrivateShadowInspectionState extends InspectionToolState[PrivateShadowInspectionState] {
+  @BooleanBeanProperty var privateShadowCompilerOption: Boolean = true
+  @BooleanBeanProperty var fatalWarningsCompilerOption: Boolean = true
 
-  @NonNls
-  private val fatalWarningsPropertyName = "fatalWarningsCompilerOption"
+  override def createConfigurable(): UnnamedConfigurable =
+    ConfigurableBuilder.newBuilder()
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("private.shadow.compiler.option.label")), () => privateShadowCompilerOption, privateShadowCompilerOption = _)
+      .checkBox(LocalizeValue.of(ScalaInspectionBundle.message("private.shadow.fatal.warnings.label")), () => fatalWarningsCompilerOption, fatalWarningsCompilerOption = _)
+      .buildUnnamed()
+
+  override def getState: PrivateShadowInspectionState = this
+
+  override def loadState(state: PrivateShadowInspectionState): Unit = XmlSerializerUtil.copyBean(state, this)
 }

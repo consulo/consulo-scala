@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.autoImport.quickFix
 
 import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
-import com.intellij.util.SlowOperations
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt}
 
@@ -44,7 +43,7 @@ object Presentation {
     else psiClass.qualifiedName
   }
 
-  private def isDeprecated(element: PsiDocCommentOwner): Boolean = Using.resource(SlowOperations.knownIssue("SCL-23057")) { _ =>
+  private def isDeprecated(element: PsiDocCommentOwner): Boolean = {
     element.isDeprecated
   }
 }

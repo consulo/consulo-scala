@@ -9,7 +9,6 @@ import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInspection.ex.InspectionProfileImpl
 import consulo.language.editor.inspection.{LocalQuickFix, LocalQuickFixAsIntentionAdapter, ProblemDescriptor, ProblemDescriptorUtil}
 import consulo.language.editor.annotation.HighlightSeverity
-import com.intellij.modcommand.ModCommandService
 import consulo.application.ApplicationManager
 import consulo.document.Document
 import consulo.colorScheme.TextAttributesKey
@@ -137,13 +136,7 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
           val action = fix match {
             case intention: IntentionAction => intention //no need to wrap - the fix is an intention at the same time
             case iconable: Iconable => new LocalQuickFixAsIntentionIconableAdapter(iconable, problemDescriptor)
-            case _ =>
-              val unwrappedModCommandAction = ModCommandService.getInstance().unwrap(fix)
-              if (unwrappedModCommandAction != null) {
-                unwrappedModCommandAction.asIntention().tap { intention =>
-                  intention.isAvailable(file.getProject, null, file) // cache presentation
-                }
-              } else new LocalQuickFixAsIntentionAdapter(fix, problemDescriptor): @nowarn("cat=deprecation")
+            case _ => new LocalQuickFixAsIntentionAdapter(fix, problemDescriptor): @nowarn("cat=deprecation")
           }
           highlightInfo.registerFix(action, null, info.message, range, highlightKey): @nowarn("cat=deprecation")
         }

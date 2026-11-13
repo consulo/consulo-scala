@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala.project.external
 
 import consulo.project.Project
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.EelProviderUtil
+import consulo.platform.Platform
 import org.jetbrains.plugins.scala.project.ReplClasspath
 
 import scala.collection.mutable
@@ -23,12 +22,12 @@ import scala.collection.mutable
  */
 //noinspection ApiStatus,UnstableApiUsage
 // upstream: @ApiStatus.Internal
-private[jetbrains] final class ReplClasspathCachedResolver(descriptor: EelDescriptor) {
+private[jetbrains] final class ReplClasspathCachedResolver(platform: Platform) {
 
-  def this(project: Project) = this(EelProviderUtil.getEelDescriptor(project))
+  def this(project: Project) = this(Platform.current())
 
   private val cache: mutable.HashMap[String, ReplClasspath] = mutable.HashMap.empty
 
   def resolve(scalaVersion: String): ReplClasspath =
-    cache.getOrElseUpdate(scalaVersion, ScalaSdkUtils.resolveReplClasspath(descriptor, scalaVersion))
+    cache.getOrElseUpdate(scalaVersion, ScalaSdkUtils.resolveReplClasspath(platform, scalaVersion))
 }

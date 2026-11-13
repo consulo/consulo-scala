@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.undoRedo.util.UndoUtil.markPsiFileForUndo
 import consulo.project.Project
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
@@ -8,11 +8,11 @@ import org.jetbrains.plugins.scala.codeInspection.quickfix.ConvertFromInfixPatte
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScInfixPattern, ScParenthesisedPattern}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
-final class ConvertFromInfixPatternQuickFix(expr: ScInfixPattern) extends PsiUpdateModCommandAction[ScInfixPattern](expr) {
+final class ConvertFromInfixPatternQuickFix(expr: ScInfixPattern) extends PsiUpdateFix[ScInfixPattern](expr) {
   override def getFamilyName: String = message
 
-  override def invoke(context: ActionContext, infixPattern: ScInfixPattern, updater: ModPsiUpdater): Unit =
-    ConvertFromInfixPatternQuickFix.applyFix(infixPattern)(using context.project())
+  override def invoke(context: PsiUpdateContext, infixPattern: ScInfixPattern): Unit =
+    ConvertFromInfixPatternQuickFix.applyFix(infixPattern)(using context.project)
 }
 
 object ConvertFromInfixPatternQuickFix {

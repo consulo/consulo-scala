@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
 import consulo.language.editor.ui.navigation.{PsiTargetNavigator, TargetPresentationProvider}
 import consulo.language.editor.template.{Template, TemplateBuilder}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.logging.Logger
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -198,7 +200,7 @@ abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
   protected def addMoreElementsToTemplate(builder: TemplateBuilder, clazz: ScTypeDefinition): Unit = {}
 
   private def runTemplate(clazz: ScTypeDefinition)(editor: Editor): Unit = {
-    val builder = new TemplateBuilderImpl(clazz)
+    val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(clazz)
 
     addTypeParametersToTemplate(clazz, builder)
     clazz match {

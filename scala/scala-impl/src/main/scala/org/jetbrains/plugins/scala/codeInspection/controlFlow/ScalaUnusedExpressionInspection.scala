@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModCommandAction, ModPsiUpdater, PsiUpdateModCommandAction}
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiComment, PsiElementVisitor, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInspection.controlFlow.ScalaUnusedExpressionInspection.{HasSideEffects, NoSideEffects, OnlyThrows, RangeCollector, SideEffectKind, createQuickFixes}
@@ -31,7 +31,7 @@ final class ScalaUnusedExpressionInspection extends LocalInspectionTool {
           }
       } {
         val quickfixes =
-          if (range == expression.getTextRange) createQuickFixes(expression).map(LocalQuickFix.from)
+          if (range == expression.getTextRange) createQuickFixes(expression)
           else Nil
         holder.registerProblem(expression, range.shiftLeft(expression.startOffset), descriptionTemplate, quickfixes*)
       }
@@ -105,15 +105,15 @@ object ScalaUnusedExpressionInspection {
     def result(): Seq[(TextRange, SideEffectKind)] = builder.toSeq
   }
 
-  private def createQuickFixes(expression: ScExpression): List[ModCommandAction] = new RemoveExpressionQuickFix(expression) match {
+  private def createQuickFixes(expression: ScExpression): List[PsiUpdateFix[?]] = new RemoveExpressionQuickFix(expression) match {
     case quickFix if findDefiningFunction(expression).forall(isUnitFunction) => List(quickFix)
     case quickFix => List(quickFix, new AddReturnQuickFix(expression))
   }
 
-  private class AddReturnQuickFix(expression: ScExpression) extends PsiUpdateModCommandAction[ScExpression](expression) {
+  private class AddReturnQuickFix(expression: ScExpression) extends PsiUpdateFix[ScExpression](expression) {
     override def getFamilyName: String = ScalaInspectionBundle.message("add.return.keyword")
 
-    override def invoke(context: ActionContext, element: ScExpression, updater: ModPsiUpdater): Unit = {
+    override def invoke(context: PsiUpdateContext, element: ScExpression): Unit = {
       val retStmt = ScalaPsiElementFactory.createExpressionWithContextFromText(s"return ${expression.getText}", expression.getContext, expression)
       expression.replaceExpression(retStmt, removeParenthesis = true)
     }

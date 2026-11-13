@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.intention.AbstractIntentionAction
 import consulo.language.editor.ui.navigation.PsiTargetNavigator
 import consulo.java.impl.JavaBundle
-import com.intellij.openapi.application.ex.ApplicationManagerEx
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.Editor
 import consulo.application.progress.ProgressIndicator
@@ -98,8 +98,7 @@ object PullUpQuickFix {
 
       val writeActionRunnable: Runnable = { () =>
         //noinspection ApiStatus
-        ApplicationManagerEx.getApplicationEx.runWriteActionWithCancellableProgressInDispatchThread(
-          title, project, null, performUnderProgress)
+        WriteActionWithProgress.run(performUnderProgress)
       }
       if (commandName eq null) {
         CommandProcessor.getInstance().executeCommand(project, writeActionRunnable, title, null)

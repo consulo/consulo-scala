@@ -24,7 +24,7 @@ final class DangerousCatchAllInspection extends LocalInspectionTool with DumbAwa
               caseClause <- caseClauses.caseClauses.headOption
               pattern <- caseClause.pattern
               if pattern.is[ScWildcardPattern, ScReferencePattern] && caseClause.guard.isEmpty
-              fix = LocalQuickFix.from(new ReplaceDangerousCatchAllQuickFix(caseClause))
+              fix = (new ReplaceDangerousCatchAllQuickFix(caseClause))
             } holder.registerProblem(holder.getManager.createProblemDescriptor(caseClause.getFirstChild, pattern,
               ScalaInspectionBundle.message("catch.all"), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
               fix))

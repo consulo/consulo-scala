@@ -1,32 +1,17 @@
-//noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.plugins.scala
 
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.LocalEelDescriptor
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, ivyHome}
-import org.jetbrains.plugins.scala.extensions.PathExt
+import consulo.platform.Platform
+import org.jetbrains.plugins.scala.DependencyManagerBase.DependencyDescription
 
-import java.nio.file.{Files, Path}
+import java.nio.file.Path
 
+/**
+ * Upstream transfers resolved artifacts into a remote (eel) environment. Consulo [[Platform]] is the local machine of
+ * the IDE process, so resolved paths are returned as is.
+ */
 // upstream: @ApiStatus.Internal
 private[scala] class EelAwareDependencyManager extends DependencyManagerBase {
   // upstream: @ApiStatus.Internal
-  def resolveSafeAndTransferToRemoteEel(eelDescriptor: EelDescriptor, dependencies: DependencyDescription*): Seq[Path] = {
-    val resolvedPaths = resolveSafe(dependencies*).toOption.getOrElse(Seq.empty).map(_.file)
-    eelDescriptor match {
-      case LocalEelDescriptor.INSTANCE =>
-        resolvedPaths
-      case remote =>
-        val localIvyHome = ivyHome
-        val remoteIvyHome = EelPathUtils.getHomePath(remote) / ".ivy2"
-        Files.createDirectories(remoteIvyHome)
-        resolvedPaths.map { path =>
-          val relativePath = localIvyHome.relativize(path)
-          val targetPath = remoteIvyHome / relativePath
-          Files.createDirectories(targetPath.getParent)
-          EelPathUtils.transferLocalContentToRemote(path, new EelPathUtils.TransferTarget.Explicit(remoteIvyHome / relativePath))
-        }
-    }
-  }
+  def resolveSafeAndTransferToRemoteEel(platform: Platform, dependencies: DependencyDescription*): Seq[Path] =
+    resolveSafe(dependencies*).toOption.getOrElse(Seq.empty).map(_.file)
 }

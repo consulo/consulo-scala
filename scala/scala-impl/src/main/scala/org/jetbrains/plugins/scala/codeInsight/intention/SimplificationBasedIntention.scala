@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import org.jetbrains.plugins.scala.codeInspection.PsiUpdateFix
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
-import com.intellij.modcommand.ModCommandAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlockExpr, ScExpression}
 abstract class SimplificationBasedIntention(
   @Nls familyName: String,
   simplificationType: SimplificationType,
-  quickFix: Simplification => ModCommandAction
+  quickFix: Simplification => PsiUpdateFix[?]
 ) extends PsiElementBaseIntentionAction {
   override def getText: String = familyName
 
@@ -24,7 +24,7 @@ abstract class SimplificationBasedIntention(
 
   override def invoke(project: Project, editor: Editor, element: PsiElement): Unit =
     simplification(element).foreach { simplification =>
-      val intentionAction = quickFix(simplification).asIntention()
+      val intentionAction = quickFix(simplification)
       intentionAction.invoke(project, editor, element.getContainingFile)
     }
 

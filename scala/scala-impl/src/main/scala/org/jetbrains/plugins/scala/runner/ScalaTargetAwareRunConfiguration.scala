@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.target.java.{JavaLanguageRuntimeConfiguration, JavaLanguageRuntimeType}
 import com.intellij.execution.target.{LanguageRuntimeType, TargetEnvironmentAwareRunProfile, TargetEnvironmentConfiguration}
 import com.intellij.openapi.projectRoots.ProjectJdkTable
-import com.intellij.platform.eel.provider.utils.EelPathUtils
 
 import java.nio.file.Path
 
@@ -52,8 +51,8 @@ abstract class ScalaTargetAwareRunConfiguration[M <: RunConfigurationModule, S](
    * Same as `com.intellij.execution.JavaRunConfigurationBase#runsUnderRemoteJdk`.
    */
   private def runsUnderRemoteJdk(): Boolean = {
-    //noinspection ApiStatus,UnstableApiUsage
-    val pathNotLocal: Path => Boolean = !EelPathUtils.isPathLocal(_)
+    // upstream: !EelPathUtils.isPathLocal(path) - all paths of Consulo platform are local
+    val pathNotLocal: Path => Boolean = _ => false
     val stringToPath: String => Path = Path.of(_)
     jdkHomeSatisfies(stringToPath andThen pathNotLocal)
   }

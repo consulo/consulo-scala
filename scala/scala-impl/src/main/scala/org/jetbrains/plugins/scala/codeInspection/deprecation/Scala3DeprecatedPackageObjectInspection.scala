@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.deprecation
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
-import com.intellij.modcommand.{ActionContext, ModCommandAction, ModPsiUpdater, PsiUpdateModCommandAction}
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInsight.unwrap.{ScalaUnwrapContext, ScalaUnwrapper}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -14,7 +14,7 @@ class Scala3DeprecatedPackageObjectInspection extends LocalInspectionTool {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case obj: ScObject if obj.isPackageObject && obj.isInScala3Module =>
-      val fix = unwrapPackageObjectQuickFix(obj).map(LocalQuickFix.from).toSeq
+      val fix = unwrapPackageObjectQuickFix(obj).toSeq
       holder.registerProblem(obj.nameId, message, fix*)
     case _ =>
   }
@@ -25,12 +25,12 @@ object Scala3DeprecatedPackageObjectInspection {
   private[deprecation] val fixId = ScalaInspectionBundle.message("unwrap.package.object.fix")
   private val unwrapper = new PackageObjectUnwrapper
 
-  private def unwrapPackageObjectQuickFix(obj: ScObject): Option[ModCommandAction] =
+  private def unwrapPackageObjectQuickFix(obj: ScObject): Option[PsiUpdateFix[?]] =
     Option.when(obj.extendsBlock.templateParents.forall(_.typeElements.isEmpty))(
-      new PsiUpdateModCommandAction[ScObject](obj) {
+      new PsiUpdateFix[ScObject](obj) {
         override def getFamilyName: String = fixId
 
-        override protected def invoke(context: ActionContext, obj: ScObject, updater: ModPsiUpdater): Unit =
+        override protected def invoke(context: PsiUpdateContext, obj: ScObject): Unit =
           unwrapper.unwrap(obj)
       }
     )

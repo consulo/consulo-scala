@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.parameters
 
-import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalInspectionToolSession, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.annotations.Nls
@@ -22,7 +22,12 @@ abstract class NameBooleanParametersInspectionBase extends LocalInspectionTool {
 
   import NameBooleanParametersInspectionBase._
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = {
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
+    buildVisitor(holder, isOnTheFly, isIgnoreSingleParameter(state))
+
+  protected def isIgnoreSingleParameter(state: Object): Boolean
+
+  private def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, isIgnoreSingleParameter: Boolean): PsiElementVisitor = {
     new ScalaElementVisitor {
       override def visitMethodCallExpression(mc: ScMethodCall): Unit = {
         if (!mc.isVisible(holder.getProject, holder.getFile)) return
@@ -79,10 +84,6 @@ abstract class NameBooleanParametersInspectionBase extends LocalInspectionTool {
 
     }
   }
-
-  def isIgnoreSingleParameter: Boolean
-
-  def setIgnoreSingleParameter(value: Boolean): Unit
 
 }
 

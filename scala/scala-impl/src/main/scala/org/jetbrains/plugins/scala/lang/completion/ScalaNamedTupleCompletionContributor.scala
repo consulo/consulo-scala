@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType, CompletionUtilCore}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import consulo.language.psi.util.PsiTreeUtil
@@ -115,7 +117,7 @@ object ScalaNamedTupleCompletionContributor {
           if (namedTuple == null)
             return
 
-          val builder = new TemplateBuilderImpl(namedTuple)
+          val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(namedTuple)
           val offsetInNamedTuple = startOffset - namedTuple.startOffset
 
           @tailrec

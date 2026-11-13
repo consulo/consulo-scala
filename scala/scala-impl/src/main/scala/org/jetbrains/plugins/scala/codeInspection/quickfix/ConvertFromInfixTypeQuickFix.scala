@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.undoRedo.util.UndoUtil.markPsiFileForUndo
 import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
@@ -8,11 +8,11 @@ import org.jetbrains.plugins.scala.codeInspection.quickfix.ConvertFromInfixTypeQ
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScInfixTypeElement, ScParenthesisedTypeElement}
 
 final class ConvertFromInfixTypeQuickFix(expr: ScInfixTypeElement)
-  extends PsiUpdateModCommandAction[ScInfixTypeElement](expr)
+  extends PsiUpdateFix[ScInfixTypeElement](expr)
     with DumbAware {
   override def getFamilyName: String = message
 
-  override def invoke(context: ActionContext, infixType: ScInfixTypeElement, updater: ModPsiUpdater): Unit =
+  override def invoke(context: PsiUpdateContext, infixType: ScInfixTypeElement): Unit =
     ConvertFromInfixTypeQuickFix.applyFix(infixType)
 }
 

@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.intention.BaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.util.PsiTreeUtil
@@ -64,7 +66,7 @@ final class AddParametersQuickfix(argExprList: SmartPsiElementPointer[ScArgument
           val newClause = clause.replace(createClauseFromText(newClauseText, clause.getParent)).asInstanceOf[ScParameterClause]
 
           val isNewParam = injectionPositions.map { case (_, _, idx) => idx }.toSet
-          val builder = new TemplateBuilderImpl(newClause)
+          val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(newClause)
           addParametersToTemplate(newClause, builder, p => isNewParam(newClause.parameters.indexOf(p)))
           CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(newClause)
           TemplateUtils.positionCursorAndStartTemplate(newClause, builder.buildTemplate(), editor)

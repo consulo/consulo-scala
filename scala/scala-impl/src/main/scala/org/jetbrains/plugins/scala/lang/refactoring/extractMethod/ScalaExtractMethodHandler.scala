@@ -10,7 +10,6 @@ import com.intellij.java.language.psi.{PsiClass, PsiMember}
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.util.SlowOperations
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.{Nullable, TestOnly}
 import org.jetbrains.plugins.scala.extensions._
@@ -238,7 +237,7 @@ class ScalaExtractMethodHandler extends ScalaRefactoringActionHandler {
                            lastExprType: Option[ScType])
                           (implicit project: Project, editor: Editor): Unit = {
 
-    val info = Using.resource(SlowOperations.knownIssue("SCL-23055"))(_ => ReachingDefinitionsCollector.collectVariableInfo(elements, sibling))
+    val info = (ReachingDefinitionsCollector.collectVariableInfo(elements, sibling))
 
     val input = info.inputVariables
     val output = info.outputVariables

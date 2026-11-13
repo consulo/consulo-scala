@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
-import com.intellij.codeInsight.template.impl.TemplateManagerImpl
+import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateState
 import consulo.application.ApplicationManager
 import consulo.language.editor.WriteCommandAction.writeCommandAction
@@ -379,7 +379,7 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
 
     try {
       val named = namedElement(getDeclaration).orNull
-      val templateState: TemplateState = TemplateManagerImpl.getTemplateState(myEditor)
+      val templateState: TemplateState = TemplateManager.getInstance(myEditor.getProject).getTemplateState(myEditor)
       if (named != null && templateState != null) {
         val occurrences = (0 until templateState.getSegmentsCount)
           .map(templateState.getSegmentRange)

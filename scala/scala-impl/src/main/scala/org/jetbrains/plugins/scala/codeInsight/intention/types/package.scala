@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.template.{Expression, TemplateManager}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingListener
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
@@ -29,7 +32,7 @@ package object types {
     manager.commitAllDocuments()
     manager.doPostponedOperationsAndUnblockDocument(editor.getDocument)
 
-    val builder = new TemplateBuilderImpl(elem)
+    val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(elem)
     builder.replaceElement(elem, expression)
 
     editor.getCaretModel.moveToOffset(elem.getNode.getStartOffset)

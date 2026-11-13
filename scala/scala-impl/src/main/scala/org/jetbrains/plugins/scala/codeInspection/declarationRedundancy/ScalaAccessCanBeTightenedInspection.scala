@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
+import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.editor.inspection.PriorityAction.Priority
 import consulo.language.editor.inspection.{FileModifier, PriorityAction}
@@ -99,7 +99,7 @@ private object ScalaAccessCanBeTightenedInspection {
       if (editor != null && !editor.isInstanceOf[ImaginaryEditor]) { // Batch || Preview
         val range = elementToHighlightIn(element).getTextRange
         var highlight: Option[HighlightInfo] = None
-        DaemonCodeAnalyzerEx.processHighlights(editor.getDocument, project, HighlightSeverity.WARNING, range.getStartOffset, range.getEndOffset, (info: HighlightInfo) => {
+        DaemonCodeAnalyzer.processHighlights(editor.getDocument, project, HighlightSeverity.WARNING, range.getStartOffset, range.getEndOffset, (info: HighlightInfo) => {
           if (info.getDescription == ScalaInspectionBundle.message("access.can.be.private")) {
             highlight = Some(info)
             false

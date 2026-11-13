@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression
 
 import consulo.language.ast.ASTNode
-import com.intellij.modcommand.ActionContext
+import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, StringExt}
@@ -11,13 +11,13 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScTypeExt, api}
-import org.jetbrains.plugins.scala.lang.surroundWith.ScalaModCommandSurrounder
+import org.jetbrains.plugins.scala.lang.surroundWith.ScalaPsiSurrounder
 import org.jetbrains.plugins.scala.project.ProjectContext
 
 /**
  * Surrounds an expression and return an expression
  */
-abstract class ScalaExpressionSurrounder extends ScalaModCommandSurrounder {
+abstract class ScalaExpressionSurrounder extends ScalaPsiSurrounder {
 
   import ScalaTokenTypes.{COMMENTS_TOKEN_SET, tSEMICOLON => Semicolon}
 
@@ -47,7 +47,7 @@ abstract class ScalaExpressionSurrounder extends ScalaModCommandSurrounder {
     else if (isApplicableToMultipleElements || elements.sizeIs == 1) elements.forall(isApplicable)
     else false
 
-  override protected def surroundElements(elements: Array[PsiElement], context: ActionContext): Option[TextRange] =
+  override protected def surroundElements(elements: Array[PsiElement], editor: Editor): Option[TextRange] =
     getSurroundSelectionRange(surroundedNode(elements))
 
   def surroundedNode(elements: Array[PsiElement]): ASTNode = {

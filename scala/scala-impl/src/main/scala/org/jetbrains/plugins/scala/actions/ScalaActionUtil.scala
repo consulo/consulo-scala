@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.ui.ex.awt.UIUtil
 import consulo.language.editor.hint.HintManager
 import com.intellij.codeInsight.hint.HintManagerImpl
 import consulo.language.editor.ui.awt.HintUtil
@@ -9,7 +10,6 @@ import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
 import consulo.ui.ex.awt.hint.LightweightHint
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
-import com.intellij.util.ui.StartupUiUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -29,7 +29,7 @@ object ScalaActionUtil {
   @RequiresEdt
   def showHint(editor: Editor, @Nls text: String): Unit = {
     val label = HintUtil.createInformationLabel(text)
-    label.setFont(StartupUiUtil.getLabelFont)
+    label.setFont(UIUtil.getLabelFont)
 
     val hint: LightweightHint = new LightweightHint(label)
 

@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.template.`macro`.Macro
 import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingAdapter
-import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import consulo.language.editor.template.TemplateState
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
@@ -159,8 +161,8 @@ class ConvertUnderscoreToParameterIntention extends PsiElementBaseIntentionActio
       val file = PsiDocumentManager.getInstance(project).getPsiFile(document)
       val parent = PsiTreeUtil.findCommonParent(file.findElementAt(parentStartOffset), file.findElementAt(newParentEndOffset))
 
-      val builder: TemplateBuilderImpl = TemplateBuilderFactory.getInstance().
-        createTemplateBuilder(parent).asInstanceOf[TemplateBuilderImpl]
+      val builder: TemplateBuilder = TemplateBuilderFactory.getInstance().
+        createTemplateBuilder(parent)
       val params = new mutable.HashMap[Int, String]()
       val depends = new mutable.HashMap[Int, String]()
 
@@ -222,7 +224,7 @@ class ConvertUnderscoreToParameterIntention extends PsiElementBaseIntentionActio
         }
 
         private def markCurrentVariables(index: Int): Unit = {
-          val templateState: TemplateState = TemplateManagerImpl.getTemplateState(editor)
+          val templateState: TemplateState = TemplateManager.getInstance(editor.getProject).getTemplateState(editor)
           var i: Int = 0
 
           while (i < templateState.getSegmentsCount) {

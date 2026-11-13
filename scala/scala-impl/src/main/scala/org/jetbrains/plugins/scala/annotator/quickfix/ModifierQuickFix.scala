@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import com.intellij.codeInsight._
-import com.intellij.modcommand.{ActionContext, ModCommand, PsiBasedModCommandAction}
 import consulo.logging.Logger
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElement
@@ -17,15 +17,15 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import java.util.Collections
 
 sealed abstract class ModifierQuickFix(listOwner: ScModifierListOwner)
-  extends PsiBasedModCommandAction[ScModifierListOwner](listOwner)
+  extends PsiUpdateFix[ScModifierListOwner](listOwner)
     with DumbAware {
-  override def perform(context: ActionContext, listOwner: ScModifierListOwner): ModCommand = {
+  override def invoke(context: PsiUpdateContext, listOwner: ScModifierListOwner): Unit = {
     listOwner.getModifierList match {
       case null =>
         ModifierQuickFix.logger.error("Illegal modifier list in: " + listOwner)
-        ModCommand.nop()
+        ()
       case modifierList =>
-        ModCommand.psiUpdate(modifierList, (modifierList: ScModifierList) => onModifierList(modifierList))
+        onModifierList(modifierList)
     }
   }
 

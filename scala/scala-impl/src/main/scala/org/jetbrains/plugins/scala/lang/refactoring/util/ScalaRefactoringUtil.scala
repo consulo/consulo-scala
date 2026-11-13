@@ -25,7 +25,6 @@ import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import java.util.function.Consumer
-import com.intellij.util.SlowOperations
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
@@ -304,7 +303,7 @@ object ScalaRefactoringUtil {
             .exists(block => !PsiTreeUtil.hasErrorElements(block) && block.statements.lengthIs == 1))
           .getOrElse(createFunction(true))
 
-      Using.resource(SlowOperations.knownIssue("SCL-23056")) { _ =>
+      {
         definitionWithoutType.`type`().getOrAny
       }
   }

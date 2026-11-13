@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 
+import consulo.ui.style.StyleManager
 import consulo.project.{DumbService, Project}
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.impl.util.text.LiteralFormatUtil
-import com.intellij.util.ui.StartupUiUtil
 import consulo.util.lang.xml.XmlStringUtil.escapeString
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.inReadAction
@@ -95,12 +95,12 @@ package object annotator {
 
     // com.intellij.codeInsight.daemon.impl.analysis.HighlightUtil.redIfNotMatch
     def red(htmlText: String) = {
-      val color = if (StartupUiUtil.INSTANCE.isDarkTheme) "FF6B68" else "red"
+      val color = if (StyleManager.get().getCurrentStyle.isDark) "FF6B68" else "red"
       "<font color='" + color + "'><b>" + htmlText + "</b></font>"
     }
 
     def underline(htmlText: String): String = {
-      val color = if (StartupUiUtil.INSTANCE.isDarkTheme) "#FF6B68" else "red"
+      val color = if (StyleManager.get().getCurrentStyle.isDark) "#FF6B68" else "red"
       s"<p style='border-bottom: 1px dotted $color;'>$htmlText</p>"
     }
 

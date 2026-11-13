@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.inspection.ProblemHighlightType
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
@@ -95,7 +97,7 @@ private[element] abstract class AnonymousGivenAliasDeclarationQuickFix(declarati
 
   protected def doInvoke(implicit editor: Editor, project: Project): Unit
 
-  protected def runTemplate(builder: TemplateBuilderImpl, context: PsiElement)
+  protected def runTemplate(builder: TemplateBuilder, context: PsiElement)
                            (implicit editor: Editor): Unit = {
     val template = builder.buildTemplate()
     TemplateUtils.startTemplateAtElement(editor, template, context)
@@ -117,7 +119,7 @@ private[element] final class ImplementAnonymousAbstractGivenFix(declaration: ScG
       CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(newElement) match {
         case definition: ScGivenAliasDefinition =>
           definition.body.foreach { body =>
-            val builder = new TemplateBuilderImpl(body)
+            val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(body)
             builder.replaceElement(body, body.getText)
             runTemplate(builder, body)
           }
@@ -154,7 +156,7 @@ private[element] final class NameAnonymousAbstractGivenFix(declaration: ScGivenA
       CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(declaration) match {
         case decl: ScGivenAliasDeclaration =>
           decl.nameElement.foreach { nameElement =>
-            val builder = new TemplateBuilderImpl(nameElement)
+            val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(nameElement)
             builder.replaceElement(nameElement, new ChooseStringValueExpression(suggestedNames, firstName))
             runTemplate(builder, nameElement)
           }

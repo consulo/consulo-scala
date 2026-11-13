@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
-import com.intellij.openapi.application.ex.ApplicationManagerEx
+import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.logging.attachment.Attachment
 import consulo.logging.Logger
 import com.intellij.openapi.progress.util.AbstractProgressIndicatorBase
@@ -82,8 +82,7 @@ final class Associations private(override val associations: Array[Association])
       }
 
       //noinspection ApiStatus
-      ApplicationManagerEx.getApplicationEx.runWriteActionWithCancellableProgressInDispatchThread(
-        title, project, null, performUnderProgress)
+      WriteActionWithProgress.run(performUnderProgress)
 
       result
     }

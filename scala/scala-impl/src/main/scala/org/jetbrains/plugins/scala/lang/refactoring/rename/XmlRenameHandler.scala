@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.language.editor.template.TemplateManager
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.template.EmptyExpression
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.template.{ExpressionContext, Template, TemplateManager, TextResult}
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.event.TemplateEditingAdapter
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.DataContext
@@ -103,7 +106,7 @@ class XmlRenameHandler extends RenameHandler with ScalaRefactoringActionHandler 
     }
 
     def buildTemplate(): Template =  {
-      val builder = new TemplateBuilderImpl(element.getParent)
+      val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(element.getParent)
 
       builder.replaceElement(element.getTagNameElement, "first", new EmptyExpression {
         override def calculateQuickResult(context: ExpressionContext): Result = new TextResult(Option(element.getTagName).getOrElse(elementStartName))

@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.notImplementedCode
 
+import consulo.language.editor.template.TemplateBuilder
+import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
@@ -21,7 +23,7 @@ class NotImplementedCodeInspection extends LocalInspectionTool {
 
     override protected def doApplyFix(elem: PsiElement)
                                      (implicit project: Project): Unit = {
-      val builder = new TemplateBuilderImpl(elem)
+      val builder = TemplateBuilderFactory.getInstance().createTemplateBuilder(elem)
       builder.replaceElement(elem, elem.getText)
       CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(elem)
       val template = builder.buildTemplate()

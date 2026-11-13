@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext, PrioritizedLookupElement}
 import consulo.language.editor.completion.AutoCompletionPolicy
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementPresentation, LookupElementRenderer}
 import consulo.language.editor.template.TemplateBuilderFactory
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import com.intellij.codeInsight.template.TemplateBuilder
 import consulo.language.editor.template.ConstantNode
 import consulo.application.ApplicationManager
 import consulo.project.Project
@@ -761,7 +762,6 @@ object ScalaSmartCompletionContributor {
 
       val builder = TemplateBuilderFactory.getInstance()
         .createTemplateBuilder(commonParent)
-        .asInstanceOf[TemplateBuilderImpl]
 
       val abstractNames = abstracts.map { `type` =>
         val name = `type`.typeParameter.name

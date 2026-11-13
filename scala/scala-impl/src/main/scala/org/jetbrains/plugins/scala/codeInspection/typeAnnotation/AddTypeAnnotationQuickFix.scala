@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.codeInspection.typeAnnotation
 
 import consulo.language.editor.intention.BatchQuickFix
 import consulo.language.editor.inspection.CommonProblemDescriptor
-import com.intellij.openapi.application.ex.ApplicationManagerEx
 import consulo.application.progress.ProgressManager
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -36,8 +35,7 @@ class AddTypeAnnotationQuickFix(element: PsiElement)
 
     val strategy = new CollectTypesToAddStrategy
 
-    ApplicationManagerEx.getApplicationEx
-      .runProcessWithProgressSynchronously(new ComputeTypesTask(quickFixes.toSeq, strategy), getFamilyName, true, project)
+    ProgressManager.getInstance.runProcessWithProgressSynchronously(new ComputeTypesTask(quickFixes.toSeq, strategy), getFamilyName, true, project)
 
     inWriteCommandAction {
       val typeAdjuster = new TypeAdjuster()

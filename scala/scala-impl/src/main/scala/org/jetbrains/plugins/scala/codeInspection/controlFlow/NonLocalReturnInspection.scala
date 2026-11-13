@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
-import com.intellij.codeInspection.options.OptPane
-import com.intellij.codeInspection.options.OptPane.{checkbox, pane}
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder, UpdateInspectionOptionFix}
+import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
+import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, ProblemsHolder, UpdateInspectionOptionFix}
+import consulo.localize.LocalizeValue
+import consulo.util.xml.serializer.XmlSerializerUtil
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -19,17 +20,17 @@ final class NonLocalReturnInspection extends LocalInspectionTool {
   import NonLocalReturnInspection._
   import org.jetbrains.plugins.scala.codeInspection.ui.CompilerInspectionOptions._
 
-  @BooleanBeanProperty
-  var checkCompilerOption: Boolean = true
+  override def createStateProvider(): InspectionToolState[?] = new NonLocalReturnInspectionState
 
-  override def getOptionsPane: OptPane = pane(checkbox(propertyName, checkboxLabel))
+  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
+    buildVisitor(holder, state.asInstanceOf[NonLocalReturnInspectionState].checkCompilerOption)
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
+  private def buildVisitor(holder: ProblemsHolder, checkCompilerOption: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case scReturn: ScReturn if isNonLocal(scReturn) &&
       isInspectionAllowed(scReturn, checkCompilerOption, "-Xlint:nonlocal-return") =>
       if (!checkCompilerOption) {
-        val fix = new UpdateInspectionOptionFix(this, propertyName, ScalaInspectionBundle.message("fix.nonlocal.return.check.compiler.option"), true)
-        val quickFix = LocalQuickFix.from(fix)
+        val quickFix = new UpdateInspectionOptionFix[NonLocalReturnInspection, NonLocalReturnInspectionState](
+          this, LocalizeValue.of(ScalaInspectionBundle.message("fix.nonlocal.return.check.compiler.option")), _.checkCompilerOption = true)
         holder.registerProblem(scReturn, annotationDescription, quickFix)
       } else {
         holder.registerProblem(scReturn, annotationDescription)
@@ -42,11 +43,8 @@ object NonLocalReturnInspection {
   @Nls
   val annotationDescription: String = ScalaInspectionBundle.message("nonlocal.return.statement")
 
-  @NonNls
-  private val propertyName: String = "checkCompilerOption"
-
   @Nls
-  private val checkboxLabel: String = ScalaInspectionBundle.message("nonlocal.return.check.compiler.option")
+  private[controlFlow] val checkboxLabel: String = ScalaInspectionBundle.message("nonlocal.return.check.compiler.option")
 
   private def isSynchronized(methodCall: ScMethodCall): Boolean = {
     val ref = methodCall.findFirstChildByTypeScala[ScReferenceExpression](ScalaElementType.REFERENCE_EXPRESSION)
@@ -62,4 +60,17 @@ object NonLocalReturnInspection {
     case parent: ScalaPsiElement => isNonLocal(parent)
     case _                       => false
   }
+}
+
+final class NonLocalReturnInspectionState extends InspectionToolState[NonLocalReturnInspectionState] {
+  @BooleanBeanProperty var checkCompilerOption: Boolean = true
+
+  override def createConfigurable(): UnnamedConfigurable =
+    ConfigurableBuilder.newBuilder()
+      .checkBox(LocalizeValue.of(NonLocalReturnInspection.checkboxLabel), () => checkCompilerOption, checkCompilerOption = _)
+      .buildUnnamed()
+
+  override def getState: NonLocalReturnInspectionState = this
+
+  override def loadState(state: NonLocalReturnInspectionState): Unit = XmlSerializerUtil.copyBean(state, this)
 }

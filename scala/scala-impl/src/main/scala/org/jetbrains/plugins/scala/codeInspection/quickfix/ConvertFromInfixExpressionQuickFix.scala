@@ -1,20 +1,20 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
-import com.intellij.modcommand.{ActionContext, ModCommand, ModPsiUpdater, PsiBasedModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScGenericCall, ScInfixExpr, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
 final class ConvertFromInfixExpressionQuickFix(expr: ScInfixExpr)
-  extends PsiBasedModCommandAction[ScInfixExpr](expr)
+  extends PsiUpdateFix[ScInfixExpr](expr)
     with DumbAware {
   override def getFamilyName: String = ConvertFromInfixExpressionQuickFix.message
 
-  override def perform(context: ActionContext, expr: ScInfixExpr): ModCommand = {
-    ModCommand.psiUpdate(expr, (expr: ScInfixExpr, updater: ModPsiUpdater) => {
+  override def invoke(context: PsiUpdateContext, expr: ScInfixExpr): Unit = {
+    {
       val start = expr.getTextRange.getStartOffset
-      val diff = context.offset() - expr.operation.nameId.getTextRange.getStartOffset
+      val diff = context.offset - expr.operation.nameId.getTextRange.getStartOffset
 
       val methodCallExpr = ScalaPsiElementFactory.createEquivMethodCall(expr)
       val referenceExpr = methodCallExpr.getInvokedExpr match {
@@ -25,8 +25,8 @@ final class ConvertFromInfixExpressionQuickFix(expr: ScInfixExpr)
         methodCallExpr.getTextRange.getStartOffset
 
       expr.replaceExpression(methodCallExpr, removeParenthesis = true)
-      updater.moveCaretTo(start + diff + size)
-    })
+      context.moveCaretTo(start + diff + size)
+    }
   }
 }
 

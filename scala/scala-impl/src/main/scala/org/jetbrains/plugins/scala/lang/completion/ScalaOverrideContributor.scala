@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder, LookupElementRenderer}
-import com.intellij.openapi.application.ex.ApplicationManagerEx
 import consulo.application.progress.ProgressIndicator
 import consulo.project.DumbService
 import consulo.component.util.Iconable
@@ -279,8 +279,7 @@ object ScalaOverrideContributor {
       }
 
       //noinspection ApiStatus
-      ApplicationManagerEx.getApplicationEx.runWriteActionWithCancellableProgressInDispatchThread(
-        title, project, null, performUnderProgress)
+      WriteActionWithProgress.run(performUnderProgress)
     }
 
     private def doHandleInsert(context: InsertionContext, item: LookupElement): Unit = {

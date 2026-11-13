@@ -39,7 +39,7 @@ class UnnecessaryPartialFunctionInspection extends LocalInspectionTool {
         case Seq(singleCaseClause) <- expression.caseClauses.map(_.caseClauses)
         if canBeConvertedToFunction(singleCaseClause, conformsTo(expectedExpressionType))
         caseKeyword <- singleCaseClause.firstChild
-        fix = LocalQuickFix.from(new UnnecessaryPartialFunctionQuickFix(expression))
+        fix = (new UnnecessaryPartialFunctionQuickFix(expression))
       } holder.registerProblem(caseKeyword, inspectionName, fix)
     case _ =>
   }

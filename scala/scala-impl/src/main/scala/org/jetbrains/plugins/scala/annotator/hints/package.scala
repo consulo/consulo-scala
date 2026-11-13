@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.ui.style.StyleManager
 import consulo.codeEditor.{CodeInsightColors, EditorColors}
 import consulo.colorScheme.EditorColorsScheme
 import consulo.colorScheme.TextAttributes
-import com.intellij.util.ui.StartupUiUtil
 
 import java.awt.Color
 
@@ -65,7 +65,7 @@ package object hints {
     }
 
     val result = attributes.clone()
-    if (StartupUiUtil.INSTANCE.isDarkTheme && result.getBackgroundColor != null) {
+    if (StyleManager.get().getCurrentStyle.isDark && result.getBackgroundColor != null) {
       val notSoBright = result.getBackgroundColor.brighter
       val tooBright = notSoBright.brighter
       result.setBackgroundColor(average(notSoBright, tooBright))

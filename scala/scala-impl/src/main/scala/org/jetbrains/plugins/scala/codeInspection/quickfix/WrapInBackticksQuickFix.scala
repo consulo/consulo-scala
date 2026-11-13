@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
-import com.intellij.modcommand.{ActionContext, ModPsiUpdater, PsiUpdateModCommandAction}
+import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.quickfix.WrapInBackticksQuickFix.message
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}
@@ -9,11 +9,11 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.ProjectContext
 
 abstract class WrapInBackticksQuickFix[T <: ScReference](reference: T, referenceBuilder: (String, ProjectContext) => T)
-  extends PsiUpdateModCommandAction[T](reference) {
+  extends PsiUpdateFix[T](reference) {
   override def getFamilyName: String = message
 
-  override def invoke(context: ActionContext, reference: T, updater: ModPsiUpdater): Unit =
-    reference.replace(referenceBuilder(s"`${reference.refName}`", context.project()))
+  override def invoke(context: PsiUpdateContext, reference: T): Unit =
+    reference.replace(referenceBuilder(s"`${reference.refName}`", context.project))
 }
 
 object WrapInBackticksQuickFix {

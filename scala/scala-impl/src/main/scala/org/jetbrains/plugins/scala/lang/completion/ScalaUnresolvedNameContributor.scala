@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.language.editor.completion.lookup.InsertionContext
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
 import consulo.language.editor.annotation.HighlightSeverity
@@ -123,7 +123,7 @@ object ScalaUnresolvedNameContributor {
 
     val scopeRange = scope.getTextRange
 
-    DaemonCodeAnalyzerEx.processHighlights(
+    DaemonCodeAnalyzer.processHighlights(
       originalFile.getViewProvider.getDocument,
       position.getProject,
       HighlightSeverity.ERROR,
