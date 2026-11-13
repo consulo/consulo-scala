@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import java.util.function.Consumer
 import consulo.application.CommonBundle
 import consulo.ide.IdeBundle
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.ui.ex.awt.{DialogWrapper, Messages}
-import consulo.language.editor.Pass
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.language.editor.refactoring.event.RefactoringElementListener
 import com.intellij.java.impl.refactoring.rename.RenameJavaMethodProcessor
@@ -37,18 +37,18 @@ class RenameScalaMethodProcessor extends RenameJavaMethodProcessor with ScalaRen
     }
   }
 
-  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Pass[? >: PsiElement]): Unit = {
+  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[? >: PsiElement]): Unit = {
     val named = element match {case named: ScNamedElement => named; case _ => return}
     val guess = ScalaRenameUtil.findSubstituteElement(element)
 
     guess match {
       case Some(guess) if guess != element =>
-        renameCallback.pass(guess)
+        renameCallback.accept(guess)
       case _ =>
         RenameSuperMembersUtil.chooseAndProcessSuper(
           named,
           (named: PsiNamedElement) => {
-            renameCallback.pass(named)
+            renameCallback.accept(named)
             false
           },
           editor

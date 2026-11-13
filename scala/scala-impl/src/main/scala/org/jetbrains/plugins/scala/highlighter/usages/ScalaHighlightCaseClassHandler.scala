@@ -22,7 +22,7 @@ class ScalaHighlightCaseClassHandler(reference: ScReference, caseClass: ScClass,
   override def getTargets: util.List[PsiElement] = util.Collections.singletonList(reference)
 
   override def selectTargets(targets: util.List[? <: PsiElement], selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit =
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
 
   override protected def addOccurrence(element: PsiElement): Unit = {
     if (element != null && element.getContainingFile == file)

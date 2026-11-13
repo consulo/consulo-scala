@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.language.editor.util.LanguageUndoUtil
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
-import consulo.undoRedo.util.UndoUtil
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -44,7 +44,7 @@ class ConvertToInfixIntention extends PsiElementBaseIntentionAction with DumbAwa
         case npe: NullPointerException =>
           throw new RuntimeException("Unable to replace: %s with %s".format(paramTypeElement, newTypeText), npe)
       }
-      UndoUtil.markPsiFileForUndo(replaced.getContainingFile)
+      LanguageUndoUtil.markPsiFileForUndo(replaced.getContainingFile)
     }
   }
 }

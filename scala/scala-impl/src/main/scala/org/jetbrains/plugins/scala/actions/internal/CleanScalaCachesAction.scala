@@ -8,7 +8,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 final class CleanScalaCachesAction extends AnAction("Clean Scala Plugin Caches") {
 
   override def actionPerformed(event: AnActionEvent): Unit = {
-    val project = event.getProject
+    val project = event.getData(Project.KEY)
     if (project != null) {
       CleanScalaCachesAction.cleanAllCaches(project)
     }

@@ -25,7 +25,7 @@ class ScalaHighlightExprResultHandler(expr: ScExpression, editor: Editor,
   }
 
   override def selectTargets(targets: util.List[? <: PsiElement], selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit = {
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
   }
 
   override def getTargets: util.List[PsiElement] = Collections.singletonList(keyword)

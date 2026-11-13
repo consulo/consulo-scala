@@ -32,7 +32,7 @@ class ScalaHighlightImplicitUsagesHandler[T](editor: Editor, file: PsiFile, data
 
   override def selectTargets(targets: util.List[? <: PsiElement],
                              selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit =
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
 
   override def computeUsages(targets: util.List[? <: PsiElement]): Unit = {
     import ScalaHighlightImplicitUsagesHandler._

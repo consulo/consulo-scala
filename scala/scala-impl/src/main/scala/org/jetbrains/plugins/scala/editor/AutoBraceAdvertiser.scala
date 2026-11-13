@@ -47,7 +47,7 @@ object AutoBraceAdvertiser {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       notification.hideBalloon()
       ShowSettingsUtilImplExt.showSettingsDialog(
-        e.getProject,
+        e.getData(Project.KEY),
         classOf[ScalaEditorSmartKeysConfigurable],
         ""
       )

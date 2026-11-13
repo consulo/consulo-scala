@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import java.util.function.Consumer
 import consulo.codeEditor.Editor
-import consulo.language.editor.Pass
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.event.RefactoringElementListener
 import consulo.language.editor.refactoring.rename.RenamePsiElementProcessor
@@ -41,7 +41,7 @@ class RenameLightProcessor extends RenamePsiElementProcessor {
     } else null
   }
 
-  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Pass[? >: PsiElement]): Unit = {
+  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[? >: PsiElement]): Unit = {
     val orig = originalElement(element)
     if (orig != null) {
       val processor = RenamePsiElementProcessor.forElement(orig)

@@ -18,7 +18,7 @@ abstract class ScHighlightEndMarkerUsagesHandler private(element: ScalaPsiElemen
   override def getTargets: util.List[PsiElement] = Collections.singletonList(elementNameId)
 
   override def selectTargets(targets: util.List[? <: PsiElement], selectionConsumer: java.util.function.Consumer[? >: util.List[? <: PsiElement]]): Unit = {
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
   }
 
   override def computeUsages(targets: util.List[? <: PsiElement]): Unit = {

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.quickfix
 
+import consulo.language.editor.util.LanguageUndoUtil
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
-import consulo.undoRedo.util.UndoUtil.markPsiFileForUndo
+import consulo.language.editor.util.LanguageUndoUtil.markPsiFileForUndo
 import consulo.application.dumb.DumbAware
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.codeInspection.quickfix.ConvertFromInfixTypeQuickFix.message

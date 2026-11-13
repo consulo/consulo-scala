@@ -16,9 +16,9 @@ class DesugarCodeAction extends AnAction(
 ) {
   // TODO support read-only files (create duplicate scratch buffer)
   override def actionPerformed(event: AnActionEvent): Unit = {
-    ScalaActionUsagesCollector.logDesugarCode(event.getProject)
+    ScalaActionUsagesCollector.logDesugarCode(event.getData(Project.KEY))
 
-    implicit val project: Project = event.getProject
+    implicit val project: Project = event.getData(Project.KEY)
     if (project == null) return
 
     val file = event.getDataContext.getData(CommonDataKeys.PSI_FILE).asInstanceOf[ScalaFile]

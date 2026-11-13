@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import java.util.function.Consumer
 import consulo.codeEditor.Editor
-import consulo.language.editor.Pass
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.java.impl.refactoring.rename.RenameJavaMemberProcessor
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
@@ -17,13 +17,13 @@ class RenameScalaTypeAliasProcessor extends RenameJavaMemberProcessor with Scala
     RenameSuperMembersUtil.chooseSuper(element.asInstanceOf[ScNamedElement])
   }
 
-  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Pass[? >: PsiElement]): Unit = {
+  override def substituteElementToRename(element: PsiElement, editor: Editor, renameCallback: Consumer[? >: PsiElement]): Unit = {
     val named = element match {
       case named: ScNamedElement => named
       case _ => return
     }
     RenameSuperMembersUtil.chooseAndProcessSuper(named, (named: PsiNamedElement) => {
-      renameCallback.pass(named)
+      renameCallback.accept(named)
       false
     }, editor)
   }

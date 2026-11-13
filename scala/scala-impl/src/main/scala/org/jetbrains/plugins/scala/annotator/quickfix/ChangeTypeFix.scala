@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.util.LanguageUndoUtil
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
-import consulo.undoRedo.util.UndoUtil
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiFile
@@ -55,7 +55,7 @@ final class ChangeTypeFix(
 
     val replaced = typeElement.replace(createTypeElementFromText(newType.canonicalText(TypePresentationContext(typeElement)), typeElement))
     ScalaPsiUtil.adjustTypes(replaced)
-    UndoUtil.markPsiFileForUndo(file)
+    LanguageUndoUtil.markPsiFileForUndo(file)
   }
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =

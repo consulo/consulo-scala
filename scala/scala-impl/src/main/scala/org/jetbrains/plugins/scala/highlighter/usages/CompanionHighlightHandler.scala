@@ -25,7 +25,7 @@ private class CompanionHighlightHandler(keyword: PsiElement, definition: ScTypeD
     }
 
   override def selectTargets(targets: util.List[? <: PsiElement], selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit = {
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
   }
 
   override def getTargets: util.List[PsiElement] = Collections.singletonList(keyword)

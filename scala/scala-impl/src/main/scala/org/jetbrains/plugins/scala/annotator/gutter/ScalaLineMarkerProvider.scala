@@ -324,7 +324,7 @@ private object GutterUtil {
     markerType.tooltipProvider,
     markerType.navigationHandler,
     alignment,
-    () => markerType.tooltipProvider.fun(element)
+    () => markerType.tooltipProvider.apply(element)
   ) {
     override def canMergeWith(other: MergeableLineMarkerInfo[?]): Boolean = other match {
       case that: ArrowUpOrDownLineMarkerInfo => icon == that.icon
@@ -382,7 +382,7 @@ private object GutterUtil {
         subclassedClass.tooltipProvider,
         subclassedClass.navigationHandler,
         Alignment.RIGHT,
-        () => subclassedClass.tooltipProvider.fun(aClass)
+        () => subclassedClass.tooltipProvider.apply(aClass)
       )
       NavigateAction.setNavigateAction(info, ScalaBundle.message("go.to.implementation"), IdeActions.ACTION_GOTO_IMPLEMENTATION)
     }

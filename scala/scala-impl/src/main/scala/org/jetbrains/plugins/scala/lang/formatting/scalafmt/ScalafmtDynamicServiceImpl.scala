@@ -182,7 +182,7 @@ final class ScalafmtDynamicServiceImpl
     extends NotificationAction(title) {
 
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-      val project = e.getProject
+      val project = e.getData(Project.KEY)
       resolveAsync(version, project, onResolved = {
         case Right(_) => ScalafmtNotifications.displayInfo(ScalaBundle.message("scalafmt.progress.version.was.downloaded", version))(using project)
         case _ => // relying on error reporting in resolve method

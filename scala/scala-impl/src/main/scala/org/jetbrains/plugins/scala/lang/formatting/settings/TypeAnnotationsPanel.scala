@@ -111,8 +111,8 @@ final class TypeAnnotationsPanel(settings: CodeStyleSettings) extends TypeAnnota
 
 object TypeAnnotationsPanel {
   private def elementsIn(field: TextFieldWithBrowseButton): util.Set[String] =
-    new util.HashSet(ParametersListUtil.COLON_LINE_PARSER.fun(field.getText))
+    new util.HashSet(ParametersListUtil.COLON_LINE_PARSER.apply(field.getText))
 
   private def setElementsIn(field: TextFieldWithBrowseButton, elements: util.Set[String]): Unit =
-    field.setText(NlsString.force(ParametersListUtil.COLON_LINE_JOINER.fun(new util.ArrayList(elements))))
+    field.setText(NlsString.force(ParametersListUtil.COLON_LINE_JOINER.apply(new util.ArrayList(elements))))
 }

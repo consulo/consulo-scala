@@ -26,7 +26,7 @@ final class ScalaImportStaticLookupActionProvider extends LookupActionProvider {
       else
         checkIcon
 
-      consumer.consume(new LookupElementAction(icon, ScalaBundle.message("action.import.member")) {
+      consumer.accept(new LookupElementAction(icon, ScalaBundle.message("action.import.member")) {
 
         import LookupElementAction.Result.ChooseItem
 

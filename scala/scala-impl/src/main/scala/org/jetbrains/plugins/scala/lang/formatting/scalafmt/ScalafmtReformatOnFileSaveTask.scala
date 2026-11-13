@@ -23,7 +23,7 @@ import org.jetbrains.sbt.api.language.SbtFile
 final class ScalafmtReformatOnFileSaveTask extends AnActionListener {
 
   override def afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult): Unit = {
-    val project = event.getProject
+    val project = event.getData(Project.KEY)
     if (project == null || project.isDisposed)
       return
 

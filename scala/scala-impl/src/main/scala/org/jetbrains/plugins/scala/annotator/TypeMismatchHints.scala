@@ -115,7 +115,7 @@ object TypeMismatchHints {
         new AnAction(ScalaBundle.message("type.mismatch.hint.context.menu.configure")) {
           override def actionPerformed(e: AnActionEvent): Unit = {
             ShowSettingsUtilImplExt.showSettingsDialog(
-              e.getProject,
+              e.getData(Project.KEY),
               classOf[EditorSettingsSectionConfigurable],
               ScalaBundle.message("scala.project.settings.form.show.type.mismatch.hints")
             )

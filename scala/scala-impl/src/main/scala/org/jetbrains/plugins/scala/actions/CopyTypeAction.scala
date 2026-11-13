@@ -34,7 +34,7 @@ final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type
   }
 
   override def actionPerformed(event: AnActionEvent): Unit = {
-    val project = event.getProject
+    val project = event.getData(Project.KEY)
     if (project == null)
       return
 

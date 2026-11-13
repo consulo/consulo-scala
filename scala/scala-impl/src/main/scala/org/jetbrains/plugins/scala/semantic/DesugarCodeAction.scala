@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.semantic
 
+import consulo.project.Project
 import consulo.diff.request.SimpleDiffRequest
 import consulo.diff.{DiffContentFactory, DiffManager}
 import consulo.ui.ex.action.AnActionEvent
@@ -31,7 +32,7 @@ object DesugarCodeAction {
   private def getTemplateText: String = "Desugar Scala Code"
 
   def actionPerformed(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
     val editor = e.getDataContext.getData(CommonDataKeys.EDITOR)
     val document = editor.getDocument
     val virtualFile = editor.getVirtualFile

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.language.editor.util.LanguageUndoUtil
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import consulo.undoRedo.util.UndoUtil
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -131,7 +131,7 @@ object ConvertImplicitBoundsToImplicitParameter {
     // remove bounds
     parameterOwner.typeParameters.foreach(_.removeImplicitBounds())
 
-    UndoUtil.markPsiFileForUndo(function.getContainingFile)
+    LanguageUndoUtil.markPsiFileForUndo(function.getContainingFile)
 
     newClause.parameters.takeRight(newParamsTexts.size)
   }

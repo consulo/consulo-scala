@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable
 
+import java.util.function.Consumer
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalQuickFixOnPsiElement, ProblemsHolder}
 import consulo.dataContext.DataContext
 import consulo.application.ApplicationManager
 import consulo.codeEditor.{Editor, ScrollType}
 import consulo.project.Project
-import consulo.language.editor.Pass
 import consulo.document.util.TextRange
 import com.intellij.java.language.psi.PsiModifier.PRIVATE
 import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace, SmartPointerManager, SmartPsiElementPointer}
@@ -129,7 +129,7 @@ trait IntroduceExpressions {
 
     val testReplaceOptions = Option(dataContext.getData(ScalaIntroduceVariableHandler.ForcedReplaceTestOptions))
 
-    val replaceChoiceCallback: Pass[ReplaceChoice] = (replaceChoice: ReplaceChoice) => {
+    val replaceChoiceCallback: Consumer[ReplaceChoice] = (replaceChoice: ReplaceChoice) => {
       val replaceAll = replaceChoice != ReplaceChoice.NO
 
       executeWriteActionCommand(INTRODUCE_VARIABLE_REFACTORING_NAME) {
@@ -148,11 +148,11 @@ trait IntroduceExpressions {
 
     val OccurrencesInFile(_, mainRange, occurrences_) = occurrences
     if (occurrences_.isEmpty) {
-      replaceChoiceCallback.pass(ReplaceChoice.NO)
+      replaceChoiceCallback.accept(ReplaceChoice.NO)
     }
     else if (ApplicationManager.getApplication.isUnitTestMode) {
       val replaceChoice = if (testReplaceOptions.exists(_.replaceAllOccurrences.contains(true))) ReplaceChoice.ALL else ReplaceChoice.NO
-      replaceChoiceCallback.pass(replaceChoice)
+      replaceChoiceCallback.accept(replaceChoice)
     }
     else {
       val chooser = new OccurrencesChooser[TextRange](editor) {
