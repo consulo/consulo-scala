@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
+import consulo.ui.image.Image
 package typedef
 
 import consulo.language.ast.ASTNode
@@ -27,7 +28,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScTemplateDefinitionE
 import org.jetbrains.plugins.scala.lang.psi.types.api.TypeParameterType
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.AccessModifierRenderer
 
-import javax.swing.Icon
 
 class ScClassImpl(stub: ScTemplateDefinitionStub[ScClass],
                   nodeType: ScTemplateDefinitionElementType[ScClass],
@@ -41,7 +41,7 @@ class ScClassImpl(stub: ScTemplateDefinitionStub[ScClass],
 
   override protected def targetTokenType: ScalaTokenType = ScalaTokenType.ClassKeyword
 
-  override protected def baseIcon: Icon =
+  override protected def baseIcon: Image =
     if (this.hasAbstractModifier) Icons.ABSTRACT_CLASS
     else Icons.CLASS
 

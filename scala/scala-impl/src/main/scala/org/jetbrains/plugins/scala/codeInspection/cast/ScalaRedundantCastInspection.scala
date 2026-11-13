@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.cast
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.impl.inspection.ProblemDescriptorImpl
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
@@ -28,7 +29,7 @@ class ScalaRedundantCastInspection extends LocalInspectionTool {
 
               val message = ScalaInspectionBundle.message("casting.left.to.right.is.redundant", left.getText, castType.presentableText)
 
-              new ProblemDescriptorImpl(call, call, message, Array(new RemoveCastQuickFix(call, left)), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, false, range, null, false)
+              new ProblemDescriptorImpl(call, call, LocalizeValue.of(message), Array(new RemoveCastQuickFix(call, left)), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, false, range, null, false)
             }
 
             holder.registerProblem(descriptor)

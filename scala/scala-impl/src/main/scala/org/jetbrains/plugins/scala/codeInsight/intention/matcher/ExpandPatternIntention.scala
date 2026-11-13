@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.matcher
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.FileModificationService
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
@@ -29,7 +30,7 @@ class ExpandPatternIntention extends PsiElementBaseIntentionAction {
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     findReferencePattern(element) match {
       case Some((_, newPatternText)) =>
-        setText(ScalaBundle.message("expand.to.new.pattern", StringUtils.abbreviate(newPatternText, 25)))
+        setText(LocalizeValue.of(ScalaBundle.message("expand.to.new.pattern", StringUtils.abbreviate(newPatternText, 25))))
         true
       case _ => false
     }

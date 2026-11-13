@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.semantic
 
+import consulo.ui.image.Image
 import consulo.language.content.{ProductionContentFolderTypeProvider, TestContentFolderTypeProvider}
 import consulo.compiler.ModuleCompilerPathsManager
 import consulo.project.Project
@@ -26,7 +27,6 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstanc
 import org.jetbrains.plugins.scala.api.{LanguageFileTypeBase, Scala3Language}
 
 import java.nio.file.Files
-import javax.swing.Icon
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 object DesugarCodeAction {
@@ -117,6 +117,6 @@ object DesugarCodeAction {
   }
 
   private object Scala3FileType extends LanguageFileTypeBase(Scala3Language.INSTANCE) {
-    override def getIcon: Icon = Icons.SCALA_FILE
+    override def getIcon: Image = Icons.SCALA_FILE
   }
 }

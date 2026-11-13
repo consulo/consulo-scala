@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion.lookups
 
+import consulo.ui.image.Image
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import org.jetbrains.plugins.scala.extensions.ElementType
 import org.jetbrains.plugins.scala.lang.completion.InsertionContextExt
@@ -7,12 +8,11 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes
 import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 
-import javax.swing.Icon
 
 object ScalaDirectiveDependencyLookupItem {
   def apply(text: String, obj: AnyRef, valueKind: ScalaDirectiveValueKind,
             scheduleAutoPopupAfterInsert: Boolean = false,
-            icon: Option[Icon] = None): LookupElement = {
+            icon: Option[Image] = None): LookupElement = {
     val builder = LookupElementBuilder
       .create(obj, text)
       .withInsertHandler { (context, item) =>
@@ -30,6 +30,6 @@ object ScalaDirectiveDependencyLookupItem {
     icon.fold(builder)(builder.withIcon)
   }
 
-  def apply(text: String, valueKind: ScalaDirectiveValueKind, scheduleAutoPopupAfterInsert: Boolean, icon: Option[Icon]): LookupElement =
+  def apply(text: String, valueKind: ScalaDirectiveValueKind, scheduleAutoPopupAfterInsert: Boolean, icon: Option[Image]): LookupElement =
     apply(text, text, valueKind, scheduleAutoPopupAfterInsert, icon)
 }

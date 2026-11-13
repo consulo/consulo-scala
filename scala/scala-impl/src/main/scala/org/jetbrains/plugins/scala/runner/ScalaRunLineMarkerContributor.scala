@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.ui.image.Image
 import consulo.execution.lineMarker.RunLineMarkerContributor.Info
 import consulo.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
 import consulo.application.AllIcons
@@ -10,7 +11,6 @@ import org.jetbrains.plugins.scala.runner.ScalaRunLineMarkerContributor.RunIcon
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.util.ScalaMainMethodUtil
 
-import javax.swing.Icon
 
 class ScalaRunLineMarkerContributor extends RunLineMarkerContributor {
   override def getInfo(element: PsiElement): Info = {
@@ -36,5 +36,5 @@ class ScalaRunLineMarkerContributor extends RunLineMarkerContributor {
 }
 
 object ScalaRunLineMarkerContributor {
-  val RunIcon: Icon = AllIcons.RunConfigurations.TestState.Run
+  val RunIcon: Image = AllIcons.RunConfigurations.TestState.Run
 }

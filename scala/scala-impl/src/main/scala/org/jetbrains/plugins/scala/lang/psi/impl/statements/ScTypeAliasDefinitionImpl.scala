@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.ui.image.Image
 import consulo.language.psi.util.EditSourceUtil
 import consulo.language.ast.ASTNode
 import consulo.navigation.ItemPresentation
@@ -24,7 +25,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScTypeAliasStub
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.{ScDesignatorType, ScProjectionType}
 
-import javax.swing.Icon
 
 final class ScTypeAliasDefinitionImpl private(stub: ScTypeAliasStub, node: ASTNode)
   extends ScalaStubBasedElementImpl[ScTypeAlias, ScTypeAliasStub](stub, ScalaElementType.TYPE_DEFINITION, node)
@@ -71,12 +71,12 @@ final class ScTypeAliasDefinitionImpl private(stub: ScTypeAliasStub, node: ASTNo
 
   override def toString: String = "ScTypeAliasDefinition: " + ifReadAllowed(name)("")
 
-  override protected def baseIcon: Icon = Icons.TYPE_ALIAS
+  override protected def baseIcon: Image = Icons.TYPE_ALIAS
 
   override def getPresentation: ItemPresentation = {
     new ItemPresentation() {
       override def getPresentableText: String = name
-      override def getIcon(open: Boolean): Icon = ScTypeAliasDefinitionImpl.this.getIcon(0)
+      override def getIcon(open: Boolean): Image = ScTypeAliasDefinitionImpl.this.getIcon(0)
       override def getLocationString: String = {
         val classFqn = ScTypeAliasDefinitionImpl.this.containingClass.toOption.map(_.qualifiedName)
         val fqn = classFqn.orElse(topLevelQualifier)

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import consulo.language.editor.DaemonCodeAnalyzerSettings
 import consulo.language.editor.gutter.{GutterIconDescriptor, LineMarkerInfo, LineMarkerProviderDescriptor, MergeableLineMarkerInfo, NavigateAction}
 import com.intellij.java.impl.codeInsight.daemon.impl.GutterTooltipHelper
@@ -38,7 +40,6 @@ import org.jetbrains.plugins.scala.util.SAMUtil._
 import java.awt.event.MouseEvent
 import java.util.Collections.singletonList
 import java.{util => ju}
-import javax.swing.Icon
 
 final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
 
@@ -89,7 +90,7 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
 
   private def arrowUpLineMarker(
     element: PsiElement,
-    icon: Icon,
+    icon: Image,
     markerType: ScalaMarkerType,
     presentationParent: Option[PsiElement] = None
   ): LineMarkerInfo[PsiElement] = {
@@ -282,13 +283,13 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
 
 // TODO Split methods between a companion object and packet object (so that methods can be more private)
 private object GutterUtil {
-  private[gutter] lazy val CompanionOption = new GutterIconDescriptor.Option("scala.companion", ScalaBundle.message("gutter.companion"), Icons.CLASS_COMPANION)
-  private[gutter] val ImplementedOption = new GutterIconDescriptor.Option("scala.implemented", ScalaBundle.message("gutter.implemented"), AllIcons.Gutter.ImplementedMethod)
-  private[gutter] val ImplementingOption = new GutterIconDescriptor.Option("scala.implementing", ScalaBundle.message("gutter.implementing"), AllIcons.Gutter.ImplementingMethod)
-  private[gutter] val SamOption = new GutterIconDescriptor.Option("scala.sam", ScalaBundle.message("gutter.sam"), AllIcons.Gutter.ImplementingFunctionalInterface)
-  private[gutter] val OverriddenOption = new GutterIconDescriptor.Option("scala.overridden", ScalaBundle.message("gutter.overridden"), AllIcons.Gutter.OverridenMethod)
-  private[gutter] val OverridingOption = new GutterIconDescriptor.Option("scala.overriding", ScalaBundle.message("gutter.overriding"), AllIcons.Gutter.OverridingMethod)
-  private[gutter] lazy val RecursionOption = new GutterIconDescriptor.Option("scala.recursion", ScalaBundle.message("gutter.recursion"), Icons.TAIL_RECURSION)
+  private[gutter] lazy val CompanionOption = new GutterIconDescriptor.Option("scala.companion", LocalizeValue.of(ScalaBundle.message("gutter.companion")), Icons.CLASS_COMPANION)
+  private[gutter] val ImplementedOption = new GutterIconDescriptor.Option("scala.implemented", LocalizeValue.of(ScalaBundle.message("gutter.implemented")), AllIcons.Gutter.ImplementedMethod)
+  private[gutter] val ImplementingOption = new GutterIconDescriptor.Option("scala.implementing", LocalizeValue.of(ScalaBundle.message("gutter.implementing")), AllIcons.Gutter.ImplementingMethod)
+  private[gutter] val SamOption = new GutterIconDescriptor.Option("scala.sam", LocalizeValue.of(ScalaBundle.message("gutter.sam")), AllIcons.Gutter.ImplementingFunctionalInterface)
+  private[gutter] val OverriddenOption = new GutterIconDescriptor.Option("scala.overridden", LocalizeValue.of(ScalaBundle.message("gutter.overridden")), AllIcons.Gutter.OverridenMethod)
+  private[gutter] val OverridingOption = new GutterIconDescriptor.Option("scala.overriding", LocalizeValue.of(ScalaBundle.message("gutter.overriding")), AllIcons.Gutter.OverridingMethod)
+  private[gutter] lazy val RecursionOption = new GutterIconDescriptor.Option("scala.recursion", LocalizeValue.of(ScalaBundle.message("gutter.recursion")), Icons.TAIL_RECURSION)
 
   private[gutter] lazy val Options = Array(
     CompanionOption,
@@ -301,7 +302,7 @@ private object GutterUtil {
   )
 
   // Only for overrid* / implement* icons
-  private[gutter] def isEnabled(icon: Icon): Boolean =
+  private[gutter] def isEnabled(icon: Image): Boolean =
     OverridingOption.isEnabled && icon == AllIcons.Gutter.OverridingMethod ||
       ImplementingOption.isEnabled && icon == AllIcons.Gutter.ImplementingMethod ||
       OverriddenOption.isEnabled && icon == AllIcons.Gutter.OverridenMethod ||
@@ -313,7 +314,7 @@ private object GutterUtil {
 
   private[gutter] final case class ArrowUpOrDownLineMarkerInfo(
     element:            PsiElement,
-    icon:               Icon,
+    icon:               Image,
     markerType:         ScalaMarkerType,
     alignment: Alignment,
     presentationParent: Option[PsiElement] = None
@@ -331,7 +332,7 @@ private object GutterUtil {
       case _                                 => false
     }
 
-    override def getCommonIcon(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): Icon = icon
+    override def getCommonIcon(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): Image = icon
 
     override def getCommonTooltip(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): IJFunction[? >: PsiElement, String] = _ => {
       markerType match {
@@ -354,7 +355,7 @@ private object GutterUtil {
       )
   }
 
-  def getOverridesOrImplementsIcon(element: PsiElement, signatures: Seq[TermSignature]): Icon =
+  def getOverridesOrImplementsIcon(element: PsiElement, signatures: Seq[TermSignature]): Image =
     if (isOverrides(element, signatures.map(_.namedElement))) OverridingMethod
     else ImplementingMethod
 
@@ -487,7 +488,7 @@ private object GutterUtil {
     case _ => "" // Just "Has a companion" is OK.
   }
 
-  private def iconFor(definition: ScTypeDefinitionLike, swapped: Boolean): Icon = definition match {
+  private def iconFor(definition: ScTypeDefinitionLike, swapped: Boolean): Image = definition match {
     case _: ScEnum => if (swapped) Icons.CLASS_COMPANION_SWAPPED else Icons.CLASS_COMPANION
     case _: ScClass => if (swapped) Icons.CLASS_COMPANION_SWAPPED else Icons.CLASS_COMPANION
     case _: ScTrait => if (swapped) Icons.TRAIT_COMPANION_SWAPPED else Icons.TRAIT_COMPANION

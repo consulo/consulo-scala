@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
+import consulo.ui.image.Image
 package patterns
 
 import consulo.navigation.NavigationItem
@@ -16,7 +17,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScOb
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScEarlyDefinitions, ScNamedElement, ScTypedDefinition}
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.{ScDesignatorType, ScProjectionType}
 
-import javax.swing.Icon
 
 trait ScBindingPattern extends ScPattern with ScNamedElement with ScTypedDefinition with NavigationItem with PsiDocCommentOwner {
 
@@ -106,7 +106,7 @@ trait ScBindingPattern extends ScPattern with ScNamedElement with ScTypedDefinit
     }
   }
 
-  override def getIcon(flags: Int): Icon = Icons.PATTERN_VAL
+  override def getIcon(flags: Int): Image = Icons.PATTERN_VAL
 
   /**
    * It's for Java only

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
+import consulo.ui.image.Image
 import consulo.application.AllIcons
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.{PsiModifierList, PsiModifierListOwner}
@@ -12,7 +13,6 @@ import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScObject}
 
-import javax.swing.Icon
 
 abstract class ScalaMemberSelectionTableBase[M <: PsiElement, I <: ScalaMemberInfoBase[M]](memberInfos: java.util.Collection[I],
                                 memberInfoModel: MemberInfoModel[M, I],
@@ -49,7 +49,7 @@ abstract class ScalaMemberSelectionTableBase[M <: PsiElement, I <: ScalaMemberIn
     }
   }
 
-  override def getOverrideIcon(memberInfo: I): Icon = memberInfo.getMember match {
+  override def getOverrideIcon(memberInfo: I): Image = memberInfo.getMember match {
     case _: ScFunction =>
       if (java.lang.Boolean.TRUE == memberInfo.getOverrides) AllIcons.General.OverridingMethod
       else if (java.lang.Boolean.FALSE == memberInfo.getOverrides) AllIcons.General.ImplementingMethod

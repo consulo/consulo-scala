@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.ui.image.Image
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
@@ -10,7 +11,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScModifierLi
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumCase, ScEnumCases}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScEnum
 
-import javax.swing.Icon
 
 trait ScEnumCaseImpl extends ScEnumCase {
   abstract override def getContext: PsiElement = ScalaPsiUtil.getCompanionModule(enumParent).get.extendsBlock
@@ -31,7 +31,7 @@ trait ScEnumCaseImpl extends ScEnumCase {
 
   override def supers: Seq[PsiClass] = if (extendsBlock.templateParents.nonEmpty) super.supers else Seq(enumParent)
 
-  override protected def baseIcon: Icon = Icons.ENUM
+  override protected def baseIcon: Image = Icons.ENUM
 
   override def isLocal: Boolean = false
 

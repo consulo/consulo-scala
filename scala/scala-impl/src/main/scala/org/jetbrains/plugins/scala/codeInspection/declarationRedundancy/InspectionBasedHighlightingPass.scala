@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import consulo.language.editor.highlight.TextEditorHighlightingPass
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
@@ -27,7 +29,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 
 import java.util.Collections
-import javax.swing.Icon
 import scala.annotation.nowarn
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -138,7 +139,7 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
             case iconable: Iconable => new LocalQuickFixAsIntentionIconableAdapter(iconable, problemDescriptor)
             case _ => new LocalQuickFixAsIntentionAdapter(fix, problemDescriptor): @nowarn("cat=deprecation")
           }
-          highlightInfo.registerFix(action, null, info.message, range, highlightKey): @nowarn("cat=deprecation")
+          highlightInfo.registerFix(action, null, LocalizeValue.of(info.message), range, highlightKey): @nowarn("cat=deprecation")
         }
 
         Option(highlightInfo)
@@ -159,6 +160,6 @@ object InspectionBasedHighlightingPass {
   ) extends LocalQuickFixAsIntentionAdapter(delegateFix, problemDescriptor)
     with Iconable {
 
-    override def getIcon(flags: Int): Icon = delegateFix.getIcon(flags)
+    override def getIcon(flags: Int): Image = delegateFix.getIcon(flags)
   }
 }

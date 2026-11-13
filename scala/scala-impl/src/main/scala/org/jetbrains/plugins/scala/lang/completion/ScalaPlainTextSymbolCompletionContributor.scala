@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.ui.image.Image
 import com.intellij.codeInsight.completion.PlainTextSymbolCompletionContributor
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.language.psi.PsiFile
@@ -10,7 +11,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
 
 import java.{util => ju}
-import javax.swing.Icon
 
 final class ScalaPlainTextSymbolCompletionContributor extends PlainTextSymbolCompletionContributor {
 
@@ -55,7 +55,7 @@ final class ScalaPlainTextSymbolCompletionContributor extends PlainTextSymbolCom
 object ScalaPlainTextSymbolCompletionContributor {
 
   private def foreachMemberIn(definition: ScTypeDefinition)
-                             (action: (ScMember, String, Icon) => Unit): Unit = for {
+                             (action: (ScMember, String, Image) => Unit): Unit = for {
     member <- definition.members
     if member.isPhysical
 
@@ -99,6 +99,6 @@ object ScalaPlainTextSymbolCompletionContributor {
       None
   }
 
-  private def createElement(name: String, icon: Icon) =
+  private def createElement(name: String, icon: Image) =
     LookupElementBuilder.create(name).withIcon(icon)
 }

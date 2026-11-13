@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
+import consulo.ui.image.Image
 package params
 
 import consulo.language.ast.ASTNode
@@ -26,7 +27,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.{ParameterizedType, TypePa
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.ScTypePolymorphicType
 import org.jetbrains.plugins.scala.lang.psi.types.{AliasType, ScType, ScTypeExt}
 
-import javax.swing.Icon
 import scala.annotation.tailrec
 
 class ScTypeParamImpl private (stub: ScTypeParamStub, node: ASTNode)
@@ -161,7 +161,7 @@ class ScTypeParamImpl private (stub: ScTypeParamStub, node: ASTNode)
   override def upperTypeElement: Option[ScTypeElement] =
     byPsiOrStub(super.upperTypeElement)(_.upperBoundTypeElement)
 
-  override def getIcon(flags: Int): Icon = {
+  override def getIcon(flags: Int): Image = {
     Icons.TYPE_ALIAS
   }
 

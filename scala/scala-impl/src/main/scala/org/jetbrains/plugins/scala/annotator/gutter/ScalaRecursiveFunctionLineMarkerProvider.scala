@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.ui.image.Image
 import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
 import consulo.codeEditor.markup.GutterIconRenderer.Alignment
 import consulo.language.psi.PsiElement
@@ -9,7 +10,6 @@ import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScFunctionDefinitionExt}
 
-import javax.swing.Icon
 
 final class ScalaRecursiveFunctionLineMarkerProvider extends LineMarkerProvider {
 
@@ -49,7 +49,7 @@ final class ScalaRecursiveFunctionLineMarkerProvider extends LineMarkerProvider 
 }
 
 object ScalaRecursiveFunctionLineMarkerProvider {
-  private def createLineMarkerInfo(icon: Icon, psiElemToTooltip: String => String, element: PsiElement): LineMarkerInfo[PsiElement] =
+  private def createLineMarkerInfo(icon: Image, psiElemToTooltip: String => String, element: PsiElement): LineMarkerInfo[PsiElement] =
     new LineMarkerInfo(
       element,
       element.getTextRange,

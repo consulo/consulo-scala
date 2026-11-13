@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala
+import consulo.ui.image.Image
 package projectView
 
 
@@ -13,7 +14,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.tasty.TastyFileType
 
 import java.{util => ju}
-import javax.swing.Icon
 
 private[projectView] sealed abstract class FileNode(protected val file: ScalaFile)
                                                    (implicit project: Project, settings: ViewSettings)
@@ -39,7 +39,7 @@ private[projectView] object FileNode {
                            (implicit project: Project, settings: ViewSettings)
     extends FileNode(file) {
 
-    override def getIcon(flags: Int): Icon = ScalaFileType.INSTANCE.getIcon
+    override def getIcon(flags: Int): Image = ScalaFileType.INSTANCE.getIcon
 
     override protected def updateImpl(data: PresentationData): Unit = {
       super.updateImpl(data)
@@ -57,13 +57,13 @@ private[projectView] object FileNode {
                              (implicit project: Project, settings: ViewSettings)
     extends FileNode(file) {
 
-    override def getIcon(flags: Int): Icon = fileType.getIcon
+    override def getIcon(flags: Int): Image = fileType.getIcon
   }
 
   final class MillFileNode(override protected val file: ScalaFile)
                           (implicit project: Project, settings: ViewSettings)
     extends FileNode(file) {
 
-    override def getIcon(flags: Int): Icon = Icons.MILL_FILE
+    override def getIcon(flags: Int): Image = Icons.MILL_FILE
   }
 }

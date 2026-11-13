@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.ui.image.Image
 import consulo.language.psi.util.EditSourceUtil
 import consulo.language.ast.ASTNode
 import consulo.navigation.ItemPresentation
@@ -22,7 +23,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.Context
 import org.jetbrains.plugins.scala.lang.psi.types.api.{Any, Nothing}
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
-import javax.swing.Icon
 
 final class ScTypeAliasDeclarationImpl private(stub: ScTypeAliasStub, node: ASTNode)
   extends ScalaStubBasedElementImpl(stub, TYPE_DECLARATION, node)
@@ -74,7 +74,7 @@ final class ScTypeAliasDeclarationImpl private(stub: ScTypeAliasStub, node: ASTN
     }
   }
 
-  override protected def baseIcon: Icon = Icons.ABSTRACT_TYPE_ALIAS
+  override protected def baseIcon: Image = Icons.ABSTRACT_TYPE_ALIAS
 
   override def getPresentation: ItemPresentation = {
     new ItemPresentation() {
@@ -84,7 +84,7 @@ final class ScTypeAliasDeclarationImpl private(stub: ScTypeAliasStub, node: ASTN
         val qname = if (containingClass != null) containingClass.qualifiedName else ""
         "(" + qname + ")"
       }
-      override def getIcon(open: Boolean): Icon = ScTypeAliasDeclarationImpl.this.getIcon(0)
+      override def getIcon(open: Boolean): Image = ScTypeAliasDeclarationImpl.this.getIcon(0)
     }
   }
 

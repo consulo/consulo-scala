@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -32,7 +33,7 @@ class AddUnitTypeAnnotationIntention extends PsiElementBaseIntentionAction {
     case null => false
     case _ if IntentionAvailabilityChecker.checkIntention(this, element)
       && findDefinition(element).isDefined =>
-      setText(ScalaBundle.message("intention.type.annotation.function.add.text"))
+      setText(LocalizeValue.of(ScalaBundle.message("intention.type.annotation.function.add.text")))
       true
     case _ => false
   }

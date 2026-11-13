@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.fake
 
+import consulo.ui.image.Image
 import consulo.language.Language
 import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiAnnotation, PsiClass, PsiClassType, PsiCodeBlock, PsiExpression, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMember, PsiMethod, PsiModifierList, PsiParameter, PsiParameterList, PsiReferenceList, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList, PsiTypeParameterListOwner}
 import consulo.language.psi.{PsiElement, PsiManager}
@@ -22,7 +23,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.Parameter
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
 import java.util
-import javax.swing.Icon
 
 abstract class FakePsiMethod(navElement: PsiElement,
                              psiMember: Option[PsiMember],
@@ -105,7 +105,7 @@ abstract class FakePsiMethod(navElement: PsiElement,
 
   override def isVarArgs: Boolean = false
 
-  override def getIcon(flags: Int): Icon = navElement match {
+  override def getIcon(flags: Int): Image = navElement match {
     case t: ScTypedDefinition =>
       val context = t.nameContext
       if (context != null) context.getIcon(flags)

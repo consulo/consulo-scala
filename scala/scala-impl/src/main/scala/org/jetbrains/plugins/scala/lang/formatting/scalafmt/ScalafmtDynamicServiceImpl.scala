@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.localize.LocalizeValue
 import consulo.project.ui.notification.{Notification, NotificationAction}
 import consulo.ui.ex.action.AnActionEvent
 import consulo.component.persist.{PersistentStateComponent, State, Storage}
@@ -179,7 +180,7 @@ final class ScalafmtDynamicServiceImpl
   }
 
   private class DownloadScalafmtNotificationActon(version: ScalafmtVersion, @Nls title: String)
-    extends NotificationAction(title) {
+    extends NotificationAction(LocalizeValue.of(title)) {
 
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       val project = e.getData(Project.KEY)
@@ -224,7 +225,7 @@ final class ScalafmtDynamicServiceImpl
         val cancelText =
           if (isDownloaded) ScalaBundle.message("scalafmt.progress.resolving.scalafmt.version.cancel", version)
           else ScalaBundle.message("scalafmt.progress.downloading.scalafmt.version.cancel", version)
-        backgroundTask.setCancelText(cancelText)
+        backgroundTask.setCancelText(LocalizeValue.of(cancelText))
 
         backgroundTask.queue()
     }

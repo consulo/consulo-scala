@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
+import consulo.ui.image.Image
 import consulo.language.editor.gutter.{GutterIconNavigationHandler, RelatedItemLineMarkerInfo, RelatedItemLineMarkerProvider}
 import consulo.application.AllIcons
 import consulo.codeEditor.markup.GutterIconRenderer
@@ -15,7 +16,6 @@ import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings.ScalaMetaMode
 
 import java.util
-import javax.swing.Icon
 import scala.collection.mutable.ArrayBuffer
 
 abstract class MacroExpansionLineMarkerProvider extends RelatedItemLineMarkerProvider {
@@ -41,7 +41,7 @@ abstract class MacroExpansionLineMarkerProvider extends RelatedItemLineMarkerPro
 
   //noinspection SameParameterValue
   protected def createMarker(
-    element: PsiElement, icon: Icon, @Nls caption: String,
+    element: PsiElement, icon: Image, @Nls caption: String,
     navigationHandler: GutterIconNavigationHandler[PsiElement]
   ): Marker = {
     val startOffset = element.getTextRange.getStartOffset

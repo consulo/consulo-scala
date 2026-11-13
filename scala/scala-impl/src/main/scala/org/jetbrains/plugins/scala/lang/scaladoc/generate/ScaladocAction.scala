@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
+import consulo.localize.LocalizeValue
 import consulo.application.CommonBundle
 import consulo.language.editor.scope.AnalysisScope
 import consulo.language.editor.impl.action.BaseAnalysisAction
@@ -20,7 +21,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.generate.ScaladocAction.Scalado
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 
-class ScaladocAction extends BaseAnalysisAction(ScalaBundle.message("generate.scaladoc"), ScalaBundle.message("scaladoc.noon")) {
+class ScaladocAction extends BaseAnalysisAction(LocalizeValue.of(ScalaBundle.message("generate.scaladoc")), LocalizeValue.of(ScalaBundle.message("scaladoc.noon"))) {
   private var configurationDialog: ScaladocConsoleRunConfigurationForm = scala.compiletime.uninitialized
 
   locally {

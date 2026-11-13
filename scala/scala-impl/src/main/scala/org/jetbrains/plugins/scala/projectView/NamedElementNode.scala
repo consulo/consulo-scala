@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.projectView
 
+import consulo.ui.image.Image
 import consulo.project.ui.view.tree.AbstractPsiBasedNode
 import consulo.ui.ex.tree.PresentationData
 import consulo.project.ui.view.tree.ViewSettings
@@ -9,7 +10,6 @@ import org.jetbrains.plugins.scala.project.ProjectContext
 
 import java.util
 import java.util.Collections
-import javax.swing.Icon
 
 private class NamedElementNode(element: ScNamedElement)(implicit project: ProjectContext, settings: ViewSettings)
   extends AbstractPsiBasedNode[ScNamedElement](project, element, settings) with IconableNode {
@@ -21,5 +21,5 @@ private class NamedElementNode(element: ScNamedElement)(implicit project: Projec
   override protected def updateImpl(data: PresentationData): Unit =
     Option(getValue).filter(_.isValid).foreach(it => data.setPresentableText(it.name))
 
-  override def getIcon(flags: Int): Icon = element.getIcon(flags)
+  override def getIcon(flags: Int): Image = element.getIcon(flags)
 }

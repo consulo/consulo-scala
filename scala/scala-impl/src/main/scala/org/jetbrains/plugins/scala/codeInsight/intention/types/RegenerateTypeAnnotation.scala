@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -24,21 +25,21 @@ class RegenerateTypeAnnotation extends AbstractTypeAnnotationIntention {
 
     override def functionWithType(function: ScFunctionDefinition,
                                   typeElement: ScTypeElement): Boolean = {
-      setText(message("intention.type.annotation.function.regenerate.text"))
+      setText(LocalizeValue.of(message("intention.type.annotation.function.regenerate.text")))
 
       true
     }
 
     override def variableWithType(variable: ScVariableDefinition,
                                   typeElement: ScTypeElement): Boolean = {
-      setText(message("intention.type.annotation.variable.regenerate.text"))
+      setText(LocalizeValue.of(message("intention.type.annotation.variable.regenerate.text")))
 
       true
     }
 
     override def valueWithType(value: ScPatternDefinition,
                                typeElement: ScTypeElement): Boolean = {
-      setText(message("intention.type.annotation.value.regenerate.text"))
+      setText(LocalizeValue.of(message("intention.type.annotation.value.regenerate.text")))
 
       true
     }

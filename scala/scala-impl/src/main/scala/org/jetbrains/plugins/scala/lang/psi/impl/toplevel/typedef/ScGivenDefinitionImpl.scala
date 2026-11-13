@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
+import consulo.ui.image.Image
 package typedef
 
 import consulo.language.ast.ASTNode
@@ -25,7 +26,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScTemplateDefinitionStub
 import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScTemplateDefinitionElementType
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
 
-import javax.swing.Icon
 
 class ScGivenDefinitionImpl(
   stub:      ScTemplateDefinitionStub[ScGivenDefinition],
@@ -40,7 +40,7 @@ class ScGivenDefinitionImpl(
   override def acceptScala(visitor: ScalaElementVisitor): Unit =
     visitor.visitGivenDefinition(this)
 
-  override protected def baseIcon: Icon = Icons.CLASS // todo: better icon ?
+  override protected def baseIcon: Image = Icons.CLASS // todo: better icon ?
 
   override protected def targetTokenType: ScalaTokenType = ScalaTokenType.GivenKeyword
 

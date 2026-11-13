@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.ui.image.Image
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext, PrioritizedLookupElement}
@@ -341,7 +342,7 @@ object ScalaEndMarkerCompletionContributor {
       val lookupString = if (useEndKeywordInLookupString) endMarker else token.specifierToken
 
       val builder = LookupElementBuilder.create(offsetData, lookupString)
-        .withIcon(EmptyIcon.ICON_16)
+        .withIcon(Image.empty(16))
         .withInsertHandler(new EndMarkerInsertHandler)
         .withRenderer { (_, presentation: LookupElementPresentation) =>
           if (useEndKeywordInLookupString) {

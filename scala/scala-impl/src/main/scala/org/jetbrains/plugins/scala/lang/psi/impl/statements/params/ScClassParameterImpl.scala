@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
+import consulo.ui.image.Image
 package params
 
 import consulo.language.ast.ASTNode
@@ -14,7 +15,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass
 import org.jetbrains.plugins.scala.lang.psi.impl.canNotBeOverridden
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScParameterStub
 
-import javax.swing.Icon
 
 final class ScClassParameterImpl private(stub: ScParameterStub, node: ASTNode)
   extends ScParameterImpl(stub, ScalaElementType.CLASS_PARAM, node) with ScClassParameter {
@@ -89,7 +89,7 @@ final class ScClassParameterImpl private(stub: ScParameterStub, node: ASTNode)
     visitor.visitClassParameter(this)
   }
 
-  override protected def baseIcon: Icon =
+  override protected def baseIcon: Image =
     if (isVar) Icons.FIELD_VAR
     else if (isVal || isCaseClassPrimaryParameter) Icons.FIELD_VAL
     else Icons.PARAMETER

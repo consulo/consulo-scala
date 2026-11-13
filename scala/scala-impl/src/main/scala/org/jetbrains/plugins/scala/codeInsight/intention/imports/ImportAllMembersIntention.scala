@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.imports
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -20,7 +21,7 @@ class ImportAllMembersIntention extends PsiElementBaseIntentionAction {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = element.getParent match {
     case qualAtCaret: ScReference =>
-      setText(ScalaBundle.message("import.all.members.of.reference", qualAtCaret.refName))
+      setText(LocalizeValue.of(ScalaBundle.message("import.all.members.of.reference", qualAtCaret.refName)))
       checkQualifier(qualAtCaret)
     case _ =>
       false

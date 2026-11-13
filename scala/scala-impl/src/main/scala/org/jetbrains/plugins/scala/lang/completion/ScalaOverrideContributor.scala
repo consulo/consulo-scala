@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
@@ -33,7 +34,6 @@ import org.jetbrains.plugins.scala.overrideImplement._
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 import org.jetbrains.plugins.scala.util.TypeAnnotationUtil
 
-import javax.swing.Icon
 import scala.annotation.nowarn
 import scala.jdk.CollectionConverters._
 
@@ -313,7 +313,7 @@ object ScalaOverrideContributor {
     presentation.setItemText(itemText)
   }
 
-  private def expensiveRenderer(member: ClassMember, icon: Icon)
+  private def expensiveRenderer(member: ClassMember, icon: Image)
                                (implicit tpc: TypePresentationContext, context: Context): LookupElementRenderer[LookupElement] = { (element, presentation) =>
     def typeText: String = {
       val maybeType = member match {

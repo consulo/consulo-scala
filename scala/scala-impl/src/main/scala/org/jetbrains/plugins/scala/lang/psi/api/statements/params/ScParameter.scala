@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements.params
 
+import consulo.ui.image.Image
 import consulo.project.DumbService
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.{PsiExpression, PsiType, PsiTypeElement}
@@ -19,7 +20,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.types.api.PsiTypeConstants
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
-import javax.swing.Icon
 import scala.annotation.tailrec
 
 trait ScParameter extends ScTypedDefinition
@@ -45,7 +45,7 @@ trait ScParameter extends ScTypedDefinition
 
   def paramType: Option[ScParameterType] = findChild[ScParameterType]
 
-  override def getIcon(flags: Int): Icon = Icons.PARAMETER
+  override def getIcon(flags: Int): Image = Icons.PARAMETER
 
   def isRepeatedParameter: Boolean
 

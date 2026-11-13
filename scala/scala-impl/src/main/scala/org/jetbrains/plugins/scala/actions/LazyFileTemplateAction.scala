@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import consulo.ide.action.CreateFromTemplateActionBase
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
 import consulo.application.dumb.DumbAware
@@ -7,7 +9,6 @@ import consulo.project.Project
 import consulo.language.psi.PsiDirectory
 import org.jetbrains.annotations.Nls
 
-import javax.swing.Icon
 
 /**
  * @param templateName name of the file template<br>
@@ -19,10 +20,10 @@ abstract class LazyFileTemplateAction(
   templateName: String,
   @Nls title: String,
   @Nls description: String,
-  val icon: Icon
+  val icon: Image
 ) extends CreateFromTemplateActionBase(
-  title,
-  description,
+  LocalizeValue.of(title),
+  LocalizeValue.of(description),
   icon
 ) with DumbAware {
 

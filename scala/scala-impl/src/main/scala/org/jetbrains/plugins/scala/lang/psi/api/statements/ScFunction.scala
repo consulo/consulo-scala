@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
+import consulo.ui.image.Image
 import consulo.project.Project
 import consulo.util.dataholder.Key
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiTypeParameter}
@@ -22,7 +23,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
-import javax.swing.Icon
 
 /**
  * Represents Scala's internal function definitions and declarations
@@ -156,7 +156,7 @@ trait ScFunction
     else super.setName(name)
   }
 
-  override def getIcon(flags: Int): Icon = super[WithBaseIconProvider].getIcon(flags)
+  override def getIcon(flags: Int): Image = super[WithBaseIconProvider].getIcon(flags)
 }
 
 object ScFunction {

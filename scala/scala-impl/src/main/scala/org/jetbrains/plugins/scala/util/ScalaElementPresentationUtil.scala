@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.util
 
+import consulo.ui.image.Image
 import com.intellij.java.language.codeInsight.TestFrameworks
 import consulo.project.DumbService
 import consulo.component.util.Iconable
@@ -11,7 +12,6 @@ import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUse
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
-import javax.swing.Icon
 
 /**
  * See also [[com.intellij.psi.impl.ElementPresentationUtil]]
@@ -29,7 +29,7 @@ object ScalaElementPresentationUtil {
   private lazy val ExceptionIcon = IconManager.getInstance.getPlatformIcon(PlatformIcons.ExceptionClass)
   private lazy val AbstractExceptionIcon = IconManager.getInstance.getPlatformIcon(PlatformIcons.AbstractException)
 
-  def getIconWithLayeredFlags(element: PsiModifierListOwner, flags: Int, icon: Icon, layerFlags: Int): Icon = {
+  def getIconWithLayeredFlags(element: PsiModifierListOwner, flags: Int, icon: Image, layerFlags: Int): Image = {
     val layeredIcon = IconManager.getInstance.createLayeredIcon(element, icon, layerFlags)
     ElementPresentationUtil.addVisibilityIcon(element, flags, layeredIcon)
   }
@@ -46,7 +46,7 @@ object ScalaElementPresentationUtil {
   /**
    * ATTENTION: this method involves traversal of definition inheritors which might be a costly operation
    */
-  def getTypeDefinitionIconWithKind(definition: ScTypeDefinition, baseFlags: Int = 0): Icon = {
+  def getTypeDefinitionIconWithKind(definition: ScTypeDefinition, baseFlags: Int = 0): Image = {
     val classKind = getScalaClassKind(definition)
     classKind match {
       case ScalaClassKind.Simple =>

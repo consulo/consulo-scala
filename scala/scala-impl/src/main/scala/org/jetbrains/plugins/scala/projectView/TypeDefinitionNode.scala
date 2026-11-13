@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.projectView
 
+import consulo.ui.image.Image
 import consulo.project.ui.view.tree.ViewSettings
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
@@ -7,14 +8,13 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScType
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 
 import java.util
-import javax.swing.Icon
 import scala.jdk.CollectionConverters._
 
 private[projectView] class TypeDefinitionNode(definition: ScTypeDefinition)
                                              (implicit project: Project, settings: ViewSettings)
   extends CustomDefinitionNode(definition) {
 
-  override final def getIcon(flags: Int): Icon = definition.getIcon(flags)
+  override final def getIcon(flags: Int): Image = definition.getIcon(flags)
 
   override def getTitle: String =
     validValue.fold(super.getTitle)(_.qualifiedName)

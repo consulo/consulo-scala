@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.ui.image.Image
 import consulo.ide.action.CreateTemplateInPackageAction
 import consulo.fileTemplate.FileTemplateManager
 import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
@@ -13,9 +14,8 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 
 import java.util.Properties
-import javax.swing.Icon
 
-abstract class NewTypeDefinitionBase[T <: ScTemplateDefinition](@Nls txt: String, @Nls description: String, icon: Icon)
+abstract class NewTypeDefinitionBase[T <: ScTemplateDefinition](@Nls txt: String, @Nls description: String, icon: Image)
   extends CreateTemplateInPackageAction[T](txt, description, icon, true) {
 
   override def checkPackageExists(psiDirectory: PsiDirectory): Boolean = JavaDirectoryService.getInstance.getPackage(psiDirectory) != null

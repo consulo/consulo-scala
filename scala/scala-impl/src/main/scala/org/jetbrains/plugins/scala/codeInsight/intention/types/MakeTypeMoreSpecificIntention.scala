@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiElement
@@ -34,7 +35,7 @@ class MakeTypeMoreSpecificIntention extends AbstractTypeAnnotationIntention {
 
     private def setTextIfCanBeMoreSpecific(declTypeOpt: Option[ScType], exprOpt: Option[ScExpression], @Nls text: String): Boolean = {
       if (canBeMoreSpecific(declTypeOpt, exprOpt)) {
-        setText(text)
+        setText(LocalizeValue.of(text))
         true
       } else {
         false

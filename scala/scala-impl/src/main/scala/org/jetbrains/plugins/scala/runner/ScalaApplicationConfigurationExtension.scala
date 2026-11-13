@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.localize.LocalizeValue
 import com.intellij.java.execution.impl.application.ApplicationConfiguration
 import com.intellij.execution.configurations.JavaParameters
 import consulo.process.cmd.ParametersList
@@ -75,7 +76,7 @@ final class ScalaApplicationConfigurationExtension extends RunConfigurationExten
     command match {
       case DoNothing          =>
       case NoProgramArguments =>
-        throw new CantRunException(ScalaBundle.message("no.program.arguments"))
+        throw new CantRunException(LocalizeValue.of(ScalaBundle.message("no.program.arguments")))
 //      case CancelExecution =>
 //        throw new ExecutionException(ScalaBundle.message("execution.cancelled"))
 //      case UpdateParameters(newParameters) =>

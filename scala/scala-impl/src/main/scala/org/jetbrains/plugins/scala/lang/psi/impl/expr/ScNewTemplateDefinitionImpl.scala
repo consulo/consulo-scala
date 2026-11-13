@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
+import consulo.ui.image.Image
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{PsiClass, PsiClassType, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
@@ -30,7 +31,6 @@ import org.jetbrains.plugins.scala.lang.psi.types._
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
-import javax.swing.Icon
 
 final class ScNewTemplateDefinitionImpl(stub: ScTemplateDefinitionStub[ScNewTemplateDefinition],
                                         nodeType: ScTemplateDefinitionElementType[ScNewTemplateDefinition],
@@ -41,7 +41,7 @@ final class ScNewTemplateDefinitionImpl(stub: ScTemplateDefinitionStub[ScNewTemp
 
   override protected def targetTokenType: ScalaTokenType = ScalaTokenType.NewKeyword
 
-  override def getIcon(flags: Int): Icon = Icons.CLASS
+  override def getIcon(flags: Int): Image = Icons.CLASS
 
   override def firstConstructorInvocation: Option[ScConstructorInvocation] =
     Option(extendsBlock)

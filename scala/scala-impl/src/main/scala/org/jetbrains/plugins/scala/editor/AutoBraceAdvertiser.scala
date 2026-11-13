@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.editor
 
+import consulo.localize.LocalizeValue
 import consulo.webBrowser.BrowserUtil
 import com.intellij.notification.CollapseActionsDirection
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
@@ -43,7 +44,7 @@ object AutoBraceAdvertiser {
     notification.notify(project)
   }
 
-  private class OpenSettingsAction extends NotificationAction(ScalaEditorBundle.message("auto.braces.advertiser.settings")) {
+  private class OpenSettingsAction extends NotificationAction(LocalizeValue.of(ScalaEditorBundle.message("auto.braces.advertiser.settings"))) {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       notification.hideBalloon()
       ShowSettingsUtilImplExt.showSettingsDialog(
@@ -54,7 +55,7 @@ object AutoBraceAdvertiser {
     }
   }
 
-  private class MoreInfoAction extends NotificationAction(ScalaEditorBundle.message("auto.braces.advertiser.more.info")) {
+  private class MoreInfoAction extends NotificationAction(LocalizeValue.of(ScalaEditorBundle.message("auto.braces.advertiser.more.info"))) {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit =
       BrowserUtil.browse(AutoBraceHttpsBlogPage)
   }

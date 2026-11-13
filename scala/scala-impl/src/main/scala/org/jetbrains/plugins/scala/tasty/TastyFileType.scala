@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.tasty
 
+import consulo.ui.image.Image
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.api.ScalaFileType
 
-import javax.swing.Icon
 
 object TastyFileType extends FileType {
   override def getName: String = tastyName
@@ -14,7 +14,7 @@ object TastyFileType extends FileType {
   override def getDefaultExtension: String = "tasty"
 
   //simply use the same icon which is used by ScalaFileType
-  override def getIcon: Icon = ScalaFileType.INSTANCE.getIcon
+  override def getIcon: Image = ScalaFileType.INSTANCE.getIcon
 
   override def isBinary = true
 

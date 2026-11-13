@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
+import consulo.ui.image.Image
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{PsiClass, PsiCodeBlock, PsiIdentifier, PsiMethod, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList}
 import consulo.language.psi.PsiElement
@@ -16,7 +17,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScPrimaryConstructorStub
 import org.jetbrains.plugins.scala.lang.psi.types.api.PsiTypeConstants
 
 import java.util
-import javax.swing.Icon
 
 class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: ASTNode)
   extends ScalaStubBasedElementImpl(stub, ScalaElementType.PRIMARY_CONSTRUCTOR, node) with ScPrimaryConstructor {
@@ -25,7 +25,7 @@ class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: AST
 
   def this(stub: ScPrimaryConstructorStub) = this(stub, null)
 
-  override def getIcon(flags: Int): Icon = Icons.FUNCTION
+  override def getIcon(flags: Int): Image = Icons.FUNCTION
 
   //todo rewrite me!
   override def hasModifier: Boolean = false

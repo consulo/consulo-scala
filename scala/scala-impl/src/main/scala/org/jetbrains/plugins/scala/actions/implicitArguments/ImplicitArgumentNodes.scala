@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
+import consulo.ui.image.Image
 import consulo.project.ui.view.tree.AbstractPsiBasedNode
 import consulo.ui.ex.tree.PresentationData
 import consulo.project.ui.view.tree.ViewSettings
@@ -24,7 +25,6 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
 import java.util
 import java.util.Collections.singletonList
-import javax.swing.Icon
 import scala.jdk.CollectionConverters._
 
 private abstract class ImplicitParameterErrorNodeBase(value: ScalaResolveResult) extends ImplicitParametersNodeBase(value) {
@@ -146,7 +146,7 @@ private abstract class ImplicitParametersNodeBase(value: ScalaResolveResult)
 
   protected def infoSuffix: Option[String] = ImplicitArgumentNodes.locationString(value)
 
-  private def presentationIcon: Icon = value.element.getIcon(0)
+  private def presentationIcon: Image = value.element.getIcon(0)
 
   protected def elementName: String = value.element.name
 

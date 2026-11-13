@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.localize.LocalizeValue
 import consulo.ide.action.{CreateFileFromTemplateDialog, CreateTemplateInPackageAction}
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
 import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
@@ -60,19 +61,19 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
 
     //noinspection ScalaExtractStringToBundle
     {
-      builder.addKind("Class", Icons.CLASS, ScalaFileTemplateUtil.SCALA_CLASS)
-      builder.addKind("Trait", Icons.TRAIT, ScalaFileTemplateUtil.SCALA_TRAIT)
-      builder.addKind("Case Class", Icons.CASE_CLASS, ScalaFileTemplateUtil.SCALA_CASE_CLASS)
+      builder.addKind(LocalizeValue.of("Class"), Icons.CLASS, ScalaFileTemplateUtil.SCALA_CLASS)
+      builder.addKind(LocalizeValue.of("Trait"), Icons.TRAIT, ScalaFileTemplateUtil.SCALA_TRAIT)
+      builder.addKind(LocalizeValue.of("Case Class"), Icons.CASE_CLASS, ScalaFileTemplateUtil.SCALA_CASE_CLASS)
       if (isInScala3Module) {
-        builder.addKind("Enum", Icons.ENUM, ScalaFileTemplateUtil.SCALA_ENUM)
+        builder.addKind(LocalizeValue.of("Enum"), Icons.ENUM, ScalaFileTemplateUtil.SCALA_ENUM)
       }
-      builder.addKind("Object", Icons.OBJECT, ScalaFileTemplateUtil.SCALA_OBJECT)
-      builder.addKind("File", Icons.SCALA_FILE, ScalaFileTemplateUtil.SCALA_FILE)
+      builder.addKind(LocalizeValue.of("Object"), Icons.OBJECT, ScalaFileTemplateUtil.SCALA_OBJECT)
+      builder.addKind(LocalizeValue.of("File"), Icons.SCALA_FILE, ScalaFileTemplateUtil.SCALA_FILE)
     }
 
     addUserDefinedScalaFileTemplates(project, directory, builder)
 
-    builder.setTitle(ScalaBundle.message("newclassorfile.menu.action.dialog.title"))
+    builder.setTitle(LocalizeValue.of(ScalaBundle.message("newclassorfile.menu.action.dialog.title")))
     builder.setValidator(new InputValidatorEx {
       override def getErrorText(inputString: String): String = {
         if (inputString.nonEmpty && !ScalaNamesUtil.isQualifiedName(inputString)) {
@@ -108,7 +109,7 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
       if fileType == ScalaFileType.INSTANCE && checkPackageExists(directory)
 
       templateName = template.getName
-    } builder.addKind(templateName, fileType.getIcon, templateName)
+    } builder.addKind(LocalizeValue.of(templateName), fileType.getIcon, templateName)
   }
 
   @Nullable

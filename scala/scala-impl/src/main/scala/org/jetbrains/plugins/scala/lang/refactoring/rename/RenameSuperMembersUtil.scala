@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala
+import consulo.ui.image.Image
 package lang.refactoring.rename
 
 
@@ -25,7 +26,6 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.project.UserDataHolderExt
 
 import java.util
-import javax.swing.Icon
 import scala.collection.mutable
 
 object RenameSuperMembersUtil {
@@ -129,7 +129,7 @@ object RenameSuperMembersUtil {
       else ScalaBundle.message("rename.has.multiple.base.members", name)
 
     val renderer = new DelegatingPsiTargetPresentationRenderer(PsiClassRenderingInfo.INSTANCE) {
-      override def getIcon(element: PsiClass): Icon = {
+      override def getIcon(element: PsiClass): Image = {
         if (element == renameAllMarker(element) || oneSuperClass) null
         else super.getIcon(element)
       }

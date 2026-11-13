@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.extractMethod.duplicates
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.folding.CodeFoldingManager
 import consulo.language.editor.highlight.HighlightManager
 import consulo.find.FindManager
@@ -111,7 +112,7 @@ object DuplicatesUtil {
 
   private def showPromptDialog(methodName: String, idx: Int, size: Int, project: Project) = {
     val title = JavaRefactoringBundle.message("process.methods.duplicates.title", Int.box(idx), Int.box(size), methodName)
-    val dialog: ReplacePromptDialog = new ReplacePromptDialog(false, title, project)
+    val dialog: ReplacePromptDialog = new ReplacePromptDialog(false, LocalizeValue.of(title), project)
     dialog.show()
     dialog
   }

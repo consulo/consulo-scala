@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
+import consulo.ui.image.Image
 import consulo.language.editor.scope.AnalysisScope
 import consulo.execution.executor.Executor
 import consulo.execution.configuration.{ModuleRunProfile, RunProfileState}
@@ -8,14 +9,13 @@ import consulo.module.Module
 import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 
-import javax.swing.Icon
 
 class ScaladocConfiguration(private val form: ScaladocConsoleRunConfigurationForm, private val project: Project,
                             private val scope: AnalysisScope) extends ModuleRunProfile {
 
   override def getName: String = ScalaBundle.message("generate.scaladoc")
 
-  override def getIcon: Icon = null
+  override def getIcon: Image = null
 
   override def getModules: Array[Module] = Module.EMPTY_ARRAY
 

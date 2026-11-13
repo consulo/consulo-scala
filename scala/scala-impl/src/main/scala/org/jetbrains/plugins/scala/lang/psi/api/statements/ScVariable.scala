@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
+import consulo.ui.image.Image
 import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.icons.Icons
@@ -9,7 +10,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlock
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScExtendsBlock
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 
-import javax.swing.Icon
 
 trait ScVariable extends ScValueOrVariable {
 
@@ -21,7 +21,7 @@ trait ScVariable extends ScValueOrVariable {
   }
 
   // TODO unify with ScFunction and ScValue
-  override protected final def baseIcon: Icon = {
+  override protected final def baseIcon: Image = {
     var parent = getParent
     while (parent != null) {
       parent match {

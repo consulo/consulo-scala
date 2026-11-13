@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.components
 
+import consulo.ui.image.Image
 import consulo.project.Project
 import consulo.project.ui.wm.StatusBarWidget
 import consulo.project.ui.wm.StatusBarWidget.WidgetPresentation
@@ -11,7 +12,6 @@ import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import java.awt.event.MouseEvent
-import javax.swing.Icon
 
 private final class ScalaHighlightingModeWidget(project: Project)
   extends StatusBarWidget with StatusBarWidget.IconPresentation {
@@ -20,7 +20,7 @@ private final class ScalaHighlightingModeWidget(project: Project)
 
   override def getPresentation: WidgetPresentation = this
 
-  override def getIcon: Icon = Icons.HIGHLIGHTING_MODE
+  override def getIcon: Image = Icons.HIGHLIGHTING_MODE
 
   override def getTooltipText: String = {
     type Mode = Boolean

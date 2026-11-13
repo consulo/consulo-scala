@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.toplevel
 
+import consulo.ui.image.Image
 import consulo.language.impl.psi.stub.StubBasedPsiElementBase
 import consulo.navigation.ItemPresentation
 import consulo.util.lang.StringUtil
@@ -31,7 +32,6 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.JavaIdentifi
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
-import javax.swing.Icon
 import scala.annotation.tailrec
 
 trait ScNamedElement extends ScalaPsiElement
@@ -174,11 +174,11 @@ trait ScNamedElement extends ScalaPsiElement
               }
           }
         }
-      override def getIcon(open: Boolean): Icon = parentMember.map(_.getIcon(0)).orNull
+      override def getIcon(open: Boolean): Image = parentMember.map(_.getIcon(0)).orNull
     }
   }
 
-  override def getIcon(flags: Int): Icon =
+  override def getIcon(flags: Int): Image =
     nameContext match {
       case null => null
       case _: ScCaseClause => Icons.PATTERN_VAL

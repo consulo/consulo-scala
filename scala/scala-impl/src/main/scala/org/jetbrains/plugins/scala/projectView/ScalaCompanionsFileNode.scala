@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.projectView
 
+import consulo.ui.image.Image
 import consulo.project.ui.view.tree.PsiFileNode
 import consulo.ui.ex.tree.PresentationData
 import consulo.project.ui.view.tree.ViewSettings
@@ -12,7 +13,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.util.ScalaElementPresentationUtil
 
 import java.util
-import javax.swing.Icon
 
 final class ScalaCompanionsFileNode(
   project: Project,
@@ -40,13 +40,13 @@ final class ScalaCompanionsFileNode(
     s"ScalaCompanionsFileNode: $kind ${delegate.name}"
   }
 
-  override def getIcon(flags: Int): Icon = {
+  override def getIcon(flags: Int): Image = {
     val icon = baseCompanionIcon
     val layerFlags = ScalaElementPresentationUtil.getBaseLayerFlags(delegate, flags)
     ScalaElementPresentationUtil.getIconWithLayeredFlags(delegate, flags, icon, layerFlags)
   }
 
-  private def baseCompanionIcon: Icon = delegate match {
+  private def baseCompanionIcon: Image = delegate match {
     case _: ScTrait                          => Icons.TRAIT_AND_OBJECT
     case _: ScEnum                           => Icons.ENUM_AND_OBJECT
     case _: ScTypeAlias                      => Icons.TYPE_AND_OBJECT

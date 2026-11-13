@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
+import consulo.ui.image.Image
 package patterns
 
 import consulo.language.ast.ASTNode
@@ -24,7 +25,6 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.ScBindingPatternStub
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
-import javax.swing.Icon
 
 class ScReferencePatternImpl private(stub: ScBindingPatternStub[ScReferencePattern], node: ASTNode)
   extends ScalaStubBasedElementImpl(stub, ScalaElementType.REFERENCE_PATTERN, node)
@@ -48,7 +48,7 @@ class ScReferencePatternImpl private(stub: ScBindingPatternStub[ScReferencePatte
       case _       => Failure(ScalaBundle.message("cannot.define.expected.type"))
     }
 
-  override def getIcon(flags: Int): Icon =
+  override def getIcon(flags: Int): Image =
     nameContext match {
       case v: ScValueOrVariable =>
         //When we are inside val/var declaration, get the corresponding declaration icon with proper flags

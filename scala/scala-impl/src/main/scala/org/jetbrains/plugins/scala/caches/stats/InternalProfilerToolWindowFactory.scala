@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.caches.stats
 
+import consulo.ui.image.Image
 import com.intellij.concurrency.JobScheduler
 import consulo.application.AllIcons
 import consulo.project.ui.notification.{NotificationGroup, NotificationType}
@@ -17,13 +18,13 @@ import org.jetbrains.plugins.scala.util.ui.extensions.ComponentExt
 
 import java.awt.BorderLayout
 import java.util.concurrent.{Future, TimeUnit}
-import javax.swing.{Icon, JPanel}
+import javax.swing.JPanel
 import scala.jdk.CollectionConverters._
 
 class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware {
 
   //noinspection UnstableApiUsage,ApiStatus
-  override def getIcon: Icon = consulo.application.AllIcons.Toolwindows.ToolWindowProfiler
+  override def getIcon: Image = consulo.application.AllIcons.Toolwindows.ToolWindowProfiler
 
   override def init(toolWindow: ToolWindow): Unit = {
     toolWindow.setStripeTitle(NlsString.force("Scala plugin profiler"))
@@ -158,7 +159,7 @@ object InternalProfilerToolWindowFactory {
 
   class RunPauseAction(dataSource: DataSource[?]) extends AnAction with DumbAware {
 
-    private def currentIcon(): Icon = {
+    private def currentIcon(): Image = {
       if (dataSource.isActive)
         AllIcons.Actions.Pause
       else AllIcons.Actions.Resume

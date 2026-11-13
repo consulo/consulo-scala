@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.localize.LocalizeValue
 import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
@@ -70,13 +71,13 @@ final class ScalaFmtSuggesterService(private val project: Project)
 
   private def createNotification: Notification = {
     val notification = suggesterNotificationGroup.createNotification(ScalaBundle.message("scalafmt.suggester.detected.in.project"), NotificationType.INFORMATION)
-    notification.addAction(new NotificationAction(ScalaBundle.message("scalafmt.suggester.enable")) {
+    notification.addAction(new NotificationAction(LocalizeValue.of(ScalaBundle.message("scalafmt.suggester.enable"))) {
       override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
         notification.expire()
         enableForProject()
       }
     })
-    notification.addAction(new NotificationAction(ScalaBundle.message("scalafmt.suggester.dont.show")) {
+    notification.addAction(new NotificationAction(LocalizeValue.of(ScalaBundle.message("scalafmt.suggester.dont.show"))) {
       override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
         notification.expire()
         dontShow()

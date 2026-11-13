@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
+import consulo.ui.image.Image
 import consulo.navigation.ItemPresentation
 import consulo.util.lang.StringUtil
 import consulo.util.lang.Pair
@@ -284,7 +285,7 @@ class PsiClassWrapper(
     "PsiClassWrapper(" + definition.toString + ")"
   }
 
-  override def getIcon(flags: Int): Icon = {
+  override def getIcon(flags: Int): Image = {
     definition.getIcon(flags)
   }
 

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.completion.lookup.{Lookup, LookupActionProvider, LookupElement, LookupElementAction}
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiNamedElement
-import consulo.ui.ex.awt.EmptyIcon
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.image.Image
 import java.util.function.Consumer
-import com.intellij.util.PlatformIcons
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaImportingInsertHandler
@@ -20,13 +21,13 @@ final class ScalaImportStaticLookupActionProvider extends LookupActionProvider {
       element.getInsertHandler == null &&
       !element.getPsiElement.is[PsiClass] =>
 
-      import PlatformIcons.{CHECK_ICON => checkIcon}
+      val checkIcon: Image = PlatformIconGroup.actionsChecked()
       val icon = if (element.shouldImport)
-        EmptyIcon.create(checkIcon.getIconWidth, checkIcon.getIconHeight)
+        Image.empty(checkIcon.getWidth, checkIcon.getHeight)
       else
         checkIcon
 
-      consumer.accept(new LookupElementAction(icon, ScalaBundle.message("action.import.member")) {
+      consumer.accept(new LookupElementAction(icon, LocalizeValue.of(ScalaBundle.message("action.import.member"))) {
 
         import LookupElementAction.Result.ChooseItem
 

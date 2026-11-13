@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
+import consulo.ui.image.Image
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.completion.CompletionResultSet
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
@@ -22,7 +23,7 @@ object ScalaKeywordLookupItem {
   def apply(keyword: String): LookupElement =
     LookupElementBuilder.create(keyword)
       .withBoldness(true)
-      .withIcon(EmptyIcon.create(16, 16))
+      .withIcon(Image.empty(16))
       .withInsertHandler(new KeywordInsertHandler(keyword))
 
   def addFor(resultSet: CompletionResultSet,

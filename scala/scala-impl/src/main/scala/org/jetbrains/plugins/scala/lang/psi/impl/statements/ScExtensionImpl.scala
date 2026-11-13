@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.ui.image.Image
 import consulo.language.ast.ASTNode
 import consulo.language.psi.resolve.PsiScopeProcessor
 import consulo.language.ast.IElementType
@@ -21,7 +22,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScNamedElement, ScType
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaStubBasedElementImpl
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScExtensionStub
 
-import javax.swing.Icon
 
 class ScExtensionImpl(@Nullable stub: ScExtensionStub, @Nullable node: ASTNode)
     extends ScalaStubBasedElementImpl(stub, ScalaElementType.EXTENSION, node)
@@ -32,7 +32,7 @@ class ScExtensionImpl(@Nullable stub: ScExtensionStub, @Nullable node: ASTNode)
 
   override def toString: String = "Extension on " + targetTypeElement.fold("<unknown>")(_.getText)
 
-  override protected final def baseIcon: Icon =
+  override protected final def baseIcon: Image =
     Icons.EXTENSION
 
   override def targetParameter: Option[ScParameter] =

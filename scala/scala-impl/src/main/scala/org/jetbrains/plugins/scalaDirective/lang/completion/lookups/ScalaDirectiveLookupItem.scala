@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion.lookups
 
+import consulo.ui.image.Image
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.document.Document
@@ -11,7 +12,7 @@ object ScalaDirectiveLookupItem {
   def apply(text: String): LookupElement =
     LookupElementBuilder.create(text)
       .withBoldness(true)
-      .withIcon(EmptyIcon.create(16, 16))
+      .withIcon(Image.empty(16))
       .withInsertHandler(new ScalaDirectiveInsertHandler(text))
 
   final class ScalaDirectiveInsertHandler(val text: String) extends InsertHandler[LookupElement] {

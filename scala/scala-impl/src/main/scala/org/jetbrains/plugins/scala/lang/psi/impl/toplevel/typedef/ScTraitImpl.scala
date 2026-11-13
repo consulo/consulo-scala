@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
+import consulo.ui.image.Image
 package typedef
 
 import consulo.language.ast.ASTNode
@@ -18,7 +19,6 @@ import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_12
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
-import javax.swing.Icon
 
 final class ScTraitImpl(stub: ScTemplateDefinitionStub[ScTrait],
                         nodeType: ScTemplateDefinitionElementType[ScTrait],
@@ -55,7 +55,7 @@ final class ScTraitImpl(stub: ScTemplateDefinitionStub[ScTrait],
 
   override def isInterface: Boolean = true
 
-  override protected def baseIcon: Icon = Icons.TRAIT
+  override protected def baseIcon: Image = Icons.TRAIT
 
   override def hasModifierProperty(name: String): Boolean = name match {
     case PsiModifier.ABSTRACT if isInterface => true

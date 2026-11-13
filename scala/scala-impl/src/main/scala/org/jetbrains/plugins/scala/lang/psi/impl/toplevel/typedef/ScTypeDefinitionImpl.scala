@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
+import consulo.ui.image.Image
 package typedef
 
 import consulo.language.ast.ASTNode
@@ -38,7 +39,6 @@ import org.jetbrains.plugins.scala.projectView.FileKind
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.{PackageObjectClassName, PackageObjectClassPackageSuffix, PackageObjectSingletonClassPackageSuffix}
 
-import javax.swing.Icon
 import scala.annotation.tailrec
 
 abstract class ScTypeDefinitionImpl[T <: ScTemplateDefinition](stub: ScTemplateDefinitionStub[T],
@@ -361,7 +361,7 @@ abstract class ScTypeDefinitionImpl[T <: ScTemplateDefinition](stub: ScTemplateD
         case path => path.parenthesize()
       }
 
-      override def getIcon(open: Boolean): Icon = ScTypeDefinitionImpl.this.getIcon(0)
+      override def getIcon(open: Boolean): Image = ScTypeDefinitionImpl.this.getIcon(0)
     }
   }
 

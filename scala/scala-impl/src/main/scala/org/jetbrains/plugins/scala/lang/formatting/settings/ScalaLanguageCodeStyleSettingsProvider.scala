@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
+import consulo.localize.LocalizeValue
 import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
 import consulo.language.codeStyle.ui.setting.{CodeStyleAbstractConfigurable, CodeStyleAbstractPanel, SmartIndentOptionsEditor}
 import consulo.language.Language
@@ -383,7 +384,7 @@ object ScalaLanguageCodeStyleSettingsProvider {
   private val Log = Logger.getInstance(getClass)
 
   private class ScalaCodeStyleAbstractConfigurable(settings: CodeStyleSettings, cloneSettings: CodeStyleSettings)
-    extends CodeStyleAbstractConfigurable(settings, cloneSettings, "Scala") {
+    extends CodeStyleAbstractConfigurable(settings, cloneSettings, LocalizeValue.of("Scala")) {
 
     override def getHelpTopic: String =
       ScalaWebHelpProvider.HelpPrefix + "troubleshoot-common-scala-issues.html#type_aware_highlighting"

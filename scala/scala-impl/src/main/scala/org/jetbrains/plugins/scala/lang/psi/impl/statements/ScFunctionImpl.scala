@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.ui.image.Image
 import consulo.language.ast.ASTNode
 import consulo.project.DumbService
 import com.intellij.java.language.psi.PsiReferenceList.Role
@@ -46,7 +47,6 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result.{Failure, TypeResult}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, PhysicalMethodSignature, ScType, ScTypeExt, TermSignature, TypePresentationContext}
 
-import javax.swing.Icon
 import scala.annotation.tailrec
 
 abstract class ScFunctionImpl[F <: ScFunction](stub: ScFunctionStub[F],
@@ -135,7 +135,7 @@ abstract class ScFunctionImpl[F <: ScFunction](stub: ScFunctionStub[F],
   })
 
   // TODO unify with ScValue and ScVariable
-  protected override final def baseIcon: Icon = {
+  protected override final def baseIcon: Image = {
     syntheticNavigationElement match {
       case c: ScClass if ScalaPsiUtil.hasImplicitModifier(c) => return c.getIcon(flags = 0)
       case _ =>

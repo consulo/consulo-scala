@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.util
 
+import consulo.ui.image.Image
 import consulo.component.util.Iconable
 import com.intellij.java.language.psi.PsiModifierListOwner
 
-import javax.swing.Icon
 
 //noinspection ScalaWrongMethodsUsage
 trait BaseIconProvider extends Iconable {
 
   protected def delegate: PsiModifierListOwner
 
-  protected def baseIcon: Icon
+  protected def baseIcon: Image
 
   /**
    * Adds visibility icons if specified in `flags`<br>
@@ -19,10 +19,10 @@ trait BaseIconProvider extends Iconable {
    *  - [[com.intellij.psi.impl.source.PsiEnumConstantImpl#getElementIcon]]
    *  - etc...
    */
-  override def getIcon(flags: Int): Icon =
+  override def getIcon(flags: Int): Image =
     getIconWithExtraLayerFlags(flags, 0)
 
-  final def getIconWithExtraLayerFlags(flags: Int, extraLayerFlags: Int): Icon = {
+  final def getIconWithExtraLayerFlags(flags: Int, extraLayerFlags: Int): Image = {
     val icon = baseIcon
     // TODO baseIcon shouldn't return null in ScVariable and ScFunction
     if (icon != null && delegate.isValid) {

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.ui.image.Image
 import consulo.language.editor.gutter.GutterIconNavigationHandler
 import com.intellij.java.impl.codeInsight.daemon.impl.GutterTooltipHelper
 import consulo.language.editor.ui.PsiElementListCellRenderer
@@ -24,7 +25,6 @@ import org.jetbrains.plugins.scala.util.SAMUtil
 
 import java.awt.event.MouseEvent
 import java.util.Collections.emptyList
-import javax.swing.Icon
 import scala.jdk.CollectionConverters._
 
 object ScalaMarkerType {
@@ -240,7 +240,7 @@ object ScalaMarkerType {
 
     override def getIconFlags: Int = 0
 
-    override def getIcon(element: PsiElement): Icon =
+    override def getIcon(element: PsiElement): Image =
       element match {
         case _: PsiMethod => super.getIcon(element)
         case x: PsiNamedElement if x.nameContext != null =>

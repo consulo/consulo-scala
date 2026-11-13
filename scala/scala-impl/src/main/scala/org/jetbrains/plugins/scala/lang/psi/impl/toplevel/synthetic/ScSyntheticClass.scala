@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.ui.image.Image
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -47,7 +48,6 @@ import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectExt, ScalaFea
 import org.jetbrains.plugins.scala.api.{NlsString, ScalaFileType, ScalaLanguage}
 
 import java.util.concurrent.Callable
-import javax.swing.Icon
 import scala.collection.mutable
 import scala.util.Using
 import scala.util.control.NonFatal
@@ -174,7 +174,7 @@ final class ScSyntheticClass(
 
       override def getPresentableText: String = NlsString.force(This.className)
 
-      override def getIcon(open: Boolean): Icon = This.getIcon(0)
+      override def getIcon(open: Boolean): Image = This.getIcon(0)
     }
   }
 
@@ -291,7 +291,7 @@ sealed class ScSyntheticFunction(
 
   override def typeParameters: Seq[ScTypeParam] = typeParams
 
-  override def getIcon(flags: Int): Icon = Icons.FUNCTION
+  override def getIcon(flags: Int): Image = Icons.FUNCTION
 
   override def toString = "Synthetic method"
 
