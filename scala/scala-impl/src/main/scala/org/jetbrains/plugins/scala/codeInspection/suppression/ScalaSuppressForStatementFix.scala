@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.codeInspection.suppression
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import consulo.language.editor.inspection.SuppressByCommentFix
 import consulo.language.editor.inspection.{InspectionsBundle, SuppressionUtil}
-import com.intellij.codeInspection.SuppressionUtilCore
 import consulo.project.Project
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiComment, PsiElement}
@@ -45,7 +44,7 @@ abstract class ScalaSuppressByLineCommentFix(key: HighlightDisplayKey) extends S
 
   //noinspection ApiStatus,UnstableApiUsage
   protected final def createComment(project: Project): PsiComment = {
-    val text: String = SuppressionUtilCore.SUPPRESS_INSPECTIONS_TAG_NAME + " " + key.getID
+    val text: String = SuppressionUtil.SUPPRESS_INSPECTIONS_TAG_NAME + " " + key.getID
     SuppressionUtil.createComment(project, text, ScalaLanguage.INSTANCE)
   }
 

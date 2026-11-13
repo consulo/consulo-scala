@@ -36,7 +36,7 @@ class ReferenceMustBePrefixedInspection extends LocalInspectionTool {
   override def isAvailableForFile(file: PsiFile): Boolean = IntentionAvailabilityChecker.checkInspection(this, file)
 
   private def registerProblem(reference: ScReference, quickFix: AddPrefixQuickFix, holder: ProblemsHolder): Unit = {
-    holder.registerProblem(reference, getDisplayName, quickFix)
+    holder.registerProblem(reference, getDisplayName.get, quickFix)
   }
 }
 

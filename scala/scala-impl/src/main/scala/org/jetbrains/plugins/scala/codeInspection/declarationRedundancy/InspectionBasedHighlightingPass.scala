@@ -8,8 +8,9 @@ import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
 import consulo.language.editor.highlight.UpdateHighlightersUtil
 import consulo.language.editor.highlight.HighlightingLevelManager
 import consulo.language.editor.intention.IntentionAction
-import com.intellij.codeInspection.ex.InspectionProfileImpl
-import consulo.language.editor.inspection.{LocalQuickFix, LocalQuickFixAsIntentionAdapter, ProblemDescriptor, ProblemDescriptorUtil}
+import consulo.language.editor.inspection.scheme.{InspectionManager, InspectionProfile}
+import consulo.language.editor.util.HighlightTypeUtil
+import consulo.language.editor.inspection.{LocalQuickFix, LocalQuickFixAsIntentionAdapter, ProblemDescriptor, ProblemHighlightType}
 import consulo.language.editor.annotation.HighlightSeverity
 import consulo.application.ApplicationManager
 import consulo.document.Document
@@ -52,7 +53,7 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
 
   private val inspectionSuppressor = new ScalaInspectionSuppressor
 
-  private def profile: InspectionProfileImpl = InspectionProjectProfileManager.getInstance(myProject).getCurrentProfile
+  private def profile: InspectionProfile = InspectionProjectProfileManager.getInstance(myProject).getCurrentProfile
 
   def isEnabled(element: PsiElement): Boolean = {
     if (builtInHighlightingDisabledIn(myProject) || incremental.Highlighting.enabledIn(myProject)) return false
@@ -117,8 +118,9 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
         progress.checkCanceled()
         val range = info.element.getTextRange
         val severity: HighlightSeverity = getSeverity
-        val infoType: HighlightInfoType = HighlightInfo.convertSeverity(severity)
-        val textAttributes: TextAttributesKey = profile.getEditorAttributes(highlightKey.toString, file)
+        val infoType: HighlightInfoType = HighlightTypeUtil.convertSeverity(severity)
+        // upstream: profile.getEditorAttributes(highlightKey.toString, file) (no per-tool editor attributes in Consulo)
+        val textAttributes: TextAttributesKey = null
 
         val highlightingInfoBuilder = HighlightInfo
           .newHighlightInfo(infoType)
@@ -132,8 +134,9 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
 
         // can be null if was rejected by com.intellij.codeInsight.daemon.impl.HighlightInfoFilter
         if (highlightInfo != null) info.fixes.foreach { fix =>
-          // TODO (SCL-20740): replace with new ProblemDescriptorBase(...), do not pass highlightInfo
-          lazy val problemDescriptor = ProblemDescriptorUtil.toProblemDescriptor(file, highlightInfo)
+          // upstream: ProblemDescriptorUtil.toProblemDescriptor(file, highlightInfo)
+          lazy val problemDescriptor = InspectionManager.getInstance(myProject).createProblemDescriptor(
+            info.element, info.message, true, LocalQuickFix.EMPTY_ARRAY, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
           val action = fix match {
             case intention: IntentionAction => intention //no need to wrap - the fix is an intention at the same time
             case iconable: Iconable => new LocalQuickFixAsIntentionIconableAdapter(iconable, problemDescriptor)

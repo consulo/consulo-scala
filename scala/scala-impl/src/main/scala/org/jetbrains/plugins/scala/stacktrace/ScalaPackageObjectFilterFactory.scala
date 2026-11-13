@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala.stacktrace
 
-import consulo.execution.ui.console.{ConsoleFilterProvider, HyperlinkInfo, OpenFileHyperlinkInfo}
-import com.intellij.java.execution.filters.{ExceptionFilter, ExceptionFilterFactory, ExceptionWorker}
-import com.intellij.execution.filters.ResultItem
+import consulo.execution.ui.console.{ConsoleFilterProvider, Filter, HyperlinkInfo, OpenFileHyperlinkInfo}
+import com.intellij.java.execution.filters.{ExceptionFilter, ExceptionFilterFactory}
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.scope.GlobalSearchScope
@@ -23,15 +22,14 @@ class ScalaPackageObjectConsoleFilterProvider extends ConsoleFilterProvider {
 }
 
 private object ScalaPackageObjectFilter {
+  // upstream: ExceptionWorker.parseExceptionLine (not accessible in Consulo Java plugin), parsing "at Class.method(File:line)"
+  private val StackTraceLine = """(?s).*?\bat\s+(?:\S+/)?([^\s(/]+)\.([^\s.(]+)\s*\(([^():]+):(\d+)\).*""".r
+
   // Based on org.jetbrains.kotlin.idea.debugger.core.KotlinExceptionFilter
-  private def parseStackTraceLine(line: String): StackTraceElement = ExceptionWorker.parseExceptionLine(line) match {
-    case null => null
-    case parsed =>
-      val declaringClass = parsed.classFqnRange.substring(line)
-      val methodName = parsed.methodNameRange.substring(line)
-      val fileName = parsed.fileName
-      val lineNumber = parsed.lineNumber
-      new StackTraceElement(declaringClass, methodName, fileName, lineNumber)
+  private def parseStackTraceLine(line: String): StackTraceElement = line match {
+    case StackTraceLine(declaringClass, methodName, fileName, lineNumber) =>
+      new StackTraceElement(declaringClass, methodName, fileName, lineNumber.toInt)
+    case _ => null
   }
 }
 

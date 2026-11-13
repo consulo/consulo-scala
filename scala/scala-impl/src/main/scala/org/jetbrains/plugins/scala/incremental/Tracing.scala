@@ -1,5 +1,4 @@
 package org.jetbrains.plugins.scala
-import consulo.ui.style.StyleManager
 package incremental
 
 import extensions.{&, FirstChild, PsiElementExt}
@@ -7,8 +6,7 @@ import lang.psi.api.expr.{ScArgumentExprList, ScBlock, ScParenthesisedExpr}
 import project.ProjectExt
 import startup.ProjectActivity
 import consulo.language.editor.Pass
-import consulo.language.editor.DaemonCodeAnalyzer
-import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
+import consulo.language.editor.{DaemonCodeAnalyzer, DaemonListener}
 import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea, RangeHighlighter}
 import consulo.colorScheme.TextAttributes
 import consulo.codeEditor.{Editor, EditorFactory}
@@ -18,9 +16,10 @@ import consulo.util.dataholder.Key
 import consulo.document.util.TextRange
 import consulo.application.util.registry.Registry
 import consulo.virtualFileSystem.VirtualFile
-import consulo.project.ui.wm.WindowManager
 import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
 import consulo.ui.ex.{Gray, JBColor}
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.style.StyleManager
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import java.awt.Color
@@ -36,7 +35,7 @@ object Tracing {
   class StartupActivity extends ProjectActivity {
     override def execute(project: Project): Unit = {
       val connection = project.getMessageBus.connect(project.unloadAwareDisposable)
-      connection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC, new HighlightingListener(project))
+      connection.subscribe(classOf[DaemonListener], new HighlightingListener(project))
     }
   }
 
@@ -58,7 +57,7 @@ object Tracing {
     private var startInstants = Map.empty[FileEditor, Long]
     private var durations = Seq.empty[Long]
 
-    override def daemonStarting(fileEditors: util.Collection[? <: FileEditor]): Unit = {
+    override def daemonStarting(fileEditors: util.Collection[FileEditor]): Unit = {
       if (!isHighlightingTracingEnabled) return
       val editors = fileEditors.asScala.filter(e => isScalaIn(e.getFile))
       if (editors.isEmpty) return
@@ -67,10 +66,10 @@ object Tracing {
       }
       startInstants ++= editors.map(editor => editor -> System.nanoTime())
       durations = Seq.empty
-      statusBar.setInfo("Highlighting...")
+      // upstream: statusBar.setInfo("Highlighting...") (no StatusBar.setInfo in Consulo)
     }
 
-    override def daemonFinished(fileEditors: util.Collection[? <: FileEditor]): Unit = {
+    override def daemonFinished(fileEditors: util.Collection[FileEditor]): Unit = {
       if (fileEditors.stream.anyMatch(e => isScalaIn(e.getFile))) {
         Highlighting.suppress = false
       }
@@ -78,13 +77,11 @@ object Tracing {
       val editors = fileEditors.asScala.filter(e => isScalaIn(e.getFile))
       if (editors.isEmpty) return
       val ds = editors.map(editor => (System.nanoTime() - startInstants(editor)) / 1000000)
-      statusBar.setInfo("Highlighted: " + (durations ++ ds).map(x => s"$x ms").mkString(", "))
+      // upstream: statusBar.setInfo("Highlighted: " + durations) (no StatusBar.setInfo in Consulo)
       startInstants --= editors.toSet
       durations ++= ds
       mergeTracingHighlighters()
     }
-
-    private def statusBar = WindowManager.getInstance.getStatusBar(project)
   }
 
   def trace(e: PsiElement, reason: String, start: Boolean = false): Unit = if (isHighlightingTracingEnabled) {
@@ -111,7 +108,7 @@ object Tracing {
         val highlighter = editor.getMarkupModel.addRangeHighlighter(
           e.getTextRange.getStartOffset, e.getTextRange.getEndOffset, HighlighterLayer.ADDITIONAL_SYNTAX, null, HighlighterTargetArea.EXACT_RANGE)
 
-        highlighter.setErrorStripeMarkColor(new JBColor(Gray._170, Gray._80))
+        highlighter.setErrorStripeMarkColor(TargetAWT.from(new JBColor(Gray._170, Gray._80)))
         highlighter.setThinErrorStripeMark(true)
         highlighter.setErrorStripeTooltip(text)
         highlighter.putUserData(TRACING_HIGHLIGHTER_KEY, "")
@@ -143,7 +140,7 @@ object Tracing {
       case _ =>
         if (start) {
           val highlighter = {
-            val attributes = new TextAttributes(null, color, null, null, 0)
+            val attributes = new TextAttributes(null, TargetAWT.from(color), null, null, 0)
             editor.getMarkupModel.addRangeHighlighter(e.getTextRange.getStartOffset, e.getTextRange.getEndOffset,
               HighlighterLayer.ADDITIONAL_SYNTAX, attributes, HighlighterTargetArea.EXACT_RANGE)
           }
@@ -180,7 +177,7 @@ object Tracing {
       return
 
     val dirtyRange = Option(DaemonCodeAnalyzer.getInstance(editor.getProject).getFileStatusMap
-      .getFileDirtyScope(editor.getDocument, psiFile, Pass.UPDATE_ALL)).getOrElse(TextRange.EMPTY_RANGE)
+      .getFileDirtyScope(editor.getDocument, Pass.UPDATE_ALL)).getOrElse(TextRange.EMPTY_RANGE)
 
     psiFile.elements(_.getTextRange.intersects(dirtyRange)).foreach { e =>
       Seq(RESOLVE_STATE_KEY, INFERENCE_STATE_KEY).foreach { key =>

@@ -32,7 +32,7 @@ final class ScalaProblemHighlightFilter extends ProblemHighlightFilter {
    * @see [[org.jetbrains.kotlin.idea.base.util.ProjectStructureUtils.KOTLIN_AWARE_SOURCE_ROOT_TYPES]]
    */
   private def isInSourceRoots(file: ScalaFile): Boolean =
-    !JavaProjectRootsUtil.isOutsideJavaSourceRoot(file)
+    !JavaProjectRootsUtil.isOutsideSourceRoot(file)
 
   private def isSpecialFile(file: ScalaFile): Boolean =
     file.isWorksheetFile ||

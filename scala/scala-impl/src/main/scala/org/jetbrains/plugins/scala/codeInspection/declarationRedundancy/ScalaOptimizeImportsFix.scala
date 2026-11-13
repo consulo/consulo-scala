@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import com.intellij.codeInsight.actions.OptimizeImportsProcessor
-import com.intellij.codeInsight.daemon.QuickFixBundle
+import consulo.java.analysis.impl.localize.JavaQuickFixLocalize
+import consulo.language.editor.localize.CodeInsightLocalize
+import consulo.language.editor.refactoring.ImportOptimizer
+import consulo.localize.LocalizeValue
+import consulo.project.DumbService
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.intention.{HighPriorityAction, IntentionAction, LowPriorityAction}
 import consulo.codeEditor.Editor
-import consulo.project.Project
 import consulo.language.psi.PsiFile
 import consulo.fileEditor.util.FileContentUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
-import org.jetbrains.plugins.scala.extensions.PsiFileExt
+import org.jetbrains.plugins.scala.extensions.{PsiFileExt, executeWriteActionCommand, inReadAction}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 
@@ -28,15 +31,25 @@ sealed abstract class ScalaOptimizeImportsFixBase extends IntentionAction {
    *
    * @param file Any parallel psi file
    */
-  override def invoke(project: Project, editor: Editor, file: PsiFile): Unit =
-    new OptimizeImportsProcessor(project, file).run()
+  // upstream: new OptimizeImportsProcessor(project, file).run() (internal in Consulo)
+  override def invoke(project: Project, editor: Editor, file: PsiFile): Unit = {
+    if (DumbService.isDumb(project)) return
 
-  override final def getFamilyName: String = getText
+    val runnables = inReadAction {
+      for {
+        optimizer <- ImportOptimizer.forFile(file).asScala.toSeq
+        psiFile <- file.getViewProvider.getAllFiles.asScala
+        if optimizer.supports(psiFile)
+      } yield optimizer.processFile(psiFile)
+    }
+    if (runnables.nonEmpty)
+      executeWriteActionCommand(CodeInsightLocalize.processOptimizeImports().get)(runnables.foreach(_.run()))(using project)
+  }
 }
 
 final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with HighPriorityAction {
 
-  override def getText: String = QuickFixBundle.message("optimize.imports.fix")
+  override def getText: LocalizeValue = JavaQuickFixLocalize.optimizeImportsFix()
 
   override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
     IntentionPreviewInfo.EMPTY
@@ -44,7 +57,7 @@ final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with Hig
 
 final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFixBase {
 
-  override def getText: String = QuickFixBundle.message("enable.optimize.imports.on.the.fly")
+  override def getText: LocalizeValue = JavaQuickFixLocalize.enableOptimizeImportsOnTheFly()
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     !ScalaApplicationSettings.getInstance().OPTIMIZE_IMPORTS_ON_THE_FLY &&
@@ -61,7 +74,7 @@ final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFi
 
 final class MarkImportAsAlwaysUsed(importText: String) extends IntentionAction with LowPriorityAction {
 
-  override def getText: String = ScalaInspectionBundle.message("mark.import.as.always.used.in.this.project")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("mark.import.as.always.used.in.this.project"))
 
   override def startInWriteAction: Boolean = true
 
@@ -74,8 +87,6 @@ final class MarkImportAsAlwaysUsed(importText: String) extends IntentionAction w
     settings.setAlwaysUsedImports((settings.getAlwaysUsedImports ++ Array(importText)).sorted)
     FileContentUtil.reparseFiles(project, Seq(file.getVirtualFile).asJava, true)
   }
-
-  override def getFamilyName: String = ScalaInspectionBundle.message("mark.import.as.always.used.in.this.project")
 
   override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     val settings = ScalaCodeStyleSettings.getInstance(project)

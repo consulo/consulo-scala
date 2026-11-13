@@ -16,7 +16,7 @@ class LoopVariableNotUpdatedInspection extends LocalInspectionTool {
       Some(ScInfixExpr((ref: ScReferenceExpression) & ResolvesTo(target@Parent(Parent(_: ScVariable))), ElementText(operator), _)),
       Some(body)) if !ref.isQualified && ComparisonOperators.contains(operator) && !isMutatedWithing(body, target) =>
         holder.registerProblem(ref.asInstanceOf[PsiReference],
-          getDisplayName, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+          getDisplayName.get, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
     case _ =>
   }
 

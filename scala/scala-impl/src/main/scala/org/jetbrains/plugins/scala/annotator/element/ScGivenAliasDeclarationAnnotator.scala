@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
@@ -62,8 +63,7 @@ object ScGivenAliasDeclarationAnnotator extends ElementAnnotator[ScGivenAliasDec
     decl: ScGivenAliasDeclaration
   ) extends IntentionAction with DumbAware {
     override def startInWriteAction(): Boolean = true
-    override def getFamilyName: String         = fixDescription
-    override def getText: String               = fixDescription
+    override def getText: LocalizeValue        = LocalizeValue.of(fixDescription)
 
     override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
       decl.isValid
@@ -86,7 +86,9 @@ object ScGivenAliasDeclarationAnnotator extends ElementAnnotator[ScGivenAliasDec
 private[element] abstract class AnonymousGivenAliasDeclarationQuickFix(declaration: ScGivenAliasDeclaration) extends IntentionAction {
   override def startInWriteAction(): Boolean = true
 
-  override def getText: String = getFamilyName
+  def getFamilyName: String
+
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     declaration.isValid && declaration.nameElement.isEmpty

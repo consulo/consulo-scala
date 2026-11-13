@@ -37,7 +37,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.TermSignature
 import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaExportedMemberUtil
 import org.jetbrains.plugins.scala.util.SAMUtil._
 
-import java.awt.event.MouseEvent
+import consulo.language.editor.Pass
+import consulo.ui.event.ComponentEvent
 import java.util.Collections.singletonList
 import java.{util => ju}
 
@@ -78,7 +79,12 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
     val leaf = PsiTreeUtil.firstChild(element).toOption.getOrElse(element)
     new LineMarkerInfo[PsiElement](
       leaf,
-      leaf.getTextRange
+      leaf.getTextRange,
+      null,
+      Pass.LINE_MARKERS,
+      null,
+      null,
+      GutterIconRenderer.Alignment.RIGHT
     )
   }
 
@@ -129,7 +135,7 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
       (parent, sam) <- funExprParent(element)
       if isInterestingSAM(sam) &&
         PsiTreeUtil.getDeepestFirst(parent) == element
-      icon = ImplementingFunctionalInterface
+      icon = ImplementingFunctional
       markerType = samTypeImplementation(sam)
     } yield arrowUpLineMarker(element, icon, markerType, Option(parent))
     else None
@@ -286,7 +292,7 @@ private object GutterUtil {
   private[gutter] lazy val CompanionOption = new GutterIconDescriptor.Option("scala.companion", LocalizeValue.of(ScalaBundle.message("gutter.companion")), Icons.CLASS_COMPANION)
   private[gutter] val ImplementedOption = new GutterIconDescriptor.Option("scala.implemented", LocalizeValue.of(ScalaBundle.message("gutter.implemented")), AllIcons.Gutter.ImplementedMethod)
   private[gutter] val ImplementingOption = new GutterIconDescriptor.Option("scala.implementing", LocalizeValue.of(ScalaBundle.message("gutter.implementing")), AllIcons.Gutter.ImplementingMethod)
-  private[gutter] val SamOption = new GutterIconDescriptor.Option("scala.sam", LocalizeValue.of(ScalaBundle.message("gutter.sam")), AllIcons.Gutter.ImplementingFunctionalInterface)
+  private[gutter] val SamOption = new GutterIconDescriptor.Option("scala.sam", LocalizeValue.of(ScalaBundle.message("gutter.sam")), AllIcons.Gutter.ImplementingFunctional)
   private[gutter] val OverriddenOption = new GutterIconDescriptor.Option("scala.overridden", LocalizeValue.of(ScalaBundle.message("gutter.overridden")), AllIcons.Gutter.OverridenMethod)
   private[gutter] val OverridingOption = new GutterIconDescriptor.Option("scala.overriding", LocalizeValue.of(ScalaBundle.message("gutter.overriding")), AllIcons.Gutter.OverridingMethod)
   private[gutter] lazy val RecursionOption = new GutterIconDescriptor.Option("scala.recursion", LocalizeValue.of(ScalaBundle.message("gutter.recursion")), Icons.TAIL_RECURSION)
@@ -322,26 +328,26 @@ private object GutterUtil {
     element,
     element.getTextRange,
     icon,
+    Pass.LINE_MARKERS,
     markerType.tooltipProvider,
     markerType.navigationHandler,
-    alignment,
-    () => markerType.tooltipProvider.apply(element)
+    alignment
   ) {
     override def canMergeWith(other: MergeableLineMarkerInfo[?]): Boolean = other match {
       case that: ArrowUpOrDownLineMarkerInfo => icon == that.icon
       case _                                 => false
     }
 
-    override def getCommonIcon(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): Image = icon
+    override def getCommonIcon(infos: ju.List[MergeableLineMarkerInfo[?]]): Image = icon
 
-    override def getCommonTooltip(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): IJFunction[? >: PsiElement, String] = _ => {
+    override def getCommonTooltip(infos: ju.List[MergeableLineMarkerInfo[?]]): IJFunction[? >: PsiElement, String] = _ => {
       markerType match {
         case ScalaMarkerType.overriddenMember => ScalaBundle.message("multiple.overriden.tooltip")
         case _                                => ScalaBundle.message("multiple.overriding.tooltip")
       }
     }
 
-    override def getCommonIconAlignment(infos: ju.List[? <: MergeableLineMarkerInfo[?]]): GutterIconRenderer.Alignment =
+    override def getCommonIconAlignment(infos: ju.List[MergeableLineMarkerInfo[?]]): GutterIconRenderer.Alignment =
       infos.get(0) match {
         case that: ArrowUpOrDownLineMarkerInfo =>
           that.alignment
@@ -380,10 +386,10 @@ private object GutterUtil {
         aClass.nameId,
         range,
         icon,
+        Pass.LINE_MARKERS,
         subclassedClass.tooltipProvider,
         subclassedClass.navigationHandler,
-        Alignment.RIGHT,
-        () => subclassedClass.tooltipProvider.apply(aClass)
+        Alignment.RIGHT
       )
       NavigateAction.setNavigateAction(info, ScalaBundle.message("go.to.implementation"), IdeActions.ACTION_GOTO_IMPLEMENTATION)
     }
@@ -463,14 +469,15 @@ private object GutterUtil {
           val info = new LineMarkerInfo(identifier,
             identifier.getTextRange,
             iconFor(typeDefinition, swapped),
+            Pass.LINE_MARKERS,
             (_: PsiElement) =>
               GutterTooltipHelper.getTooltipText(singletonList(companion.nameId.getPrevSiblingNotWhitespace), ScalaBundle.message("has.companion", nameOf(companion)), false, IdeActions.ACTION_GOTO_DECLARATION)
                 .replace("to navigate", "on the keyword to navigate"), // Not internationalizable (which is somewhat OK).
-            (_: MouseEvent, _: PsiElement) =>
+            (_: ComponentEvent[?], _: PsiElement) =>
               Option(PsiNavigationSupport.getInstance.createNavigatable(companion.getProject,
                 companion.getContainingFile.getVirtualFile, companion.nameId.getPrevSiblingNotWhitespace.startOffset)).foreach(_.navigate(true)),
-            Alignment.LEFT,
-            ScalaBundle.message("go.to.companion", nameOf(companion))          )
+            Alignment.LEFT
+          )
           NavigateAction.setNavigateAction(info, ScalaBundle.message("go.to.companion", nameOf(companion)), IdeActions.ACTION_GOTO_DECLARATION)
 
         }

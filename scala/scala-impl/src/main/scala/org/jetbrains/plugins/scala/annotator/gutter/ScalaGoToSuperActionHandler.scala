@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
-import consulo.navigation.NavigationUtil
+import consulo.application.Application
+import consulo.language.editor.ui.navigation.PsiTargetNavigationService
+import consulo.localize.LocalizeValue
 import consulo.language.psi.util.EditSourceUtil
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -15,6 +17,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTemplateDefinition}
 
+import java.util.function.Supplier
+import java.{util => ju}
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 
@@ -34,8 +38,13 @@ class ScalaGoToSuperActionHandler extends ScalaCodeInsightActionHandler {
         }
         true
       }
-      val popup = NavigationUtil.getPsiElementPopup[PsiElement](superElements.toArray, ScalaMarkerType.newCellRenderer, title, processor)
-      popup.showInBestPositionFor(editor)
+      val targets: Supplier[ju.Collection[PsiElement]] = () => ju.List.of(superElements*)
+      Application.get().getInstance(classOf[PsiTargetNavigationService])
+        .newNavigator[PsiElement](targets)
+        .presentationProvider(ScalaMarkerType.newPresentationProvider)
+        .title(LocalizeValue.of(title))
+        .processor(processor)
+        .navigate(editor, project)
     }
 
     (superClasses, superSignatureElements) match {

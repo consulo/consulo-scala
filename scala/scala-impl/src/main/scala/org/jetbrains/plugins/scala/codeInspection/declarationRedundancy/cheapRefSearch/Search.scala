@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.java.analysis.impl.codeInspection.deadCode.UnusedDeclarationInspectionBase
+import com.intellij.java.analysis.impl.codeInspection.deadCode.{UnusedDeclarationInspectionBase, UnusedDeclarationInspectionState}
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
 import consulo.project.content.TestSourcesFilter
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.plugins.scala.caches.ModTracker.anyScalaPsiChange
@@ -36,6 +37,18 @@ import scala.collection.mutable.ArrayBuffer
  */
 
 private[declarationRedundancy] object Search {
+
+  // upstream: UnusedDeclarationInspectionBase.isDeclaredAsEntryPoint (absent in Consulo Java plugin)
+  private def isDeclaredAsEntryPoint(element: PsiElement): Boolean = {
+    val profile = InspectionProjectProfileManager.getInstance(element.getProject).getInspectionProfile
+    val tool = profile.getToolById(UnusedDeclarationInspectionBase.SHORT_NAME, element)
+    tool != null && (tool.getTool match {
+      case inspection: UnusedDeclarationInspectionBase =>
+        val state = profile.getToolState[UnusedDeclarationInspectionState](UnusedDeclarationInspectionBase.SHORT_NAME, element)
+        state != null && inspection.isEntryPoint(element, state)
+      case _ => false
+    })
+  }
 
   type Usages = Seq[ElementUsage]
 
@@ -340,7 +353,7 @@ private[declarationRedundancy] object Search {
         case e if !onlyVisibleInLocalFile && TestSourcesFilter.isTestSources(e.getContainingFile.getVirtualFile, e.getProject) => false
         case _: ScSelfTypeElement => false
         case e: ScalaPsiElement if e.module.exists(_.isBuildModule) => false
-        case e: PsiElement if UnusedDeclarationInspectionBase.isDeclaredAsEntryPoint(e) => false
+        case e: PsiElement if isDeclaredAsEntryPoint(e) => false
         case obj: ScObject if ScalaMainMethodUtil.hasScala2MainMethod(obj) => false
         case n: ScNamedElement if n.nameId == null || n.name == "_" || isOverridingOrOverridden(n) => false
         case n: ScNamedElement =>

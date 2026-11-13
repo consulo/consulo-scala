@@ -24,7 +24,7 @@ final class RedundantFinalOnToplevelObjectInspection extends LocalInspectionTool
     case obj@ScObject.withModifierList(ml) if obj.isTopLevel && ml.isFinal =>
       val finalModifier = ml.findFirstChildByType(ScalaTokenTypes.kFINAL).getOrElse(obj.targetToken)
       val quickFix = new SetModifierQuickfix(obj, ScalaModifier.Final, set = false)
-      holder.registerProblem(finalModifier, getDisplayName, quickFix)
+      holder.registerProblem(finalModifier, getDisplayName.get, quickFix)
     case _ =>
   }
 }

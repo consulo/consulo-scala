@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.highlighter
 
 import consulo.language.editor.rawHighlight.HighlightInfoHolder
-import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType, HighlightVisitor}
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType, HighlightInfoTypeImpl, HighlightVisitor}
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.codeEditor.HighlighterColors
 import consulo.colorScheme.TextAttributesKey
 import consulo.application.dumb.DumbAware
 import consulo.document.util.TextRange
@@ -88,7 +90,7 @@ class ScalaSyntaxHighlightingVisitor extends HighlightVisitor with DumbAware {
       .create()
 
   private def info(e: PsiElement, attr: TextAttributesKey): HighlightInfo =
-    HighlightInfo.newHighlightInfo(HighlightInfoType.TEXT_ATTRIBUTES)
+    HighlightInfo.newHighlightInfo(ScalaSyntaxHighlightingVisitor.TextAttributesType)
       .range(e)
       .textAttributes(attr)
       .create()
@@ -98,4 +100,10 @@ class ScalaSyntaxHighlightingVisitor extends HighlightVisitor with DumbAware {
 
   override def clone(): HighlightVisitor =
     new ScalaSyntaxHighlightingVisitor()
+}
+
+private object ScalaSyntaxHighlightingVisitor {
+  // upstream: HighlightInfoType.TEXT_ATTRIBUTES (absent in Consulo)
+  private val TextAttributesType: HighlightInfoType =
+    new HighlightInfoTypeImpl(HighlightSeverity.TEXT_ATTRIBUTES, HighlighterColors.TEXT)
 }

@@ -10,7 +10,7 @@ abstract class AbstractRegisteredInspection extends LocalInspectionTool {
 
   protected def problemDescriptor(element: PsiElement,
                                   maybeQuickFix: Option[LocalQuickFix] = None,
-                                  @Nls descriptionTemplate: String = getDisplayName,
+                                  @Nls descriptionTemplate: String = getDisplayName.get,
                                   highlightType: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
                                  (implicit manager: InspectionManager, isOnTheFly: Boolean): Option[ProblemDescriptor] = {
     val fixes = maybeQuickFix match {
@@ -29,9 +29,4 @@ abstract class AbstractRegisteredInspection extends LocalInspectionTool {
         case _ =>
       }
   }
-
-  /*
-    * DO NOT OVERRIDE
-    */
-  override final def getDisplayName: String = super.getDisplayName
 }

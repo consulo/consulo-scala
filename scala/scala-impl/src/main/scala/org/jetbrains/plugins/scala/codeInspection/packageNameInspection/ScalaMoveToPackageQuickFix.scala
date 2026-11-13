@@ -1,12 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
 import consulo.application.CommonBundle
-import consulo.module.Module
 import consulo.project.Project
-import consulo.module.content.ModuleRootManager
-import com.intellij.openapi.roots.SourceFolder
 import consulo.ui.ex.awt.Messages
-import com.intellij.refactoring.util.CommonMoveClassesOrPackagesUtil
+import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesUtil
 import com.intellij.java.impl.refactoring.util.RefactoringMessageUtil
 import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.Nls
@@ -24,7 +21,7 @@ final class ScalaMoveToPackageQuickFix(_file: ScalaFile, packageName: String)
     val directory = try {
       // upstream: checks that the package name is compatible with the package prefix of the source root,
       // Consulo source roots have no package prefixes
-      val directory = CommonMoveClassesOrPackagesUtil.chooseDestinationPackage(
+      val directory = MoveClassesOrPackagesUtil.chooseDestinationPackage(
         project,
         packageName.replace("`", ""), // ugly hack to support most escaped package names... if they contain a dot... well, good night!
         file.getContainingDirectory

@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
 import consulo.language.content.ProjectRootsUtil
-import consulo.java.impl.util.JavaProjectRootsUtil
 import consulo.module.content.ProjectRootManager
 import consulo.document.util.TextRange
 import consulo.util.io.FileUtil
@@ -48,11 +47,8 @@ class ScalaPackageNameInspection extends LocalInspectionTool {
             sourceFolder <- Option(ProjectRootsUtil.getModuleSourceRoot(root, file.getProject))
           } yield sourceFolder
 
-        val packagePrefix =
-          for {
-            sourceFolder <- sourceFolder
-            packagePrefix = sourceFolder.getPackagePrefix if packagePrefix.nonEmpty
-          } yield packagePrefix
+        // upstream: sourceFolder.getPackagePrefix (Consulo source roots have no package prefixes)
+        val packagePrefix: Option[String] = None
 
         val dir = file.getContainingDirectory
         if (dir == null) return null
@@ -130,7 +126,8 @@ class ScalaPackageNameInspection extends LocalInspectionTool {
    */
   private def packageNameFromFile(file: PsiDirectory, packagePrefix: Option[String]): Option[String] = {
     val vFile = file.getVirtualFile
-    val suitableDestinationSourceRoots = JavaProjectRootsUtil.getSuitableDestinationSourceRoots(file.getProject).asScala
+    // upstream: JavaProjectRootsUtil.getSuitableDestinationSourceRoots (absent in Consulo)
+    val suitableDestinationSourceRoots = ProjectRootManager.getInstance(file.getProject).getContentSourceRoots.toSeq
     // If there are nested source roots, prefer inner, SCL-20397
     // TODO There's no need to iterate over source roots of other modules
     val withoutPrefix = suitableDestinationSourceRoots.sortBy(_.getPath.length).reverseIterator

@@ -28,7 +28,7 @@ sealed abstract class ParameterlessAccessInspection extends LocalInspectionTool 
       }
 
       maybeTargetExpression.flatMap(collect(_, reference)).foreach { expr =>
-        holder.registerProblem(reference.nameId, getDisplayName, new AddCallParenthesesQuickFix(expr))
+        holder.registerProblem(reference.nameId, getDisplayName.get, new AddCallParenthesesQuickFix(expr))
       }
     case _ =>
   }

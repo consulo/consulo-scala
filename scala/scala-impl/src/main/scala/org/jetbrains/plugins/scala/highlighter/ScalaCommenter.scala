@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.highlighter
 
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.SelfManagingCommenter
-import com.intellij.codeInsight.generation.SelfManagingCommenterUtil
 import consulo.language.CodeDocumentationAwareCommenter
 import consulo.document.Document
 import consulo.document.util.TextRange
@@ -119,7 +118,9 @@ class ScalaCommenter extends SelfManagingCommenter[ScalaCommenterDataHolder] wit
       else
         (getBlockCommentPrefix, getBlockCommentSuffix)
 
-    SelfManagingCommenterUtil.uncommentBlockComment(startOffset, endOffset, document, prefix, suffix)
+    // upstream: SelfManagingCommenterUtil.uncommentBlockComment
+    document.deleteString(endOffset - suffix.length, endOffset)
+    document.deleteString(startOffset, startOffset + prefix.length)
   }
 
   override def insertBlockComment(startOffset: Int, endOffset: Int, document: Document, data: ScalaCommenterDataHolder): TextRange = {
@@ -134,7 +135,10 @@ class ScalaCommenter extends SelfManagingCommenter[ScalaCommenterDataHolder] wit
       else
         (getBlockCommentPrefix, getBlockCommentSuffix)
 
-    SelfManagingCommenterUtil.insertBlockComment(startOffset, endOffset, document, prefix, suffix)
+    // upstream: SelfManagingCommenterUtil.insertBlockComment
+    document.insertString(startOffset, prefix)
+    document.insertString(endOffset + prefix.length, suffix)
+    new TextRange(startOffset, endOffset + prefix.length + suffix.length)
   }
 }
 

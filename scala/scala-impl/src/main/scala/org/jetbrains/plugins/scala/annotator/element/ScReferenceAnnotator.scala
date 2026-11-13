@@ -5,7 +5,7 @@ import consulo.language.editor.inspection.ProblemHighlightType
 import consulo.language.psi.{PsiElement, PsiErrorElement, PsiNamedElement, PsiPackage}
 import com.intellij.java.language.psi.{PsiMethod, PsiParameter}
 import consulo.language.impl.psi.LeafPsiElement
-import consulo.language.psi.util.PsiTreeUtil.{findCommonContext, findFirstContext}
+import consulo.language.psi.util.PsiTreeUtil.findCommonContext
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.annotator.AnnotatorUtils.highlightImplicitView
@@ -43,6 +43,13 @@ object ScReferenceAnnotator extends ElementAnnotator[ScReference] {
   //By default, unresolved scaladoc links are marked as Warnings, which won't be detected in project highlighting tests
   //This flag allows us to automatically test ScalaDoc links resolution during project highlights tests
   @TestOnly var HighlightUnresolvedScalaDocLinksAsErrors = false
+
+  // upstream: PsiTreeUtil.findFirstContext (absent in Consulo)
+  private def findFirstContext(element: PsiElement, strict: Boolean, condition: PsiElement => Boolean): PsiElement = {
+    var current = if (strict && element != null) element.getContext else element
+    while (current != null && !condition(current)) current = current.getContext
+    current
+  }
 
   override def annotate(element: ScReference, typeAware: Boolean)
                        (implicit holder: ScalaAnnotationHolder): Unit = {

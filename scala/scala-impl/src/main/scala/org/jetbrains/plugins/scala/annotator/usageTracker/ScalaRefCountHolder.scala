@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.annotator.usageTracker
 
 import consulo.language.editor.Pass
 import consulo.language.editor.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl
 import consulo.logging.Logger
 import consulo.util.dataholder.Key
 import consulo.document.util.TextRange
@@ -144,11 +143,7 @@ object ScalaRefCountHolder {
     PsiDocumentManager.getInstance(project).getDocument(file) match {
       case null => None
       case document =>
-        DaemonCodeAnalyzer.getInstance(project) match {
-          case analyzerImpl: impl.DaemonCodeAnalyzerImpl =>
-            Some(Option(analyzerImpl.getFileStatusMap.getFileDirtyScope(document, file, Pass.UPDATE_ALL)))
-          case _ => None
-        }
+        Some(Option(DaemonCodeAnalyzer.getInstance(project).getFileStatusMap.getFileDirtyScope(document, Pass.UPDATE_ALL)))
     }
   }
 

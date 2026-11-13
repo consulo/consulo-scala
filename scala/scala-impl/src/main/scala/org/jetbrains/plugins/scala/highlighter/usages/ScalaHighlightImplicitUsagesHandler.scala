@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.highlighter.usages
 
-import com.intellij.codeInsight.highlighting.HighlightUsagesHandler
 import consulo.language.editor.highlight.usage.HighlightUsagesHandlerBase
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, ReferenceRange}
+import consulo.usage.UsageTargetUtil
 import java.util.function.Consumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.highlighter.usages.ScalaHighlightImplicitUsagesHandler.TargetKind
@@ -30,11 +30,11 @@ class ScalaHighlightImplicitUsagesHandler[T](editor: Editor, file: PsiFile, data
 
   override lazy val getTargets: util.List[PsiElement] = (kind.target(data).toSeq: Seq[PsiElement]).asJava
 
-  override def selectTargets(targets: util.List[? <: PsiElement],
-                             selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit =
+  override def selectTargets(targets: util.List[PsiElement],
+                             selectionConsumer: Consumer[util.List[PsiElement]]): Unit =
     selectionConsumer.accept(targets)
 
-  override def computeUsages(targets: util.List[? <: PsiElement]): Unit = {
+  override def computeUsages(targets: util.List[PsiElement]): Unit = {
     import ScalaHighlightImplicitUsagesHandler._
     val usages = targets.asScala
       .flatMap(findUsages(editor.getProject, file, _))
@@ -45,12 +45,12 @@ class ScalaHighlightImplicitUsagesHandler[T](editor: Editor, file: PsiFile, data
 
   override def highlightReferences: Boolean = true
 
-  override def highlightUsages(): Unit = {
+  override def highlightUsages(performHighlighting: Runnable): Unit = {
     val targets = getTargets
     if (targets.isEmpty) {
       invokeDefaultHandler()
     } else {
-      super.highlightUsages()
+      super.highlightUsages(performHighlighting)
     }
   }
 
@@ -58,7 +58,9 @@ class ScalaHighlightImplicitUsagesHandler[T](editor: Editor, file: PsiFile, data
   //for non-implicit elements
   private def invokeDefaultHandler(): Unit =
     ScalaHighlightUsagesHandlerFactory.implicitHighlightingEnabled.withValue(false) {
-      HighlightUsagesHandler.invoke(editor.getProject, editor, file)
+      // upstream: HighlightUsagesHandler.invoke(editor.getProject, editor, file) (internal in Consulo)
+      val usageTargets = UsageTargetUtil.findUsageTargets(editor, file)
+      if (usageTargets != null) usageTargets.foreach(_.highlightUsages(file, editor, true))
     }
 
   private def nameId(target: PsiElement): Option[TextRange] = target match {

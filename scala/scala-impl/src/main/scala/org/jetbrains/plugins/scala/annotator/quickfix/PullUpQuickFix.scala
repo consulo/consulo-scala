@@ -2,8 +2,9 @@ package org.jetbrains.plugins.scala.annotator.quickfix
 
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.intention.AbstractIntentionAction
-import consulo.language.editor.ui.navigation.PsiTargetNavigator
-import consulo.java.impl.JavaBundle
+import consulo.application.Application
+import consulo.language.editor.ui.navigation.PsiTargetNavigationService
+import consulo.localize.LocalizeValue
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.Editor
 import consulo.application.progress.ProgressIndicator
@@ -21,6 +22,9 @@ import org.jetbrains.plugins.scala.lang.refactoring.extractTrait.ScalaExtractMem
 import org.jetbrains.plugins.scala.lang.refactoring.memberPullUp.ScalaPullUpProcessor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.isUnitTestMode
+
+import java.util.function.Supplier
+import java.{util => ju}
 
 final class PullUpQuickFix private(member: ScMember, override val getText: String) extends AbstractIntentionAction {
 
@@ -47,11 +51,18 @@ final class PullUpQuickFix private(member: ScMember, override val getText: Strin
         executor(_)
       }
     } else invokeLater {
-      val navigator = new PsiTargetNavigator(superClasses.toArray)
+      val targets = superClasses.toSeq
       val processor = new PullUpProcessor(executor)
 
-      if (editor == null) navigator.performSilently(processor)
-      else navigator.navigate(editor, JavaBundle.message("choose.super.class.popup.title"), new PullUpProcessor(executor))
+      if (editor == null) targets.headOption.foreach(processor.execute)
+      else {
+        val targetsSupplier: Supplier[ju.Collection[ScTypeDefinition]] = () => ju.List.of(targets*)
+        Application.get().getInstance(classOf[PsiTargetNavigationService])
+          .newNavigator[ScTypeDefinition](targetsSupplier)
+          .title(LocalizeValue.localizeTODO("Choose super class")) // upstream: JavaBundle.message("choose.super.class.popup.title")
+          .processor(processor)
+          .navigate(editor, project)
+      }
     }
   }
 

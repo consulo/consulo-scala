@@ -4,12 +4,14 @@ import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
-import consulo.language.editor.ui.navigation.{PsiTargetNavigator, TargetPresentationProvider}
+import consulo.language.editor.ui.navigation.{PsiTargetNavigationService, TargetPresentationProvider}
+import consulo.application.Application
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.{Template, TemplateBuilder}
 import consulo.logging.Logger
-import consulo.codeEditor.Editor
+import consulo.codeEditor.{Editor, EditorPopupHelper}
 import consulo.project.Project
-import consulo.navigation.TargetPresentation
+import consulo.navigation.NavigationService
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
 import consulo.language.psi.resolve.PsiElementProcessor
 import consulo.language.psi.util.PsiTreeUtil
@@ -26,6 +28,9 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaDirectoryService
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.{ScalaFileType, isUnitTestMode}
+
+import java.util.function.Supplier
+import java.{util => ju}
 
 abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
   extends CreateFromUsageQuickFixBase(ref) {
@@ -160,15 +165,18 @@ abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
               case _ => ScalaBundle.message("new.class.location.local.scope")
             }
 
-            TargetPresentation.builder(text).presentation()
+            Application.get().getInstance(classOf[NavigationService]).presentationBuilder(LocalizeValue.of(text)).build()
           }
 
+          val targets: Supplier[ju.Collection[PsiElement]] = () => ju.List.of(siblings*)
           invokeLater {
-            new PsiTargetNavigator(siblings.toArray)
+            Application.get().getInstance(classOf[PsiTargetNavigationService])
+              .newNavigator[PsiElement](targets)
               .selection(selection)
               .presentationProvider(renderer)
-              .createPopup(projectContext.project, title, processor)
-              .showInBestPositionFor(editor)
+              .title(LocalizeValue.of(title))
+              .processor(processor)
+              .createPopup(projectContext.project, EditorPopupHelper.getInstance.showPopupInBestPositionFor(editor, _))
           }
         }
     }

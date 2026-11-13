@@ -189,7 +189,7 @@ object ScalaShebangExecutableInspection {
       permissionChange match {
         case Right(_) =>
           // File.setExecutable changes filesystem metadata outside PSI, so restart analysis to remove the warning.
-          DaemonCodeAnalyzer.getInstance(project).restart(file, this)
+          DaemonCodeAnalyzer.getInstance(project).restart(file)
         case Left(message) =>
           val failureEditor =
             if (editor != null)

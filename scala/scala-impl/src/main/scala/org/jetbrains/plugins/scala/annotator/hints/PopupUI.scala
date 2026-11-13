@@ -1,21 +1,19 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.codeInsight.hint.LineTooltipRenderer
 import consulo.language.editor.intention.IntentionAction
-import com.intellij.codeInsight.intention.impl.ShowIntentionActionsHandler
+import consulo.language.editor.ui.awt.HintUtil
 import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.ex.{EditorMarkupModel, TooltipAction}
 import consulo.ui.ex.popup.{JBPopup, JBPopupFactory}
 import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
 import consulo.util.lang.ref.Ref
 import consulo.language.psi.PsiElement
-import consulo.ui.ex.awt.hint.HintHint
+import consulo.util.lang.StringUtil
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.plugins.scala.autoImport.quickFix.PopupPosition
-import org.jetbrains.plugins.scala.extensions.PsiElementExt
 
 import java.awt.Point
-import java.awt.event.{InputEvent, KeyEvent, KeyListener}
+import java.awt.event.{KeyEvent, KeyListener}
+import javax.swing.event.{HyperlinkEvent, HyperlinkListener}
 import java.util.concurrent.TimeUnit
 
 private class PopupUI(override val message: String,
@@ -52,18 +50,19 @@ private class PopupUI(override val message: String,
 }
 
 private object PopupUI {
+  private val ActionHref = "action"
+
+  // upstream: the content was rendered by LineTooltipRenderer with a TooltipAction (internal API in Consulo),
+  // here it is an information label with a link to the action ("show all actions" link is not available)
   def apply(message: String, action: IntentionAction, element: PsiElement, editor: Editor): PopupUI = {
-    val provider = editor.getMarkupModel.asInstanceOf[EditorMarkupModel].getErrorStripTooltipRendererProvider
     val uiRef = Ref.create[PopupUI]()
-    val tooltipAction = new MyTooltipAction(action, element, uiRef)
-    val renderer = provider.calcTooltipRenderer(message, tooltipAction, -1).asInstanceOf[LineTooltipRenderer]
 
-    val hintHint = new HintHint()
-    hintHint.setAwtTooltip(true)
+    val text = s"<html><body>$message<br/><a href=\"$ActionHref\">${StringUtil.escapeXmlEntities(action.getText.get)}</a></body></html>"
+    val hyperlinkListener: HyperlinkListener = event =>
+      if (event.getEventType == HyperlinkEvent.EventType.ACTIVATED && event.getDescription == ActionHref)
+        execute(action, element, editor, uiRef.get())
 
-    val dummyHint = renderer.createHint(editor, new Point(0, 0), false, ErrorTooltip.tooltipGroup, hintHint, true, true, null)
-    val component = dummyHint.getComponent
-    component.setBackground(hintHint.getTextBackground)
+    val component = HintUtil.createInformationLabel(text, hyperlinkListener, null, null)
     component.setOpaque(true)
 
     val popup = JBPopupFactory.getInstance.createComponentPopupBuilder(component, null)
@@ -85,35 +84,17 @@ private object PopupUI {
     }
     editor.getContentComponent.addKeyListener(keyListener)
 
-    popup.addListener(new JBPopupListener {
-      override def onClosed(event: LightweightWindowEvent): Unit = dummyHint.hide()
-    })
-
     val ui = new PopupUI(message, popup)
     uiRef.set(ui)
     ui
   }
 
-  private class MyTooltipAction(action: IntentionAction, element: PsiElement, ui: Ref[PopupUI]) extends TooltipAction {
-
-    override def getText: String = action.getText
-
-    override def execute(editor: Editor, event: InputEvent): Unit = {
-      val popupUi = ui.get()
-      val popupLocation = popupUi.popup.getLocationOnScreen
-      popupUi.cancel()
-      if (element.isValid) {
-        PopupPosition.withCustomPopupLocation(editor, popupLocation) {
-          action.invoke(element.getProject, editor, element.getContainingFile)
-        }
-      }
-    }
-
-    override def showAllActions(editor: Editor): Unit = {
-      ui.get().cancel()
-      if (element.isValid) {
-        editor.getCaretModel.moveToOffset(element.endOffset)
-        new ShowIntentionActionsHandler().invoke(element.getProject, editor, element.getContainingFile, true)
+  private def execute(action: IntentionAction, element: PsiElement, editor: Editor, popupUi: PopupUI): Unit = {
+    val popupLocation = popupUi.popup.getLocationOnScreen
+    popupUi.cancel()
+    if (element.isValid) {
+      PopupPosition.withCustomPopupLocation(editor, popupLocation) {
+        action.invoke(element.getProject, editor, element.getContainingFile)
       }
     }
   }

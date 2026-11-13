@@ -22,7 +22,7 @@ class SimplifyBooleanMatchInspection extends LocalInspectionTool {
     case stmt: ScMatch if stmt.isValid && SimpleBooleanMatchUtil.isSimpleBooleanMatchStmt(stmt) =>
       val toHighlight = stmt.findFirstChildByType(ScalaTokenTypes.kMATCH).getOrElse(stmt)
       val fix = (new SimplifyBooleanMatchToIfStmtQuickFix(stmt))
-      holder.registerProblem(toHighlight, getDisplayName, fix)
+      holder.registerProblem(toHighlight, getDisplayName.get, fix)
     case _ =>
   }
 }

@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.annotator
 import consulo.colorScheme.TextAttributes
 import consulo.document.util.TextRange
 import consulo.ui.ex.Gray
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
@@ -13,7 +14,7 @@ import org.jetbrains.plugins.scala.compilersettings.settings._
 
 object ByNameParameter extends AnnotatorPart[ScExpression] {
 
-  private val Foreground = Gray._128
+  private val Foreground = TargetAWT.from(Gray._128)
 
   override def annotate(exp: ScExpression, typeAware: Boolean)
                        (implicit holder: ScalaAnnotationHolder): Unit = {

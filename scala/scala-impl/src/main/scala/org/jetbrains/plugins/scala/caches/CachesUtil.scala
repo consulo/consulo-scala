@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.caches
 
 import consulo.project.Project
 import consulo.component.util.ModificationTracker
+import consulo.util.dataholder.Key
 import consulo.language.psi.{PsiElement, PsiFile}
 import consulo.application.util.{CachedValue, CachedValueProvider, CachedValuesManager}
 import consulo.language.psi.util.PsiTreeUtil

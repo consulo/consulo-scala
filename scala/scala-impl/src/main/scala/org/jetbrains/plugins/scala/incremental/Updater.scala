@@ -11,10 +11,10 @@ import consulo.codeEditor.EditorEx
 import consulo.codeEditor.markup.MarkupModelEx
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.util.dataholder.Key
+import consulo.ui.color.ColorValue
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.extensions.inReadAction
 
-import java.awt.Color
 import javax.swing.Timer
 import scala.collection.mutable.ArrayBuffer
 
@@ -52,7 +52,7 @@ private class Updater(editor: Editor) extends Disposable {
       val document = editor.getDocument
       val daemon = DaemonCodeAnalyzer.getInstance(editor.getProject)
       inReadAction(daemon.combineDirtyScopes(document, newlyVisibleRange))
-      daemon.stopProcess(/* restart = */ true)
+      daemon.stopProcess(editor.getProject, document)
     }
 
     previousVisibleRange = visibleRange
@@ -66,7 +66,7 @@ private class Updater(editor: Editor) extends Disposable {
 private object Updater {
   private val UPDATE_DELAY = 200 // ms
 
-  private val ERROR_STRIPE_MARK_COLOR_KEY = Key.create[Color]("error_stripe_mark_color")
+  private val ERROR_STRIPE_MARK_COLOR_KEY = Key.create[ColorValue]("error_stripe_mark_color")
 
   private def concealErrorStripeMarksOutside(visibleRange: TextRange, markupModel: MarkupModelEx, colorScheme: EditorColorsScheme): Unit = {
     val outsideHighlighters = {

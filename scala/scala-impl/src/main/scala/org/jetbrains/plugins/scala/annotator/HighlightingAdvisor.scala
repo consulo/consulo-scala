@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.annotator
 import consulo.language.editor.highlight.HighlightingLevelManager
 import consulo.module.content.ProjectFileIndex
 import consulo.document.util.TextRange
-import com.intellij.psi.impl.IncompleteModelUtil
 import consulo.language.impl.psi.DummyHolder
 import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.annotations.TestOnly
@@ -35,11 +34,7 @@ object HighlightingAdvisor {
       return false
     }
 
-    //noinspection ApiStatus,UnstableApiUsage
-    if (IncompleteModelUtil.isIncompleteModel(element)) {
-      // The project is in an incomplete dependencies state. Only run non-type-aware annotators.
-      return false
-    }
+    // upstream: IncompleteModelUtil.isIncompleteModel(element) check (no incomplete dependencies mode in Consulo)
 
     val file = element.getContainingFile
     val isEnabledForFile =

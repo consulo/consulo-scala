@@ -13,7 +13,7 @@ class PostfixMethodCallInspection extends LocalInspectionTool {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case pexpr: ScPostfixExpr if !safe(pexpr) =>
-      holder.registerProblem(pexpr, getDisplayName, new AddDotFix(pexpr))
+      holder.registerProblem(pexpr, getDisplayName.get, new AddDotFix(pexpr))
     case _ =>
   }
 

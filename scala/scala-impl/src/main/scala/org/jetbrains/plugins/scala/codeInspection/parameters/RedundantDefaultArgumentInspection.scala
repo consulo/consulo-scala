@@ -25,7 +25,7 @@ class RedundantDefaultArgumentInspection extends LocalInspectionTool {
 
   private def registerProblem(expr: ScExpression)
                              (implicit holder: ProblemsHolder): Unit = {
-    holder.registerProblem(expr, getDisplayName, new DeleteRedundantDefaultArgumentQuickFix(expr))
+    holder.registerProblem(expr, getDisplayName.get, new DeleteRedundantDefaultArgumentQuickFix(expr))
   }
 }
 

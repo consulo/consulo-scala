@@ -16,7 +16,7 @@ final class TypedParameterWithoutParenthesisInspection extends LocalInspectionTo
       for {
         param <- parameterClause.parameters
         _     <- param.typeElement
-      } holder.registerProblem(parameterClause, getDisplayName, createQuickFix(parameterClause))
+      } holder.registerProblem(parameterClause, getDisplayName.get, createQuickFix(parameterClause))
     case _ =>
   }
 }

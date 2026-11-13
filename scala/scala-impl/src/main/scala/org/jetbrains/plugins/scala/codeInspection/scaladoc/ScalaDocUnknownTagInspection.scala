@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -29,7 +30,7 @@ final class ScalaDocUnknownTagInspection extends LocalInspectionTool with DumbAw
 
         val tagName = tag.name
         if (!MyScaladocParsing.TagNames.AllTagNames.contains(tagName)) {
-          holder.registerProblem(holder.getManager.createProblemDescriptor(tagNameElement, getDisplayName, true,
+          holder.registerProblem(holder.getManager.createProblemDescriptor(tagNameElement, getDisplayName.get, true,
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly, new ScalaDocDeleteUnknownTagInspection(tag)))
         } else {
           val condition = MyScaladocParsing.TagNames.TagNamesWithParameters.contains(tagName) &&
@@ -50,7 +51,7 @@ final class ScalaDocUnknownTagInspection extends LocalInspectionTool with DumbAw
     }
   }
 
-  override def getDisplayName: String = ScalaInspectionBundle.message("unknown.scaladoc.tag")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("unknown.scaladoc.tag"))
 }
 
 final class ScalaDocDeleteUnknownTagInspection(unknownTag: ScDocTag)

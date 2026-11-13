@@ -10,6 +10,8 @@ import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScConstructorInvocation
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{MethodInvocation, ScGenericCall}
 
+import consulo.ui.ex.awtUnsafe.TargetAWT
+
 import java.awt.Insets
 
 case class Hint(parts: Seq[Text],
@@ -62,7 +64,7 @@ object Hint {
   // TODO Can we detect a "current" editor somehow?
   private def widthOf(char: Char, editor: Option[Editor])(implicit scheme: EditorColorsScheme) =
     editor.orElse(EditorFactory.getInstance().getAllEditors.headOption)
-      .map(_.getComponent.getFontMetrics(scheme.getFont(EditorFontType.PLAIN)).charWidth(char))
+      .map(_.getComponent.getFontMetrics(TargetAWT.to(scheme.getFont(EditorFontType.PLAIN))).charWidth(char))
 
 
   final class MenuProvider private(

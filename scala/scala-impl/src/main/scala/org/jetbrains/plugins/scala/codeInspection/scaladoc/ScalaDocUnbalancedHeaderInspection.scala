@@ -28,7 +28,7 @@ final class ScalaDocUnbalancedHeaderInspection extends LocalInspectionTool with 
 
         val isUnbalanced = syntaxElement.getFirstChild.getTextLength != lastChild.getTextLength
         if (isUnbalanced) {
-          val description = getDisplayName
+          val description = getDisplayName.get
           val problem = holder.getManager.createProblemDescriptor(
             lastChild, description, true,
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

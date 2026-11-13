@@ -8,7 +8,7 @@ import consulo.codeEditor.event.FoldingListener
 import consulo.codeEditor.markup.{MarkupModelEx, RangeHighlighterEx}
 import consulo.codeEditor.markup.MarkupModelListener
 import consulo.codeEditor.{Editor, EditorFactory, FoldRegion}
-import consulo.component.extension.ExtensionPointName
+import consulo.application.Application
 import consulo.project.Project
 import consulo.disposer.Disposer
 import consulo.util.dataholder.Key
@@ -117,7 +117,7 @@ class Listener extends EditorFactoryListener {
 private object Listener {
   private val INCREMENTAL_HIGHLIGHTING_KEY = Key.create[AnyRef]("incremental_highlighting_key")
 
-  private def instance = new ExtensionPointName("com.intellij.editorFactoryListener").findExtensionOrFail(classOf[Listener])
+  private def instance = Application.get().getExtensionPoint(classOf[EditorFactoryListener]).findExtensionOrFail(classOf[Listener])
 
   private def editorsIn(project: Project) = EditorFactory.getInstance.getAllEditors.filter(_.getProject == project)
 

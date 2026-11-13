@@ -23,7 +23,7 @@ final class JavaAccessorEmptyParenCallInspection extends LocalInspectionTool {
           if quickfix.isAccessor(method) &&
             isNotOverloadedMethod(place, resolveResult.fromType) =>
           if (hasSameType(call, place)) {
-            holder.registerProblem(place.nameId, getDisplayName, createQuickFix(call))
+            holder.registerProblem(place.nameId, getDisplayName.get, createQuickFix(call))
           }
         case _ =>
       }

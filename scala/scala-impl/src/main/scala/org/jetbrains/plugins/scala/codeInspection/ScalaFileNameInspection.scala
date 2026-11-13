@@ -83,7 +83,7 @@ final class ScalaFileNameInspection extends LocalInspectionTool {
 
     manager.createProblemDescriptor(
       Option(td.nameId).getOrElse(td),
-      getDisplayName,
+      getDisplayName.get,
       isOnTheFly,
       localQuickFixes,
       ProblemHighlightType.GENERIC_ERROR_OR_WARNING

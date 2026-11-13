@@ -100,7 +100,7 @@ private object ScalaAccessCanBeTightenedInspection {
         val range = elementToHighlightIn(element).getTextRange
         var highlight: Option[HighlightInfo] = None
         DaemonCodeAnalyzer.processHighlights(editor.getDocument, project, HighlightSeverity.WARNING, range.getStartOffset, range.getEndOffset, (info: HighlightInfo) => {
-          if (info.getDescription == ScalaInspectionBundle.message("access.can.be.private")) {
+          if (info.getDescription.get == ScalaInspectionBundle.message("access.can.be.private")) {
             highlight = Some(info)
             false
           } else {

@@ -1,15 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.intellij.java.language.JavaLanguage
 import consulo.project.Project
 import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
-import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiReference}
-import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.psi.{PsiElement, PsiReference}
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline.ShouldProcess
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.{Method, SearchMethodResult}
-import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.TextSearch.{isNotScalaOrJava, isUReferenceExpression}
 import org.jetbrains.plugins.scala.util.ScalaUsageNamesUtil
-import org.jetbrains.uast.{UReferenceExpression, UastFacade}
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -33,7 +29,7 @@ private[cheapRefSearch] final class TextSearch(
         } else {
           val found = foundElement match {
             case _: PsiReference => true
-            case n: NavigatablePsiElement if isNotScalaOrJava(n) && isUReferenceExpression(n) => true
+            // upstream: also UAST reference expressions of other JVM languages (no UReferenceExpression in Consulo)
             case _ => false
           }
 
@@ -65,14 +61,4 @@ private[cheapRefSearch] final class TextSearch(
 
     new SearchMethodResult(buffer.asScala.toSeq, didExitBeforeExhaustion)
   }
-}
-
-object TextSearch {
-  private val uastFacade: UastFacade = UastFacade.INSTANCE
-
-  private def isNotScalaOrJava(e: PsiElement): Boolean =
-    !e.getLanguage.isKindOf(ScalaLanguage.INSTANCE) && !e.getLanguage.isKindOf(JavaLanguage.INSTANCE)
-
-  private def isUReferenceExpression(e: PsiElement): Boolean =
-    uastFacade.convertElementWithParent(e, classOf[UReferenceExpression]) != null
 }

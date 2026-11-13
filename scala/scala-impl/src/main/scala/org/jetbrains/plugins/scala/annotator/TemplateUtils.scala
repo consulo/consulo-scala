@@ -3,8 +3,7 @@ package org.jetbrains.plugins.scala.annotator
 import consulo.language.editor.template.{Template, TemplateManager}
 import consulo.codeEditor.Editor
 import consulo.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.FileEditorOpenRequest
-import consulo.navigation.OpenFileDescriptor
+import consulo.navigation.OpenFileDescriptorFactory
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.extensions.executeWriteActionCommand
@@ -59,14 +58,11 @@ object TemplateUtils {
         startTemplate(editor)
       case _ =>
         val virtualFile = element.getContainingFile.getVirtualFile
-        val descriptor = new OpenFileDescriptor(project, virtualFile, offset)
-        FileEditorManager.getInstance(project)
-          .requestOpenTextEditor(descriptor, FileEditorOpenRequest.withFocus(true))
-          .thenAccept { editor =>
-            if (editor != null) {
-              executeWriteActionCommand()(startTemplate(editor))(using project)
-            }
-          }
+        val descriptor = OpenFileDescriptorFactory.getInstance(project).newBuilder(virtualFile).offset(offset).build()
+        val editor = FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+        if (editor != null) {
+          executeWriteActionCommand()(startTemplate(editor))(using project)
+        }
     }
   }
 }

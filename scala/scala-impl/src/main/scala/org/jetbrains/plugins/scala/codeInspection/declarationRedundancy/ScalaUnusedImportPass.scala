@@ -1,22 +1,21 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
-import consulo.language.editor.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl.{DaemonListeners, ProgressableTextEditorHighlightingPass}
+import consulo.language.editor.{AutoImportHelper, DaemonCodeAnalyzer}
+import consulo.language.editor.highlight.TextEditorHighlightingPass
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.editor.impl.highlight.HighlightInfoProcessor
 import consulo.language.editor.highlight.HighlightingLevelManager
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.annotation.HighlightSeverity
-import consulo.undoRedo.UndoManager
+import consulo.undoRedo.ProjectUndoManager
+import consulo.undoRedo.util.UndoUtil
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
 import consulo.util.dataholder.Key
 import consulo.language.psi.{PsiDocumentManager, PsiFile}
-import consulo.document.util.DocumentUtil
-import consulo.application.util.function.Processor
-import consulo.util.lang.ThreeState
+import java.util.function.Predicate
 import org.jetbrains.plugins.scala.annotator.usageTracker.UsageTracker
 import org.jetbrains.plugins.scala.caches.CachesUtil.fileModCount
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.ScalaUnusedImportPass.scheduleOnTheFlyImportOptimizer
@@ -32,15 +31,11 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
 
 class ScalaUnusedImportPass(override val file: PsiFile, editor: Editor, override val document: Document,
                             highlightInfoProcessor: HighlightInfoProcessor)
-  extends ProgressableTextEditorHighlightingPass(
+  // upstream: extends ProgressableTextEditorHighlightingPass (internal in Consulo)
+  extends TextEditorHighlightingPass(
     file.getProject,
     document,
-    "Scala Unused Symbols",
-    file,
-    editor,
-    if (file.getTextRange == null) throw new AssertionError(s"File text range is null: ${file.getClass}") else file.getTextRange,
-    /*runIntentionPassAfter*/ false,
-    highlightInfoProcessor
+    /*runIntentionPassAfter*/ false
   ) with ScalaUnusedImportPassBase {
 
   override protected def getFixes: List[IntentionAction] = List(new ScalaOptimizeImportsFix, new ScalaEnableOptimizeImportsOnTheFlyFix)
@@ -48,7 +43,7 @@ class ScalaUnusedImportPass(override val file: PsiFile, editor: Editor, override
   private var myHighlights: ju.List[HighlightInfo] = scala.compiletime.uninitialized
   private var myOptimizeImportsRunnable: Option[Runnable] = None
 
-  override def collectInformationWithProgress(progress: ProgressIndicator): Unit = file match {
+  override def doCollectInformation(progress: ProgressIndicator): Unit = file match {
     case _ if builtInHighlightingDisabledIn(myProject) || incremental.Highlighting.enabledIn(myProject) => myHighlights = ju.Collections.emptyList()
     case _ if HighlightingLevelManager.getInstance(file.getProject).shouldInspect(file) =>
       file.findScalaLikeFile match {
@@ -66,7 +61,10 @@ class ScalaUnusedImportPass(override val file: PsiFile, editor: Editor, override
     case _ =>
   }
 
-  override def applyInformationWithProgress(): Unit = {
+  override def getInfos: ju.List[HighlightInfo] =
+    if (myHighlights == null) ju.Collections.emptyList() else myHighlights
+
+  override def doApplyInformationToEditor(): Unit = {
     if (myHighlights == null) return
 
     implicit val project: Project = file.getProject
@@ -94,11 +92,11 @@ object ScalaUnusedImportPass {
       invokeLater {
         if (!project.isDisposed &&
           document.getModificationStamp == stamp &&
-          !UndoManager.getInstance(project).isUndoInProgress &&
-          !UndoManager.getInstance(project).isRedoInProgress
+          !ProjectUndoManager.getInstance(project).isUndoInProgress &&
+          !ProjectUndoManager.getInstance(project).isRedoInProgress
         ) {
           PsiDocumentManager.getInstance(project).commitAllDocuments()
-          DocumentUtil.writeInRunUndoTransparentAction(runnable)
+          UndoUtil.writeInRunUndoTransparentAction(runnable)
         }
       }
     }
@@ -118,7 +116,7 @@ object ScalaUnusedImportPass {
       val codeAnalyzer = DaemonCodeAnalyzer.getInstance(file.getProject)
       file match {
         case _: ScalaFile if codeAnalyzer.isHighlightingAvailable(file) && codeAnalyzer.isErrorAnalyzingFinished(file) =>
-          !containsErrorsPreventingOptimize(file) && DaemonListeners.canChangeFileSilently(file, true, ThreeState.UNSURE)
+          !containsErrorsPreventingOptimize(file) && AutoImportHelper.getInstance(file.getProject).canChangeFileSilently(file)
         case _ => false
       }
     }
@@ -133,7 +131,7 @@ object ScalaUnusedImportPass {
           HighlightSeverity.ERROR,
           0,
           document.getTextLength,
-          ((_: HighlightInfo) => false) : Processor[? >: HighlightInfo] //todo: only unresolved ref issues?
+          ((_: HighlightInfo) => false) : Predicate[HighlightInfo] //todo: only unresolved ref issues?
         )
 
     }

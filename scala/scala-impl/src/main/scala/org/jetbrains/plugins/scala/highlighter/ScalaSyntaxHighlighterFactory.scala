@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.highlighter
 
-import consulo.language.parser.ParserDefinition
 import consulo.html.language.HTMLLanguage
 import consulo.language.Language
 import consulo.language.editor.highlight.SyntaxHighlighterFactory
@@ -26,7 +25,7 @@ final class ScalaSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @Nullable file: VirtualFile
   ): ScalaSyntaxHighlighter = {
     val language = if (project != null && file != null)
-      LanguageSubstitutors.getInstance.substituteLanguage(ScalaLanguage.INSTANCE, file, project)
+      LanguageSubstitutors.substituteLanguage(ScalaLanguage.INSTANCE, file, project)
     else
       ScalaLanguage.INSTANCE
 
@@ -41,8 +40,6 @@ object ScalaSyntaxHighlighterFactory {
     @Nullable file: VirtualFile,
     language: Language
   ): ScalaSyntaxHighlighter = {
-    val parserDefinition = ParserDefinition.forLanguage(language)
-
     val isScala3 = language.isKindOf(Scala3Language.INSTANCE)
 
     // SyntaxHighlighter instances can outlive sbt/project model refreshes.
@@ -53,7 +50,8 @@ object ScalaSyntaxHighlighterFactory {
       val noUnicodeEscapesInRawStrings = features.noUnicodeEscapesInRawStrings
 
       new ScalaSyntaxHighlighter.CustomScalaLexer(
-        parserDefinition.createLexer(project).asInstanceOf[ScalaLexer],
+        // upstream: parserDefinition.createLexer(project) (Consulo ParserDefinition creates lexers by LanguageVersion)
+        new ScalaLexer(isScala3, project),
         isScala3 = isScala3,
         noUnicodeEscapesInRawStrings = noUnicodeEscapesInRawStrings
       )

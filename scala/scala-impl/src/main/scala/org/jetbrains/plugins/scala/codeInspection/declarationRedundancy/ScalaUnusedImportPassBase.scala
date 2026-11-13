@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
 import consulo.language.editor.highlight.TextEditorHighlightingPass
-import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
+import consulo.language.editor.rawHighlight.{HighlightDisplayKey, HighlightInfo, HighlightInfoType}
+import consulo.language.editor.inspection.HighlightInfoTypeSeverityByKey
+import consulo.codeEditor.CodeInsightColors
 import consulo.language.editor.highlight.UpdateHighlightersUtil
 import consulo.language.editor.intention.IntentionAction
 import consulo.document.Document
@@ -40,16 +42,22 @@ trait ScalaUnusedImportPassBase { self: TextEditorHighlightingPass =>
 
         psiOption.flatMap { psi =>
           val highlightInfoBuilder =
-            HighlightInfo.newHighlightInfo(HighlightInfoType.UNUSED_SYMBOL)
+            HighlightInfo.newHighlightInfo(unusedSymbolType)
               .range(psi)
               .descriptionAndTooltip(ScalaInspectionBundle.message("unused.import.statement"))
 
-          getFixes.foreach(action => highlightInfoBuilder.registerFix(action, null, null, null, null))
-          qName.foreach(name => highlightInfoBuilder.registerFix(new MarkImportAsAlwaysUsed(name), null, null, null, null))
+          getFixes.foreach(action => highlightInfoBuilder.registerFix(action))
+          qName.foreach(name => highlightInfoBuilder.registerFix(new MarkImportAsAlwaysUsed(name)))
           // can be null if was rejected by com.intellij.codeInsight.daemon.impl.HighlightInfoFilter
           Option(highlightInfoBuilder.create())
         }
       }
+
+  // upstream: HighlightInfoType.UNUSED_SYMBOL (severity of the "unused" tool)
+  private def unusedSymbolType: HighlightInfoType =
+    Option(HighlightDisplayKey.find("unused"))
+      .map(key => new HighlightInfoTypeSeverityByKey(key, CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES): HighlightInfoType)
+      .getOrElse(HighlightInfoType.RAW_UNUSED_SYMBOL)
 
   protected def highlightAll(highlights: util.Collection[HighlightInfo]): Unit = {
     UpdateHighlightersUtil.setHighlightersToEditor(file.getProject, document, 0,

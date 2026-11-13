@@ -19,7 +19,7 @@ class ScalaProblemFileHighlightFilter(project: Project) extends Condition[Virtua
     case sf: ScalaFile =>
       (isEnabled || ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(sf)) &&
         isScalaSourceFile(project, file) &&
-        !CompilerManager.getInstance(project).isExcludedFromCompilation(file)
+        !CompilerManager.getInstance(project).isExcludedFromCompilation(file.toNioPath)
     case _ => false
   }
 

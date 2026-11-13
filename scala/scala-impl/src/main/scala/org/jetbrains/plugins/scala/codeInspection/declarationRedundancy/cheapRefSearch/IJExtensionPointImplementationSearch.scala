@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
 import consulo.xml.language.XmlFileType
-import com.intellij.openapi.module
+import consulo.module.Module
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiElement
 import consulo.language.psi.scope.GlobalSearchScope
-import com.intellij.psi.search.ProjectScope
+import consulo.project.content.scope.ProjectScopes
 import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
 import consulo.xml.language.psi.XmlToken
 import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch.Search.Pipeline.ShouldProcess
@@ -35,12 +35,12 @@ private[cheapRefSearch] final class IJExtensionPointImplementationSearch(overrid
       override def contains(file: VirtualFile): Boolean =
         file.getFileType.is[XmlFileType] && file.getExtension.equalsIgnoreCase("xml")
 
-      override def isSearchInModuleContent(aModule: module.Module): Boolean = false
+      override def isSearchInModuleContent(aModule: Module): Boolean = false
 
       override def isSearchInLibraries: Boolean = false
     }
 
-    val finalSearchScope = globalScope.intersectWith(ProjectScope.getContentScope(ctx.element.getProject))
+    val finalSearchScope = globalScope.intersectWith(ProjectScopes.getContentScope(ctx.element.getProject))
 
     val stringToSearch = ctx.element.asOptionOf[ScClass].map(_.qualifiedName)
 

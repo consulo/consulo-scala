@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -17,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocSyntaxElement
 final class ScalaDocUnclosedTagWithoutParserInspection extends LocalInspectionTool with DumbAware {
   override def isEnabledByDefault: Boolean = true
 
-  override def getDisplayName: String = ScalaInspectionBundle.message("display.name.unclosed.tag")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("display.name.unclosed.tag"))
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = {
     new ScalaElementVisitor {
@@ -35,7 +36,7 @@ final class ScalaDocUnclosedTagWithoutParserInspection extends LocalInspectionTo
           s.getLastChild.getNode.getElementType) &&
           firstElementType != ScalaDocTokenType.DOC_HEADER && firstElementType != ScalaDocTokenType.VALID_DOC_HEADER) {
 
-          holder.registerProblem(holder.getManager.createProblemDescriptor(s.getFirstChild, getDisplayName, true,
+          holder.registerProblem(holder.getManager.createProblemDescriptor(s.getFirstChild, getDisplayName.get, true,
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly, new ScalaDocEscapeTagQuickFix(s)))
         }
       }

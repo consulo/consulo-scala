@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.language.editor.Pass
 import consulo.ui.image.Image
 import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
 import consulo.codeEditor.markup.GutterIconRenderer.Alignment
@@ -54,9 +55,9 @@ object ScalaRecursiveFunctionLineMarkerProvider {
       element,
       element.getTextRange,
       icon,
+      Pass.LINE_MARKERS,
       (e: PsiElement) => psiElemToTooltip(e.getText),
       null,
-      Alignment.LEFT,
-      () => psiElemToTooltip(element.getText)
+      Alignment.LEFT
     )
 }

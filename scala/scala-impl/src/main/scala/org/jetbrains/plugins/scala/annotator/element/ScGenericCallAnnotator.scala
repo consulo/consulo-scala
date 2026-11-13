@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.annotator.element
 
-import com.intellij.psi.impl.light.LightDefaultConstructor
 import com.intellij.java.language.psi.{PsiMethod, PsiTypeParameterListOwner}
 import consulo.language.psi.PsiNamedElement
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -125,9 +124,7 @@ object ScGenericCallAnnotator extends ElementAnnotator[ScGenericCall] {
 
                       functionTypeParamsByClause.lift(functionClauseIdx).getOrElse(Seq.empty)
                     }
-                  case lCons: LightDefaultConstructor =>
-                    if (typeArgClauseIdx == 0) lCons.containingClass.getTypeParameters.instantiate
-                    else                       Seq.empty
+                  // upstream: case for LightDefaultConstructor (no light default constructors in Consulo Java PSI)
                   case jmethod: PsiMethod =>
                     if (jmethod.isConstructor) {
                       if (typeArgClauseIdx == 0) jmethod.containingClass.getTypeParameters.instantiate

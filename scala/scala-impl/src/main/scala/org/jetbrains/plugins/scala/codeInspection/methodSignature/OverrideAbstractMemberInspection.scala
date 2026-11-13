@@ -17,16 +17,16 @@ class OverrideAbstractMemberInspection extends LocalInspectionTool {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case param: ScClassParameter if isApplicable(param) =>
-      holder.registerProblem(param.nameId, getDisplayName, createQuickFix(param))
+      holder.registerProblem(param.nameId, getDisplayName.get, createQuickFix(param))
 
     case v: ScValue if !hasOverride(v) && !PropertyMethods.isBeanProperty(v) =>
       val firstOverrideElement =
         v.declaredElements.find(elem => isApplicable(superValsSignatures(elem)))
 
-      firstOverrideElement.foreach(elem => holder.registerProblem(elem.nameId, getDisplayName, createQuickFix(v)))
+      firstOverrideElement.foreach(elem => holder.registerProblem(elem.nameId, getDisplayName.get, createQuickFix(v)))
 
     case function: ScFunction if isApplicable(function) =>
-      holder.registerProblem(function.nameId, getDisplayName, createQuickFix(function))
+      holder.registerProblem(function.nameId, getDisplayName.get, createQuickFix(function))
 
     case _ =>
   }

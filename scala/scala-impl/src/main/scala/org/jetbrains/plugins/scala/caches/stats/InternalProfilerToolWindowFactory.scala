@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.caches.stats
 
 import consulo.ui.image.Image
-import com.intellij.concurrency.JobScheduler
+import consulo.application.util.concurrent.AppExecutorUtil
 import consulo.application.AllIcons
-import consulo.project.ui.notification.{NotificationGroup, NotificationType}
+import consulo.project.ui.notification.{NotificationGroup, NotificationService, NotificationType}
+import consulo.localize.LocalizeValue
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
 import consulo.application.ApplicationManager
 import consulo.application.dumb.DumbAware
@@ -24,7 +25,7 @@ import scala.jdk.CollectionConverters._
 class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware {
 
   //noinspection UnstableApiUsage,ApiStatus
-  override def getIcon: Image = consulo.application.AllIcons.Toolwindows.ToolWindowProfiler
+  override def getIcon: Image = AllIcons.Toolwindows.ToolWindowRun // upstream: AllIcons.Toolwindows.ToolWindowProfiler
 
   override def init(toolWindow: ToolWindow): Unit = {
     toolWindow.setStripeTitle(NlsString.force("Scala plugin profiler"))
@@ -149,7 +150,7 @@ object InternalProfilerToolWindowFactory {
   def scheduleRefresh[Data](tableModel: DataByIdTableModel[Data], dataSource: DataSource[Data]): Future[?] = {
     val refreshRateMs = 500L
 
-    JobScheduler.getScheduler
+    AppExecutorUtil.getAppScheduledExecutorService
       .scheduleWithFixedDelay(() => {
         ApplicationManager.getApplication.invokeLater(() =>
           tableModel.refresh(dataSource.getCurrentData)
@@ -213,9 +214,9 @@ object InternalProfilerToolWindowFactory {
       val totalFreed = preFreed + cacheFreed
       val total = toMB(runtime.totalMemory.toDouble)
 
-      NotificationGroup.createNotification(
-        s"Cache cleared ($cacheEntityCount entities)",
-        f"""<html>
+      NotificationService.getInstance.newOfType(NotificationGroup, NotificationType.INFORMATION)
+        .title(LocalizeValue.of(s"Cache cleared ($cacheEntityCount entities)"))
+        .content(LocalizeValue.of(        f"""<html>
            |<body>
            |<table>
            |<tr><td>Pre GC: </td><td>$preFreed%1.1f MB</td><td>(${toPercent(preFreed/memoryBeforePrepare)}%1.1f%%)</td></tr>
@@ -226,9 +227,8 @@ object InternalProfilerToolWindowFactory {
            |<tr><td>Available: </td><td>$total%1.1f MB</td><td></td></tr>
            |</table>
            |</body>
-           |</html>""".stripMargin,
-        NotificationType.INFORMATION
-      ).notify(project)
+           |</html>""".stripMargin))
+        .notify(project)
     }
 
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT

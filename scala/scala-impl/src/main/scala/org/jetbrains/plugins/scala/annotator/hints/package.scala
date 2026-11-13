@@ -4,6 +4,7 @@ import consulo.ui.style.StyleManager
 import consulo.codeEditor.{CodeInsightColors, EditorColors}
 import consulo.colorScheme.EditorColorsScheme
 import consulo.colorScheme.TextAttributes
+import consulo.ui.ex.awtUnsafe.TargetAWT
 
 import java.awt.Color
 
@@ -66,9 +67,9 @@ package object hints {
 
     val result = attributes.clone()
     if (StyleManager.get().getCurrentStyle.isDark && result.getBackgroundColor != null) {
-      val notSoBright = result.getBackgroundColor.brighter
+      val notSoBright = TargetAWT.to(result.getBackgroundColor).brighter
       val tooBright = notSoBright.brighter
-      result.setBackgroundColor(average(notSoBright, tooBright))
+      result.setBackgroundColor(TargetAWT.from(average(notSoBright, tooBright)))
     }
     result
   }

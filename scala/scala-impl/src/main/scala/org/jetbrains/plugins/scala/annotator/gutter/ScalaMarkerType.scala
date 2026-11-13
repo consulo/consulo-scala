@@ -4,6 +4,12 @@ import consulo.ui.image.Image
 import consulo.language.editor.gutter.GutterIconNavigationHandler
 import com.intellij.java.impl.codeInsight.daemon.impl.GutterTooltipHelper
 import consulo.language.editor.ui.PsiElementListCellRenderer
+import consulo.language.editor.ui.navigation.TargetPresentationProvider
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.localize.LocalizeValue
+import consulo.navigation.{NavigationService, TargetPresentation}
+import consulo.application.Application
+import consulo.ui.event.ComponentEvent
 import consulo.ui.ex.action.IdeActions
 import consulo.project.Project
 import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNamedElement}
@@ -23,7 +29,6 @@ import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaOverridingMemberSea
 import org.jetbrains.plugins.scala.lang.psi.types.TermSignature
 import org.jetbrains.plugins.scala.util.SAMUtil
 
-import java.awt.event.MouseEvent
 import java.util.Collections.emptyList
 import scala.jdk.CollectionConverters._
 
@@ -35,7 +40,7 @@ object ScalaMarkerType {
   }
 
   private def navigateToSuperMethod(
-    event: MouseEvent,
+    event: ComponentEvent[?],
     method: PsiMethod,
     project: Project,
     includeSelf: Boolean
@@ -45,7 +50,7 @@ object ScalaMarkerType {
   }
 
   private def superMethodsOf(method: PsiMethod, includeSelf: Boolean): Array[NavigatablePsiElement] = {
-    val superMethods = (if (includeSelf) Array[NavigatablePsiElement](method) else NavigatablePsiElement.EMPTY_NAVIGATABLE_ELEMENT_ARRAY) ++ (method match {
+    val superMethods = (if (includeSelf) Array[NavigatablePsiElement](method) else Array.empty[NavigatablePsiElement]) ++ (method match {
       case fn: ScFunction =>
         val sigs = fn.superSignaturesIncludingSelfType
         sigs.flatMap(sigToNavigatableElement).toArray[NavigatablePsiElement]
@@ -148,6 +153,11 @@ object ScalaMarkerType {
 
   def newCellRenderer: PsiElementListCellRenderer[PsiElement] = new ScCellRenderer
 
+  def newPresentationProvider: TargetPresentationProvider[PsiElement] = {
+    val renderer = new ScCellRenderer
+    element => renderer.presentation(element)
+  }
+
   val subclassedClass: ScalaMarkerType = ScalaMarkerType(
     tooltipProvider = element =>
       element.parent.collect {
@@ -214,23 +224,23 @@ object ScalaMarkerType {
         case method: PsiMethod if method.containingClass != null =>
           val presentation = method.containingClass.getPresentation
           if (presentation != null)
-            presentation.getPresentableText + " " + presentation.getLocationString
+            presentation.getPresentableText.get + " " + presentation.getLocationString
           else {
-            ClassPresentationUtil.getNameForClass(method.containingClass, false)
+            ClassPresentationUtil.getNameForClass(method.containingClass, false).get
           }
         case xlass: PsiClass =>
           val presentation = xlass.getPresentation
-          presentation.getPresentableText + " " + presentation.getLocationString
+          presentation.getPresentableText.get + " " + presentation.getLocationString
         case x: PsiNamedElement if x.nameContext.isInstanceOf[ScMember] =>
           val containing = x.nameContext.asInstanceOf[ScMember].containingClass
           if (containing == null) defaultPresentation
           else {
             val presentation = containing.getPresentation
-            presentation.getPresentableText + " " + presentation.getLocationString
+            presentation.getPresentableText.get + " " + presentation.getLocationString
           }
         case x: ScClassParameter =>
           val presentation = x.getPresentation
-          presentation.getPresentableText + " " + presentation.getLocationString
+          presentation.getPresentableText.get + " " + presentation.getLocationString
         case x: PsiNamedElement => x.name
         case _                  => defaultPresentation
       }
@@ -238,13 +248,19 @@ object ScalaMarkerType {
 
     override def getContainerText(psiElement: PsiElement, s: String): Null = null
 
+    def presentation(element: PsiElement): TargetPresentation =
+      Application.get().getInstance(classOf[NavigationService])
+        .presentationBuilder(LocalizeValue.of(getElementText(element)))
+        .withIcon(getIcon(element))
+        .build()
+
     override def getIconFlags: Int = 0
 
     override def getIcon(element: PsiElement): Image =
       element match {
         case _: PsiMethod => super.getIcon(element)
         case x: PsiNamedElement if x.nameContext != null =>
-          x.nameContext.getIcon(getIconFlags)
+          IconDescriptorUpdaters.getIcon(x.nameContext, getIconFlags)
         case _ => super.getIcon(element)
       }
   }

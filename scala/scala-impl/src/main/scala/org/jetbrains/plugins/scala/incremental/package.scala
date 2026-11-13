@@ -2,11 +2,11 @@ package org.jetbrains.plugins
 package scala
 
 import consulo.language.editor.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerImpl}
-import consulo.language.editor.FileStatusMap
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.document.FileDocumentManager
+import consulo.language.psi.PsiDocumentManager
+import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nullable
@@ -14,27 +14,17 @@ import org.jetbrains.annotations.Nullable
 package object incremental {
   private final val REASON = "Incremental highlighting"
 
-  private val combineDirtyScopesMethod = {
-    val method = classOf[FileStatusMap].getDeclaredMethod("combineDirtyScopes", classOf[Document], classOf[TextRange], classOf[Object])
-    method.setAccessible(true)
-    method
-  }
-
-  private val stopProcessMethod = {
-    val method = classOf[DaemonCodeAnalyzerImpl].getDeclaredMethod("stopProcess", classOf[Boolean], classOf[String])
-    method.setAccessible(true)
-    method
-  }
-
   private[incremental] implicit class DaemonCodeAnalyzerExt(private val daemon: DaemonCodeAnalyzer) extends AnyVal {
     // com.intellij.codeInsight.daemon.impl.FileStatusMap.combineDirtyScopes
     def combineDirtyScopes(document: Document, scope: TextRange): Unit = {
-      combineDirtyScopesMethod.invoke(daemon.getFileStatusMap, document, scope, REASON)
+      daemon.getFileStatusMap.markFileScopeDirty(document, scope, document.getTextLength, REASON)
     }
 
-    // com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl.stopProcess
-    def stopProcess(toRestartAlarm: Boolean): Unit = {
-      stopProcessMethod.invoke(daemon, toRestartAlarm, REASON)
+    // upstream: DaemonCodeAnalyzerImpl.stopProcess(toRestartAlarm = true, reason) (not public in Consulo),
+    // restarting the file re-highlights the whole file instead of only the dirty scope
+    def stopProcess(project: Project, document: Document): Unit = {
+      val file = PsiDocumentManager.getInstance(project).getPsiFile(document)
+      if (file != null) daemon.restart(file)
     }
   }
 

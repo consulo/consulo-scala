@@ -51,7 +51,7 @@ final class ScalaUnreachableCodeInspection extends LocalInspectionTool {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = new PsiElementVisitor {
 
-    private val descriptionTemplate = getDisplayName
+    private val descriptionTemplate = getDisplayName.get
 
     override def visitElement(element: PsiElement): Unit = {
       if (!element.isVisible(holder.getProject, holder.getFile)) return
@@ -199,7 +199,7 @@ object ScalaUnreachableCodeInspection {
     unreachable.iterator.flatMap(searchComponent).toSeq
   }*/
 
-  private def createQuickFix(head: PsiElement, last: PsiElement): PsiUpdateFix[?] = head.getParent match {
+  private def createQuickFix(head: PsiElement, last: PsiElement): LocalQuickFix = head.getParent match {
     case doStatement@ScDo(_, Some(`head`)) => new UnwrapDoStmtFix(doStatement)
     case _ if head eq last => new RemoveFragmentQuickFix(head)
     case _ => new RemoveRangeQuickFix(head, last)

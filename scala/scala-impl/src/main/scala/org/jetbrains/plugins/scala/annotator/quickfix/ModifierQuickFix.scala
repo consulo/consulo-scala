@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
-import com.intellij.codeInsight._
+import consulo.java.analysis.impl.localize.JavaQuickFixLocalize
 import consulo.logging.Logger
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElement
@@ -75,7 +75,7 @@ object ModifierQuickFix {
 
     override def getFamilyName: String =
       if (nameId == null) ScalaBundle.message("remove.named.modifier.fix", modifier.text)
-      else daemon.QuickFixBundle.message("remove.modifier.fix", nameId.getText, modifier.text)
+      else JavaQuickFixLocalize.removeModifierFix(nameId.getText, modifier.text).get
   }
 
   sealed class Add(listOwner: ScModifierListOwner, @Nullable nameId: PsiElement, modifier: ScalaModifier)
@@ -87,7 +87,7 @@ object ModifierQuickFix {
 
     override def getFamilyName: String =
       if (nameId == null) ScalaBundle.message("add.modifier.fix.without.name", modifier.text)
-      else daemon.QuickFixBundle.message("add.modifier.fix", nameId.getText, modifier.text)
+      else JavaQuickFixLocalize.addModifierFix(nameId.getText, modifier.text).get
   }
 
   final class AddOverrideWithKeyword(listOwner: ScModifierListOwner, nameId: PsiElement, keywordType: IElementType)

@@ -12,7 +12,7 @@ trait TargetNameInspectionBase extends LocalInspectionTool {
         //noinspection ReferencePassedToNls
         holder.registerProblem(
           problemElement.element,
-          problemElement.maybeDescription.getOrElse(getDisplayName),
+          problemElement.maybeDescription.getOrElse(getDisplayName.get),
           problemElement.maybeQuickFix.toArray*
         )
       }

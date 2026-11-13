@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElementVisitor
@@ -13,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocTag
 
 final class ScalaDocMissingParameterDescriptionInspection extends LocalInspectionTool with DumbAware {
-  override def getDisplayName: String = ScalaInspectionBundle.message("display.name.missing.parameter.description")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("display.name.missing.parameter.description"))
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = {
     new ScalaElementVisitor {
@@ -31,7 +32,7 @@ final class ScalaDocMissingParameterDescriptionInspection extends LocalInspectio
 
         if (!hasDescription) {
           holder.registerProblem(holder.getManager.createProblemDescriptor(
-            valueElement, getDisplayName, true,
+            valueElement, getDisplayName.get, true,
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly
           ))
         }

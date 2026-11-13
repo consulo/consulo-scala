@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -15,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocInlinedTag
 final class ScalaDocInlinedTagInspection extends LocalInspectionTool with DumbAware {
   override def isEnabledByDefault: Boolean = true
 
-  override def getDisplayName: String = ScalaInspectionBundle.message("display.name.inlined.tag")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("display.name.inlined.tag"))
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
     new ScalaElementVisitor {
@@ -23,7 +24,7 @@ final class ScalaDocInlinedTagInspection extends LocalInspectionTool with DumbAw
         if (!inlinedTag.isVisible(holder.getProject, holder.getFile)) return
 
         val problem = holder.getManager.createProblemDescriptor(
-          inlinedTag, getDisplayName, true,
+          inlinedTag, getDisplayName.get, true,
           ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly,
           new ScalaDocInlinedTagDeleteQuickFix(inlinedTag),
           new ScalaDocInlinedTagReplaceQuickFix(inlinedTag)

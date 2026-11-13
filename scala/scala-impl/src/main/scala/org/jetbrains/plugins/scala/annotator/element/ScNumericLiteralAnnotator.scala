@@ -15,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScPrefixExpr
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.api.NlsString
-import org.jetbrains.plugins.scala.{ScalaBundle, project}
+import org.jetbrains.plugins.scala.{ScalaBundle, project, rt}
 
 sealed abstract class ScNumericLiteralAnnotator[L <: Numeric : reflect.ClassTag](isLong: Boolean)
   extends ElementAnnotator[L]
@@ -51,7 +51,7 @@ object ScNumericLiteralAnnotator {
       scalaVersion.forall(v =>
         v.languageLevel >= ScalaLanguageLevel.Scala_2_13 &&
           v.languageLevel < ScalaLanguageLevel.Scala_3_0 &&
-          (v.minorVersion >= project.Version("13"))
+          (v.minorVersion >= rt.project.Version("13"))
       )
     val binAllowedInScala3_5 =
       scalaVersion.forall(_.languageLevel >= ScalaLanguageLevel.Scala_3_5)

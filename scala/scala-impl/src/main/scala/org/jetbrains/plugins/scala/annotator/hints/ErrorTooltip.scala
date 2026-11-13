@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.annotator.hints
 
-import com.intellij.codeInsight.hint.TooltipGroup
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
@@ -13,8 +12,6 @@ sealed trait ErrorTooltip {
 }
 
 object ErrorTooltip {
-  val tooltipGroup = new TooltipGroup("Scala inlay error tooltip", 0)
-
   implicit def fromString(@Nls message: String): ErrorTooltip = ErrorTooltip(message)
 
   def apply(@Nls message: String): ErrorTooltip = JustText(message)

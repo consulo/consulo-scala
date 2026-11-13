@@ -5,7 +5,8 @@ import consulo.document.util.TextRange
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.application.util.CachedValueProvider.Result
-import consulo.application.util.{CachedValueProvider, CachedValuesManager}
+import consulo.application.util.CachedValueProvider
+import consulo.language.psi.util.LanguageCachedValueUtil
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
@@ -587,7 +588,7 @@ package object collections {
     }
   }
 
-  def exprsWithSideEffects(expr: ScExpression): Seq[ScExpression] = CachedValuesManager.getCachedValue(expr, new SideEffectsProvider(expr))
+  def exprsWithSideEffects(expr: ScExpression): Seq[ScExpression] = LanguageCachedValueUtil.getCachedValue(expr, new SideEffectsProvider(expr))
 
   def hasSideEffects(expr: ScExpression): Boolean = exprsWithSideEffects(expr).nonEmpty
 
