@@ -11,7 +11,7 @@ import consulo.execution.configuration.ConfigurationFactory
 import com.intellij.java.execution.impl.junit.JavaRunConfigurationProducerBase
 import consulo.module.Module
 import consulo.util.dataholder.Key
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions._
@@ -84,7 +84,7 @@ abstract class BaseScalaApplicationConfigurationProducer[T <: ApplicationConfigu
   override def setupConfigurationFromContext(
     configuration: T,
     context: ConfigurationContext,
-    sourceElementRef: Ref[PsiElement]
+    sourceElementRef: SimpleReference[PsiElement]
   ): Boolean = {
     val location = context.getLocation
     if (location == null) return false

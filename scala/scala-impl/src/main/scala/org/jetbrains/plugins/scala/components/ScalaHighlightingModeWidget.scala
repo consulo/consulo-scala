@@ -4,21 +4,24 @@ import consulo.localize.LocalizeValue
 
 import consulo.ui.image.Image
 import consulo.project.Project
-import consulo.project.ui.wm.StatusBarWidget
+import consulo.project.ui.wm.{StatusBar, StatusBarWidget}
+import consulo.ui.Component
+import consulo.ui.event.{ClickEvent, ComponentEventListener}
 import consulo.project.ui.wm.StatusBarWidget.WidgetPresentation
-import java.util.function.Consumer
 import org.jetbrains.plugins.scala.ScalaBundle.message
 import org.jetbrains.plugins.scala.actions.ScalaHighlightingModeAction
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
-import java.awt.event.MouseEvent
-
 private final class ScalaHighlightingModeWidget(project: Project)
   extends StatusBarWidget with StatusBarWidget.IconPresentation {
 
-  override def ID(): String = ScalaHighlightingModeWidgetFactory.ID
+  override def getId(): String = ScalaHighlightingModeWidgetFactory.ID
+
+  override def install(statusBar: StatusBar): Unit = ()
+
+  override def dispose(): Unit = ()
 
   override def getPresentation: WidgetPresentation = this
 
@@ -72,6 +75,6 @@ private final class ScalaHighlightingModeWidget(project: Project)
       s"</div></body></html>"
   }
 
-  def getClickConsumer: Consumer[MouseEvent] =
+  override def getClickListener: ComponentEventListener[Component, ClickEvent] =
     _ => ScalaHighlightingModeAction.perform(project)
 }

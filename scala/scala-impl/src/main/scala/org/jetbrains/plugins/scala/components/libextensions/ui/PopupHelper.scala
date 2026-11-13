@@ -6,7 +6,7 @@ import consulo.project.ui.notification.{Notification, NotificationService}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
-import javax.swing.event.HyperlinkEvent
+import consulo.ui.event.HyperlinkEvent
 
 class PopupHelper {
   def showEnablePopup(yesCallback: () => Unit, noCallback: () => Unit): Unit = {

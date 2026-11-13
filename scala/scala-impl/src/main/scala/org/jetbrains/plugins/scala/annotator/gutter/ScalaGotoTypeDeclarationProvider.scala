@@ -5,12 +5,13 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.action.TypeDeclarationProvider
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScCompoundType, ScType, ScTypeExt}
 
 @ExtensionImpl
 class ScalaGotoTypeDeclarationProvider extends TypeDeclarationProvider {
-  override def getSymbolTypeDeclarations(symbol: PsiElement): Array[PsiElement] = {
+  override def getSymbolTypeDeclarations(symbol: PsiElement, editor: Editor, offset: Int): Array[PsiElement] = {
     implicit val context: Context = Context(symbol)
 
     symbol match {

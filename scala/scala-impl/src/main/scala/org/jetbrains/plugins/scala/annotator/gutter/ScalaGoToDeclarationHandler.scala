@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.annotator.gutter
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.navigation.GotoDeclarationHandler
-import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiReference, PsiWhiteSpace, ResolveResult}
 import consulo.language.psi.util.PsiTreeUtil
@@ -101,7 +100,6 @@ class ScalaGoToDeclarationHandler extends GotoDeclarationHandler {
     }
   }
 
-  override def getActionText(context: DataContext): String = null
 }
 
 object ScalaGoToDeclarationHandler {

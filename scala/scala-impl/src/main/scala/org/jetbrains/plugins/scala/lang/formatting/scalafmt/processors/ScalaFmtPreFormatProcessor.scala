@@ -50,7 +50,7 @@ import org.scalafmt.dynamic.exceptions.{PositionExceptionImpl, ReflectionExcepti
 import org.scalafmt.dynamic.{ScalafmtReflect, ScalafmtReflectConfig, ScalafmtVersion}
 
 import java.nio.file.{Path, Paths}
-import javax.swing.event.HyperlinkEvent
+import consulo.ui.event.HyperlinkEvent
 import scala.annotation.{nowarn, tailrec}
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
@@ -71,8 +71,8 @@ class ScalaFmtPreFormatProcessor extends PreFormatProcessor {
    * Starting the range at the beginning of that whitespace leaves no whitespace for the IntelliJ formatter to format.
    * The whitespace is formatted with scalafmt anyway, see [[ScalaFmtPreFormatProcessor.fixRangeStartingOnPsiElement]].
    */
-  //noinspection ApiStatus,UnstableApiUsage
-  override def adjustRange(element: ASTNode, range: TextRange): TextRange =
+  // upstream: overrides PreFormatProcessor.adjustRange (SCL-23253); Consulo has no such hook, so it is never called by the platform
+  def adjustRange(element: ASTNode, range: TextRange): TextRange =
     containingFile(element) match {
       case psiFile: ScalaFile if !range.isEmpty && isFormattedWithScalafmt(psiFile, range) =>
         fixRangeStartingOnPsiElement(psiFile, range)

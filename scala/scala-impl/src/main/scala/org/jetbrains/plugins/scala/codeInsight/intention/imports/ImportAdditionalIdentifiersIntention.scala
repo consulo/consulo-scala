@@ -35,7 +35,7 @@ class ImportAdditionalIdentifiersIntention extends PsiElementBaseIntentionAction
   override def invoke(project: Project, editor: Editor, element: PsiElement): Unit =
     if (element.isValid) check(project, editor, element).foreach(_.apply())
 
-  def startInWriteAction(): Boolean = false
+  override def startInWriteAction(): Boolean = false
 
   def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
     val element = file.findElementAt(editor.getCaretModel.getOffset)

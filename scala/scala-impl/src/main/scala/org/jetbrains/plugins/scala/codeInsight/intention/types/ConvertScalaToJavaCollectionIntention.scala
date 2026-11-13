@@ -35,7 +35,7 @@ class ConvertScalaToJavaCollectionIntention extends BaseJavaConvertersIntention(
   @SafeFieldForPreview
   override val alreadyConvertedPrefixes: Set[String] = Set("java.")
 
-  def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.scala.to.java.collection.hint"))
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.scala.to.java.collection.hint"))
 
   def getFamilyName: String = ConvertScalaToJavaCollectionIntention.getFamilyName
 }

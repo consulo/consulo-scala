@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.highlighter
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.ui.image.Image
 import consulo.localize.LocalizeValue
 import consulo.language.editor.rawHighlight.RainbowHighlighter
 import consulo.colorScheme.TextAttributesKey
@@ -171,9 +170,6 @@ class ScalaColorsAndFontsPage extends RainbowColorSettingsPage {
   override def getDisplayName: LocalizeValue = LocalizeValue.of(NlsString.displayNameAndConfigurableId("Scala").nls)
 
   override def getLanguage: ScalaLanguage = ScalaLanguage.INSTANCE
-
-  //NOTE: is not used anywhere, see IDEA-345886
-  override def getIcon: Image = null
 
   override def getAttributeDescriptors: Array[AttributesDescriptor] = ScalaColorsAndFontsPage.ourDescriptors
 

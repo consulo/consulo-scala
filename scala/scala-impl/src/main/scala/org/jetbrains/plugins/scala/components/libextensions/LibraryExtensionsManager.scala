@@ -74,7 +74,8 @@ final class LibraryExtensionsManager(project: Project) {
     private val accessed = new AtomicBoolean(false)
     override def afterLibraryAdded(newLibrary: Library): Unit = action()
     override def afterLibraryRemoved(library: Library): Unit = action()
-    override def afterLibraryRenamed(library: Library, oldName: String): Unit = action()
+    override def afterLibraryRenamed(library: Library): Unit = action()
+    override def beforeLibraryRemoved(library: Library): Unit = ()
 
     private def action(): Unit = {
       if (accessed.compareAndSet(false, true))

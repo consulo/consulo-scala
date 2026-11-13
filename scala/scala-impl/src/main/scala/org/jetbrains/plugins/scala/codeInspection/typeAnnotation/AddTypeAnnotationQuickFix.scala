@@ -17,7 +17,7 @@ import java.{util => ju}
 import scala.collection.mutable
 
 class AddTypeAnnotationQuickFix(element: PsiElement)
-  extends AbstractFixOnPsiElement(ScalaInspectionBundle.message("add.type.annotation"), element) with BatchQuickFix {
+  extends AbstractFixOnPsiElement(ScalaInspectionBundle.message("add.type.annotation"), element) with BatchQuickFix[CommonProblemDescriptor] {
 
   override protected def doApplyFix(element: PsiElement)
                                    (implicit project: Project): Unit = {

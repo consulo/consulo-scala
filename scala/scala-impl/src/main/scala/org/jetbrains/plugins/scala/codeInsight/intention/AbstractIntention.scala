@@ -12,7 +12,7 @@ abstract class AbstractIntention(@Nls text: String, @Nls familyName: String)
                                 (f: (Project, Editor) => PartialFunction[PsiElement, Unit])
   extends PsiElementBaseIntentionAction {
 
-  def getText: LocalizeValue = LocalizeValue.of(text)
+  override def getText: LocalizeValue = LocalizeValue.of(text)
 
   def getFamilyName: String = familyName
 

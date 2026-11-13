@@ -37,9 +37,9 @@ final class NonLocalReturnInspection extends LocalInspectionTool {
   override def createStateProvider(): InspectionToolState[?] = new NonLocalReturnInspectionState
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession, state: Object): PsiElementVisitor =
-    buildVisitor(holder, state.asInstanceOf[NonLocalReturnInspectionState].checkCompilerOption)
+    buildVisitorImpl(holder, state.asInstanceOf[NonLocalReturnInspectionState].checkCompilerOption)
 
-  private def buildVisitor(holder: ProblemsHolder, checkCompilerOption: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
+  private def buildVisitorImpl(holder: ProblemsHolder, checkCompilerOption: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case scReturn: ScReturn if isNonLocal(scReturn) &&
       isInspectionAllowed(scReturn, checkCompilerOption, "-Xlint:nonlocal-return") =>
       if (!checkCompilerOption) {

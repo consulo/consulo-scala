@@ -17,7 +17,7 @@ abstract class SimplificationBasedIntention(
   simplificationType: SimplificationType,
   quickFix: Simplification => PsiUpdateFix[?]
 ) extends PsiElementBaseIntentionAction {
-  def getText: LocalizeValue = LocalizeValue.of(familyName)
+  override def getText: LocalizeValue = LocalizeValue.of(familyName)
 
   def getFamilyName: String = familyName
 

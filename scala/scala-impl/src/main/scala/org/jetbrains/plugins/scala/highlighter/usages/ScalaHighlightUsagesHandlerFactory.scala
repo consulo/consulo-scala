@@ -22,12 +22,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObj
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
 @ExtensionImpl(id = "ScalaHighlightUsagesHandlerFactory")
-final class ScalaHighlightUsagesHandlerFactory extends HighlightUsagesHandlerFactory {
+final class ScalaHighlightUsagesHandlerFactory extends HighlightUsagesHandlerFactory[PsiElement] {
 
   import ScalaTokenType._
   import ScalaTokenTypes._
 
-  override def createHighlightUsagesHandler(editor: Editor, file: PsiFile): HighlightUsagesHandlerBase[? <: PsiElement] = {
+  override def createHighlightUsagesHandler(editor: Editor, file: PsiFile): HighlightUsagesHandlerBase[PsiElement] = {
     if (!file.is[ScalaFile]) return null
     val offset = TargetElementUtil.adjustOffset(file, editor.getDocument, editor.getCaretModel.getOffset)
     val element: PsiElement = file.findElementAt(offset) match {

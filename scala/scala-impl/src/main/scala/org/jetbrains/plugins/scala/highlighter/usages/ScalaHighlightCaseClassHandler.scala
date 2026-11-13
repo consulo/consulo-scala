@@ -21,10 +21,10 @@ class ScalaHighlightCaseClassHandler(reference: ScReference, caseClass: ScClass,
 {
   override def getTargets: util.List[PsiElement] = util.Collections.singletonList(reference)
 
-  override def selectTargets(targets: util.List[? <: PsiElement], selectionConsumer: Consumer[? >: util.List[? <: PsiElement]]): Unit =
+  override def selectTargets(targets: util.List[PsiElement], selectionConsumer: Consumer[util.List[PsiElement]]): Unit =
     selectionConsumer.accept(targets)
 
-  override protected def addOccurrence(element: PsiElement): Unit = {
+  override def addOccurrence(element: PsiElement): Unit = {
     if (element != null && element.getContainingFile == file)
       super.addOccurrence(element match {
         case ref: ScStableCodeReference => ref.nameId
@@ -32,7 +32,7 @@ class ScalaHighlightCaseClassHandler(reference: ScReference, caseClass: ScClass,
       })
   }
 
-  override def computeUsages(targets: util.List[? <: PsiElement]): Unit = {
+  override def computeUsages(targets: util.List[PsiElement]): Unit = {
     val config = ScalaFindUsagesConfiguration.getInstance(file.getProject)
     val manager = new ScalaFindUsagesHandler(caseClass, config)
     val localSearchScope =

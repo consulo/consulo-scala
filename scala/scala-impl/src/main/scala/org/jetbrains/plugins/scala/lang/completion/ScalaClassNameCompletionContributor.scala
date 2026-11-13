@@ -200,7 +200,7 @@ object ScalaClassNameCompletionContributor {
       prefixMatcher,
       invocationCount <= 1,
       new Consumer[PsiClass] {
-        override def consume(`class`: PsiClass): Unit = `class` match {
+        override def accept(`class`: PsiClass): Unit = `class` match {
           case _: PsiClassWrapper =>
           case _ =>
             //todo: filter according to position

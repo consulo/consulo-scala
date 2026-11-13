@@ -16,7 +16,7 @@ final class ScalaPostfixTemplateProvider extends PostfixTemplateProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
-  override def getTemplates: ju.Set[PostfixTemplate] = {
+  override protected def buildTemplates(): ju.Set[PostfixTemplate] = {
     ScalaPostfixTemplateProvider.Templates.asJava
   }
 
