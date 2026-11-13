@@ -83,6 +83,12 @@
     <dependencies>
         <dependency>
             <groupId>consulo</groupId>
+            <artifactId>consulo-util-nodep</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>consulo</groupId>
             <artifactId>consulo-execution-test-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

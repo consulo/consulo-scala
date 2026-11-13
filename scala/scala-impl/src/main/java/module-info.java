@@ -85,6 +85,7 @@ module org.intellij.scala {
     requires consulo.util.dataholder;
     requires consulo.util.io;
     requires consulo.util.jdom;
+    requires consulo.util.nodep;
     requires consulo.util.lang;
     requires consulo.util.xml.serializer;
     requires consulo.version.control.system.api;
