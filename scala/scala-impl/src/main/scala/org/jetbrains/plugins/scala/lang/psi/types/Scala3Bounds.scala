@@ -1,13 +1,19 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
-import com.thaiopensource.util.Service
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.types.api.{ParameterizedType, TypeParameter, TypeParameterType}
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.ScTypePolymorphicType
 import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectContextOwner}
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final case class Scala3Bounds(project: Project)
   extends ScalaBoundsBase
     with ProjectContextOwner

@@ -9,6 +9,10 @@ module org.intellij.scala {
     requires transitive scala.library;
     requires scala.reflect;
     requires org.apache.commons.text;
+    requires scala.xml;
+    requires scala.collection.compat;
+    requires org.apache.ivy;
+    requires coursier.paths;
     requires jakarta.inject;
 
     requires com.intellij.xml;

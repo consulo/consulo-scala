@@ -1,6 +1,9 @@
 package org.jetbrains.plugins.scala
 package projectView
 
+
+import org.jetbrains.plugins.scala.api.ScalaFileType
+import org.jetbrains.plugins.scala.api.api
 import consulo.project.ui.view.tree.PsiFileNode
 import consulo.ui.ex.tree.PresentationData
 import consulo.project.ui.view.tree.ViewSettings

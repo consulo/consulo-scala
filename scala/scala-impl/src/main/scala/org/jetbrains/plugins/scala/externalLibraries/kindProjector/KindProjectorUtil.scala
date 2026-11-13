@@ -13,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic.ScSyntheticClass
 import org.jetbrains.plugins.scala.lang.psi.types.api.Any
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType, ScTypeExt, ScalaType}
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._
@@ -68,7 +69,7 @@ object KindProjectorUtil {
   private val starInlineSyntax: Seq[String]       = Seq("*", "-*", "+*")
   private val underscoreInlineSyntax: Seq[String] = Seq("_", "-_", "+_")
 
-  def apply(project: Project): KindProjectorUtil = project.getService(classOf[KindProjectorUtil])
+  def apply(project: Project): KindProjectorUtil = project.getInstance(classOf[KindProjectorUtil])
 
   private val newSyntaxVersion = new ComparableVersion("0.10.0")
   private val VersionPattern   = "(?:.+?)(?:-(\\d.*?))?\\.jar".r

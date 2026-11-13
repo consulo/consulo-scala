@@ -199,7 +199,7 @@ object StdTypes {
     val last = current.get()
     if (last != null && (last.projectContext == pc)) last
     else {
-      val fromContainer = pc.getService(classOf[StdTypes])
+      val fromContainer = pc.getInstance(classOf[StdTypes])
       current.compareAndSet(last, fromContainer)
       fromContainer
     }

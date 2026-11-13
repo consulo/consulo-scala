@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 class ScalaClassElementDescriptionProvider extends ElementDescriptionProvider {
   override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String = {
     if (location == UsageViewTypeLocation.INSTANCE)
-      return null //Handled by com.intellij.usageView.UsageViewTypeLocation.DEFAULT_PROVIDER
+      return null //Handled by consulo.usage.UsageViewTypeLocation.DEFAULT_PROVIDER
 
     element match {
       case o: ScObject => o.name

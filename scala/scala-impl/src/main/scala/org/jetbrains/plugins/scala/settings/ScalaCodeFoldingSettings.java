@@ -5,7 +5,7 @@ import consulo.application.ApplicationManager;
 public abstract class ScalaCodeFoldingSettings {
 
   public static ScalaCodeFoldingSettings getInstance() {
-    return ApplicationManager.getApplication().getService(ScalaCodeFoldingSettings.class);
+    return ApplicationManager.getApplication().getInstance(ScalaCodeFoldingSettings.class);
   }
 
   public abstract boolean isCollapseFileHeaders(); // from CodeFoldingSettings

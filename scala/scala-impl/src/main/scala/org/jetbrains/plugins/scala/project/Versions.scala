@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.{ProgressIndicator, ProgressManager}

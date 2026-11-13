@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
+
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.IndexSink
 import consulo.language.psi.util.PsiTreeUtil

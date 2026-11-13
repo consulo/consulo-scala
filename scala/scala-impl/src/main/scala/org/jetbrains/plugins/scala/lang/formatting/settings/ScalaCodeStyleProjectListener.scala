@@ -7,6 +7,6 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.migration.ProjectCod
 private final class ScalaCodeStyleProjectListener extends ProjectManagerListener {
 
   override def projectOpened(project: Project): Unit = {
-    project.getService(classOf[ProjectCodeStyleSettingsMigrationService]).init()
+    project.getInstance(classOf[ProjectCodeStyleSettingsMigrationService]).init()
   }
 }

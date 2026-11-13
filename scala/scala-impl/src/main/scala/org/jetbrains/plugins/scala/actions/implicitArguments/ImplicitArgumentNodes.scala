@@ -85,7 +85,7 @@ private class ImplicitParameterProblemNode(value: ScalaResolveResult)
 
   private def errorLeafNode(@Nls errorText: String): util.Collection[AbstractTreeNode[?]] = {
     singletonList(new AbstractTreeNode[String](project, errorText) {
-      override def getChildren: java.util.ArrayList[com.intellij.ide.util.treeView.AbstractTreeNode[?]] = new util.ArrayList[AbstractTreeNode[?]]()
+      override def getChildren: java.util.ArrayList[consulo.project.ui.view.tree.AbstractTreeNode[?]] = new util.ArrayList[AbstractTreeNode[?]]()
 
       override def update(data: PresentationData): Unit = {
         data.setPresentableText(errorText)

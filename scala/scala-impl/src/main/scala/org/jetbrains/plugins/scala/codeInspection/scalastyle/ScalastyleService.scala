@@ -14,5 +14,5 @@ trait ScalastyleService {
 
 object ScalastyleService {
   def instance: ScalastyleService =
-    ApplicationManager.getApplication.getService(classOf[ScalastyleService])
+    ApplicationManager.getApplication.getInstance(classOf[ScalastyleService])
 }

@@ -30,5 +30,5 @@ class ApplicationCodeStyleSettingsMigrationService extends CodeStyleSettingsMigr
 object ApplicationCodeStyleSettingsMigrationService {
 
   def instance: ApplicationCodeStyleSettingsMigrationService =
-    ApplicationManager.getApplication.getService(classOf[ApplicationCodeStyleSettingsMigrationService])
+    ApplicationManager.getApplication.getInstance(classOf[ApplicationCodeStyleSettingsMigrationService])
 }

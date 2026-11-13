@@ -46,7 +46,7 @@ object ScalafmtDynamicService {
 
   val DefaultVersion = ScalafmtVersion(1, 5, 1)
 
-  def instance: ScalafmtDynamicService = ApplicationManager.getApplication.getService(classOf[ScalafmtDynamicService])
+  def instance: ScalafmtDynamicService = ApplicationManager.getApplication.getInstance(classOf[ScalafmtDynamicService])
 
   type ResolveResult = Either[ScalafmtResolveError, ScalafmtReflect]
 

@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.ide.plugins.PluginManagerCore
 import consulo.component.PropertiesComponent
 import consulo.project.ui.notification.{NotificationDisplayType, Notifications}
 import consulo.application.ApplicationManager
-import com.thaiopensource.util.Service
 import consulo.logging.Logger
 import consulo.container.plugin.PluginId
 import consulo.module.ModuleManager
@@ -39,7 +42,10 @@ import scala.util.{Failure, Success, Using}
 import scala.xml.factory.XMLLoader
 import scala.xml.{Elem, SAXParser}
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class LibraryExtensionsManager(project: Project) {
   import LibraryExtensionsManager._
 
@@ -241,7 +247,7 @@ object LibraryExtensionsManager {
   private[libextensions] val PROPS_NAME         = "intellij-compat.json"
 
   def getInstance(project: Project): LibraryExtensionsManager =
-    project.getService(classOf[LibraryExtensionsManager])
+    project.getInstance(classOf[LibraryExtensionsManager])
 
   class MyModificationTracker extends ModificationTracker {
     private var modCount = 0L

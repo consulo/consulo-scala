@@ -139,7 +139,7 @@ public class ScalaApplicationSettings implements PersistentStateComponent<ScalaA
   }
 
   public static ScalaApplicationSettings getInstance() {
-    return ApplicationManager.getApplication().getService(ScalaApplicationSettings.class);
+    return ApplicationManager.getApplication().getInstance(ScalaApplicationSettings.class);
   }
 
   public String[] getLikeOptionClasses() {

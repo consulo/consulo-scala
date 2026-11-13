@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.language.dataFlow.interpreter.{ReachabilityCountingInterpreter, RunnerResult}
 import com.intellij.java.analysis.impl.codeInspection.dataFlow.jvm.JvmDfaMemoryStateImpl
 import consulo.language.dataFlow.ir.{ControlFlow, DfaInstructionState}
 import consulo.language.dataFlow.value.DfaValueFactory
-import com.thaiopensource.util.Service
 import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
 import consulo.project.Project
@@ -95,9 +98,12 @@ object DfaManager {
     extends Exception(s"Failed to analyze function ${fun.name}, cfg:\n$cfg", cause)
 
   private def dfaCache(project: Project): ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] =
-    project.getService(classOf[DfaCacheService]).cache
+    project.getInstance(classOf[DfaCacheService]).cache
 
-  @Service(Array(Service.Level.PROJECT))
+  // upstream: @Service(Array(Service.Level.PROJECT))
+  @Singleton
+  @ServiceAPI(ComponentScope.PROJECT)
+  @ServiceImpl
   private final class DfaCacheService(project: Project) {
     private val cachedDfaResults: () => ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] =
       cached(

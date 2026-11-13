@@ -289,7 +289,7 @@ object ScalaSyntaxHighlighter {
     scalaDocLexer: Lexer,
     scalaDirectiveLexer: Lexer,
     htmlLexer: Lexer,
-  ) extends com.intellij.lexer.LayeredLexer(scalaLexer) {
+  ) extends consulo.language.lexer.LayeredLexer(scalaLexer) {
 
     init()
 

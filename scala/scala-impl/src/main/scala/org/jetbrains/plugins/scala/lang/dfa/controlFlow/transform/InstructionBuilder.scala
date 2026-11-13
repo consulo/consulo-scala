@@ -360,7 +360,7 @@ object InstructionBuilder {
   }
 
   final class FixedLabel(index: Int) extends Label {
-    private[InstructionBuilder] override val offset: com.intellij.codeInspection.dataFlow.lang.ir.ControlFlow.FixedOffset = new FixedOffset(index)
+    private[InstructionBuilder] override val offset: consulo.language.dataFlow.ir.ControlFlow.FixedOffset = new FixedOffset(index)
   }
 
   /*private def mergeStack(oldS: VStack, newS: VStack, mergeIndex: Int): VStack = {

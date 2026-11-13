@@ -14,6 +14,7 @@ import consulo.content.bundle.Sdk
 import consulo.module.content.ModuleRootManager
 import com.intellij.java.language.psi.JavaPsiFacade
 import com.intellij.util.PlatformUtils
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._

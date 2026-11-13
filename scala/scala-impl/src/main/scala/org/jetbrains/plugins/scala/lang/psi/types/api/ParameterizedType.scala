@@ -1,6 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
-import com.thaiopensource.util.Service
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.light.LightContextFunctionParameter
@@ -57,9 +60,12 @@ trait ParameterizedType extends ValueType {
 object ParameterizedType {
 
   def substitutorCache(project: Project): ConcurrentMap[ParameterizedType, ScSubstitutor] =
-    project.getService(classOf[SubstitutorCacheService]).substitutorCache
+    project.getInstance(classOf[SubstitutorCacheService]).substitutorCache
 
-  @Service(Array(Service.Level.PROJECT))
+  // upstream: @Service(Array(Service.Level.PROJECT))
+  @Singleton
+  @ServiceAPI(ComponentScope.PROJECT)
+  @ServiceImpl
   private final class SubstitutorCacheService {
     val substitutorCache: ConcurrentMap[ParameterizedType, ScSubstitutor] = new ConcurrentHashMap()
   }

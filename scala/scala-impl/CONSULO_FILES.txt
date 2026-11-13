@@ -1,0 +1,2 @@
+src/main/scala/org/jetbrains/plugins/scala/ScalaFileTypeFactory.scala
+src/main/resources/META-INF/plugin.xml

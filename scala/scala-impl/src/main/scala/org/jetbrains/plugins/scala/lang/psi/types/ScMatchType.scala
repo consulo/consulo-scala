@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.java.language.jvm.JvmModifier
-import com.thaiopensource.util.Service
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -100,11 +103,14 @@ object ScMatchType {
   private val maxRecursionDepth = 50
 
   private def reductionCache(project: Project): ConcurrentMap[ScType, ContextDependent[TypeResult]] =
-    project.getService(classOf[MatchTypeReductionCacheService]).reductionCache
+    project.getInstance(classOf[MatchTypeReductionCacheService]).reductionCache
 
   def clearReductionCache(project: Project): Unit = reductionCache(project).clear()
 
-  @Service(Array(Service.Level.PROJECT))
+  // upstream: @Service(Array(Service.Level.PROJECT))
+  @Singleton
+  @ServiceAPI(ComponentScope.PROJECT)
+  @ServiceImpl
   private final class MatchTypeReductionCacheService {
     val reductionCache: ConcurrentMap[ScType, ContextDependent[TypeResult]] = new ConcurrentHashMap()
   }

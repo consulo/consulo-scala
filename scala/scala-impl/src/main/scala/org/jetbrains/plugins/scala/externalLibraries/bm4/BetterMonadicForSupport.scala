@@ -29,5 +29,5 @@ class BetterMonadicForSupport(project: Project) {
 
 object BetterMonadicForSupport {
   def apply(project: Project): BetterMonadicForSupport =
-    project.getService(classOf[BetterMonadicForSupport])
+    project.getInstance(classOf[BetterMonadicForSupport])
 }

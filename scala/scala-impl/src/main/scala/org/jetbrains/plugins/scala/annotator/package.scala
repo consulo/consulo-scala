@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala
 
+
+import org.jetbrains.plugins.scala.api.api
 import consulo.project.{DumbService, Project}
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.impl.util.text.LiteralFormatUtil

@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.inference
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.application.ApplicationManager
-import com.thaiopensource.util.Service
 import consulo.project.Project
 import com.intellij.psi.impl.source.codeStyle.CodeStyleSchemesImpl
 import org.jetbrains.plugins.scala.api.ScalaLanguage
@@ -14,12 +17,15 @@ import scala.jdk.CollectionConverters._
 private final class LegacyCodeStyleSettingsComponent extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getService(classOf[LegacyCodeStyleSettingsComponent.AppService])
+    ApplicationManager.getApplication.getInstance(classOf[LegacyCodeStyleSettingsComponent.AppService])
   }
 }
 
 private object LegacyCodeStyleSettingsComponent {
-  @Service(Array(Service.Level.APP))
+  // upstream: @Service(Array(Service.Level.APP))
+  @Singleton
+  @ServiceAPI(ComponentScope.APPLICATION)
+  @ServiceImpl
   private final class AppService {
     // Executed in the service constructor.
     setupCodeStyleSchemes()

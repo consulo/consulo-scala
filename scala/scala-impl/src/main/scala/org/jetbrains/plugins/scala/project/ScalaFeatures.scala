@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.language.Language
 import consulo.util.dataholder.Key
 import consulo.util.lang.ref.Ref

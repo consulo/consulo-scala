@@ -26,6 +26,7 @@ import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._

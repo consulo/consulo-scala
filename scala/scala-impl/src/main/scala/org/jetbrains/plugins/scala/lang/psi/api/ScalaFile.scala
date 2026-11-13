@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api
 
+
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import consulo.document.util.TextRange
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtension

@@ -9,6 +9,7 @@ import consulo.logging.Logger
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.{PsiDirectory, PsiElement}
 import consulo.language.util.IncorrectOperationException
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.actions.ScalaFileTemplateUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

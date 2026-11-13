@@ -37,7 +37,7 @@ class ScalaWebHelpProvider extends WebHelpProvider {
   private def addActiveKeyMapParameter(url: Url): Url = {
     val knownActiveKeymap = getKnownActiveKeyMap
     if (knownActiveKeymap != null) {
-      val keymapId = ApplicationManager.getApplication.getService(classOf[KeymapHelpIdPresenter]).getKeymapIdForHelp(knownActiveKeymap)
+      val keymapId = ApplicationManager.getApplication.getInstance(classOf[KeymapHelpIdPresenter]).getKeymapIdForHelp(knownActiveKeymap)
       url.addParameters(Map("keymap" -> keymapId).asJava)
     }
     else url

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
 import com.intellij.codeInsight.hint.HintManagerImpl
 import consulo.language.editor.inspection.PriorityAction
@@ -9,7 +13,6 @@ import consulo.application.util.ClientId
 import com.intellij.idea.AppMode
 import com.intellij.model.SideEffectGuard.SideEffectNotAllowedException
 import consulo.application.{ApplicationManager, ReadAction}
-import com.thaiopensource.util.Service
 import consulo.codeEditor.imaginary.ImaginaryEditor
 import com.intellij.openapi.editor.ClientEditorManager
 import consulo.codeEditor.{Editor, LogicalPosition}
@@ -220,9 +223,12 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
 private object ScalaImportElementFix {
 
   private def boundedExecutor: ExecutorService =
-    ApplicationManager.getApplication.getService(classOf[ExecutorHolder]).boundedTaskExecutor
+    ApplicationManager.getApplication.getInstance(classOf[ExecutorHolder]).boundedTaskExecutor
 
-  @Service
+  // upstream: @Service
+  @Singleton
+  @ServiceAPI(ComponentScope.APPLICATION)
+  @ServiceImpl
   private final class ExecutorHolder {
     val boundedTaskExecutor: ExecutorService =
       AppExecutorUtil.createBoundedApplicationPoolExecutor("ScalaImportElementFixExecutor", 2)

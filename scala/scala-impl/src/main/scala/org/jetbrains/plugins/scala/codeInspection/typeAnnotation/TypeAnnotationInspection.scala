@@ -13,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScPatternDefinition, ScVariableDefinition}
 import org.jetbrains.plugins.scala.settings.annotations.ScalaTypeAnnotationSettings.TypeAnnotationReasons
 import org.jetbrains.plugins.scala.settings.annotations._
+import org.jetbrains.plugins.scala.util._
 import org.jetbrains.plugins.scala.api.util._
 import org.jetbrains.plugins.scala.language.util._
 import org.jetbrains.plugins.scala.rt.util._

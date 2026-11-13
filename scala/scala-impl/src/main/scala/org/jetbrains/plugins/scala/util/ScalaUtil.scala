@@ -7,6 +7,7 @@ import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._

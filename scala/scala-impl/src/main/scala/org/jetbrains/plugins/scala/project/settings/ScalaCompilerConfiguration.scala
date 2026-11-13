@@ -179,7 +179,7 @@ object ScalaCompilerConfiguration extends SimpleModificationTracker {
   val DefaultProfileName = "Default"
 
   def instanceIn(project: Project): ScalaCompilerConfiguration =
-    project.getService(classOf[ScalaCompilerConfiguration])
+    project.getInstance(classOf[ScalaCompilerConfiguration])
   def apply(project: Project): ScalaCompilerConfiguration =
     instanceIn(project)
 

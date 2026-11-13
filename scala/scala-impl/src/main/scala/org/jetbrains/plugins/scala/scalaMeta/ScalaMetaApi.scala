@@ -7,5 +7,5 @@ trait ScalaMetaApi
   with ScalaMetaParseExceptionApi
 
 object ScalaMetaApi {
-  def instance: ScalaMetaApi = ApplicationManager.getApplication.getService(classOf[ScalaMetaApi])
+  def instance: ScalaMetaApi = ApplicationManager.getApplication.getInstance(classOf[ScalaMetaApi])
 }

@@ -28,6 +28,7 @@ import org.jetbrains.plugins.scala.finder.{ResolveFilterScope, WorksheetResolveF
 import org.jetbrains.plugins.scala.lang.TokenSets._
 import org.jetbrains.plugins.scala.lang.parser.ScalaElementType._
 import org.jetbrains.plugins.scala.lang.psi.ScDeclarationSequenceHolder
+import org.jetbrains.plugins.scala.lang.psi.api._
 import org.jetbrains.plugins.scala.api.lang.psi.api._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScPatternDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging

@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.project;
 
+
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel;
+import org.jetbrains.plugins.scala.shared.project.ScalaLibraryPropertiesStateSharedInIdeaAndJps;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.xml.serializer.annotation.Tag;
 import com.intellij.util.xmlb.annotations.XCollection;

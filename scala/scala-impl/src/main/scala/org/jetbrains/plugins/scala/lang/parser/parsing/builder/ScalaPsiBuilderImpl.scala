@@ -7,6 +7,7 @@ import consulo.language.psi.FileContextUtil.CONTAINING_FILE_KEY
 import org.jetbrains.plugins.scala.lang.parser.{IndentationWidth, PsiBuilderExt, ScalaPsiBuilderExt}
 import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilderImpl.IndentationRegionHolder
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt.enableFeaturesCheckInTests
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._

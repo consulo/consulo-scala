@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
+
+import org.jetbrains.plugins.scala.api.util.UnloadAwareDisposable
 import consulo.application.ApplicationManager
 import consulo.util.lang.ShutDownTracker
 import org.jetbrains.plugins.scala.extensions.invokeOnDispose

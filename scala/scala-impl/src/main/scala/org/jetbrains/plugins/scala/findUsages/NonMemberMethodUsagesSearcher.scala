@@ -7,6 +7,7 @@ import consulo.language.psi.search.SearchRequestCollector
 import com.intellij.java.indexing.search.searches.MethodReferencesSearch
 import consulo.language.psi.search.ReferencesSearch
 import consulo.application.util.function.Processor
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.finder.ScalaFilterScope
 

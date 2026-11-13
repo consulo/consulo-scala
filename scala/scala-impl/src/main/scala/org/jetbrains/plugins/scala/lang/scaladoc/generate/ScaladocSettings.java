@@ -30,7 +30,7 @@ public class ScaladocSettings implements PersistentStateComponent<ScaladocSettin
   }
 
   public static ScaladocSettings getInstance(Project project) {
-    return project.getService(ScaladocSettings.class);
+    return project.getInstance(ScaladocSettings.class);
   }
 
 }

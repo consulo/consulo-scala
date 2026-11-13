@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.language.editor.completion.lookup.Lookup
 import consulo.language.editor.completion.lookup.event.{LookupEvent, LookupListener}
 import com.intellij.codeInsight.lookup.LookupManagerListener
 import consulo.disposer.Disposable
-import com.thaiopensource.util.Service
 import consulo.document.RangeMarker
 import consulo.project.Project
 import org.jetbrains.plugins.scala.editor.AutoBraceUtils._
@@ -32,7 +35,10 @@ import org.jetbrains.plugins.scala.extensions._
  * Because of that we watch for completeion popups with this service and retroactively
  * 'fix' the auto braces when the dialog either chooses a completion item or gets canceled.
  */
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class AutoBraceLookupListenerService(project: Project) extends Disposable {
   locally {
     project.getMessageBus.connect(this)

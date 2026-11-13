@@ -4,7 +4,7 @@ import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.highlight.HighlightManager
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import consulo.language.editor.template.macro.Macro
+import consulo.language.editor.template.`macro`.Macro
 import consulo.language.editor.template.{Template, TemplateBuilderFactory, TemplateManager}
 import com.intellij.codeInsight.template.TemplateBuilderImpl
 import consulo.language.editor.template.event.TemplateEditingAdapter

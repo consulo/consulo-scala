@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.application.progress.ProgressManager
 import consulo.project.Project
 import consulo.content.library.{LibraryType, NewLibraryConfiguration, PersistentLibraryKind}

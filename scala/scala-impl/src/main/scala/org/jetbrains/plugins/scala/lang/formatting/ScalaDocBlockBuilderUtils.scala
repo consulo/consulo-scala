@@ -10,7 +10,7 @@ private object ScalaDocBlockBuilderUtils {
 
   /** Originally copied from private method [[com.intellij.psi.formatter.java.SimpleJavaBlock.isNotEmptyNode]] */
   def isNotEmptyNode(node: ASTNode): Boolean =
-    !com.intellij.psi.formatter.FormatterUtil.containsWhiteSpacesOnly(node) &&
+    !consulo.language.codeStyle.FormatterUtil.containsWhiteSpacesOnly(node) &&
       node.getTextLength > 0
 
   def isNotEmptyDocNode(node: ASTNode): Boolean =

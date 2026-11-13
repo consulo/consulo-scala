@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
+
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 import consulo.project.Project
 import consulo.util.nodep.io.FileUtilRt
 import consulo.language.psi.search.FilenameIndex

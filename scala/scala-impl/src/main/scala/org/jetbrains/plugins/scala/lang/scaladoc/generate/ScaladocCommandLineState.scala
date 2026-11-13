@@ -18,6 +18,7 @@ import consulo.module.content.layer.OrderEnumerator
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._

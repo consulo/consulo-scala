@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
+
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 import consulo.util.collection.ArrayUtil.EMPTY_STRING_ARRAY
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScValueOrVariable
 import org.jetbrains.plugins.scala.lang.psi.stubs.impl.{ScExpressionOwnerStub, ScTypeElementOwnerStub}

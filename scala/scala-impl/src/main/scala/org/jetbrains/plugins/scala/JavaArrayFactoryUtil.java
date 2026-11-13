@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala;
 
+
+import org.jetbrains.plugins.scala.api.api;
 import consulo.language.psi.PsiElement;
 import consulo.util.collection.ArrayFactory;
 import org.jetbrains.plugins.scala.lang.psi.api.base.*;

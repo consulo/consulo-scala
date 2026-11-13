@@ -179,13 +179,13 @@ def foo(): String = {
   def org$example$Example$foo$defaultValue: String = "default";
   val org$example$Example$foo$$tracer = _root_.org.jetbrains.plugins.scala.caches.stats.Tracer("org$example$Example$foo$cacheKey", "Example.foo");
   org$example$Example$foo$$tracer.invocation();
-  val org$example$Example$foo$holder = _root_.org.jetbrains.plugins.scala.caches.CachesUtil.getOrCreateCachedRef[_root_.com.intellij.psi.PsiElement, String](org$example$Example$foo$element, org$example$Example$foo$key, "org$example$Example$foo$cacheKey", "Example.foo", (() => ModTracker.anyScalaPsiChange));
+  val org$example$Example$foo$holder = _root_.org.jetbrains.plugins.scala.caches.CachesUtil.getOrCreateCachedRef[_root_.consulo.language.psi.PsiElement, String](org$example$Example$foo$element, org$example$Example$foo$key, "org$example$Example$foo$cacheKey", "Example.foo", (() => ModTracker.anyScalaPsiChange));
   val fromCachedHolder = org$example$Example$foo$holder.get();
   if (fromCachedHolder.$bang$eq(null))
     return fromCachedHolder
   else
     ();
-  val org$example$Example$foo$guard = org.jetbrains.plugins.scala.caches.RecursionManager.RecursionGuard[_root_.com.intellij.psi.PsiElement, String](org$example$Example$foo$key.toString);
+  val org$example$Example$foo$guard = org.jetbrains.plugins.scala.caches.RecursionManager.RecursionGuard[_root_.consulo.language.psi.PsiElement, String](org$example$Example$foo$key.toString);
   if (org$example$Example$foo$guard.checkReentrancy(org$example$Example$foo$dataForGuard))
     return _root_.org.jetbrains.plugins.scala.caches.CachesUtil.handleRecursiveCall(org$example$Example$foo$element, org$example$Example$foo$data, org$example$Example$foo$key, org$example$Example$foo$defaultValue)
   else
@@ -224,7 +224,7 @@ def foo(): String = {
               } finally exc.set.foreach(((fun) => fun.isProbablyRecursive = false))
             else
               {
-                val fun = com.intellij.psi.util.PsiTreeUtil.getContextOfType(org$example$Example$foo$element, true, classOf[org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction]);
+                val fun = consulo.language.psi.util.PsiTreeUtil.getContextOfType(org$example$Example$foo$element, true, classOf[org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction]);
                 if (fun.$eq$eq(null).$bar$bar(fun.isProbablyRecursive))
                   throw exc
                 else
@@ -272,13 +272,13 @@ def foo(x: Int): String = {
   def org$example$Example$foo$defaultValue: String = "default";
   val org$example$Example$foo$$tracer = _root_.org.jetbrains.plugins.scala.caches.stats.Tracer("org$example$Example$foo$cacheKey", "Example.foo");
   org$example$Example$foo$$tracer.invocation();
-  val org$example$Example$foo$holder = _root_.org.jetbrains.plugins.scala.caches.CachesUtil.getOrCreateCachedMap[_root_.com.intellij.psi.PsiElement, Int, String](org$example$Example$foo$element, org$example$Example$foo$key, "org$example$Example$foo$cacheKey", "Example.foo", (() => ModTracker.anyScalaPsiChange));
+  val org$example$Example$foo$holder = _root_.org.jetbrains.plugins.scala.caches.CachesUtil.getOrCreateCachedMap[_root_.consulo.language.psi.PsiElement, Int, String](org$example$Example$foo$element, org$example$Example$foo$key, "org$example$Example$foo$cacheKey", "Example.foo", (() => ModTracker.anyScalaPsiChange));
   val fromCachedHolder = org$example$Example$foo$holder.get(org$example$Example$foo$data);
   if (fromCachedHolder.$bang$eq(null))
     return fromCachedHolder
   else
     ();
-  val org$example$Example$foo$guard = org.jetbrains.plugins.scala.caches.RecursionManager.RecursionGuard[scala.Tuple2[_root_.com.intellij.psi.PsiElement, Int], String](org$example$Example$foo$key.toString);
+  val org$example$Example$foo$guard = org.jetbrains.plugins.scala.caches.RecursionManager.RecursionGuard[scala.Tuple2[_root_.consulo.language.psi.PsiElement, Int], String](org$example$Example$foo$key.toString);
   if (org$example$Example$foo$guard.checkReentrancy(org$example$Example$foo$dataForGuard))
     return _root_.org.jetbrains.plugins.scala.caches.CachesUtil.handleRecursiveCall(org$example$Example$foo$element, org$example$Example$foo$data, org$example$Example$foo$key, org$example$Example$foo$defaultValue)
   else
@@ -317,7 +317,7 @@ def foo(x: Int): String = {
               } finally exc.set.foreach(((fun) => fun.isProbablyRecursive = false))
             else
               {
-                val fun = com.intellij.psi.util.PsiTreeUtil.getContextOfType(org$example$Example$foo$element, true, classOf[org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction]);
+                val fun = consulo.language.psi.util.PsiTreeUtil.getContextOfType(org$example$Example$foo$element, true, classOf[org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction]);
                 if (fun.$eq$eq(null).$bar$bar(fun.isProbablyRecursive))
                   throw exc
                 else

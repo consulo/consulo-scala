@@ -134,7 +134,7 @@ public class ScalaExtractMethodDialog extends DialogWrapper {
     myNameLabel.setLabelFor(editorTextField);
     editorTextField.addDocumentListener(new DocumentListener() {
       @Override
-      public void documentChanged(com.intellij.openapi.editor.event.DocumentEvent event) {
+      public void documentChanged(consulo.document.event.DocumentEvent event) {
         if (isDefaultClassName) updateClassName(StringUtil.capitalize(editorTextField.getText()));
         updateSignature();
       }

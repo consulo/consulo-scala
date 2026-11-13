@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala
 
+
+import org.jetbrains.plugins.scala.api.NotImplementedError
+import org.jetbrains.plugins.scala.api.Scala3Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.api.api
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.language.impl.psi.stub.StubBasedPsiElementBase
 import consulo.language.ast.ASTNode
@@ -19,8 +25,8 @@ import consulo.navigation.OpenFileDescriptor
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
-import com.intellij.openapi.util.{A, B, DialogTitle, E, F, NlsContexts, NlsSafe}
 import consulo.application.util.function.{Computable, ThrowableComputable}
+import com.intellij.openapi.util.{DialogTitle, NlsContexts, NlsSafe}
 import consulo.disposer.Disposer
 import consulo.util.lang.ref.Ref
 import consulo.document.util.TextRange
@@ -49,6 +55,7 @@ import consulo.util.collection.ArrayFactory
 import consulo.application.util.function.Processor
 import org.jetbrains.annotations.{Nls, NonNls, Nullable}
 import org.jetbrains.plugins.scala.caches.UserDataHolderDelegator
+import org.jetbrains.plugins.scala.extensions.implementation.iterator._
 import org.jetbrains.plugins.scala.api.extensions.implementation.iterator._
 import org.jetbrains.plugins.scala.internal.ScalaDynamicPluginManager
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
@@ -1525,7 +1532,7 @@ package object extensions {
 
   implicit def toProcessor[T](action: T => Boolean): Processor[T] = (t: T) => action(t)
 
-  implicit def toComputable[T](action: => T): com.intellij.openapi.util.Computable[T] = () => action
+  implicit def toComputable[T](action: => T): consulo.application.util.function.Computable[T] = () => action
 
   implicit def toCallable[T](action: => T): Callable[T] = () => action
 

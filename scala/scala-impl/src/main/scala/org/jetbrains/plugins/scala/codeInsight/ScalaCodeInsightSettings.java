@@ -34,7 +34,7 @@ public class ScalaCodeInsightSettings implements PersistentStateComponent<ScalaC
     public static final int MAX_PRESENTATION_LENGTH = Byte.MAX_VALUE;
 
     public static ScalaCodeInsightSettings getInstance() {
-        return ApplicationManager.getApplication().getService(ScalaCodeInsightSettings.class);
+        return ApplicationManager.getApplication().getInstance(ScalaCodeInsightSettings.class);
     }
 
     //private fields are not serialized

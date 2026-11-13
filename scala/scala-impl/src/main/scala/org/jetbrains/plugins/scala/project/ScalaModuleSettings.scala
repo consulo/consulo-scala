@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
 import consulo.module.Module

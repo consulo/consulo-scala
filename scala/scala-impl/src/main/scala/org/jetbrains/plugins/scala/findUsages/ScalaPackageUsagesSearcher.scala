@@ -6,6 +6,7 @@ import consulo.language.psi.{PsiPackage, PsiReference}
 import consulo.language.psi.search.{SearchRequestCollector, UsageSearchContext}
 import consulo.language.psi.search.ReferencesSearch
 import consulo.application.util.function.Processor
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScPackageImpl
 

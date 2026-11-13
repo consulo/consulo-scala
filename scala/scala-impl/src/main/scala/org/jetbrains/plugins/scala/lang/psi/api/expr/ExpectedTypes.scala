@@ -18,5 +18,5 @@ trait ExpectedTypes {
 object ExpectedTypes {
   type ParameterType = (ScType, Option[ScTypeElement])
 
-  def instance(): ExpectedTypes = ApplicationManager.getApplication.getService(classOf[ExpectedTypes])
+  def instance(): ExpectedTypes = ApplicationManager.getApplication.getInstance(classOf[ExpectedTypes])
 }

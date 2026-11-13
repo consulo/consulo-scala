@@ -721,7 +721,7 @@ object ScalaPsiManager {
     instance(ctx.getProject)
 
   def instance(project: Project): ScalaPsiManager =
-    project.getService(classOf[ScalaPsiManager])
+    project.getInstance(classOf[ScalaPsiManager])
 
   implicit val ImplicitCollectorCacheCapabilities: CacheCapabilities[ImplicitCollectorCache] =
     new CacheCapabilities[ImplicitCollectorCache] {

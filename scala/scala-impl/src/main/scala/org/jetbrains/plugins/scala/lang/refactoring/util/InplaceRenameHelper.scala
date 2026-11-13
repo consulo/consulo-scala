@@ -16,6 +16,7 @@ import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiNamedElement}
 import consulo.language.editor.refactoring.rename.inplace.MyLookupExpression
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 
 import scala.collection.immutable.ArraySeq

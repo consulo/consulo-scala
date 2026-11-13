@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
+
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.stubs.impl.ScBoundsOwnerStub
 

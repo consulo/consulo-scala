@@ -46,7 +46,7 @@ class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: AST
 
   override def getReturnTypeElement: PsiTypeElement = null
 
-  override def getHierarchicalMethodSignature: com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl = new HierarchicalMethodSignatureImpl(getSignature(PsiSubstitutor.EMPTY))
+  override def getHierarchicalMethodSignature: com.intellij.java.language.impl.psi.impl.source.HierarchicalMethodSignatureImpl = new HierarchicalMethodSignatureImpl(getSignature(PsiSubstitutor.EMPTY))
 
   override def findSuperMethods(parentClass: PsiClass): Array[PsiMethod] = PsiMethod.EMPTY_ARRAY
 
@@ -58,7 +58,7 @@ class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: AST
 
   override def findDeepestSuperMethods: Array[PsiMethod] = PsiMethod.EMPTY_ARRAY
 
-  override def findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): java.util.ArrayList[com.intellij.psi.util.MethodSignatureBackedByPsiMethod] =
+  override def findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): java.util.ArrayList[com.intellij.java.language.psi.util.MethodSignatureBackedByPsiMethod] =
     new util.ArrayList[MethodSignatureBackedByPsiMethod]()
 
   override def getSignature(substitutor: PsiSubstitutor): MethodSignatureBackedByPsiMethod = MethodSignatureBackedByPsiMethod.create(this, substitutor)

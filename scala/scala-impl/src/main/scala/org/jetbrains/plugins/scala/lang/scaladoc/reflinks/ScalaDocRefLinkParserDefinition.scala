@@ -8,6 +8,7 @@ import consulo.project.Project
 import consulo.language.ast.{IFileElementType, TokenSet}
 import consulo.language.file.FileViewProvider
 import consulo.language.psi.{PsiElement, PsiFile}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.lexer.ScalaDocRefLinkLexer
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.parser.ScalaDocRefLinkParser
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScalaDocRefLinkFile

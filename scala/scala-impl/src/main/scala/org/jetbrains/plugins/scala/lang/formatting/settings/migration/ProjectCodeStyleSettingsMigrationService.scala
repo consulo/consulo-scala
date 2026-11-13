@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
-import com.thaiopensource.util.Service
 import consulo.component.persist.{State, Storage, StoragePathMacros}
 import consulo.project.Project
 import consulo.language.codeStyle.CodeStyleScheme
@@ -12,7 +15,10 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.migration.CodeStyleS
   name = "ProjectCodeStyleSettingsMigration",
   storages = Array[Storage](new Storage(StoragePathMacros.WORKSPACE_FILE))
 )
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class ProjectCodeStyleSettingsMigrationService(private val project: Project)
   extends CodeStyleSettingsMigrationServiceBase  {
 

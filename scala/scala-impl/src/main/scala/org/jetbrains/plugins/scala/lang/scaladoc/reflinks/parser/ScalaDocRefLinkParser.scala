@@ -17,7 +17,7 @@ class ScalaDocRefLinkParser extends PsiParser with LightPsiParser {
     rootMarker.done(rootElementType)
   }
 
-  override def parse(rootElementType: IElementType, builder: PsiBuilder): com.intellij.lang.ASTNode = {
+  override def parse(rootElementType: IElementType, builder: PsiBuilder): consulo.language.ast.ASTNode = {
     parseLight(rootElementType, builder)
     builder.getTreeBuilt
   }

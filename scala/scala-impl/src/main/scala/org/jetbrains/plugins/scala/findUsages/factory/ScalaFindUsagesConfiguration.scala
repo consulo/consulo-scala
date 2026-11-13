@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.find.ui.AbstractFindUsagesDialog
 import consulo.find.{FindUsagesHandler, FindUsagesOptions}
-import com.thaiopensource.util.Service
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.TestOnly
@@ -16,7 +19,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, 
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
 import org.jetbrains.plugins.scala.settings.CompilerIndicesSettings
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class ScalaFindUsagesConfiguration(project: Project) {
   private var typeDefinitionOptions: ScalaTypeDefinitionFindUsagesOptions = scala.compiletime.uninitialized
   private var memberOptions: ScalaMemberFindUsagesOptions = scala.compiletime.uninitialized
@@ -54,7 +60,7 @@ final class ScalaFindUsagesConfiguration(project: Project) {
 }
 
 object ScalaFindUsagesConfiguration {
-  def getInstance(project: Project): ScalaFindUsagesConfiguration = project.getService(classOf[ScalaFindUsagesConfiguration])
+  def getInstance(project: Project): ScalaFindUsagesConfiguration = project.getInstance(classOf[ScalaFindUsagesConfiguration])
 
   abstract class FindUsagesOptionsResolver {
     def getOptions: Option[FindUsagesOptions]

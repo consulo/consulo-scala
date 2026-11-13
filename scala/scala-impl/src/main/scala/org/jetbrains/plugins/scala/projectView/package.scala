@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala
 
+
+import org.jetbrains.plugins.scala.api.ScalaFileType
+import org.jetbrains.plugins.scala.api.api
 import consulo.project.ui.view.tree.ViewSettings
 import consulo.project.ui.view.tree.AbstractTreeNode
 import consulo.project.Project

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import consulo.disposer.Disposable
 import consulo.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.roots.libraries.ui

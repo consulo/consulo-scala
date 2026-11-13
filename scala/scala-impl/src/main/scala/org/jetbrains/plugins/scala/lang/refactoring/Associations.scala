@@ -75,7 +75,7 @@ final class Associations private(override val associations: Array[Association])
     val bindings = {
       var result: Seq[Binding] = Seq.empty
       val title = ScalaBundle.message("processing.imports.title")
-      val performUnderProgress: java.util.function.Consumer[com.intellij.openapi.progress.ProgressIndicator] = { indicator =>
+      val performUnderProgress: java.util.function.Consumer[consulo.application.progress.ProgressIndicator] = { indicator =>
         indicator.setIndeterminate(false)
         indicator.setFraction(0)
         result = getBindingsForOffsetUnderProgress(indicator)(segment.getStartOffset)
@@ -105,7 +105,7 @@ final class Associations private(override val associations: Array[Association])
     }
   }
 
-  private def getBindingsForOffsetUnderProgress(indicator: com.intellij.openapi.progress.ProgressIndicator)
+  private def getBindingsForOffsetUnderProgress(indicator: consulo.application.progress.ProgressIndicator)
                                                (offset: Int)
                                                (implicit file: PsiFile, adjuster: AfterIndentOffsetAdjuster): Seq[Binding] = {
     val size = associations.length

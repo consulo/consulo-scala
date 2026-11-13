@@ -244,7 +244,7 @@ final class ScalafmtDynamicServiceImpl
 object ScalafmtDynamicServiceImpl {
 
 
-  private object ScalafmtVersionConverter extends com.intellij.util.xmlb.Converter[ScalafmtVersion] {
+  private object ScalafmtVersionConverter extends consulo.util.xml.serializer.Converter[ScalafmtVersion] {
     override def fromString(value: String): ScalafmtVersion = {
       val parsed = ScalafmtVersion.parse(value)
       parsed.getOrElse(throw new AssertionError(s"Wrong scalafmt version format: $value"))

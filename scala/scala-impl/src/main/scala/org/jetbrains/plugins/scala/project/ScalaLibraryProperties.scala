@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import consulo.content.library.LibraryProperties
 import consulo.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore

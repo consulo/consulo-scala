@@ -9,6 +9,7 @@ import com.intellij.java.language.impl.psi.scope.ElementClassHint
 import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
+import org.jetbrains.plugins.scala.lang.psi.api._
 import org.jetbrains.plugins.scala.api.lang.psi.api._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeProjection
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionExt, ScTypeAlias, ScTypeAliasDefinition}

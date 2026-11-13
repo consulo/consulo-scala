@@ -40,7 +40,7 @@ private class CacheWithoutModificationCountN[T <: Product, R](id: String, name: 
 @CachedWithoutModificationCount(ValueWrapper.SofterReference, cleanupScheduler)
 def foo(x: Int): String = "Foo"
 
-private val org$example$Example$foo$map = new java.util.concurrent.ConcurrentHashMap[Int, _root_.com.intellij.util.SofterReference[String]]();
+private val org$example$Example$foo$map = new java.util.concurrent.ConcurrentHashMap[Int, _root_.consulo.application.util.SofterReference[String]]();
 cleanupScheduler.asInstanceOf[_root_.org.jetbrains.plugins.scala.caches.CleanupScheduler].subscribe((() => org$example$Example$foo$map.clear()));
 def foo(x: Int): String = {
   var org$example$Example$foo = {
@@ -48,7 +48,7 @@ def foo(x: Int): String = {
     if (fromMap.$bang$eq(null))
       fromMap
     else
-      null.asInstanceOf[_root_.com.intellij.util.SofterReference[String]]
+      null.asInstanceOf[_root_.consulo.application.util.SofterReference[String]]
   };
   val org$example$Example$foo$$tracer = _root_.org.jetbrains.plugins.scala.caches.stats.Tracer("org$example$Example$foo$cacheKey", "Example.foo");
   org$example$Example$foo$$tracer.invocation();
@@ -63,7 +63,7 @@ def foo(x: Int): String = {
         "Foo"
       } finally org$example$Example$foo$$tracer.calculationEnd();
       assert(org$example$Example$foo$computedValue.$bang$eq(null), "Cached function should never return null");
-      org$example$Example$foo$map.put(x, new _root_.com.intellij.util.SofterReference(org$example$Example$foo$computedValue));
+      org$example$Example$foo$map.put(x, new _root_.consulo.application.util.SofterReference(org$example$Example$foo$computedValue));
       org$example$Example$foo$computedValue
     }
   else

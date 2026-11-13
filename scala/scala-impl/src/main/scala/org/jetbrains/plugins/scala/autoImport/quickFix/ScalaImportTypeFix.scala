@@ -26,6 +26,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScPackaging, ScTypedDe
 import org.jetbrains.plugins.scala.lang.psi.impl.{ScPackageImpl, ScalaPsiManager}
 import org.jetbrains.plugins.scala.lang.resolve.ResolveTargets
 import org.jetbrains.plugins.scala.lang.resolve.ResolveUtils.{isAccessible, kindMatches}
+import org.jetbrains.plugins.scala.settings._
 import org.jetbrains.plugins.scala.compilersettings.settings._
 
 final class ScalaImportTypeFix private (ref: ScReference)

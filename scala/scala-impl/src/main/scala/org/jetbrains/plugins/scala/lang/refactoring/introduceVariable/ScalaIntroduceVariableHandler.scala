@@ -7,7 +7,6 @@ import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, SelectionModel}
 import consulo.project.Project
 import consulo.ui.ex.awt.DialogWrapper
-import com.intellij.openapi.util.D
 import consulo.document.util.TextRange
 import consulo.project.ui.wm.WindowManager
 import consulo.language.psi.{PsiFile, PsiWhiteSpace}

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs
 
+
+import org.jetbrains.plugins.scala.api.lang.psi.stubs.ScStubElement
 import com.intellij.java.language.impl.psi.impl.java.stubs.PsiClassStub
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 

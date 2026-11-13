@@ -5,7 +5,7 @@ import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, P
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.annotations.Nls
 
-@deprecated("Implement com.intellij.codeInspection.LocalInspectionTool.LocalInspectionTool directly", "2022.3")
+@deprecated("Implement consulo.language.editor.inspection.LocalInspectionTool.LocalInspectionTool directly", "2022.3")
 abstract class AbstractRegisteredInspection extends LocalInspectionTool {
 
   protected def problemDescriptor(element: PsiElement,

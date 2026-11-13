@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scala
 package annotator
 package element
 
+
+import org.jetbrains.plugins.scala.api.api
 import consulo.language.editor.inspection.ProblemHighlightType
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.ScalaBundle

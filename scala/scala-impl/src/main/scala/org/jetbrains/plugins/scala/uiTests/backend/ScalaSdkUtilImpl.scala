@@ -12,6 +12,7 @@ import com.intellij.openapi.roots.ui.configuration.libraryEditor.NewLibraryEdito
 import consulo.module.content.layer.ModifiableRootModel
 import consulo.module.content.util.ModuleRootModificationUtil
 import org.apache.ivy.util.MessageLogger
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.components.libextensions.ProgressIndicatorLogger
 import org.jetbrains.plugins.scala.extensions.withProgressSynchronouslyTry

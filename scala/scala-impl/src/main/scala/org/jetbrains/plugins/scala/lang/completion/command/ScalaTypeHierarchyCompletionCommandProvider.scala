@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.lang.completion.command
 import com.intellij.codeInsight.completion.command.commands.AbstractTypeHierarchyCompletionCommandProvider
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiFile}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.{&, PsiElementExt, ResolvesTo}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScPrimaryConstructor, ScReference}

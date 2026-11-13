@@ -2,6 +2,9 @@ package org.jetbrains.plugins.scala
 package lang
 package psi
 
+
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.api.api
 import consulo.language.codeStyle.CodeStyle
 import com.intellij.java.language.codeInsight.AnnotationUtil
 import consulo.language.impl.psi.ASTDelegatePsiElement

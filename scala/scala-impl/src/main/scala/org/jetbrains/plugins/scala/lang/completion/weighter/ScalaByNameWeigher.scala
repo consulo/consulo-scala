@@ -7,6 +7,7 @@ import consulo.language.psi.util.PsiTreeUtil.getContextOfType
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.util.text.EditDistance.optimalAlignment
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.{&, PsiNamedElementExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.completion.{insideTypePattern, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern

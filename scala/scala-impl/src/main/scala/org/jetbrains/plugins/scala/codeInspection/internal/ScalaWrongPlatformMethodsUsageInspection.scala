@@ -73,27 +73,27 @@ class ScalaWrongPlatformMethodsUsageInspection extends LocalInspectionTool {
 private object ScalaWrongPlatformMethodsUsageInspection {
 
   private val methodNameToClasses: Map[String, (Seq[String], Option[String])] = Map(
-    ("getContainingClass", (Seq("com.intellij.psi.PsiMember"),
+    ("getContainingClass", (Seq("com.intellij.java.language.psi.PsiMember"),
       Some("org.jetbrains.plugins.scala.extensions.PsiMemberExt.containingClass")
     )),
-    ("getQualifiedName", (Seq("com.intellij.psi.PsiClass"),
+    ("getQualifiedName", (Seq("com.intellij.java.language.psi.PsiClass"),
       Some("org.jetbrains.plugins.scala.extensions.PsiClassExt.qualifiedName"))
     ),
     ("getName", (
       Seq(
-        "com.intellij.navigation.NavigationItem",
-        "com.intellij.psi.PsiNamedElement",
+        "consulo.navigation.NavigationItem",
+        "consulo.language.psi.PsiNamedElement",
         "org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction",
         "org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement"
       ),
       Some("org.jetbrains.plugins.scala.extensions.PsiNamedElementExt.name"))
     ),
-    ("hasModifierProperty", (Seq("com.intellij.psi.PsiModifierListOwner"),
+    ("hasModifierProperty", (Seq("com.intellij.java.language.psi.PsiModifierListOwner"),
       Some("org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt._")
     )),
-    ("getClasses", (Seq("com.intellij.psi.PsiClassOwner"), None)),
+    ("getClasses", (Seq("com.intellij.java.language.psi.PsiClassOwner"), None)),
     ("getClassNames", (Seq("com.intellij.psi.PsiClassOwnerEx"), None)),
-    ("putUserData", (Seq("com.intellij.openapi.project.Project", "com.intellij.openapi.module.Module"),
+    ("putUserData", (Seq("consulo.project.Project", "consulo.module.Module"),
       Some("org.jetbrains.plugins.scala.extensions.AnyRefExt.delegateUserDataHolder.putUserData")
     )),
   )

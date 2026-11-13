@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.util
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.concurrency.JobScheduler
 import com.intellij.diagnostic.PerformanceWatcher
 import consulo.desktop.awt.ui.IdeEventQueue
@@ -7,7 +11,6 @@ import consulo.disposer.Disposable
 import consulo.application.ApplicationManager
 import consulo.ui.ModalityState
 import com.intellij.openapi.application.TransactionGuard
-import com.thaiopensource.util.Service
 import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager, StandardProgressIndicator}
 import consulo.component.ProcessCanceledException
 import consulo.project.Project
@@ -31,7 +34,7 @@ private final class UIFreezingGuard extends ProjectActivity {
    */
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getService(classOf[UIFreezingGuard.AppService])
+    ApplicationManager.getApplication.getInstance(classOf[UIFreezingGuard.AppService])
   }
 }
 
@@ -43,7 +46,10 @@ object UIFreezingGuard {
    * If such events are detected, it issues a cancellation, to hopefully stop the long-running resolve computation which
    * is blocking the UI thread.
    */
-  @Service(Array(Service.Level.APP))
+  // upstream: @Service(Array(Service.Level.APP))
+  @Singleton
+  @ServiceAPI(ComponentScope.APPLICATION)
+  @ServiceImpl
   private final class AppService extends Disposable {
     private final val periodMs = 300
     private var periodicTask: ScheduledFuture[?] =

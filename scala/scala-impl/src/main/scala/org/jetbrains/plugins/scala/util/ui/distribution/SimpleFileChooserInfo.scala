@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.util.ui.distribution
 import com.intellij.ide.`macro`.Macro
 import consulo.fileChooser.{FileChooserDescriptor, FileChooserDescriptorFactory}
 import com.intellij.openapi.roots.ui.distribution.FileChooserInfo
+import org.jetbrains.annotations.NotNull
 
 import kotlin.jvm.functions.Function1
 

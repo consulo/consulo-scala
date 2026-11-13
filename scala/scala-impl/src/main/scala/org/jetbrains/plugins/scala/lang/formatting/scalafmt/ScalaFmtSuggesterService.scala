@@ -4,7 +4,7 @@ import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
 import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
-import com.thaiopensource.util.Service
+import com.intellij.openapi.components.Service
 import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
@@ -89,7 +89,7 @@ final class ScalaFmtSuggesterService(private val project: Project)
 object ScalaFmtSuggesterService {
 
   def instance(implicit project: Project): ScalaFmtSuggesterService =
-    project.getService(classOf[ScalaFmtSuggesterService])
+    project.getInstance(classOf[ScalaFmtSuggesterService])
 
   class State {
     @BeanProperty

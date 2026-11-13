@@ -531,7 +531,7 @@ object ScalaResolveResult {
                             isInStableElementPattern: Boolean = false)(implicit context: Context): ScalaLookupItem = {
       val ScalaResolveResult(element, substitutor) = resolveResult: @unchecked
       if (!element.isValid) {
-        throw new IllegalArgumentException(s"`$element` is supposed to be valid (please consider using ${classOf[com.intellij.openapi.application.ReadAction].getName})")
+        throw new IllegalArgumentException(s"`$element` is supposed to be valid (please consider using ${classOf[consulo.application.ReadAction].getName})")
       }
 
       val isCurrentClassMember: Boolean = {

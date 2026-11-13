@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala
 
+
+import org.jetbrains.plugins.scala.api.Scala3Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.api.api
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.process.ExecutionException
 import consulo.disposer.Disposable
 import consulo.document.Document

@@ -5,6 +5,7 @@ import com.intellij.lang.LightPsiParser
 import consulo.language.parser.PsiBuilder
 import consulo.language.parser.PsiParser
 import consulo.language.ast.IElementType
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.tLINE_COMMENT
 

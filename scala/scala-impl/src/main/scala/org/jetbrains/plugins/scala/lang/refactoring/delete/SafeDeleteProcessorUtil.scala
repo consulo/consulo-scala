@@ -489,5 +489,5 @@ object SafeDeleteProcessorUtil {
     false
   }
 
-  private val LOG: Logger = Logger.getInstance("#com.intellij.refactoring.safeDelete.JavaSafeDeleteProcessor")
+  private val LOG: Logger = Logger.getInstance("#com.intellij.java.impl.refactoring.safeDelete.JavaSafeDeleteProcessor")
 }

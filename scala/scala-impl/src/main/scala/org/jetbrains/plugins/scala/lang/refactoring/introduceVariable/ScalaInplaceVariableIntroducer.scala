@@ -37,6 +37,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.{BalloonConflictsReport
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.settings.annotations._
+import org.jetbrains.plugins.scala.util._
 import org.jetbrains.plugins.scala.api.util._
 import org.jetbrains.plugins.scala.language.util._
 import org.jetbrains.plugins.scala.rt.util._

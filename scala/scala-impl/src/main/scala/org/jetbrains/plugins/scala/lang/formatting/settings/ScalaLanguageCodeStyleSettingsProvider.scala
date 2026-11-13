@@ -33,7 +33,7 @@ class ScalaLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsPr
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-  override def getIndentOptionsEditor: com.intellij.application.options.SmartIndentOptionsEditor = new SmartIndentOptionsEditor
+  override def getIndentOptionsEditor: consulo.language.codeStyle.ui.setting.SmartIndentOptionsEditor = new SmartIndentOptionsEditor
 
   override def createCustomSettings(settings: CodeStyleSettings): org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings = new ScalaCodeStyleSettings(settings)
 

@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.navigation.ItemPresentation
 import consulo.application.{ApplicationManager, ReadAction}
-import com.thaiopensource.util.Service
 import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.ProgressManager
@@ -194,7 +197,7 @@ final class ScSyntheticClass(
   }
 
   override def processDeclarations(
-    processor: com.intellij.psi.scope.PsiScopeProcessor,
+    processor: consulo.language.psi.resolve.PsiScopeProcessor,
     state: ResolveState,
     lastParent: PsiElement,
     place: PsiElement
@@ -318,7 +321,10 @@ sealed class ScSyntheticFunction(
   }
 }
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class SyntheticClasses(project: Project) {
   implicit def ctx: ProjectContext = project
 
@@ -733,7 +739,7 @@ final class SyntheticClassElementFinder(project: Project) extends PsiElementFind
 }
 
 object SyntheticClasses {
-  def get(project: Project): SyntheticClasses = project.getService(classOf[SyntheticClasses])
+  def get(project: Project): SyntheticClasses = project.getInstance(classOf[SyntheticClasses])
 
   val TypeParameter = "TypeParameterForSyntheticFunction"
 }

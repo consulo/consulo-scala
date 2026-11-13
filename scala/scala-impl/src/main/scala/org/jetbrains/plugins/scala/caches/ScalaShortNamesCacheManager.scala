@@ -1,6 +1,9 @@
 package org.jetbrains.plugins.scala.caches
 
-import com.thaiopensource.util.Service
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.project.{DumbService, Project}
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import consulo.language.psi.scope.GlobalSearchScope
@@ -17,7 +20,10 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil._
 import scala.collection.immutable.ArraySeq.unsafeWrapArray
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class ScalaShortNamesCacheManager(implicit project: Project) {
 
   def getClassByFQName(fqn: String, scope: GlobalSearchScope): PsiClass = {
@@ -137,5 +143,5 @@ final class ScalaShortNamesCacheManager(implicit project: Project) {
 object ScalaShortNamesCacheManager {
 
   def getInstance(implicit project: Project): ScalaShortNamesCacheManager =
-    project.getService(classOf[ScalaShortNamesCacheManager])
+    project.getInstance(classOf[ScalaShortNamesCacheManager])
 }

@@ -1,13 +1,19 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
-import com.thaiopensource.util.Service
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import consulo.project.Project
 
 /**
  * Each [[Search.Method]] has its own cache, and one [[Search.Method]] instance is bound to a project
  * by virtue of this class being adorned with `@Service(Array(Service.Level.PROJECT))`.
  */
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private[declarationRedundancy] final class SearchMethodsWithProjectBoundCache private(project: Project) {
   val LocalSearchMethods: Seq[Search.Method] = Seq(
     new LocalImplicitSearch(c => c.isOnlyVisibleInLocalFile && c.isImplicit),
@@ -26,5 +32,5 @@ private[declarationRedundancy] final class SearchMethodsWithProjectBoundCache pr
 }
 
 object SearchMethodsWithProjectBoundCache {
-  def apply(project: Project): SearchMethodsWithProjectBoundCache = project.getService(classOf[SearchMethodsWithProjectBoundCache])
+  def apply(project: Project): SearchMethodsWithProjectBoundCache = project.getInstance(classOf[SearchMethodsWithProjectBoundCache])
 }

@@ -97,5 +97,5 @@ object ReflectExpansionsCollector {
   }
 
   def getInstance(project: Project): ReflectExpansionsCollector =
-    project.getService(classOf[ReflectExpansionsCollector])
+    project.getInstance(classOf[ReflectExpansionsCollector])
 }

@@ -302,7 +302,7 @@ object ScalaPluginAboutPopupDescriptionProvider {
 
   //noinspection TypeAnnotation
   private object DefaultSettings {
-    val ScalaCompileServerSettings = new org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+    val ScalaCompileServerSettings = new org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
     val ScalaCompilerSettings = new org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration(null)
     val SbtProjectSettings = new org.jetbrains.sbt.project.settings.SbtProjectSettings
     val ScalaProjectSettings = new org.jetbrains.plugins.scala.settings.ScalaProjectSettings(null)

@@ -22,7 +22,7 @@ class ScalaDirectiveParserDefinition extends ParserDefinition {
   //noinspection TypeAnnotation
   override val getStringLiteralElements = TokenSet.create()
 
-  override def createLexer(project: Project): com.intellij.lexer.FlexAdapter =
+  override def createLexer(project: Project): consulo.language.lexer.FlexAdapter =
     new FlexAdapter(new _ScalaDirectiveLexer(null.asInstanceOf[java.io.Reader]))
 
   override def createParser(project: Project): org.jetbrains.plugins.scalaDirective.lang.parser.ScalaDirectiveParser = new ScalaDirectiveParser

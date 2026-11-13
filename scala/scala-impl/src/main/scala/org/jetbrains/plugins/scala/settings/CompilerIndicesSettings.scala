@@ -74,5 +74,5 @@ object CompilerIndicesSettings {
   }
 
   def apply(project: Project): CompilerIndicesSettings =
-    project.getService(classOf[CompilerIndicesSettings])
+    project.getInstance(classOf[CompilerIndicesSettings])
 }

@@ -191,7 +191,7 @@ public class ScalaProjectSettings implements PersistentStateComponent<ScalaProje
   }
 
   public static ScalaProjectSettings getInstance(Project project) {
-    return project.getService(ScalaProjectSettings.class);
+    return project.getInstance(ScalaProjectSettings.class);
   }
 
   @Override

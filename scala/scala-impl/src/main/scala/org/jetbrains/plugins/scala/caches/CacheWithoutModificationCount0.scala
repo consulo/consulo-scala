@@ -39,7 +39,7 @@ private class CacheWithoutModificationCount0[R](id: String, name: String, wrappe
 def foo(): String = "Foo"
 
 new _root_.scala.volatile();
-private var org$example$Example$foo: _root_.com.intellij.util.SofterReference[String] = null.asInstanceOf[_root_.com.intellij.util.SofterReference[String]];
+private var org$example$Example$foo: _root_.consulo.application.util.SofterReference[String] = null.asInstanceOf[_root_.consulo.application.util.SofterReference[String]];
 cleanupScheduler.asInstanceOf[_root_.org.jetbrains.plugins.scala.caches.CleanupScheduler].subscribe((() => org$example$Example$foo = null));
 def foo(): String = {
   val org$example$Example$foo$$tracer = _root_.org.jetbrains.plugins.scala.caches.stats.Tracer("org$example$Example$foo$cacheKey", "Example.foo");
@@ -55,7 +55,7 @@ def foo(): String = {
         "Foo"
       } finally org$example$Example$foo$$tracer.calculationEnd();
       assert(org$example$Example$foo$computedValue.$bang$eq(null), "Cached function should never return null");
-      org$example$Example$foo = new _root_.com.intellij.util.SofterReference(org$example$Example$foo$computedValue);
+      org$example$Example$foo = new _root_.consulo.application.util.SofterReference(org$example$Example$foo$computedValue);
       org$example$Example$foo$computedValue
     }
   else
