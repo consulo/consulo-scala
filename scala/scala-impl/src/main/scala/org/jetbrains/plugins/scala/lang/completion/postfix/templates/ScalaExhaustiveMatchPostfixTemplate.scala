@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.lang.completion.postfix.templates
 
 import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.postfixTemplate.PostfixTemplate
-import com.intellij.codeInsight.template.postfix.templates.StringBasedPostfixTemplate
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -26,7 +25,7 @@ final class ScalaExhaustiveMatchPostfixTemplate(
 ) extends PostfixTemplate(
   null,
   alias,
-  s"${StringBasedPostfixTemplate.EXPR} ${ScalaExhaustiveMatchPostfixTemplate.alias} ${ScalaExhaustiveMatchPostfixTemplate.exhaustiveAlias}",
+  s"${ScalaStringBasedPostfixTemplate.EXPR} ${ScalaExhaustiveMatchPostfixTemplate.alias} ${ScalaExhaustiveMatchPostfixTemplate.exhaustiveAlias}",
   null
 ) with DumbAware {
 

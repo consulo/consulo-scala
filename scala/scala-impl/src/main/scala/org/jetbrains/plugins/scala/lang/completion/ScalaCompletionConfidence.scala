@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.completion
 
 import consulo.language.editor.completion.CompletionConfidence
-import consulo.codeEditor.Editor
+import consulo.language.Language
 import consulo.language.psi.{PsiElement, PsiFile}
 import consulo.util.lang.ThreeState
 import org.jetbrains.annotations.Nullable
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt}
 import org.jetbrains.plugins.scala.lang.completion.ScalaCompletionConfidence._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -15,7 +16,9 @@ import org.jetbrains.plugins.scala.lang.psi.types.{ScOrType, ScTypeExt}
 
 final class ScalaCompletionConfidence extends CompletionConfidence {
 
-  override def shouldSkipAutopopup(editor: Editor, contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override def shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = {
     def typedChar(c: Char): Boolean = psiFile.charSequence.charAt(offset - 1) == c
 
     if (offset != 0) {
@@ -37,7 +40,7 @@ final class ScalaCompletionConfidence extends CompletionConfidence {
         }
       }
     }
-    super.shouldSkipAutopopup(editor, contextElement, psiFile, offset)
+    super.shouldSkipAutopopup(contextElement, psiFile, offset)
   }
 }
 

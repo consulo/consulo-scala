@@ -27,7 +27,7 @@ final class ScalaGlobalMembersCompletionContributor extends ScalaCompletionContr
   extend(
     CompletionType.BASIC,
     InsideScalaReference_NotTopLevel,
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters,
                                   context: ProcessingContext,

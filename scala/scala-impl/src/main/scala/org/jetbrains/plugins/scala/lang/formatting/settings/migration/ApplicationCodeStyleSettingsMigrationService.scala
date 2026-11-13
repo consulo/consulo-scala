@@ -2,13 +2,10 @@ package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
 import consulo.application.ApplicationManager
 import consulo.component.persist.{State, Storage}
-import consulo.language.codeStyle.CodeStyleScheme
-import com.intellij.psi.impl.source.codeStyle.CodeStyleSchemesImpl
+import consulo.language.codeStyle.{CodeStyleScheme, CodeStyleSchemes}
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.formatting.settings.migration.CodeStyleSettingsMigrationServiceBase.MigrationItem
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
-
-import scala.jdk.CollectionConverters._
 
 @State(
   name = "ApplicationCodeStyleSettingsMigration",
@@ -17,7 +14,7 @@ import scala.jdk.CollectionConverters._
 class ApplicationCodeStyleSettingsMigrationService extends CodeStyleSettingsMigrationServiceBase {
 
   override protected def migrate(migrations: Seq[MigrationItem], currentVersion: Int, latestVersion: Int): Unit = {
-    val appLevelSchemes: Seq[CodeStyleScheme] = CodeStyleSchemesImpl.getSchemeManager.getAllSchemes.asScala.toSeq
+    val appLevelSchemes: Seq[CodeStyleScheme] = CodeStyleSchemes.getInstance.getSchemes.toSeq
 
     appLevelSchemes.zipWithIndex.foreach { case (scheme, idx) =>
       val scalaSettings = scheme.getCodeStyleSettings.getCustomSettings(classOf[ScalaCodeStyleSettings])

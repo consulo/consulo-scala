@@ -81,7 +81,7 @@ final class CaseClauseCompletionContributor extends ScalaCompletionContributor {
   }
 
   extend(insideCaseClause) {
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters,
                                   context: ProcessingContext,
@@ -94,7 +94,7 @@ final class CaseClauseCompletionContributor extends ScalaCompletionContributor {
   }
 
   private def extend(place: ElementPattern[? <: PsiElement])
-                    (provider: CompletionProvider[CompletionParameters]): Unit =
+                    (provider: CompletionProvider): Unit =
     extend(CompletionType.BASIC, place, provider)
 
 }
@@ -234,7 +234,7 @@ object CaseClauseCompletionContributor {
           case _ => false
         }
 
-        if (extractorExists) resultSet.consume(lookupElement)
+        if (extractorExists) resultSet.accept(lookupElement)
       }
   }
 

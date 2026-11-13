@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.completion.handlers
 
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.LookupElement
-import consulo.ui.ModalityState
+import consulo.application.Application
 import consulo.application.ReadAction
 import consulo.language.psi.util.PsiTreeUtil.getParentOfType
 import com.intellij.java.language.psi.PsiClass
@@ -139,7 +139,7 @@ final class ScalaConstructorInsertHandler(typeParametersEvaluator: (ScType => St
                 }
               }
               .withDocumentsCommitted(project)
-              .finishOnUiThread(ModalityState.defaultModalityState(), contextOption => {
+              .finishOnUiThread((app: Application) => app.getDefaultModalityState, contextOption => {
                 marker.dispose()
                 contextOption.foreach { ctx =>
                   ScalaApplicationSettings.getInstance().SPECIFY_RETURN_TYPE_EXPLICITLY =

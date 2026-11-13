@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector
 
 import consulo.language.editor.refactoring.postfixTemplate.PostfixTemplateExpressionSelectorBase
 import consulo.document.Document
-import consulo.util.lang.function.{Condition, Conditions}
+import consulo.util.lang.function.Condition
 import consulo.language.psi.PsiElement
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt}
@@ -16,8 +16,8 @@ import java.{util => ju}
 sealed abstract class AncestorSelector(condition: Condition[PsiElement])
   extends PostfixTemplateExpressionSelectorBase(condition) {
 
-  override final protected def getFilters(offset: Int): Condition[PsiElement] =
-    Conditions.and(super.getFilters(offset), getPsiErrorFilter)
+  override final protected def getFilters(offset: Int): ju.function.Predicate[PsiElement] =
+    super.getFilters(offset).and(getPsiErrorFilter)
 
   override final def getNonFilteredExpressions(
     context: PsiElement,

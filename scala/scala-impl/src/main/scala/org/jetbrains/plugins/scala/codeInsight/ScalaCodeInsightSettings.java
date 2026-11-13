@@ -2,18 +2,16 @@ package org.jetbrains.plugins.scala.codeInsight;
 
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
-import com.intellij.openapi.components.SettingsCategory;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
-import com.intellij.openapi.util.Getter;
-import com.intellij.openapi.util.Setter;
 import consulo.util.xml.serializer.XmlSerializerUtil;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @State(
         name = "ScalaCodeInsightSettings",
-        storages = {@Storage("scala_code_insight_settings.xml")},
-        reportStatistic = true,
-        category = SettingsCategory.CODE
+        storages = {@Storage("scala_code_insight_settings.xml")}
 )
 public class ScalaCodeInsightSettings implements PersistentStateComponent<ScalaCodeInsightSettings> {
 
@@ -54,100 +52,100 @@ public class ScalaCodeInsightSettings implements PersistentStateComponent<ScalaC
     public boolean showExclusiveRangeHint = SHOW_EXCLUSIVE_RANGE_HINT_DEFAULT;
 
 
-    public Getter<Boolean> showParameterNamesGetter() {
+    public Supplier<Boolean> showParameterNamesGetter() {
         return () -> showParameterNames;
     }
 
-    public Setter<Boolean> showParameterNamesSetter() {
+    public Consumer<Boolean> showParameterNamesSetter() {
         return value -> showParameterNames = value;
     }
 
-    public Getter<Boolean> showMethodResultTypeGetter() {
+    public Supplier<Boolean> showMethodResultTypeGetter() {
         return () -> showFunctionReturnType;
     }
 
-    public Setter<Boolean> showMethodResultTypeSetter() {
+    public Consumer<Boolean> showMethodResultTypeSetter() {
         return value -> showFunctionReturnType = value;
     }
 
-    public Getter<Boolean> showMemberVariableTypeGetter() {
+    public Supplier<Boolean> showMemberVariableTypeGetter() {
         return () -> showPropertyType;
     }
 
-    public Setter<Boolean> showMemberVariableSetter() {
+    public Consumer<Boolean> showMemberVariableSetter() {
         return value -> showPropertyType = value;
     }
 
-    public Getter<Boolean> showLocalVariableTypeGetter() {
+    public Supplier<Boolean> showLocalVariableTypeGetter() {
         return () -> showLocalVariableType;
     }
 
-    public Setter<Boolean> showLocalVariableTypeSetter() {
+    public Consumer<Boolean> showLocalVariableTypeSetter() {
         return value -> showLocalVariableType = value;
     }
 
-    public Getter<Boolean> showMethodChainInlayHintsGetter() {
+    public Supplier<Boolean> showMethodChainInlayHintsGetter() {
         return () -> showMethodChainInlayHints;
     }
 
-    public Setter<Boolean> showMethodChainInlayHintsSetter() {
+    public Consumer<Boolean> showMethodChainInlayHintsSetter() {
         return value -> showMethodChainInlayHints = value;
     }
 
-    public Getter<Boolean> alignMethodChainInlayHintsGetter() {
+    public Supplier<Boolean> alignMethodChainInlayHintsGetter() {
         return () -> alignMethodChainInlayHints;
     }
 
-    public Setter<Boolean> alignMethodChainInlayHintsSetter() {
+    public Consumer<Boolean> alignMethodChainInlayHintsSetter() {
         return value -> alignMethodChainInlayHints = value;
     }
 
-    public Getter<Integer> uniqueTypesToShowMethodChainsGetter() {
+    public Supplier<Integer> uniqueTypesToShowMethodChainsGetter() {
         return () -> uniqueTypesToShowMethodChains;
     }
 
-    public Setter<Integer> uniqueTypesToShowMethodChainsSetter() {
+    public Consumer<Integer> uniqueTypesToShowMethodChainsSetter() {
         return value -> uniqueTypesToShowMethodChains = value;
     }
 
-    public Getter<Integer> presentationLengthGetter() {
+    public Supplier<Integer> presentationLengthGetter() {
         return () -> presentationLength;
     }
 
-    public Setter<Integer> presentationLengthSetter() {
+    public Consumer<Integer> presentationLengthSetter() {
         return value -> presentationLength = value;
     }
 
-    public Getter<Boolean> showObviousTypeGetter() {
+    public Supplier<Boolean> showObviousTypeGetter() {
         return () -> showObviousType;
     }
 
-    public Setter<Boolean> showObviousTypeSetter() {
+    public Consumer<Boolean> showObviousTypeSetter() {
         return value -> showObviousType = value;
     }
 
-    public Getter<Boolean> preserveIndentsGetter() {
+    public Supplier<Boolean> preserveIndentsGetter() {
         return () -> preserveIndents;
     }
 
-    public Setter<Boolean> preserveIndentsSetter() {
+    public Consumer<Boolean> preserveIndentsSetter() {
         return value -> preserveIndents = value;
     }
 
-    public Getter<Boolean> showRangeHintsForToAndUntilGetter() {
+    public Supplier<Boolean> showRangeHintsForToAndUntilGetter() {
         return () -> showRangeHintsForToAndUntil;
     }
 
-    public Setter<Boolean> showRangeHintsForToAndUntilSetter() {
+    public Consumer<Boolean> showRangeHintsForToAndUntilSetter() {
         return value -> showRangeHintsForToAndUntil = value;
     }
 
 
-    public Getter<Boolean> showExclusiveRangeHintDefaultGetter() {
+    public Supplier<Boolean> showExclusiveRangeHintDefaultGetter() {
         return () -> showExclusiveRangeHint;
     }
 
-    public Setter<Boolean> showExclusiveRangeHintDefaultSetter() {
+    public Consumer<Boolean> showExclusiveRangeHintDefaultSetter() {
         return value -> showExclusiveRangeHint = value;
     }
 

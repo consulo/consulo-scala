@@ -7,8 +7,7 @@ import consulo.document.util.TextRange
 import consulo.language.psi.PsiFile
 import consulo.language.ast.TokenType
 import consulo.language.codeStyle.CodeStyleManager
-import com.intellij.psi.formatter.FormattingDocumentModelImpl
-import consulo.language.codeStyle.{PsiBasedFormattingModel, FormatterUtil => PsiFormatterUtil}
+import consulo.language.codeStyle.{FormattingDocumentModel, PsiBasedFormattingModel, FormatterUtil => PsiFormatterUtil}
 import consulo.language.impl.ast.TreeUtil
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
@@ -54,7 +53,7 @@ object ScalaFormattingModelBuilder {
   private val Log = Logger.getInstance(getClass)
 
   private final class ScalaFormattingModel(file: PsiFile, rootBlock: ScalaBlock)
-    extends PsiBasedFormattingModel(file, rootBlock, FormattingDocumentModelImpl.createOn(file)) {
+    extends PsiBasedFormattingModel(file, rootBlock, FormattingDocumentModel.create(file)) {
 
     import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.WHITES_SPACES_FOR_FORMATTER_TOKEN_SET
 

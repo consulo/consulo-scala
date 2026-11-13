@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight
 
-import com.intellij.codeInsight.{TargetElementEvaluatorEx, TargetElementEvaluatorEx2}
+import consulo.language.editor.TargetElementUtilExtender
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifierListOwner, PsiReferenceExpression}
@@ -11,7 +11,6 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.{ScBindingPattern, ScReferencePattern}
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScTypeAliasDefinition, ScValueOrVariable, ScVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScNamedElement, ScTypedDefinition}
@@ -19,6 +18,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObj
 import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.light.PsiTypedDefinitionWrapper
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
+
+import java.{util => ju}
 
 /**
  * Scala-specific target element evaluator used by platform navigation/search entry points.
@@ -30,9 +31,9 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
  *   - `org.jetbrains.plugins.scala.refactoring.rename.generated.ScalaRenameParameterTest#testSyntheticCopyParameter`
  *   - `org.jetbrains.plugins.scala.hierarchy.ScalaTypeHierarchyProviderTest#test_ref_to_primary_constructor`
  */
-class ScalaTargetElementEvaluator extends TargetElementEvaluatorEx2 with TargetElementEvaluatorEx {
+class ScalaTargetElementEvaluator extends TargetElementUtilExtender {
 
-  override def getElementByReference(ref: PsiReference, flags: Int): PsiElement = ref.getElement match {
+  override def getReferenceOrReferencedElement(ref: PsiReference, flags: ju.Set[String]): PsiElement = ref.getElement match {
     case isUnapplyFromVal(binding) => binding
     case isSyntheticParameterWithOriginalParameter(p) => p
     case isCaseClassApply(clazz) => clazz
@@ -43,10 +44,7 @@ class ScalaTargetElementEvaluator extends TargetElementEvaluatorEx2 with TargetE
     case _ => null
   }
 
-  override def isAcceptableNamedParent(parent: PsiElement): Boolean = parent match {
-    case _: ScNewTemplateDefinition => false
-    case _ => true
-  }
+  // upstream: isAcceptableNamedParent (ScNewTemplateDefinition is not a named parent) has no Consulo counterpart
 
   private object isUnapplyFromVal {
     def unapply(ref: ScStableCodeReference): Option[ScBindingPattern] = {
@@ -131,26 +129,15 @@ class ScalaTargetElementEvaluator extends TargetElementEvaluatorEx2 with TargetE
     child != null && child.getNode != null && ScalaTokenTypes.IDENTIFIER_TOKEN_SET.contains(child.getNode.getElementType )
   }
 
-  override def adjustElement(editor: Editor, flags: Int, element: PsiElement, contextElement: PsiElement): PsiElement =
-    super.adjustElement(editor, flags, element, contextElement)
+  override def modifyReferenceOrReferencedElement(refElement: PsiElement, file: PsiFile, editor: Editor, flags: ju.Set[String], offset: Int): PsiElement =
+    if (refElement == null) null
+    else findReferencedTypeAliasDefinition(editor, offset, refElement).orNull
 
-  override def adjustReference(ref: PsiReference): PsiElement =
-    super.adjustReference(ref)
-
-  override def adjustReferenceOrReferencedElement(file: PsiFile, editor: Editor, offset: Int, flags: Int, refElement: PsiElement): PsiElement =
-    super.adjustReferenceOrReferencedElement(file, editor, offset, flags, refElement)
-
-  override def adjustTargetElement(editor: Editor, offset: Int, flags: Int, targetElement: PsiElement): PsiElement = {
-    val element = findReferencedTypeAliasDefinition(editor, offset, targetElement) match {
-      case Some(typeAlias) =>
-        typeAlias
-      case None =>
-        super.adjustTargetElement(editor, offset, flags, targetElement)
-    }
-    element match {
-      case e: PsiNamedElement => ScNamedElement.adjusted(e)
-      case e => e
-    }
+  override def modifyTargetElement(element: PsiElement, flags: ju.Set[String]): PsiElement = element match {
+    case e: PsiNamedElement =>
+      val adjusted = ScNamedElement.adjusted(e)
+      if (adjusted != e) adjusted else null
+    case _ => null
   }
 
   override def getGotoDeclarationTarget(element: PsiElement, navElement: PsiElement): PsiElement = {
@@ -234,6 +221,6 @@ class ScalaTargetElementEvaluator extends TargetElementEvaluatorEx2 with TargetE
     case variable: ScValueOrVariable if variable.isAbstract => false
     case typedDef: ScTypedDefinition if typedDef.isAbstractMember => false
     case modifierListOwner: PsiModifierListOwner if modifierListOwner.hasAbstractModifier => false
-    case _ => super.includeSelfInGotoImplementation(element)
+    case _ => true
   }
 }

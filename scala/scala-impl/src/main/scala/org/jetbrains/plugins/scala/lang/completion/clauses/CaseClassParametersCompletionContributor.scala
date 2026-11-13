@@ -20,7 +20,7 @@ class CaseClassParametersCompletionContributor extends ScalaCompletionContributo
 
   extend(CompletionType.BASIC,
     PlatformPatterns.psiElement,
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
         val position = positionFromParameters(using parameters)

@@ -3,10 +3,10 @@ package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 import consulo.language.codeStyle.CodeStyle
 import consulo.project.ui.notification.{Notification, NotificationAction}
 import consulo.ui.ex.action.AnActionEvent
+import consulo.localize.LocalizeValue
 import consulo.logging.Logger
 import consulo.document.FileDocumentManager
 import consulo.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import consulo.project.Project
 import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 import consulo.language.psi.PsiFile
@@ -120,14 +120,14 @@ final class ScalafmtDynamicConfigServiceImpl(private implicit val project: Proje
   }
 
   private def reportConfigurationFileNotFound(configPath: String): Unit = {
-    val actionConfigure = new NotificationAction(ScalaBundle.message("scalafmt.can.not.find.config.file.go.to.settings")) {
+    val actionConfigure = new NotificationAction(LocalizeValue.of(ScalaBundle.message("scalafmt.can.not.find.config.file.go.to.settings"))) {
       override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
         notification.expire()
         val filter = ScalaFmtSettingsPanel.SearchFilter.ScalafmtConfiguration
         ShowSettingsUtilImplExt.showScalaCodeStyleSettingsDialog(project, filter)
       }
     }
-    val actionCreate = new NotificationAction(ScalaBundle.message("scalafmt.can.not.find.config.file.create.new")) {
+    val actionCreate = new NotificationAction(LocalizeValue.of(ScalaBundle.message("scalafmt.can.not.find.config.file.create.new"))) {
       override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
         notification.expire()
 
@@ -320,7 +320,7 @@ object ScalafmtDynamicConfigServiceImpl {
           val vFile = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(file)
           if (openInEditor)
             invokeLater {
-              FileEditorManager.getInstance(project).requestOpenFile(vFile, FileEditorOpenRequest.withFocus(true))
+              FileEditorManager.getInstance(project).openFile(vFile, true)
             }
           vFile
         }

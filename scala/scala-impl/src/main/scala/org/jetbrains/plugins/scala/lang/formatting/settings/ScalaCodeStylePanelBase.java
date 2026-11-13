@@ -4,8 +4,9 @@ import consulo.language.codeStyle.ui.setting.CodeStyleAbstractPanel;
 import consulo.colorScheme.EditorColorsScheme;
 import consulo.codeEditor.EditorHighlighter;
 import consulo.virtualFileSystem.fileType.FileType;
-import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
+import consulo.language.editor.highlight.EditorHighlighterProvider;
 import consulo.language.codeStyle.CodeStyleSettings;
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.awt.ScrollPaneFactory;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.api.ScalaFileType;
@@ -29,15 +30,14 @@ abstract public class ScalaCodeStylePanelBase extends CodeStyleAbstractPanel {
     }
 
     @Override
-    protected final String getTabTitle() {
-        return myTabTitle != null ? myTabTitle : super.getTabTitle();
+    protected final LocalizeValue getTabTitle() {
+        return myTabTitle != null ? LocalizeValue.of(myTabTitle) : super.getTabTitle();
     }
 
     @Override
     protected final EditorHighlighter createHighlighter(EditorColorsScheme colors) {
         FileType fileType = getFileType();
-        return FileTypeEditorHighlighterProviders.getInstance()
-                .forFileType(fileType)
+        return EditorHighlighterProvider.forFileType(fileType)
                 .getEditorHighlighter(null, fileType, null, colors);
     }
 

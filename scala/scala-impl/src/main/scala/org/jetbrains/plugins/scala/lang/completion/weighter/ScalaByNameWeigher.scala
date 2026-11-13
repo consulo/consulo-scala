@@ -6,7 +6,6 @@ import consulo.util.dataholder.Key
 import consulo.language.psi.util.PsiTreeUtil.getContextOfType
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.{PsiElement, PsiNamedElement}
-import com.intellij.util.text.EditDistance.optimalAlignment
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions.{&, PsiNamedElementExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.completion.{insideTypePattern, positionFromParameters}
@@ -26,7 +25,7 @@ final class ScalaByNameWeigher extends CompletionWeigher {
   import ScalaByNameWeigher._
 
   override def weigh(element: LookupElement, location: CompletionLocation): Comparable[?] = {
-    val parameters = location.getBaseCompletionParameters
+    val parameters = location.getCompletionParameters
     val position = positionFromParameters(using parameters)
 
     def handleByText(@NotNull name: String): Option[Integer] = {
@@ -118,4 +117,32 @@ private object ScalaByNameWeigher {
       case bp: ScBindingPattern => Some(bp.name)
       case _ => None
     }
+
+  // upstream: com.intellij.util.text.EditDistance.optimalAlignment (optimal string alignment distance)
+  private def optimalAlignment(str1: String, str2: String, caseSensitive: Boolean): Int = {
+    def equal(c1: Char, c2: Char) =
+      if (caseSensitive) c1 == c2 else Character.toLowerCase(c1) == Character.toLowerCase(c2)
+
+    val (s1, s2) = if (str1.length > str2.length) (str2, str1) else (str1, str2)
+    val length1 = s1.length
+    if (length1 == 0) return s2.length
+
+    var v0 = new Array[Int](length1 + 1)
+    var v1 = Array.tabulate(length1 + 1)(identity)
+    var v2 = new Array[Int](length1 + 1)
+    for (j <- 0 until s2.length) {
+      v2(0) = j + 1
+      for (i <- 0 until length1) {
+        val cost = if (equal(s1.charAt(i), s2.charAt(j))) 0 else 1
+        v2(i + 1) = math.min(math.min(v2(i) + 1, v1(i + 1) + 1), v1(i) + cost)
+        if (i > 0 && j > 0 && equal(s2.charAt(j), s1.charAt(i - 1)) && equal(s1.charAt(i), s2.charAt(j - 1)))
+          v2(i + 1) = math.min(v2(i + 1), v0(i - 1) + cost)
+      }
+      val temp = v0
+      v0 = v1
+      v1 = v2
+      v2 = temp
+    }
+    v1(length1)
+  }
 }

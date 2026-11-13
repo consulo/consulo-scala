@@ -9,7 +9,7 @@ import consulo.logging.Logger
 import consulo.project.Project
 import consulo.language.codeStyle.setting.CodeStyleSettingsCustomizable.OptionAnchor
 import consulo.language.codeStyle.setting.LanguageCodeStyleSettingsProvider.SettingsType
-import com.intellij.psi.codeStyle.{CodeStyleConfigurable, CodeStyleSettingsCustomizableOptions, DisplayPriority, IndentOptions}
+import consulo.configurable.Configurable
 import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings}
 import consulo.language.codeStyle.setting.{CodeStyleSettingsCustomizable, LanguageCodeStyleSettingsProvider}
 import consulo.language.psi.{PsiFile, PsiFileFactory}
@@ -25,12 +25,12 @@ import scala.jdk.CollectionConverters.ListHasAsScala
 
 class ScalaLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
 
-  override def createConfigurable(baseSettings: CodeStyleSettings, modelSettings: CodeStyleSettings): CodeStyleConfigurable =
+  override def createSettingsPage(baseSettings: CodeStyleSettings, modelSettings: CodeStyleSettings): Configurable =
     new ScalaCodeStyleAbstractConfigurable(baseSettings, modelSettings)
 
-  override def getConfigurableDisplayName: String = NlsString.displayNameAndConfigurableId("Scala")
+  override def getConfigurableDisplayName: LocalizeValue = LocalizeValue.of(NlsString.displayNameAndConfigurableId("Scala"))
 
-  override def getDisplayPriority = DisplayPriority.COMMON_SETTINGS
+  // upstream: getDisplayPriority = DisplayPriority.COMMON_SETTINGS
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
@@ -57,12 +57,14 @@ class ScalaLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsPr
     else super.createFileFromText(project, text)
   }
 
-  override def customizeDefaults(commonSettings: CommonCodeStyleSettings, indentOptions: CommonCodeStyleSettings.IndentOptions): Unit = {
-    super.customizeDefaults(commonSettings, indentOptions)
+  override def getDefaultCommonSettings: CommonCodeStyleSettings = {
+    val commonSettings = new CommonCodeStyleSettings(getLanguage)
+    val indentOptions = commonSettings.initIndentOptions()
     indentOptions.INDENT_SIZE = 2
     indentOptions.TAB_SIZE = 2
     indentOptions.CONTINUATION_INDENT_SIZE = 2
     commonSettings.KEEP_FIRST_COLUMN_COMMENT = false //added here to comply with prior default behavior
+    commonSettings
   }
 
   override def customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType): Unit = {
@@ -253,9 +255,7 @@ class ScalaLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsPr
     }
 
     import ApplicationBundle.{message => appMessage}
-//    import com.intellij.psi.codeStyle.{CodeStyleSettingsCustomizable => options}
-
-    val options = CodeStyleSettingsCustomizableOptions.getInstance
+    import consulo.language.codeStyle.setting.{CodeStyleSettingsCustomizable => options}
     //Custom options
     if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
 
@@ -408,7 +408,7 @@ object ScalaLanguageCodeStyleSettingsProvider {
   }
 
   private val BRACE_OPTION_AND_VALUES: (Array[(String, Int)]) =
-    CodeStyleSettingsCustomizableOptions.getInstance().BRACE_OPTIONS
+    CodeStyleSettingsCustomizable.BRACE_OPTIONS
       .zip(CodeStyleSettingsCustomizable.BRACE_VALUES)
 
   private def example(@NonNls str: String): String = str.stripMargin.withNormalizedSeparator

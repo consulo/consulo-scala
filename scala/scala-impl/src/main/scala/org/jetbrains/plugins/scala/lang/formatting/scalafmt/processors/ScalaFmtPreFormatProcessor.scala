@@ -7,7 +7,7 @@ import consulo.project.ui.notification.event.NotificationListener
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.document.Document
-import consulo.navigation.OpenFileDescriptor
+import consulo.navigation.OpenFileDescriptorFactory
 import consulo.application.progress.ProgressIndicatorProvider
 import consulo.project.Project
 import consulo.util.dataholder.Key
@@ -985,7 +985,7 @@ object ScalaFmtPreFormatProcessor {
       event.getDescription match {
         case `FileHrefAnchor` =>
           Option(file.getVirtualFile)
-            .foreach(new OpenFileDescriptor(project, _, offset).navigate(true))
+            .foreach(vFile => OpenFileDescriptorFactory.getInstance(project).builder(vFile).offset(offset).build().navigate(true))
         case _ =>
       }
     }

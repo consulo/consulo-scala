@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.navigation
 
+import com.intellij.java.impl.ide.util.PsiClassOrFunctionalExpressionPresentationProvider
+import consulo.application.Application
 import consulo.ide.navigation.GotoTargetPresentationProvider
-import com.intellij.ide.util.{PsiClassRenderingInfo, PsiElementRenderingInfo}
+import consulo.language.editor.ui.navigation.PsiTargetPresentationFactory
+import consulo.localize.LocalizeValue
 import consulo.navigation.TargetPresentation
 import consulo.language.psi.PsiElement
 import consulo.language.psi.util.PsiTreeUtil
@@ -13,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 //noinspection ApiStatus,UnstableApiUsage
 final class ScalaGotoTargetPresentationProvider extends GotoTargetPresentationProvider {
 
-  override def getTargetPresentation(element: PsiElement, differentNames: Boolean): TargetPresentation = element match {
+  override def getPresentation(element: PsiElement, options: GotoTargetPresentationProvider.Options): TargetPresentation = element match {
     case exportStmt: ScExportStmt =>
       val containingType = Option(PsiTreeUtil.getParentOfType(exportStmt, classOf[ScTypeDefinition]))
       val presentation = containingType.map(typeDefinitionPresentation)
@@ -25,14 +28,14 @@ final class ScalaGotoTargetPresentationProvider extends GotoTargetPresentationPr
   }
 
   private def typeDefinitionPresentation(containingType: ScTypeDefinition): TargetPresentation =
-    PsiElementRenderingInfo.targetPresentation(containingType, PsiClassRenderingInfo.INSTANCE)
+    new PsiClassOrFunctionalExpressionPresentationProvider().getPresentation(containingType)
 
-  private def extensionMethodPresentation(function: ScFunction): TargetPresentation =
-    PsiElementRenderingInfo.targetPresentation(function, new PsiElementRenderingInfo[ScFunction] {
-      override def getPresentableText(element: ScFunction): String =
-        extensionMethodPresentableText(element)
-
-      override def getContainerText(element: ScFunction): String =
-        extensionMethodContainerText(element).orNull
-    })
+  private def extensionMethodPresentation(function: ScFunction): TargetPresentation = {
+    val builder = Application.get().getInstance(classOf[PsiTargetPresentationFactory])
+      .presentationBuilder(function)
+      .withPresentableText(LocalizeValue.of(extensionMethodPresentableText(function)))
+    extensionMethodContainerText(function)
+      .fold(builder)(text => builder.withContainerText(LocalizeValue.of(text)))
+      .build()
+  }
 }

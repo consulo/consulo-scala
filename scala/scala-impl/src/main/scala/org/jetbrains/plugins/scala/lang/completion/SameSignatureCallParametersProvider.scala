@@ -7,9 +7,10 @@ import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.pattern.PlatformPatterns
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.{PsiMember, PsiMethod}
-import consulo.desktop.awt.ui.impl.image.LayeredIcon
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.api.NotImplementedError
@@ -29,7 +30,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
-import javax.swing.Icon
+import consulo.ui.image.{Image, ImageEffects}
 
 final class SameSignatureCallParametersProvider extends CompletionContributor {
 
@@ -40,13 +41,13 @@ final class SameSignatureCallParametersProvider extends CompletionContributor {
   extendBasicAndSmart(classOf[ScConstructorInvocation])(new ConstructorParametersCompletionProvider)
 
   private def extendBasicAndSmart(invocationClass: Class[? <: ScalaPsiElement])
-                                 (provider: CompletionProvider[CompletionParameters]): Unit = {
+                                 (provider: CompletionProvider): Unit = {
     val place = identifierWithParentsPattern(
       classOf[ScReferenceExpression],
       classOf[ScArgumentExprList],
       invocationClass
     ).afterLeaf("(", ",")
-      .beforeLeaf(")")
+      .beforeLeaf(PlatformPatterns.psiElement().withText(")"))
 
     extend(CompletionType.BASIC, place, provider)
     extend(CompletionType.SMART, place, provider)
@@ -212,7 +213,7 @@ object SameSignatureCallParametersProvider {
       typeable.`type`().getOrAny.conforms(parameterType)
     }
 
-    final def icon: Icon = iconable.getIcon(0)
+    final def icon: Image = IconDescriptorUpdaters.getIcon(iconable, 0)
   }
 
   private final case class ExpressionArgument(override protected val typeable: ScReferenceExpression,
@@ -411,20 +412,11 @@ object SameSignatureCallParametersProvider {
     }
   }
 
-  private def compositeIcon(leftIcon: Icon,
-                                  rightIcon: Icon) = {
-    val result = new LayeredIcon(2)
-    result.setIcon(
-      rightIcon,
-      0,
-      2 * leftIcon.getIconWidth / 5,
-      0
+  private def compositeIcon(leftIcon: Image,
+                                  rightIcon: Image): Image =
+    ImageEffects.layered(
+      ImageEffects.appendRight(ImageEffects.empty(2 * leftIcon.getWidth / 5, leftIcon.getHeight), rightIcon),
+      leftIcon
     )
-    result.setIcon(
-      leftIcon,
-      1
-    )
-    result
-  }
 
 }

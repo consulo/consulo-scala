@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang
 
 import consulo.language.editor.AutoPopupController
-import com.intellij.codeInsight.completion.{BaseCompletionParameters, CompletionUtil}
+import consulo.language.editor.completion.CompletionUtilCore as CompletionUtil
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResult, CompletionResultSet, CompletionSorter, CompletionType, OffsetKey, OffsetMap}
 import consulo.language.editor.completion.lookup.InsertionContext
 import com.intellij.java.impl.codeInsight.completion.JavaCompletionUtil
@@ -12,7 +12,6 @@ import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.util.dataholder.Key
-import com.intellij.patterns.Capture
 import consulo.language.pattern.{ElementPattern, PatternCondition, PlatformPatterns, PsiElementPattern, StandardPatterns}
 import com.intellij.java.language.psi.{PsiClass, PsiMember}
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
@@ -228,7 +227,7 @@ package object completion {
    * physical psi change, so we don't need to care about caches there.
    *
    */
-  def positionFromParameters(implicit parameters: BaseCompletionParameters): PsiElement = {
+  def positionFromParameters(implicit parameters: CompletionParameters): PsiElement = {
     val defaultPosition = parameters.getPosition
 
     mirrorPosition(parameters.getOriginalFile, defaultPosition)
@@ -396,7 +395,7 @@ package object completion {
     }
   }
 
-  abstract class ScalaCompletionProvider extends CompletionProvider[CompletionParameters] {
+  abstract class ScalaCompletionProvider extends CompletionProvider {
 
     protected def completionsFor(position: PsiElement)
                                 (implicit parameters: CompletionParameters,
@@ -420,7 +419,7 @@ package object completion {
     }
   }
 
-  private[completion] trait DelegatingCompletionProvider[E <: ScalaPsiElement] extends CompletionProvider[CompletionParameters] {
+  private[completion] trait DelegatingCompletionProvider[E <: ScalaPsiElement] extends CompletionProvider {
 
     override final def addCompletions(parameters: CompletionParameters,
                                       context: ProcessingContext,

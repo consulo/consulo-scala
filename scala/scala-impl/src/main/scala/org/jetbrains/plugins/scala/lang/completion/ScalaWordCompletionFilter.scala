@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import consulo.language.editor.completion.DefaultWordCompletionFilter
+import consulo.language.Language
+import consulo.language.editor.completion.WordCompletionElementFilter
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-final class ScalaWordCompletionFilter extends DefaultWordCompletionFilter {
-  override def isWordCompletionInDumbModeEnabled: Boolean = false
+// upstream: isWordCompletionInDumbModeEnabled = false (no Consulo counterpart)
+final class ScalaWordCompletionFilter extends WordCompletionElementFilter {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 }

@@ -3,9 +3,9 @@ package org.jetbrains.plugins.scala.lang.formatting.settings
 import consulo.application.AllIcons
 import consulo.language.Language
 import consulo.ui.ex.action.ActionManager
-import consulo.ui.ModalityState
+import consulo.application.ApplicationManager
 import consulo.logging.Logger
-import com.intellij.openapi.editor.colors.impl.DefaultColorsScheme
+import consulo.colorScheme.EditorColorsManager
 import consulo.codeEditor.EditorEx
 import consulo.language.editor.highlight.LayeredLexerEditorHighlighter
 import consulo.codeEditor.{EditorFactory, EditorSettings}
@@ -14,9 +14,10 @@ import consulo.document.FileDocumentManager
 import consulo.language.editor.highlight.SyntaxHighlighterFactory.getSyntaxHighlighter
 import consulo.ui.ex.keymap.util.KeymapUtil
 import consulo.project.Project
-import com.intellij.openapi.ui.MessageType
+import consulo.ui.{NotificationType => MessageType}
 import consulo.ui.ex.awt.{TextComponentAccessor, TextFieldWithBrowseButton, VerticalFlowLayout}
-import com.intellij.openapi.ui.panel.ComponentPanelBuilder
+import consulo.localize.LocalizeValue
+import consulo.ui.ex.awt.{JBLabel, UIUtil}
 import consulo.ui.ex.popup.{Balloon, JBPopupFactory}
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.codeStyle.CodeStyleSettings
@@ -216,7 +217,7 @@ final class ScalaFmtSettingsPanel(settings: CodeStyleSettings) extends ScalaCode
   private def saveConfigChangesToFile(configTextNew: String, vFile: VirtualFile): Unit = {
     val document = inReadAction(FileDocumentManager.getInstance.getDocument(vFile))
     inWriteAction {
-      invokeAndWait(ModalityState.current()) {
+      invokeAndWait(ApplicationManager.getApplication.getCurrentModalityState) {
         document.setText(configTextNew)
       }
     }
@@ -293,7 +294,7 @@ final class ScalaFmtSettingsPanel(settings: CodeStyleSettings) extends ScalaCode
 
     showScalaFmtInvalidCodeWarnings = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.show.warnings.when.formatting.invalid.code"))
     useIntellijFormatterForRangeFormat = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.use.intellij.formatter.for.code.range.formatting"))
-    useIntellijWarning = new JLabel(AllIcons.General.Warning)
+    useIntellijWarning = new JBLabel(AllIcons.General.Warning)
     useIntellijWarning.setToolTipText(ScalaBundle.message("scalafmt.settings.panel.use.intellij.formatter.for.code.range.formatting.warning.tooltip"))
     useIntellijFormatterForRangeFormat.addChangeListener((_: ChangeEvent) => {
       useIntellijWarning.setVisible(!useIntellijFormatterForRangeFormat.isSelected)
@@ -317,7 +318,8 @@ final class ScalaFmtSettingsPanel(settings: CodeStyleSettings) extends ScalaCode
     }
 
     reformatOnFileSaveCheckBox = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.reformat.on.file.save", saveActionsShortcutsText))
-    reformatOnFileSaveComment = ComponentPanelBuilder.createCommentComponent(ScalaBundle.message("scalafmt.settings.panel.reformat.on.file.save.tooltip", KeymapUtil.getShortcutText("ReformatCode")), false): @nowarn("cat=deprecation")
+    // upstream: ComponentPanelBuilder.createCommentComponent
+    reformatOnFileSaveComment = new JBLabel(ScalaBundle.message("scalafmt.settings.panel.reformat.on.file.save.tooltip", KeymapUtil.getFirstKeyboardShortcutText("ReformatCode")), UIUtil.ComponentStyle.SMALL, UIUtil.FontColor.BRIGHTER)
     fallBackToDefaultSettings = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.fallback.to.default.settings"))
 
     inner.add(showScalaFmtInvalidCodeWarnings,
@@ -423,10 +425,11 @@ final class ScalaFmtSettingsPanel(settings: CodeStyleSettings) extends ScalaCode
 
     externalFormatterSettingsPath.getTextField.addFocusListener(focusListener)
     externalFormatterSettingsPath.addBrowseFolderListener(
+      LocalizeValue.of(customSettingsTitle),
+      LocalizeValue.of(customSettingsTitle),
       projectOpt.orNull,
-      FileChooserDescriptorFactory.createSingleFileDescriptor("conf")
-        .withTitle(customSettingsTitle)
-        .withDescription(customSettingsTitle),
+      FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
+        .withExtensionFilter("conf"),
       textAccessor
     )
   }
@@ -495,7 +498,7 @@ object ScalaFmtSettingsPanel {
     if (hoconLanguage != null) {
       val highlighter = new LayeredLexerEditorHighlighter(
         getSyntaxHighlighter(hoconLanguage, null, null),
-        new DefaultColorsScheme
+        EditorColorsManager.getInstance.getGlobalScheme // upstream: new DefaultColorsScheme
       )
       editor.setHighlighter(highlighter)
     }
@@ -505,7 +508,7 @@ object ScalaFmtSettingsPanel {
 
   private def fillEditorSettings(settings: EditorSettings,
                                        language: Language): Unit = {
-    settings.setLanguageSupplier(() => language)
+    // upstream: settings.setLanguageSupplier(() => language)
     settings.setWhitespacesShown(true)
     settings.setLineMarkerAreaShown(false)
     settings.setIndentGuidesShown(false)

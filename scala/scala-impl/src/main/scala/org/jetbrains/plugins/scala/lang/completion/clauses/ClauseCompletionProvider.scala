@@ -11,7 +11,7 @@ import scala.reflect.{ClassTag, classTag}
 
 private[clauses] abstract class ClauseCompletionProvider[
   T <: ScalaPsiElement & Typeable : ClassTag
-] extends CompletionProvider[CompletionParameters] {
+] extends CompletionProvider {
 
   override final def addCompletions(parameters: CompletionParameters,
                                     context: ProcessingContext,

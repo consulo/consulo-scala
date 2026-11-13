@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
 import consulo.localize.LocalizeValue
-import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.language.codeStyle.{CodeStyle, CodeStyleSettingsManager}
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
-import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
-import com.intellij.openapi.components.Service
+import consulo.component.persist.{PersistentStateComponent, State, Storage, StoragePathMacros}
+import jakarta.inject.Singleton
 import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions._
@@ -20,7 +21,10 @@ import scala.beans.BeanProperty
   name = "SuggestScalaFmt",
   storages = Array[Storage](new Storage(StoragePathMacros.WORKSPACE_FILE))
 )
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class ScalaFmtSuggesterService(private val project: Project)
   extends PersistentStateComponent[ScalaFmtSuggesterService.State] {
 
@@ -49,16 +53,16 @@ final class ScalaFmtSuggesterService(private val project: Project)
   override def loadState(state: ScalaFmtSuggesterService.State): Unit = this.state = state
 
   private def enableForProject(): Unit = {
-    val codeStyleSchemesModel = new CodeStyleSchemesModel(project)
-    var scheme = codeStyleSchemesModel.getSelectedScheme
-    if (!codeStyleSchemesModel.isProjectScheme(scheme)) {
-      codeStyleSchemesModel.copyToProject(scheme)
-      scheme = codeStyleSchemesModel.getProjectScheme
+    // upstream: copied the selected scheme to the project via CodeStyleSchemesModel
+    val manager = CodeStyleSettingsManager.getInstance(project)
+    if (!manager.USE_PER_PROJECT_SETTINGS || manager.PER_PROJECT_SETTINGS == null) {
+      manager.PER_PROJECT_SETTINGS = CodeStyle.getSettings(project).clone()
+      manager.USE_PER_PROJECT_SETTINGS = true
     }
-    val newSettings = scheme.getCodeStyleSettings.getCustomSettings(classOf[ScalaCodeStyleSettings])
+    val newSettings = manager.PER_PROJECT_SETTINGS.getCustomSettings(classOf[ScalaCodeStyleSettings])
     newSettings.FORMATTER = ScalaCodeStyleSettings.SCALAFMT_FORMATTER
     newSettings.SCALAFMT_CONFIG_PATH = ""
-    codeStyleSchemesModel.apply()
+    manager.notifyCodeStyleSettingsChanged()
 
     ScalafmtDynamicConfigService.instanceIn(project).init()
   }

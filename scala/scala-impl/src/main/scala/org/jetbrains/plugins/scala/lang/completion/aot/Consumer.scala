@@ -22,7 +22,7 @@ private[completion] sealed abstract class Consumer(originalResultSet: Completion
     resultSet.runRemainingContributors(parameters, this)
   }
 
-  override final def consume(result: CompletionResult): Unit = {
+  override final def accept(result: CompletionResult): Unit = {
     val lookupElement = result.getLookupElement
     consume(lookupElement, suggestItemText(lookupElement.getLookupString))
   }
@@ -45,7 +45,7 @@ private[completion] sealed abstract class Consumer(originalResultSet: Completion
     }
 
     val decoratedLookupElement = LookupElementDecorator.withInsertHandler(rendererDecorator, createInsertHandler(itemText))
-    resultSet.consume(decoratedLookupElement)
+    resultSet.accept(decoratedLookupElement)
   }
 
   protected def augmentPresentation(itemText: String): LookupElementPresentation => Unit

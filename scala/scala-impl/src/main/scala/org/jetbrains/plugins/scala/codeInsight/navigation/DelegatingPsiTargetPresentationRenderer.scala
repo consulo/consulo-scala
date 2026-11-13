@@ -1,15 +1,30 @@
 package org.jetbrains.plugins.scala.codeInsight.navigation
 
-import consulo.ui.image.Image
-import com.intellij.codeInsight.navigation.impl.PsiTargetPresentationRenderer
-import com.intellij.ide.util.PsiElementRenderingInfo
+import consulo.application.Application
+import consulo.language.editor.ui.navigation.{PsiTargetPresentationFactory, TargetPresentationProvider}
 import consulo.language.psi.PsiElement
+import consulo.localize.LocalizeValue
+import consulo.navigation.TargetPresentation
+import consulo.ui.image.Image
 
+// upstream: PsiTargetPresentationRenderer delegating to com.intellij.ide.util.PsiElementRenderingInfo
+class DelegatingPsiTargetPresentationRenderer[T <: PsiElement](private val delegate: TargetPresentationProvider[? >: T]) extends TargetPresentationProvider[T] {
+  def getElementText(element: T): String = delegate.getPresentation(element).getPresentableText.get
 
-class DelegatingPsiTargetPresentationRenderer[T <: PsiElement](private val renderingInfo: PsiElementRenderingInfo[T]) extends PsiTargetPresentationRenderer[T] {
-  override def getElementText(element: T): String = renderingInfo.getPresentableText(element)
+  def getContainerText(element: T): String = delegate.getPresentation(element).getContainerText match {
+    case text if text.isEmpty => null
+    case text => text.get
+  }
 
-  override def getContainerText(element: T): String = renderingInfo.getContainerText(element)
+  def getIcon(element: T): Image = delegate.getPresentation(element).getIcon
 
-  override def getIcon(element: T): Image = renderingInfo.getIcon(element)
+  override def getPresentation(element: T): TargetPresentation = {
+    val containerText = getContainerText(element)
+    Application.get().getInstance(classOf[PsiTargetPresentationFactory])
+      .presentationBuilder(element)
+      .withPresentableText(LocalizeValue.of(getElementText(element)))
+      .withIcon(getIcon(element))
+      .withContainerText(if (containerText == null) LocalizeValue.empty() else LocalizeValue.of(containerText))
+      .build()
+  }
 }

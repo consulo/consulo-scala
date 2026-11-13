@@ -285,19 +285,19 @@ final class ScalaSmartCompletionContributor extends ScalaCompletionContributor {
   }
 
   private def extendSmart(clazz: Class[? <: ScalaPsiElement],
-                          provider: CompletionProvider[CompletionParameters]): Unit =
+                          provider: CompletionProvider): Unit =
     extendSmart(superParentPattern(clazz), provider)
 
   private def extendSmartAndBasic(clazz: Class[? <: ScalaPsiElement],
-                                  provider: CompletionProvider[CompletionParameters]): Unit =
+                                  provider: CompletionProvider): Unit =
     extendSmartAndBasic(superParentPattern(clazz), provider)
 
   private def extendSmart(pattern: ElementPattern[? <: PsiElement],
-                          provider: CompletionProvider[CompletionParameters]): Unit =
+                          provider: CompletionProvider): Unit =
     extend(CompletionType.SMART, pattern, provider)
 
   private def extendSmartAndBasic(pattern: ElementPattern[? <: PsiElement],
-                                  provider: CompletionProvider[CompletionParameters]): Unit = {
+                                  provider: CompletionProvider): Unit = {
     extendSmart(pattern, provider)
     extend(CompletionType.BASIC, pattern, provider) // SCL-19749
   }
@@ -305,7 +305,7 @@ final class ScalaSmartCompletionContributor extends ScalaCompletionContributor {
 
 object ScalaSmartCompletionContributor {
 
-  private abstract class ScalaSmartCompletionProvider extends CompletionProvider[CompletionParameters] {
+  private abstract class ScalaSmartCompletionProvider extends CompletionProvider {
     final override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
       val place = positionFromParameters(using parameters)
       addCompletions(using parameters, result, place)

@@ -6,7 +6,7 @@ import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBu
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiDocumentManager
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil
+import consulo.language.editor.inject.EditorWindow
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.ScTypeText
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
@@ -19,7 +19,7 @@ abstract class ChooseValueExpression[T](lookupItems: Seq[T], defaultItem: T) ext
 
   def calcLookupElements(): Seq[LookupElementBuilder] = lookupItems.map { elem =>
     LookupElementBuilder.create(elem, lookupString(elem)).withInsertHandler((context: InsertionContext, item: LookupElement) => {
-      val topLevelEditor = InjectedLanguageEditorUtil.getTopLevelEditor(context.getEditor)
+      val topLevelEditor = EditorWindow.getTopLevelEditor(context.getEditor)
       val templateState = TemplateManager.getInstance(topLevelEditor.getProject).getTemplateState(topLevelEditor)
       if (templateState != null) {
         val range = templateState.getCurrentVariableRange

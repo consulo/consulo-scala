@@ -2,8 +2,7 @@ package org.jetbrains.plugins.scala.lang.completion
 
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet}
 import consulo.language.editor.completion.lookup.InsertionContext
-import com.intellij.codeInsight.lookup.InsertHandlerDecorator
-import consulo.language.editor.completion.lookup.{LookupElement, LookupElementDecorator}
+import consulo.language.editor.completion.lookup.{InsertHandler, LookupElement, LookupElementDecorator}
 import com.intellij.java.language.jvm.JvmClassKind
 import consulo.application.progress.ProgressManager
 import consulo.util.dataholder.Key
@@ -39,7 +38,7 @@ import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
-private class ScalaBasicCompletionProvider extends CompletionProvider[CompletionParameters] {
+private class ScalaBasicCompletionProvider extends CompletionProvider {
   import ScalaBasicCompletionProvider._
   import ScalaCompletionUtil._
 
@@ -496,7 +495,7 @@ object ScalaBasicCompletionProvider {
     }
   }
 
-  private def insertHandlerDecorator(text: String): InsertHandlerDecorator[LookupElement] =
+  private def insertHandlerDecorator(text: String): InsertHandler[LookupElementDecorator[LookupElement]] =
     (context: InsertionContext, decorator: LookupElementDecorator[LookupElement]) => {
       val document = context.getEditor.getDocument
       context.commitDocument()

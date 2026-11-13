@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.utils
 
 import consulo.project.Project
-import consulo.project.util.ProjectUtil
 import consulo.virtualFileSystem.{StandardFileSystems, VirtualFile}
 import consulo.versionControlSystem.util.VcsUtil
 import org.apache.commons.lang3.StringUtils
@@ -34,7 +33,7 @@ object ScalafmtConfigUtils {
         prefix + configPath
       }
 
-      val projectRoot = ProjectUtil.guessProjectDir(project).toOption
+      val projectRoot = project.getBaseDir.toOption
       projectRoot.flatMap { baseDir =>
         val result = absolutePath(baseDir)
         if (exists(result) || !isRelativePath) {

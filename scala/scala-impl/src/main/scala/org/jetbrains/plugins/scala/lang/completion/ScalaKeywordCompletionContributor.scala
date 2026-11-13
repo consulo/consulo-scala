@@ -24,7 +24,7 @@ final class ScalaKeywordCompletionContributor extends ScalaCompletionContributor
   ): Unit = extend(
     CompletionType.BASIC,
     PlatformPatterns.psiElement.and(new FilterPattern(new AndFilter(filters*))),
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
       override def addCompletions(parameters: CompletionParameters,
                                   context: ProcessingContext,
                                   resultSet: CompletionResultSet): Unit =

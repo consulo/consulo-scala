@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.lang.formatting.settings.inference
 import consulo.language.codeStyle.CodeStyle
 import consulo.index.io.{DataIndexer, ID}
 import consulo.language.psi.stub.{FileBasedIndex, FileBasedIndexExtension, FileContent}
-import consulo.execution.ui.console.InputFilter
 import consulo.index.io.{IntInlineKeyDescriptor, KeyDescriptor}
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.api.ScalaFileType
@@ -20,7 +19,7 @@ import scala.jdk.CollectionConverters._
 final class ScalaDocAsteriskAlignStyleIndexer extends FileBasedIndexExtension[AsteriskAlignStyle, Integer] {
   override val getName: ID[AsteriskAlignStyle, Integer] = ScalaDocAsteriskAlignStyleIndexer.Id
 
-  override def getInputFilter: FileBasedIndex.InputFilter = file => {
+  override def getInputFilter: FileBasedIndex.InputFilter = (_, file) => {
     file.isInLocalFileSystem &&
       file.getFileType.isInstanceOf[ScalaFileType]
   }

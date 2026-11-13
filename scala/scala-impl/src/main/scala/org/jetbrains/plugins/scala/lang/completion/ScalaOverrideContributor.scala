@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
@@ -50,7 +51,7 @@ class ScalaOverrideContributor extends ScalaCompletionContributor {
 
   extend(CompletionType.BASIC,
     identifierPattern.and(new FilterPattern(new AndFilter(new NotFilter(new LeftNeighbour(new TextContainFilter("override"))), new AndFilter(new NotFilter(new LeftNeighbour(new TextFilter("."))), new ModifiersFilter)))): @nowarn("cat=deprecation"),
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
         // one word (simple completion throw generation all possible variants)
@@ -79,7 +80,7 @@ class ScalaOverrideContributor extends ScalaCompletionContributor {
   // completion inside class parameters
   extend(CompletionType.BASIC,
     identifierWithParentPattern(classOf[ScClassParameter]),
-    new CompletionProvider[CompletionParameters]() {
+    new CompletionProvider() {
 
       override def addCompletions(completionParameters: CompletionParameters,
                                   processingContext: ProcessingContext,
@@ -109,7 +110,7 @@ class ScalaOverrideContributor extends ScalaCompletionContributor {
     */
   extend(CompletionType.BASIC,
     identifierPattern.and(new FilterPattern(new AndFilter(new NotFilter(new OrFilter(new LeftNeighbour(new TextContainFilter(".")), new LeftNeighbour(new TextContainFilter(":"))))))): @nowarn("cat=deprecation"),
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
       val position = positionFromParameters(using parameters)
@@ -252,7 +253,7 @@ object ScalaOverrideContributor {
       case _ => member.getElement
     }
 
-    val icon = lookupObject.getIcon(ICON_FLAG_VISIBILITY | ICON_FLAG_READ_STATUS)
+    val icon = IconDescriptorUpdaters.getIcon(lookupObject, ICON_FLAG_VISIBILITY | ICON_FLAG_READ_STATUS)
 
     LookupElementBuilder.create(lookupObject, lookupString)
       .withIcon(icon)

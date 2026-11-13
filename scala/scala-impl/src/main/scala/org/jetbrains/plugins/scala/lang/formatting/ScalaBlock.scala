@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
 import consulo.language.codeStyle.{ASTBlock, Alignment, Block, ChildAttributes, Indent, Spacing, Wrap}
-import com.intellij.formatting.SpacingImpl
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiWhiteSpace}
@@ -145,12 +144,12 @@ class ScalaBlock(
   @unused("debug print utility")
   private def printSubBlocksSpacingDebugInfoToConsole(child1: Block, child2: Block, spacing: Spacing): Unit = {
     (child1, child2, spacing) match {
-      case (c1: ScalaBlock, c2: ScalaBlock, s: SpacingImpl) =>
+      case (c1: ScalaBlock, c2: ScalaBlock, s) =>
         println(
           s"""Spacing:
              |    child1: ${c1.debugText}
              |    child2: ${c2.debugText}
-             |    result: $s (${if(s.isReadOnly) "readonly" else ""})
+             |    result: $s (${if(s == Spacing.getReadOnlySpacing) "readonly" else ""})
              |""".stripMargin
         )
       case _ =>

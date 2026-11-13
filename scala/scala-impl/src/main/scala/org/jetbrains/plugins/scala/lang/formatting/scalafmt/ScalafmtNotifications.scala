@@ -48,8 +48,8 @@ object ScalafmtNotifications {
   private def updateShownMessagesCache(message: String): Unit = {
     messagesShown.get(message) match {
       case Some(WeakReference(notification)) =>
-        val balloon = notification.getBalloon
-        if (balloon == null || balloon.isDisposed) {
+        // upstream: checked notification.getBalloon (no balloon API in Consulo)
+        if (notification.isExpired) {
           messagesShown.remove(message)
         }
       case _ =>
@@ -90,7 +90,7 @@ object ScalafmtNotifications {
       notificationRef <- messagesShown.valuesIterator
       notification <- notificationRef.get
       if notification.getGroupId == "Scalafmt Format Error Notifications"
-    } notification.hideBalloon()
+    } notification.expire() // upstream: hideBalloon()
   }
 
   sealed trait FmtVerbosity

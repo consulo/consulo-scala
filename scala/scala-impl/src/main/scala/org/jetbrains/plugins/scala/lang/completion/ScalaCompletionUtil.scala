@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.completion
 
 import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
 import consulo.language.editor.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionUtil
+import consulo.language.editor.completion.CompletionUtilCore as CompletionUtil
 import consulo.application.util.matcher.PrefixMatcher
 import consulo.language.Language
 import consulo.project.Project

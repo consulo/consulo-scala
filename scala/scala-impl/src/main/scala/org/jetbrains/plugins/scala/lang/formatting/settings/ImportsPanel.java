@@ -6,9 +6,9 @@ import consulo.ui.ex.awt.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.util.ui.UI;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettingsUtil;
+import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -44,8 +44,11 @@ public final class ImportsPanel extends ScalaCodeStylePanelBase {
     public ImportsPanel(CodeStyleSettings settings) {
         super(settings, ScalaBundle.message("imports.panel.title"));
 
-        myImportRetativeToBasePackagePanel.add(UI.PanelFactory.panel(myImportRetativeToBasePackageCheckBox)
-                .withTooltip(ScalaBundle.message("imports.panel.base.package.help")).createPanel());
+        // upstream: UI.PanelFactory.panel(...).withTooltip(...)
+        JPanel basePackagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        basePackagePanel.add(myImportRetativeToBasePackageCheckBox);
+        basePackagePanel.add(ContextHelpLabel.create(ScalaBundle.message("imports.panel.base.package.help")));
+        myImportRetativeToBasePackagePanel.add(basePackagePanel);
 
         addFullQualifiedImportsCheckBox.addItemListener(itemEvent -> myImportRetativeToBasePackageCheckBox.setEnabled(addFullQualifiedImportsCheckBox.isSelected()));
         myImportRetativeToBasePackageCheckBox.setEnabled(addFullQualifiedImportsCheckBox.isSelected());

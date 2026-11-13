@@ -46,7 +46,7 @@ final class ScalaAfterNewCompletionContributor extends ScalaCompletionContributo
 
 object ScalaAfterNewCompletionContributor {
 
-  private abstract class CompletionProviderBase[E <: ScExpression](parentExprClass: Class[E]) extends CompletionProvider[CompletionParameters] {
+  private abstract class CompletionProviderBase[E <: ScExpression](parentExprClass: Class[E]) extends CompletionProvider {
 
     override def addCompletions(parameters: CompletionParameters,
                                 context: ProcessingContext,

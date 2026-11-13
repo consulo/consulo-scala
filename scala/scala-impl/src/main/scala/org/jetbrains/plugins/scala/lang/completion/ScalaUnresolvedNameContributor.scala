@@ -45,7 +45,7 @@ class ScalaUnresolvedNameContributor extends ScalaCompletionContributor {
   extend(
     CompletionType.BASIC,
     PlatformPatterns.psiElement,
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters,
                                   processingContext: ProcessingContext,

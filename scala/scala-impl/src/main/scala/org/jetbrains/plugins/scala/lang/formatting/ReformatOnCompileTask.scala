@@ -6,6 +6,7 @@ import consulo.compiler.CompileContext
 import consulo.compiler.scope.CompileScope
 import consulo.logging.Logger
 import consulo.project.Project
+import consulo.virtualFileSystem.LocalFileSystem
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.{PsiFile, PsiManager}
 import org.jetbrains.plugins.scala.api.ScalaFileType
@@ -15,6 +16,8 @@ import org.jetbrains.plugins.scala.lang.formatting.scalafmt.processors.ScalaFmtP
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
+
+import scala.jdk.CollectionConverters._
 
 final class ReformatOnCompileTask(project: Project) extends ScalaCompileTask {
 
@@ -36,7 +39,8 @@ final class ReformatOnCompileTask(project: Project) extends ScalaCompileTask {
     CodeStyle.getSettings(project).getCustomSettings(classOf[ScalaCodeStyleSettings])
 
   private def reformatScopeFiles(compileScope: CompileScope, scalaSettings: ScalaCodeStyleSettings): Unit = for {
-    virtualFile <- compileScope.getFiles(ScalaFileType.INSTANCE, true)
+    path <- compileScope.getFiles(ScalaFileType.INSTANCE).asScala
+    virtualFile <- Option(LocalFileSystem.getInstance.findFileByNioFile(path))
     psiFile = inReadAction(PsiManager.getInstance(project).findFile(virtualFile))
     if shouldFormatFile(psiFile, scalaSettings)
     psiFile <- psiFile.asOptionOf[ScalaFile].filterNot(_.isWorksheetFile)

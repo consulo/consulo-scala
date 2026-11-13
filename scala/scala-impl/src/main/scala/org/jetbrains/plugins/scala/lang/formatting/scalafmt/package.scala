@@ -1,14 +1,11 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
-import com.intellij.jarRepository.RemoteRepositoriesConfiguration
 import consulo.module.ModuleManager
 import consulo.project.Project
 import org.jetbrains.plugins.scala.DependencyManagerBase
 import org.jetbrains.plugins.scala.DependencyManagerBase.{IvyResolver, MavenResolver}
 import org.jetbrains.sbt.project.module.SbtModule
 import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver}
-
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 package object scalafmt {
 
@@ -30,15 +27,9 @@ package object scalafmt {
     }
   }
 
-  // Both Gradle and  Maven projects import theirs resolvers to
-  // `File | Settings | Build, Execution, Deployment | Remote Jar Repositories`
-  private def resolversFromRemoteJarRepositories(project: Project): Seq[DependencyManagerBase.MavenResolver] = {
-    val configuration = RemoteRepositoriesConfiguration.getInstance(project)
-    val repositories = configuration.getRepositories.asScala.toSeq
-    repositories.map { repo =>
-      MavenResolver(repo.getName, ensureIsURL(repo.getUrl))
-    }
-  }
+  // upstream: resolvers from `Remote Jar Repositories` (com.intellij.jarRepository.RemoteRepositoriesConfiguration),
+  // which Gradle and Maven projects import; no Consulo counterpart
+  private def resolversFromRemoteJarRepositories(project: Project): Seq[DependencyManagerBase.MavenResolver] = Nil
 
   // e.g. `file://C:/temp/`
   private val ResourceWithProtocol = raw"^\w+://.*$$".r

@@ -1,15 +1,13 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.plugins.scala.codeInsight.hints.codeVision
 
-import com.intellij.codeInsight.daemon.impl.JavaCodeVisionUsageCollector.{CLASS_LOCATION, METHOD_LOCATION, logCodeAuthorClicked}
 import consulo.versionControlSystem.codeVision.VcsCodeVisionLanguageContext
-import consulo.codeEditor.Editor
+import consulo.language.Language
 import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
-
-import java.awt.event.MouseEvent
 
 private final class ScalaVcsCodeVisionContext extends VcsCodeVisionLanguageContext {
 
@@ -19,12 +17,9 @@ private final class ScalaVcsCodeVisionContext extends VcsCodeVisionLanguageConte
     (isAcceptedTemplateDefinition(element) || isAcceptedMember(element)) &&
       !isInWorksheetFile(element) //SCL-21098
 
-  override def handleClick(mouseEvent: MouseEvent, editor: Editor, element: PsiElement): Unit = {
-    val project = element.getProject
-    val location = if (isAcceptedTemplateDefinition(element)) CLASS_LOCATION else METHOD_LOCATION
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-    logCodeAuthorClicked(project, location)
-  }
+  // upstream: handleClick logged JavaCodeVisionUsageCollector statistics (no Consulo counterpart)
 }
 
 private object ScalaVcsCodeVisionContext {

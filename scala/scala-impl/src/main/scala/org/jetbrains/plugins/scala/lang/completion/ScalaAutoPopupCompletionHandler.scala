@@ -27,7 +27,7 @@ final class ScalaAutoPopupCompletionHandler extends TypedHandlerDelegate {
 
       if (needsAutoPopup) {
         AutoPopupController.getInstance(project)
-          .scheduleAutoPopup(editor, null)
+          .scheduleAutoPopup(editor)
         Result.STOP
       } else Result.CONTINUE
     }

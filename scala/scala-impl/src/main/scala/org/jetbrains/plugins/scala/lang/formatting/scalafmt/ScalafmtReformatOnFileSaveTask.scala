@@ -1,17 +1,16 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import com.intellij.ide.actions.{SaveAllAction, SaveDocumentAction}
+import consulo.dataContext.DataContext
 import consulo.ui.ex.action.event.AnActionListener
-import consulo.ui.ex.action.{AnAction, AnActionEvent}
-import com.intellij.openapi.actionSystem.AnActionResult
-import consulo.language.editor.CommonDataKeys
+import consulo.ui.ex.action.{ActionManager, AnAction, AnActionEvent, IdeActions}
+import consulo.codeEditor.Editor
 import consulo.undoRedo.CommandProcessor.{getInstance => CommandProcessor}
 import consulo.document.Document
 import consulo.document.FileDocumentManager
 import consulo.fileEditor.{FileEditorManager, TextEditor}
 import consulo.project.Project
 import consulo.module.content.ProjectRootManager
-import com.intellij.openapi.util.registry.RegistryManager
+import consulo.application.util.registry.Registry
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, inReadAction}
@@ -22,18 +21,19 @@ import org.jetbrains.sbt.api.language.SbtFile
 
 final class ScalafmtReformatOnFileSaveTask extends AnActionListener {
 
-  override def afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult): Unit = {
+  override def afterActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent): Unit = {
     val project = event.getData(Project.KEY)
     if (project == null || project.isDisposed)
       return
 
-    action match {
-      case _: SaveDocumentAction => //no shortcut by default
-        val editor = event.getDataContext.getData(CommonDataKeys.EDITOR)
+    // upstream: matched on SaveDocumentAction/SaveAllAction classes (internal in Consulo)
+    ActionManager.getInstance.getId(action) match {
+      case "SaveDocument" => //no shortcut by default
+        val editor = event.getData(Editor.KEY)
         if (editor != null) {
           reformatIfNeededInUndoTransparentAction(Seq(editor.getDocument))(using project)
         }
-      case _: SaveAllAction => // Ctrl/Cmd + S (by default)
+      case IdeActions.ACTION_SAVEALL => // Ctrl/Cmd + S (by default)
         //NOTE: for now we reformat only the selected editor, because it was how it worked before
         //But actually the "Save All" action saves all documents.
         //Maybe it makes sense to reformat all open editors? Maybe add an extra setting for that?
@@ -119,6 +119,6 @@ private object ScalafmtReformatOnFileSaveTask {
   private var LastFormatOnSaveTimeMs: Long = 0
 
   private def MinTimeBetweenFormatOnSaveActionMs: Int = {
-    RegistryManager.getInstance().get("scalafmt.min.time.between.format.on.save.action.ms").asInteger()
+    Registry.intValue("scalafmt.min.time.between.format.on.save.action.ms")
   }
 }

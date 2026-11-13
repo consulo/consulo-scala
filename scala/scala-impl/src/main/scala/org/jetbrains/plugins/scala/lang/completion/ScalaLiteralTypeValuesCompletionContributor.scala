@@ -33,7 +33,7 @@ final class ScalaLiteralTypeValuesCompletionContributor extends CompletionContri
 }
 
 object ScalaLiteralTypeValuesCompletionContributor {
-  private final class ScalaLiteralTypeValuesCompletionProvider extends CompletionProvider[CompletionParameters] {
+  private final class ScalaLiteralTypeValuesCompletionProvider extends CompletionProvider {
     override def addCompletions(parameters: CompletionParameters,
                                 context: ProcessingContext,
                                 result: CompletionResultSet): Unit = {

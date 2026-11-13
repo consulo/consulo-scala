@@ -28,7 +28,7 @@ final class ScalaKindCompletionWeigher extends CompletionWeigher {
       case _ => member
     }
 
-    val position = positionFromParameters(using location.getBaseCompletionParameters)
+    val position = positionFromParameters(using location.getCompletionParameters)
     element match {
       case ScalaLookupItem(_, namedElement) if !insideTypePattern.accepts(position, location.getProcessingContext) =>
         namedElement match {

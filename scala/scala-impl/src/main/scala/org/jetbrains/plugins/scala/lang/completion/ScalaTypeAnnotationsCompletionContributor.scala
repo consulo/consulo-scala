@@ -46,7 +46,7 @@ object ScalaTypeAnnotationsCompletionContributor {
         )
       )
 
-  private class ScalaTypeAnnotationsCompletionProvider extends CompletionProvider[CompletionParameters] {
+  private class ScalaTypeAnnotationsCompletionProvider extends CompletionProvider {
     override def addCompletions(parameters: CompletionParameters,
                                 context: ProcessingContext,
                                 resultSet: CompletionResultSet): Unit = {
@@ -70,11 +70,11 @@ object ScalaTypeAnnotationsCompletionContributor {
 
   private object TypeAnnotationsLookupItem {
     def apply(builder: LookupElementBuilder): LookupElementDecorator[LookupElementBuilder] =
-      LookupElementDecorator.withDelegateInsertHandler(builder, ReformattingInsertHandler)
+      LookupElementDecorator.withInsertHandler(builder, ReformattingInsertHandler)
 
-    private object ReformattingInsertHandler extends InsertHandler[LookupElementBuilder] {
-      override def handleInsert(context: InsertionContext, item: LookupElementBuilder): Unit = {
-        item.handleInsert(context)
+    private object ReformattingInsertHandler extends InsertHandler[LookupElementDecorator[LookupElementBuilder]] {
+      override def handleInsert(context: InsertionContext, item: LookupElementDecorator[LookupElementBuilder]): Unit = {
+        item.getDelegate.handleInsert(context)
         context.commitDocument()
 
         val file = context.getFile

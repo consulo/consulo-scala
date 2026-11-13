@@ -20,7 +20,7 @@ final class ScalaPrefixPackageCompletionContributor extends ScalaCompletionContr
   extend(
     CompletionType.BASIC,
     identifierWithParentPattern(classOf[ScReference]),
-    new CompletionProvider[CompletionParameters] {
+    new CompletionProvider {
 
       override def addCompletions(parameters: CompletionParameters,
                                   context: ProcessingContext,

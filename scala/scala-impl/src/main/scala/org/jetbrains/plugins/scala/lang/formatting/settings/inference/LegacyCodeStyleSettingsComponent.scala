@@ -6,12 +6,10 @@ import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
 import consulo.application.ApplicationManager
 import consulo.project.Project
-import com.intellij.psi.impl.source.codeStyle.CodeStyleSchemesImpl
+import consulo.language.codeStyle.CodeStyleSchemes
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.startup.ProjectActivity
-
-import scala.jdk.CollectionConverters._
 
 //todo: Revalidate, add tests and remove
 private final class LegacyCodeStyleSettingsComponent extends ProjectActivity {
@@ -31,7 +29,7 @@ private object LegacyCodeStyleSettingsComponent {
     setupCodeStyleSchemes()
 
     private def setupCodeStyleSchemes(): Unit = {
-      val codeStyleSchemes = CodeStyleSchemesImpl.getSchemeManager.getAllSchemes.asScala
+      val codeStyleSchemes = CodeStyleSchemes.getInstance.getSchemes
       codeStyleSchemes.foreach { scheme =>
         val scalaSettings = scheme.getCodeStyleSettings.getCustomSettings(classOf[ScalaCodeStyleSettings])
         val commonSettings = scheme.getCodeStyleSettings.getCommonSettings(ScalaLanguage.INSTANCE)

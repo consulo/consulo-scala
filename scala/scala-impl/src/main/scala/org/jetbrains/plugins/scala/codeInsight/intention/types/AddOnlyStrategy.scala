@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
-import com.intellij.codeInsight.intention.impl.preview.IntentionPreviewEditor
+import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.template.Template
 import consulo.language.editor.template.event.TemplateEditingAdapter
 import consulo.codeEditor.Editor
@@ -102,7 +102,7 @@ class AddOnlyStrategy(editor: Option[Editor] = None) extends Strategy {
     editor match {
       case Some(e) if validVariants.size > 1
         // skip starting template in intention preview - it requires EDT and write thread so there will be an exception
-        && !e.is[IntentionPreviewEditor] =>
+        && !IntentionPreviewUtils.isIntentionPreviewActive =>
         val chooseTypeTextExpression = new ChooseTypeTextExpression(validVariants)
         val templateListener = new TemplateEditingAdapter {
           override def templateFinished(template: Template, brokenOff: Boolean): Unit = {

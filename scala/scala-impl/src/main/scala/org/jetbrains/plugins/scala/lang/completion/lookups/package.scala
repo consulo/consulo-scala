@@ -2,7 +2,8 @@ package org.jetbrains.plugins.scala.lang.completion
 
 import consulo.language.editor.completion.lookup.LookupElementPresentation
 import consulo.language.psi.PsiNamedElement
-import com.intellij.util.IconUtil.getEmptyIcon
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.ui.image.Image
 import com.siyeh.ig.psiutils.JavaDeprecationUtils.isDeprecated
 
 package object lookups {
@@ -16,8 +17,8 @@ package object lookups {
       }
 
     def setIcon(element: PsiNamedElement): Unit = presentation.setIcon {
-      if (isReal) element.getIcon(0)
-      else getEmptyIcon(false)
+      if (isReal) IconDescriptorUpdaters.getIcon(element, 0)
+      else Image.empty(Image.DEFAULT_ICON_SIZE)
     }
 
     def appendGrayedTailText(text: String): Unit =
