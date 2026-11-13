@@ -980,13 +980,15 @@ object ScalaFmtPreFormatProcessor {
     s"""<a href="$FileHrefAnchor">$fileName</a>"""
 
   private def fileLinkListener(project: Project, file: PsiFile, offset: Int): NotificationListener =
-    (notification: Notification, event: HyperlinkEvent) => {
-      notification.expire()
-      event.getDescription match {
-        case `FileHrefAnchor` =>
-          Option(file.getVirtualFile)
-            .foreach(vFile => OpenFileDescriptorFactory.getInstance(project).builder(vFile).offset(offset).build().navigate(true))
-        case _ =>
+    new NotificationListener {
+      override def hyperlinkActivated(notification: Notification, event: HyperlinkEvent): Unit = {
+        notification.expire()
+        event.getDescription match {
+          case `FileHrefAnchor` =>
+            Option(file.getVirtualFile)
+              .foreach(vFile => OpenFileDescriptorFactory.getInstance(project).builder(vFile).offset(offset).build().navigate(true))
+          case _ =>
+        }
       }
     }
 
