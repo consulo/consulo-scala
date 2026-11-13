@@ -4,9 +4,9 @@ import consulo.ide.action.CreateFromTemplateAction.moveCaretAfterNameIdentifier
 import consulo.fileTemplate.AttributesDefaults
 import consulo.ide.action.ui.CreateFromTemplateDialog
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.dataContext.DataContext
-import consulo.language.editor.LangDataKeys
+import consulo.language.editor.util.IdeView
 import consulo.module.Module
 import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiElement}
@@ -26,14 +26,12 @@ class NewPackageObjectAction extends LazyFileTemplateAction(
   ScalaBundle.message("new.packageobject.menu.action.text"),
   ScalaBundle.message("new.packageobject.menu.action.description"),
   Icons.PACKAGE_OBJECT
-) {
+) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
-    super.update(e)
-
     e.getPresentation.setIcon(icon)
 
-    val hasPackage = Option(e.getDataContext.getData(LangDataKeys.IDE_VIEW))
+    val hasPackage = Option(e.getDataContext.getData(IdeView.KEY))
             .flatMap(_.getDirectories.headOption)
             .flatMap(dir => Option(JavaDirectoryService.getInstance.getPackage(dir)))
             .map(_.getQualifiedName)
@@ -58,7 +56,7 @@ class NewPackageObjectAction extends LazyFileTemplateAction(
     val dataContext = event.getDataContext
 
     for {
-      view           <- dataContext.getData(LangDataKeys.IDE_VIEW).toOption
+      view           <- dataContext.getData(IdeView.KEY).toOption
       dir            <- getTargetDirectory(dataContext, view).toOption
       defaults        = getAttributesDefaults(dataContext)
       createdElement <- createElement(selectedTemplate, dir, defaults)
@@ -76,7 +74,7 @@ class NewPackageObjectAction extends LazyFileTemplateAction(
     val project = directory.getProject
     FileTemplateManager.getInstance(project).addRecentName(selectedTemplate.getName)
     val properties = if (defaults != null) defaults.getDefaultProperties else null
-    val dialog = new CreateFromTemplateDialog(project, directory, selectedTemplate, defaults, properties)
+    val dialog = new CreateFromTemplateDialog(directory, selectedTemplate, defaults, properties)
     val createdElement = dialog.create()
     ScalaFileTemplateUtil.removeBracesIfIndentationBasedSyntaxIsEnabled(project, directory, createdElement.getContainingFile)
     if (createdElement != null) {

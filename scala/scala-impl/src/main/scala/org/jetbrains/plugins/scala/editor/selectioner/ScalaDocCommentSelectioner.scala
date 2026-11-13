@@ -1,11 +1,11 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.plugins.scala.editor.selectioner
 
-import com.intellij.codeInsight.editorActions.wordSelection.LineCommentSelectioner
+import consulo.language.editor.action.{AbstractWordSelectioner, ExtendWordSelectionHandlerBase}
 import consulo.language.ast.ASTNode
 import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
-import consulo.language.psi.PsiElement
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 
 import java.util
@@ -18,7 +18,8 @@ import java.util
  * @see [[com.intellij.codeInsight.editorActions.wordSelection.BlockCommentSelectioner]] (works for Scala automatically)
  * @see [[com.intellij.codeInsight.editorActions.wordSelection.LineCommentSelectioner]] (works for Scala automatically)
  */
-final class ScalaDocCommentSelectioner extends LineCommentSelectioner {
+// upstream: extended LineCommentSelectioner (impl class in Consulo), its `select` logic is inlined in `lineCommentSelect`
+final class ScalaDocCommentSelectioner extends AbstractWordSelectioner {
   override def canSelect(e: PsiElement): Boolean = {
     val node = e.getNode
     node != null && {
@@ -31,13 +32,47 @@ final class ScalaDocCommentSelectioner extends LineCommentSelectioner {
     if (node == null)
       return null
 
-    val result = super.select(element, editorText, cursorOffset, editor)
+    val result = lineCommentSelect(element, editorText, cursorOffset, editor)
     if (result == null)
       return null
 
     val mainContentRange = contentParagraphsRange(node)
     mainContentRange.foreach(result.add)
 
+    result
+  }
+
+  private def lineCommentSelect(element: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): util.List[TextRange] = {
+    val result = super.select(element, editorText, cursorOffset, editor)
+    if (result == null)
+      return null
+
+    var firstComment = element
+    var e = element
+    var stop = false
+    while (!stop && e.getPrevSibling != null) {
+      e match {
+        case _: PsiComment => firstComment = e
+        case _: PsiWhiteSpace =>
+        case _ => stop = true
+      }
+      if (!stop) e = e.getPrevSibling
+    }
+
+    var lastComment = element
+    e = element
+    stop = false
+    while (!stop && e.getNextSibling != null) {
+      e match {
+        case _: PsiComment => lastComment = e
+        case _: PsiWhiteSpace =>
+        case _ => stop = true
+      }
+      if (!stop) e = e.getNextSibling
+    }
+
+    result.addAll(ExtendWordSelectionHandlerBase.expandToWholeLine(editorText,
+      new TextRange(firstComment.getTextRange.getStartOffset, lastComment.getTextRange.getEndOffset)))
     result
   }
 

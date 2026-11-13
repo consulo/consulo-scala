@@ -8,7 +8,7 @@ import consulo.logging.Logger
 import consulo.codeEditor.action.EditorActionHandler
 import consulo.document.Document
 import consulo.codeEditor.Editor
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiFile, PsiWhiteSpace}
@@ -26,7 +26,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScFunctionExpr}
 class EnterBetweenClosureBracesHandler extends EnterHandlerDelegateAdapter {
   private val LOG: Logger = Logger.getInstance("#org.jetbrains.plugins.scala.editor.enterHandler.EnterBetweenClosureBracesHandler")
 
-  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffset: Ref[Integer], caretAdvance: Ref[Integer],
+  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffset: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],
                                dataContext: DataContext, originalHandler: EditorActionHandler): Result = {
     if (!file.isInstanceOf[ScalaFile]) {
       return Result.Continue

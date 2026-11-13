@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.actions.implicitConversions
 import consulo.language.editor.ui.PsiElementListCellRenderer
 import consulo.colorScheme.TextAttributes
 import consulo.language.psi.{PsiElement, PsiNamedElement}
-import com.intellij.util.TextWithIcon
 import org.jetbrains.plugins.scala.actions.Parameters
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
@@ -14,16 +13,16 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.TypeAnnotatio
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation._
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
-import java.awt.{Component, Font}
+import java.awt.Font
 import javax.swing._
 
 private class ScImplicitFunctionListCellRenderer(actual: PsiNamedElement, place: PsiElement)
   extends PsiElementListCellRenderer[PsiNamedElement] {
 
-  override def getItemLocation(value: Any): TextWithIcon =
+  override protected def getRightCellRenderer(value: Any): DefaultListCellRenderer =
     value match {
-      case e: ScMember if e.isSynthetic => super.getItemLocation(e.syntheticNavigationElement)
-      case _                            => super.getItemLocation(value)
+      case e: ScMember if e.isSynthetic => super.getRightCellRenderer(e.syntheticNavigationElement)
+      case _                            => super.getRightCellRenderer(value)
     }
 
   override def getNavigationItemAttributes(value: Any): TextAttributes = {
@@ -36,10 +35,10 @@ private class ScImplicitFunctionListCellRenderer(actual: PsiNamedElement, place:
     result
   }
 
-  override def getListCellRendererComponent(list: JList[?], value: Any, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component = {
-    val item = value.asInstanceOf[Parameters].newExpression
-    super.getListCellRendererComponent(list, item, index, isSelected, cellHasFocus)
-  }
+  // upstream: overrides `getListCellRendererComponent(JList, Object, ...)`, which is not overridable from Scala here
+  def parametersRenderer: ListCellRenderer[Parameters] =
+    (list: JList[? <: Parameters], value: Parameters, index: Int, isSelected: Boolean, cellHasFocus: Boolean) =>
+      getListCellRendererComponent(list.asInstanceOf[JList[PsiNamedElement]], value.newExpression, index, isSelected, cellHasFocus)
 
   override def getElementText(element: PsiNamedElement): String =
     element match {

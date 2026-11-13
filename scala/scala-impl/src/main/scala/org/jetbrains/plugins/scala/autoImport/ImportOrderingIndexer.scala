@@ -18,7 +18,7 @@ import java.util
 final class ImportOrderingIndexer extends FileBasedIndexExtension[String, Void] {
   override val getName: ID[String, Void] = ImportOrderingIndexer.Id
 
-  override def getInputFilter: FileBasedIndex.InputFilter = file => {
+  override def getInputFilter: FileBasedIndex.InputFilter = (_, file) => {
     file.isInLocalFileSystem &&
       file.getFileType.is[ScalaFileType]
   }

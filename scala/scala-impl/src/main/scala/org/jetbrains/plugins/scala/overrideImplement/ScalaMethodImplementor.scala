@@ -8,7 +8,6 @@ import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
 import consulo.language.psi.PsiElement
 import java.util.function.Consumer
-import com.intellij.util.EmptyConsumer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
@@ -47,8 +46,7 @@ class ScalaMethodImplementor extends MethodImplementor {
     new ScalaPsiMethodGenerationInfo(method, baseMethod.orNull)
   }
 
-  @nowarn("msg=class EmptyConsumer in package util is deprecated")
-  override def createDecorator(targetClass: PsiClass, baseMethod: PsiMethod, toCopyJavaDoc: Boolean, insertOverrideIfPossible: Boolean): Consumer[PsiMethod] = EmptyConsumer.getInstance()
+  override def createDecorator(targetClass: PsiClass, baseMethod: PsiMethod, toCopyJavaDoc: Boolean, insertOverrideIfPossible: Boolean): Consumer[PsiMethod] = _ => ()
 
   override def getMethodsToImplement(aClass: PsiClass): Array[PsiMethod] = Array()
 }

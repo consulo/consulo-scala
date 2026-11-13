@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import com.intellij.codeInsight.daemon.impl.{AnnotationHolderImpl, AnnotationSessionImpl}
+import consulo.language.editor.annotation.HighlightSeverity
+import consulo.language.editor.intention.IntentionAction
 import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, TextAttributesKey}
 import consulo.colorScheme.TextAttributes
 import consulo.document.util.TextRange
@@ -16,10 +17,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiElementExt, ScalaFeatures}
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
+import org.jetbrains.plugins.scala.semantic.AnnotatorHolderMock.AnnotatorHolderMockBase
 import org.jetbrains.plugins.scala.text.ClassPrinter
 
 import java.awt.Font
-import scala.jdk.CollectionConverters.ListHasAsScala
 
 // Proof of concept implementation, #SCL-22046
 object ElementRenderer {
@@ -41,17 +42,21 @@ object ElementRenderer {
 
   private def highlight(file: PsiFile, colorScheme: EditorColorsScheme): Seq[(PsiElement, TextAttributes)] = {
     val highlighter = ScalaSyntaxHighlighterFactory.createScalaSyntaxHighlighter(file.getProject, file = null, language = file.getLanguage)
-    val annotator = new ScalaColorSchemeAnnotator()
     val elements = file.elements.toSeq
 
-    val rangeToKey: Seq[(TextRange, TextAttributesKey)] = AnnotationSessionImpl.computeWithSession(file, false, annotator, annotationHolder => annotationHolder match {
-      case holder: AnnotationHolderImpl =>
-        elements.flatMap { e =>
-          holder.runAnnotatorWithContext(e)
-          holder.asScala.map(it => (TextRange.create(it.getStartOffset, it.getEndOffset), it.getTextAttributes))
-        }
-      case _ => Seq.empty
-    })
+    // upstream: ran the annotator via AnnotationSessionImpl/AnnotationHolderImpl (impl classes in Consulo)
+    val holder = new AnnotatorHolderMockBase[(TextRange, TextAttributesKey)](file)(using Ordering.by(p => (p._1.getStartOffset, p._1.getEndOffset))) {
+      override def createMockAnnotation(
+        severity: HighlightSeverity,
+        range: TextRange,
+        message: String,
+        enforcedAttributes: TextAttributesKey,
+        fixes: Seq[IntentionAction]
+      ): Option[(TextRange, TextAttributesKey)] =
+        Option(enforcedAttributes).map(range -> _)
+    }
+    elements.foreach(ScalaColorSchemeAnnotator.highlightElement(_)(using holder))
+    val rangeToKey: Seq[(TextRange, TextAttributesKey)] = holder.annotations
 
     val leafElementToKeys = elements.filter(_.is[LeafPsiElement]).map { e =>
       val annotations = rangeToKey.filter(_._1.contains(e.getTextRange)).map(_._2) // TODO Optimize
@@ -81,7 +86,7 @@ object ElementRenderer {
         path.map(path => s"<a href=\"psi_element://${path.stripPrefix("_root_.")}\"><code>$text</code></a>").getOrElse(text)
       }
       if (a.getForegroundColor == null && a.getFontType == Font.PLAIN && !link.startsWith("<a href=")) link else { // TODO Omit style="" for links
-        val color = Option(a.getForegroundColor).map(c => "color:" + f"#${c.getRed}%02x${c.getGreen}%02x${c.getBlue}%02x" + ";").mkString
+        val color = Option(a.getForegroundColor).map(c => "color:" + f"#${c.toRGB.getRed}%02x${c.toRGB.getGreen}%02x${c.toRGB.getBlue}%02x" + ";").mkString
         val font = if (a.getFontType == Font.BOLD) "font-weight:bold;" else if (a.getFontType == Font.ITALIC) "font-style:italic;" else ""
         s"<span style=\"$color$font\">" + link + "</span>"
       }

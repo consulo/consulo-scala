@@ -24,7 +24,7 @@ object PopupPosition {
     }
   }
 
-  def best: PopupPosition = _.showInBestPositionFor(_)
+  def best: PopupPosition = (popup, editor) => editor.showPopupInBestPositionFor(popup)
 
   def at(point: Point): PopupPosition = (popup, editor) => popup.showInScreenCoordinates(editor.getComponent, point)
 

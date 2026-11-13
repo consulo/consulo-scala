@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.editor.smartEnter.fixers
 
+import consulo.language.editor.action.SmartEnterProcessor
 import consulo.language.codeStyle.CodeStyle
 import consulo.document.Document
 import consulo.codeEditor.Editor
@@ -59,7 +60,7 @@ final class ScalaForStatementFixer extends ScalaForStatementFixerBase {
 
   private def createEmptyBodyIfNeeded(forStatement: ScFor)
                                      (implicit editor: Editor, document: Document, processor: ScalaSmartEnterProcessor): Unit = {
-    processor.commit(editor)
+    SmartEnterProcessor.commitDocument(editor)
     if (forStatement.body.isEmpty) {
       forStatement.getRightBracket.foreach { rightBracket =>
         document.insertString(rightBracket.endOffset, " {}")
@@ -77,7 +78,7 @@ final class ScalaForStatementFixer extends ScalaForStatementFixerBase {
         .find(_.getTextRange.containsOffset(currentOffset))
         .getOrElse(enumerators)
       document.insertString(anchor.endOffset, "\n" * newLines)
-      processor.commit(editor)
+      SmartEnterProcessor.commitDocument(editor)
       forStatement.getRightBracket.foreach { rightBracket =>
         processor.reformatWithoutAdjustment(rightBracket)
         val tabSize = CodeStyle.getSettings(anchor.getProject)

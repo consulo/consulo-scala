@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
-import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.editor.completion.{CompletionContributor, CompletionService, WeighingContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.application.dumb.DumbAware
 import consulo.language.util.ProcessingContext
 import org.apache.maven.artifact.versioning.ComparableVersion
@@ -15,7 +15,7 @@ import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
 final class ScalaDirectiveScalaVersionCompletionContributor extends CompletionContributor with DumbAware {
-  extend(CompletionType.BASIC, ScalaDirectiveScalaVersionPattern, new CompletionProvider[CompletionParameters] {
+  extend(CompletionType.BASIC, ScalaDirectiveScalaVersionPattern, new CompletionProvider {
     override def addCompletions(params: CompletionParameters, processingContext: ProcessingContext, resultSet: CompletionResultSet): Unit = {
       val place = positionFromParameters(using params)
       val (_, valueKind) = ScalaDirectiveValueKind.extract(place.getText)
@@ -41,5 +41,15 @@ object ScalaDirectiveScalaVersionCompletionContributor {
     val scala3 = DependencyUtil.getScala3CompilerVersions(onlyStable)
 
     scala2 ++ scala3
+  }
+
+  // upstream: com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher (impl class in Consulo)
+  private[completion] final class RealPrefixMatchingWeigher extends LookupElementWeigher("prefix", false, true) {
+    override def weigh(element: LookupElement, context: WeighingContext): Comparable[?] = {
+      val matcher = CompletionService.getItemMatcher(element, context)
+      var max = Integer.MIN_VALUE
+      element.getAllLookupStrings.forEach(s => max = Math.max(max, matcher.matchingDegree(s)))
+      Integer.valueOf(-max)
+    }
   }
 }

@@ -12,7 +12,10 @@ import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
 import consulo.ui.ex.popup.BaseListPopupStep
 import consulo.util.dataholder.Key
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
-import consulo.desktop.awt.ui.popup.list.ListPopupImpl
+import consulo.ui.ex.awt.popup.AWTListPopup
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.ui.image.Image
 import consulo.ui.ex.awt.JBUI
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -30,7 +33,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocResolvableCodeRefe
 
 import java.awt.Point
 import javax.swing.event.ListSelectionEvent
-import javax.swing.{Icon, JLabel, JList}
+import javax.swing.{JLabel, JList}
 
 sealed abstract class ScalaAddImportAction[Psi <: PsiElement, Elem <: ElementToImport](
   editor: Editor,
@@ -84,7 +87,7 @@ sealed abstract class ScalaAddImportAction[Psi <: PsiElement, Elem <: ElementToI
 
   case class PresentablePopupElement(elem: Elem) {
     // evaluate icon and presentation, so it won't be calculated in painting thread (which is forbidden)
-    val icon: Icon = elem.element.getIcon(0)
+    val icon: Image = IconDescriptorUpdaters.getIcon(elem.element, 0)
 
     @Nls
     //noinspection ReferencePassedToNls
@@ -95,7 +98,7 @@ sealed abstract class ScalaAddImportAction[Psi <: PsiElement, Elem <: ElementToI
     val title = chooserTitle(validVariants)
     val firstPopupStep: BaseListPopupStep[PresentablePopupElement] =
       new BaseListPopupStep[PresentablePopupElement](title, validVariants.map(PresentablePopupElement.apply)*) {
-        override def getIconFor(aValue: PresentablePopupElement): Icon =
+        override def getIconFor(aValue: PresentablePopupElement): Image =
           aValue.icon
 
         override def getTextFor(value: PresentablePopupElement): String =
@@ -286,7 +289,10 @@ object ScalaAddImportAction {
     }
 
     override protected def customizePopup(popup: ListPopup, editor: Editor): Unit = {
-      popup.asInstanceOf[ListPopupImpl].getList.clearSelection()
+      popup match {
+        case awtPopup: AWTListPopup => awtPopup.getList.clearSelection()
+        case _ =>
+      }
 
       popup.addListSelectionListener { (e: ListSelectionEvent) =>
         val jList = e.getSource.asInstanceOf[JList[PresentablePopupElement]]
@@ -330,7 +336,7 @@ object ScalaAddImportAction {
     val label = new JLabel(derivation(variant.found))
 
     label.setBorder(JBUI.Borders.empty(2))
-    label.setFont(editor.getColorsScheme.getFont(EditorFontType.PLAIN))
+    label.setFont(TargetAWT.to(editor.getColorsScheme.getFont(EditorFontType.PLAIN)))
 
     val popup: JBPopup =
       JBPopupFactory.getInstance().createComponentPopupBuilder(label, null)

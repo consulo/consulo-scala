@@ -5,7 +5,6 @@ import consulo.codeEditor.HighlighterIterator
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.document.FileDocumentManager
-import com.intellij.openapi.fileEditor.impl.FileDocumentManagerImpl
 import consulo.project.Project
 import consulo.util.lang.StringUtil
 import consulo.virtualFileSystem.VirtualFile
@@ -43,7 +42,7 @@ package object editor {
 
     def textWithConvertedSeparators(file: VirtualFile): String = {
       val separator = if (document.getLineCount > 1)
-        FileDocumentManagerImpl.getLineSeparator(document, file)
+        FileDocumentManager.getInstance.getLineSeparator(file, null) // upstream: FileDocumentManagerImpl.getLineSeparator(document, file)
       else
         "\n"
       val documentText = document.getText
@@ -77,7 +76,7 @@ package object editor {
       if (0 <= offset && offset < editor.getDocument.getTextLength) {
         val highlighter = editor.asInstanceOf[EditorEx].getHighlighter
         val iterator = highlighter.createIterator(offset)
-        predicate(iterator.getTokenType)
+        predicate(iterator.getTokenType.asInstanceOf[IElementType])
       } else {
         false
       }

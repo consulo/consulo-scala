@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala
 
-import consulo.language.editor.DaemonCodeAnalyzer
-import consulo.language.editor.DaemonCodeAnalyzer.DaemonListener
+import consulo.language.editor.DaemonListener
 import consulo.language.ast.ASTNode
 import consulo.codeEditor.EditorFactory
 import consulo.document.event.{BulkAwareDocumentListener, DocumentEvent}
@@ -109,12 +108,12 @@ object Tracing {
   }
 
   private val daemonListener = new DaemonListener {
-    override def daemonStarting(fileEditors: ju.Collection[? <: FileEditor]): Unit = if (parameters.annotator) {
+    override def daemonStarting(fileEditors: ju.Collection[FileEditor]): Unit = if (parameters.annotator) {
       trace("Highlighting started")
       annotatedElements = ListBuffer.empty[PsiElement]
     }
 
-    override def daemonFinished(fileEditors: ju.Collection[? <: FileEditor]): Unit = if (parameters.annotator) {
+    override def daemonFinished(fileEditors: ju.Collection[FileEditor]): Unit = if (parameters.annotator) {
       trace(s"Annotated: ${annotatedElements.map(_.asText).mkString(" ")}")
       trace("Highlighting finished")
     }
@@ -133,7 +132,7 @@ object Tracing {
 
     psiManager.addPsiTreeChangeListener(psiTreeChangeListener, project)
     eventMulticaster.addDocumentListener(documentListener, project)
-    connection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC, daemonListener)
+    connection.subscribe(classOf[DaemonListener], daemonListener)
 
     lines = ListBuffer.empty[String]
 

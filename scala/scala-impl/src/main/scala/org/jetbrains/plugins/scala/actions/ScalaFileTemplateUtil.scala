@@ -57,8 +57,7 @@ object ScalaFileTemplateUtil {
     val features = ScalaFeatures.forPsiOrDefault(file)
     if (file.getProject.indentationBasedSyntaxEnabled(features)) {
       WriteCommandAction
-        .writeCommandAction(file.getProject)
-        .shouldRecordActionForActiveDocument(false)
+        .writeCommandAction(file.getProject) // upstream: .shouldRecordActionForActiveDocument(false)
         .run { () =>
           val optionalBracesOwners = file.elements.filterByType[ScOptionalBracesOwner]
           //TODO (minor) we should handle all kind of code with braces from potential user-defined file templates

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.actions
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.ui.ex.CopyPasteManager
@@ -20,10 +20,9 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result.{TypeResult, Typeable}
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScTypeExt, TypePresentationContext}
 
-import java.awt.datatransfer.StringSelection
 import scala.annotation.tailrec
 
-final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type")) {
+final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type")) with AnActionWithSyncUpdate {
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override def update(e: AnActionEvent): Unit = {
@@ -53,7 +52,7 @@ final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type
       },
       uiDataConsumer = typeTextOpt => {
         typeTextOpt.foreach { text =>
-          CopyPasteManager.getInstance.setContents(new StringSelection(text))
+          CopyPasteManager.getInstance.setText(text)
         }
       },
       progressTitle = ScalaBundle.message("calculating.type"),

@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
 import consulo.language.editor.documentation.DocumentationMarkup
-import consulo.language.editor.documentation.DocumentationMarkup.BOTTOM_ELEMENT
 import consulo.colorScheme.EditorColorsManager
 import consulo.colorScheme.TextAttributes
 import consulo.application.util.HtmlChunk
@@ -117,7 +116,8 @@ private class ScalaDocDefinitionGenerator private(
     }
 
   private def generateContainerInfoSection(containerIconFqn: String, containerLink: String): HtmlChunk.Element =
-    BOTTOM_ELEMENT.children(
+    // upstream: DocumentationMarkup.BOTTOM_ELEMENT
+    HtmlChunk.div().setClass("bottom").children(
       HtmlChunk.tag("icon").attr("src", containerIconFqn),
       HtmlChunk.nbsp,
       HtmlChunk.raw(containerLink)

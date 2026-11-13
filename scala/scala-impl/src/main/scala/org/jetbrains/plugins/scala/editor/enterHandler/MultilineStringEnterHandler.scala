@@ -6,7 +6,7 @@ import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
 import consulo.codeEditor.action.EditorActionHandler
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.psi.PsiFile
 import consulo.language.codeStyle.CodeStyleManager
 import org.apache.commons.lang3.StringUtils
@@ -23,7 +23,7 @@ class MultilineStringEnterHandler extends EnterHandlerDelegateAdapter {
   private var wasInMultilineString: Boolean = false
   private var whiteSpaceAfterCaret: String = ""
 
-  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: Ref[Integer], caretAdvance: Ref[Integer],
+  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],
                                dataContext: DataContext, originalHandler: EditorActionHandler): Result = {
 
     val caretOffset = caretOffsetRef.get.intValue

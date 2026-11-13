@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor.smartEnter
 
-import com.intellij.codeInsight.CodeInsightFrontbackUtil
+import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.java.impl.codeInsight.editorActions.smartEnter.EnterProcessor
 import consulo.language.editor.action.SmartEnterProcessor
 import consulo.language.editor.completion.lookup.LookupManager
@@ -116,7 +116,7 @@ class ScalaSmartEnterProcessor extends SmartEnterProcessor {
     reformat(atCaret)
     commit(editor)
 
-    atCaret = CodeInsightFrontbackUtil.findElementInRange(psiFile, rangeMarker.getStartOffset, rangeMarker.getEndOffset, atCaret.getClass)
+    atCaret = CodeInsightUtilCore.findElementInRange(psiFile, rangeMarker.getStartOffset, rangeMarker.getEndOffset, atCaret.getClass, psiFile.getLanguage)
 
     for (processor <- ScalaSmartEnterProcessor.myEnterProcessors) {
       if (atCaret != null && processor.doEnter(editor, atCaret, isModified(editor)))

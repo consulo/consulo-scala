@@ -21,7 +21,8 @@ object DesktopUtils {
         .createNotification(
           ScalaBundle.message("title.problem.opening.web.page"),
           ScalaBundle.message("html.unable.to.launch.web.browser", url),
-          NotificationType.WARNING
+          NotificationType.WARNING,
+          null
         )
         .addAction(new AnAction(ScalaBundle.message("copy.link.to.clipboard")) {
           override def actionPerformed(e: AnActionEvent): Unit = {

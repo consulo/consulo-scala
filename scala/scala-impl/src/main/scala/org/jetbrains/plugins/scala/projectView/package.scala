@@ -5,7 +5,7 @@ import org.jetbrains.plugins.scala.api.ScalaFileType
 import consulo.project.ui.view.tree.ViewSettings
 import consulo.project.ui.view.tree.AbstractTreeNode
 import consulo.project.Project
-import consulo.util.nodep.io.FileUtilRt
+import consulo.util.io.FileUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScValueOrVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
@@ -38,7 +38,7 @@ package object projectView {
     private def isMillFile(file: ScalaFile):Boolean = {
       val vf = file.getVirtualFile
       if (vf == null) return false
-      FileUtilRt.extensionEquals(vf.getPath, "mill")
+      FileUtil.extensionEquals(vf.getPath, "mill")
     }
   }
 

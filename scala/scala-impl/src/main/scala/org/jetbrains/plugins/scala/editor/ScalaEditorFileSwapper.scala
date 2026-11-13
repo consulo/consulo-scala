@@ -1,22 +1,21 @@
 package org.jetbrains.plugins.scala.editor
 
-import com.intellij.openapi.fileEditor.impl.EditorComposite
-import consulo.fileEditor.EditorFileSwapper
+import consulo.fileEditor.{EditorFileSwapper, FileEditorWithProviderComposite}
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiManager
-import kotlin.Pair
+import consulo.util.lang.Pair
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 final class ScalaEditorFileSwapper extends EditorFileSwapper {
-  override def getFileToSwapTo(project: Project, editorComposite: EditorComposite): Pair[VirtualFile, Integer] = {
+  override def getFileToSwapTo(project: Project, editorComposite: FileEditorWithProviderComposite): Pair[VirtualFile, Integer] = {
     val sourceFile = ScalaEditorFileSwapper.findSourceFile(project, editorComposite.getFile)
     if (sourceFile ne null)
-      new Pair(sourceFile, null)
+      Pair.create(sourceFile, null)
     else
       null
   }

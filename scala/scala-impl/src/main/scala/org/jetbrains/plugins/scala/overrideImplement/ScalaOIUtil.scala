@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.overrideImplement
 
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.FileModificationService
-import consulo.language.editor.generation.{ClassMember => JClassMember}
 import consulo.application.ApplicationManager
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.Editor
@@ -118,45 +117,45 @@ object ScalaOIUtil {
       else getMembersToOverride(clazz)
 
     if (classMembers.nonEmpty) {
-      val selectedMembers = methodName match {
+      methodName match {
         case None =>
           if (ApplicationManager.getApplication.isUnitTestMode)
-            classMembers //if no explicit methodName is specified in tests, implement all members
+            runAction(classMembers, isImplement, clazz) //if no explicit methodName is specified in tests, implement all members
           else
-            showSelectMembersDialogAndGet(clazz, isImplement, classMembers)
+            showSelectMembersDialog(clazz, isImplement, classMembers) { selectedMembers =>
+              if (selectedMembers.nonEmpty) {
+                runAction(selectedMembers, isImplement, clazz)
+              }
+            }
         case Some(name) =>
-          classMembers.find {
+          val selectedMembers = classMembers.find {
             case named: ScalaNamedMember if named.name == name => true
             case _ => false
           }.toSeq
-      }
-      if (selectedMembers.nonEmpty) {
-        runAction(selectedMembers, isImplement, clazz)
+          if (selectedMembers.nonEmpty) {
+            runAction(selectedMembers, isImplement, clazz)
+          }
       }
     }
   }
 
-  private def showSelectMembersDialogAndGet(
+  // upstream: showSelectMembersDialogAndGet (modal MemberChooser), the Consulo member chooser is asynchronous
+  private def showSelectMembersDialog(
     clazz: ScTemplateDefinition,
     isImplement: Boolean,
     classMembers: Seq[ClassMember]
-  ): Seq[ClassMember] = {
+  )(onSelected: Seq[ClassMember] => Unit)(implicit project: Project): Unit = {
     val title = if (isImplement) ScalaBundle.message("select.method.implement") else ScalaBundle.message("select.method.override")
-    val chooserDialog = new ScalaMemberChooser[ClassMember](
-      classMembers.to(ArraySeq),
-      false,
-      true,
-      isImplement,
-      true,
-      true,
-      clazz
-    )
-    chooserDialog.setTitle(title)
-    if (isImplement) {
-      chooserDialog.selectElements(classMembers.toArray[JClassMember])
-    }
-    chooserDialog.show()
-    Option(chooserDialog.getSelectedElements).map(_.asScala.toSeq).getOrElse(Seq.empty)
+    ScalaMemberChooser.show[ClassMember](
+      classMembers,
+      allowEmptySelection = false,
+      allowMultiSelection = true,
+      needAddOverrideChb = isImplement,
+      needSpecifyTypeChb = true,
+      needCopyScalaDocChb = true,
+      clazz,
+      title
+    )(onSelected)
   }
 
   /**

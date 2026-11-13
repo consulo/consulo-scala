@@ -2,10 +2,9 @@ package org.jetbrains.plugins.scala.actions.utils
 
 import consulo.disposer.Disposable
 import consulo.ui.ex.action.AnAction
-import consulo.ui.ModalityState
-import consulo.application.{NonBlockingReadAction, ReadAction}
-import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.impl.EditorImpl
+import consulo.application.{Application, NonBlockingReadAction, ReadAction}
+import consulo.codeEditor.{Editor, EditorPopupHelper}
+import consulo.codeEditor.util.EditorUtil
 import consulo.project.Project
 import consulo.ui.ex.awt.LoadingDecorator
 import consulo.ui.ex.popup.JBPopupFactory
@@ -13,17 +12,16 @@ import consulo.disposer.Disposer
 import consulo.ui.ex.awt.NonOpaquePanel
 import consulo.ui.ex.awt.{JBLabel, JBLoadingPanel}
 import consulo.application.util.concurrent.AppExecutorUtil
-import com.intellij.util.concurrency.EdtScheduler
-import consulo.desktop.awt.ui.impl.image.AnimatedIcon
-import consulo.ui.ex.awt.{AsyncProcessIcon, EmptyIcon, UIUtil}
+import consulo.ui.ex.awt.{AsyncProcessIcon, UIUtil}
+import consulo.ui.image.Image
+import consulo.util.concurrent.CancellablePromise
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.concurrency.CancellablePromise
 
 import java.awt.FlowLayout
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import javax.swing.{JLabel, JPanel}
-import scala.annotation.nowarn
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.util.Try
 import scala.util.chaining.scalaUtilChainingOps
@@ -104,13 +102,9 @@ private[actions] object TaskRunnerWithLoadingProgress {
     editor: Editor,
     cancelOnScrolling: Boolean
   ): CancellablePromise[T] = {
-    // Unfortunately, the Editor interface is not disposable, so we fall back to the project as disposable.
-    // Though the main implementation `EditorImpl` has the disposable.
-    // TODO: SCL-25149 Needs to be rewritten using `com.intellij.openapi.editor.ex.util.EditorUtil.disposeWithEditor`.
-    val editorOrProjectDisposable = editor match {
-      case impl: EditorImpl => impl.getDisposable: @nowarn("cat=deprecation")
-      case _ => project
-    }
+    // upstream: used `EditorImpl.getDisposable` (or the project as a fallback)
+    val editorOrProjectDisposable = Disposable.newDisposable("TaskRunnerWithLoadingProgress")
+    EditorUtil.disposeWithEditor(editor, editorOrProjectDisposable)
 
     val cancellablePromiseRef = new AtomicReference[CancellablePromise[?]]()
     val (stopAction, stopActionDisposable) =
@@ -123,7 +117,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
 
     val submittedActionPromise = backgroundAction
       .finishOnUiThread(
-        ModalityState.defaultModalityState(),
+        (app: Application) => app.getDefaultModalityState,
         result => {
           uiDataConsumer.accept(result)
         }
@@ -137,6 +131,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
         if (cancelOnScrolling) {
           editor.getScrollingModel.removeVisibleAreaListener(visibleAreaListener)
         }
+        UIUtil.invokeLaterIfNeeded(() => Disposer.dispose(editorOrProjectDisposable))
       })
 
     cancellablePromiseRef.set(submittedActionPromise)
@@ -170,12 +165,12 @@ private[actions] object TaskRunnerWithLoadingProgress {
       stopActionRef.set(originalStopAction)
       (stopActionRef.get(), None)
     } else {
-      val disposable = Disposer.newDisposable()
+      val disposable = Disposable.newDisposable()
       Disposer.register(editorOrProjectDisposable, disposable)
 
       val loadingPanel = new JBLoadingPanel(null, panel =>
         new LoadingDecorator(panel, disposable, 0, false, new AsyncProcessIcon(s"ProgressUtils(title: $progressTitle)")) {
-          override protected def customizeLoadingLayer(parent: JPanel, text: JLabel, icon: AnimatedIcon): NonOpaquePanel = {
+          override protected def customizeLoadingLayer(parent: JPanel, text: JLabel, icon: AsyncProcessIcon): NonOpaquePanel = {
             parent.setLayout(new FlowLayout(FlowLayout.LEFT))
             val result = new NonOpaquePanel
             result.add(icon)
@@ -183,7 +178,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
             result
           }
         })
-      loadingPanel.add(new JBLabel(EmptyIcon.ICON_18))
+      loadingPanel.add(new JBLabel(Image.empty(18)))
       loadingPanel.add(new JBLabel(progressTitle))
 
       val popupBuilder = JBPopupFactory.getInstance()
@@ -200,17 +195,18 @@ private[actions] object TaskRunnerWithLoadingProgress {
       val popup = popupBuilder.createPopup()
       Disposer.register(disposable, popup)
 
-      val showPopupFuture: kotlinx.coroutines.Job = EdtScheduler.getInstance.schedule(
-        DefaultProgressPopupDelay.toMillis.toInt,
-        ModalityState.defaultModalityState(),
-        () => {
+      // upstream: EdtScheduler.schedule(delay, ModalityState.defaultModalityState(), ...)
+      val application = Application.get()
+      val showPopupFuture = AppExecutorUtil.getAppScheduledExecutorService.schedule(
+        (() => application.invokeLater(() => {
           val needToShowPopup = !popup.isDisposed && !popup.isVisible && !editor.isDisposed
           if (needToShowPopup) {
-            val popupPosition = JBPopupFactory.getInstance().guessBestPopupLocation(editor)
             loadingPanel.startLoading()
-            popup.show(popupPosition)
+            EditorPopupHelper.getInstance.showPopupInBestPositionFor(editor, popup)
           }
-        }
+        }, application.getDefaultModalityState)): Runnable,
+        DefaultProgressPopupDelay.toMillis,
+        TimeUnit.MILLISECONDS
       )
 
       stopActionRef.set((cancel: Boolean) => {
@@ -218,7 +214,7 @@ private[actions] object TaskRunnerWithLoadingProgress {
           loadingPanel.stopLoading()
           originalStopAction.accept(cancel)
         } finally {
-          showPopupFuture.cancel(null)
+          showPopupFuture.cancel(false)
 
           UIUtil.invokeLaterIfNeeded(() => {
             if (popup.isVisible) {

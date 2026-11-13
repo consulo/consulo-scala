@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
 import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.application.ApplicationManager
 import consulo.undoRedo.CommandProcessor
@@ -34,7 +34,7 @@ class CreateScalaDocStubAction extends AnAction(
   ScalaEditorBundle.message("create.scaladoc.stub.action.text"),
   ScalaEditorBundle.message("create.scaladoc.stub.action.description"),
   /* icon = */ null
-) {
+) with AnActionWithSyncUpdate {
   override def update(e: AnActionEvent): Unit =
     ScalaActionUtil.enableAndShowIfInScalaFile(e)
 
@@ -176,7 +176,8 @@ object CreateScalaDocStubAction {
       }
     }
 
-    if (!ApplicationManager.getApplication.isWriteIntentLockAcquired || IntentionPreviewUtils.isIntentionPreviewActive) {
+    // upstream: isWriteIntentLockAcquired (no write-intent lock in Consulo)
+    if (!ApplicationManager.getApplication.isDispatchThread || IntentionPreviewUtils.isIntentionPreviewActive) {
       commandBody.run()
     } else {
       CommandProcessor.getInstance().executeCommand(project, commandBody, ScalaEditorBundle.message("action.create.scaladoc.stub"), null, psiDocument)

@@ -8,10 +8,10 @@ import org.jetbrains.plugins.scala.packagesearch.lang.completion.BaseDependencyC
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveDependencyCompletionProviderBase._
 import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 
-abstract class ScalaDirectiveDependencyCompletionProviderBase extends CompletionProvider[CompletionParameters] {
+abstract class ScalaDirectiveDependencyCompletionProviderBase extends CompletionProvider {
   protected def addCompletions(params: DependencyCompletionParameters, resultSet: CompletionResultSet): Unit
 
-  override protected def addCompletions(params: CompletionParameters, processingContext: ProcessingContext, resultSet: CompletionResultSet): Unit = {
+  override def addCompletions(params: CompletionParameters, processingContext: ProcessingContext, resultSet: CompletionResultSet): Unit = {
     resultSet.restartCompletionOnAnyPrefixChange()
 
     val dependencyParams = new DependencyCompletionParameters(params, resultSet)

@@ -1,13 +1,16 @@
 package org.jetbrains.plugins.scala.util;
 
 import consulo.language.editor.intention.BaseIntentionAction;
-import com.intellij.codeInspection.InspectionProfileEntry;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ExtensionAPI;
+import consulo.language.editor.inspection.InspectionTool;
 import consulo.component.extension.ExtensionPointName;
 import consulo.language.psi.PsiElement;
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 abstract public class IntentionAvailabilityChecker {
   private static final ExtensionPointName<IntentionAvailabilityChecker> EP_NAME =
-      ExtensionPointName.create("org.intellij.scala.scalaIntentionAvailabilityChecker");
+      ExtensionPointName.create(IntentionAvailabilityChecker.class);
 
   private static final IntentionAvailabilityChecker defaultChecker = new IntentionAvailabilityChecker() {};
   
@@ -15,7 +18,7 @@ abstract public class IntentionAvailabilityChecker {
     return true;
   }
   
-  public boolean isInspectionAvailable(InspectionProfileEntry inspection, PsiElement psiElement) {
+  public boolean isInspectionAvailable(InspectionTool inspection, PsiElement psiElement) {
     return true;
   }
   
@@ -35,7 +38,7 @@ abstract public class IntentionAvailabilityChecker {
     return getChecker(psiElement).isIntentionAvailable(intention, psiElement);
   }
   
-  public static boolean checkInspection(InspectionProfileEntry inspection, PsiElement psiElement) {
+  public static boolean checkInspection(InspectionTool inspection, PsiElement psiElement) {
     return getChecker(psiElement).isInspectionAvailable(inspection, psiElement);
   }
 }

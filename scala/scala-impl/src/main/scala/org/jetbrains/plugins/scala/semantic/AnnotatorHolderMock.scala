@@ -31,7 +31,7 @@ private class AnnotatorHolderMock(file: PsiFile) extends AnnotatorHolderMockBase
   }
 }
 
-private object AnnotatorHolderMock {
+private[scala] object AnnotatorHolderMock {
   abstract class AnnotatorHolderMockBase[T: Ordering](file: PsiFile) extends ScalaAnnotationHolder {
 
     implicit object TextRangeOrdering extends scala.math.Ordering[TextRange] {
@@ -96,7 +96,7 @@ private object AnnotatorHolderMock {
     def fromHighlightInfo(info: HighlightInfo, fileText: String): Option[Message] = {
       val constructor = HighlightingSeverityToConstructor.get(info.getSeverity)
       val range = TextRange.create(info.getStartOffset, info.getEndOffset)
-      constructor.map(_.apply(range.substring(fileText), info.getDescription))
+      constructor.map(_.apply(range.substring(fileText), info.getDescription.get))
     }
 
     @nowarn("cat=deprecation")

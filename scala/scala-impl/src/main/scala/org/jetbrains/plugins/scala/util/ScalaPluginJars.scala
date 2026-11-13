@@ -2,11 +2,9 @@ package org.jetbrains.plugins.scala.util
 
 import consulo.util.io.FileUtil
 import consulo.util.nodep.io.FileUtilRt
-import consulo.util.io.PathUtil.getJarPathForClass
+import consulo.util.io.ClassPathUtil.getJarPathForClass
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
-import org.jetbrains.jps.incremental.BuilderService
-import org.jetbrains.org.objectweb.asm.ClassReader
-import org.jetbrains.plugins.scala.extensions.{PathExt, invokeLater}
+import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.nio.file.Path
 import scala.util.parsing.combinator.RegexParsers
@@ -65,42 +63,10 @@ object CompilerBridgeSourcesJars {
 }
 
 object IntellijPlatformJars {
-
-  val jpsBuildersJar: Path = Path.of(getJarPathForClass(classOf[BuilderService]))
+  // upstream: also jpsBuildersJar, asmJar (org.jetbrains.org.objectweb.asm) and protobufJava - JPS build process jars, no JPS in Consulo
   val utilJar: Path = Path.of(getJarPathForClass(classOf[FileUtil]))
   val utilRtJar: Path = Path.of(getJarPathForClass(classOf[FileUtilRt]))
   val fastUtilJar: Path = Path.of(getJarPathForClass(classOf[Int2ObjectMap[?]]))
-  val asmJar: Path = Path.of(getJarPathForClass(classOf[ClassReader]))
-
-  /**
-   * NOTE:<br>
-   * There are several protobuf classes in the classpath:<br>
-   *  - in `idea_system_root/lib/protobuf.jar`
-   *  - in `idea_system_root/plugins/bazel-plugin/lib/protobuf4.jar`
-   *  - in `idea_system_root/plugins/android/lib/layoutlib.jar` (in older versions)
-   *  - in `idea_system_root/plugins/java/lib/rt/protobuf-java6.jar` (bundled plugin, in older versions)
-   *
-   *  (The exact list can vary depending on the exact IntelliJ SDK version)
-   *
-   * We need to ensure that we resolve the first, which is used by JPSs
-   * to avoid runtime errors in communicating with JPS (e.g. SCL-19414).
-   *
-   * @see [[org.jetbrains.jps.cmdline.ClasspathBootstrap.getBuildProcessApplicationClasspath]]
-   */
-  val protobufJava: Path = {
-    val result = Path.of(getJarPathForClass(classOf[com.google.protobuf.Message]))
-    // example in 2021.2: <idea system dir>/lib/protobuf-java-3.15.8.jar
-    val Regex = raw"""^.*?/lib/intellij.libraries.protobuf.jar$$""".r
-    result.systemIndependentPathString.toLowerCase match {
-      case Regex() =>
-      case _ =>
-        invokeLater {
-          throw new AssertionError(s"Unexpected protobuf jar location: $result")
-          ()
-        }
-    }
-    result
-  }
 }
 
 object LibraryJars {

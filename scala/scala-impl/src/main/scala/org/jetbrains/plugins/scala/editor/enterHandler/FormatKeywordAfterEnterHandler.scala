@@ -7,7 +7,7 @@ import consulo.codeEditor.action.EditorActionHandler
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.editor.{DocumentExt, indentKeyword}
@@ -26,7 +26,7 @@ final class FormatKeywordAfterEnterHandler extends EnterHandlerDelegateAdapter {
   private var selectedKeywordF: Option[KeywordF] = None
 
   override def preprocessEnter(file: PsiFile, editor: Editor,
-                               caretOffset: Ref[Integer], caretAdvance: Ref[Integer],
+                               caretOffset: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],
                                dataContext: DataContext,
                                originalHandler: EditorActionHandler): Result = {
     val offset = caretOffset.get()

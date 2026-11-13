@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
 import consulo.ui.image.Image
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.project.ui.view.tree.AbstractPsiBasedNode
 import consulo.ui.ex.tree.PresentationData
 import consulo.project.ui.view.tree.ViewSettings
@@ -30,7 +32,7 @@ import scala.jdk.CollectionConverters._
 private abstract class ImplicitParameterErrorNodeBase(value: ScalaResolveResult) extends ImplicitParametersNodeBase(value) {
   private def errorWave: SimpleTextAttributes = {
     val stripeColor = CodeInsightColors.ERRORS_ATTRIBUTES.getDefaultAttributes.getErrorStripeColor
-    new SimpleTextAttributes(STYLE_WAVED, null, stripeColor)
+    new SimpleTextAttributes(STYLE_WAVED, null, TargetAWT.to(stripeColor))
   }
 
   override protected def nameAttributes: SimpleTextAttributes =
@@ -146,7 +148,7 @@ private abstract class ImplicitParametersNodeBase(value: ScalaResolveResult)
 
   protected def infoSuffix: Option[String] = ImplicitArgumentNodes.locationString(value)
 
-  private def presentationIcon: Image = value.element.getIcon(0)
+  private def presentationIcon: Image = IconDescriptorUpdaters.getIcon(value.element, 0)
 
   protected def elementName: String = value.element.name
 

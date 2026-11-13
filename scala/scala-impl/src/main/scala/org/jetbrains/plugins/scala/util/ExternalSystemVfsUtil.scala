@@ -2,20 +2,17 @@ package org.jetbrains.plugins.scala.util
 
 import consulo.compiler.util.CompilerUtil
 import consulo.compiler.CompilerPaths
-import consulo.externalSystem.rt.model.ExternalSystemSourceType
-import consulo.externalSystem.model.{ProjectKeys, ProjectSystemId}
-import consulo.externalSystem.service.project.manage.ProjectDataManager
-import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.model.ProjectSystemId
 import consulo.module.ModuleManager
+import consulo.module.content.ModuleRootManager
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
-import consulo.virtualFileSystem.LocalFileSystem
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.project.ModuleExt
 
 import java.nio.file.Path
-import java.util.Collections
 import scala.jdk.CollectionConverters._
 
 object ExternalSystemVfsUtil {
@@ -37,17 +34,13 @@ object ExternalSystemVfsUtil {
     try {
       // simply refresh all the source roots to catch any generated files -- this MAY have a performance impact
       // in which case it might be necessary to receive the generated sources directly from sbt and refresh them (see BuildManager)
-      val info = Option(ProjectDataManager.getInstance().getExternalProjectData(project, id, project.getBasePath))
-      val allSourceRoots = info
-        .map(info => ExternalSystemApiUtil.findAllRecursively(info.getExternalProjectStructure, ProjectKeys.CONTENT_ROOT))
-        .getOrElse(Collections.emptyList())
-      val generatedSourceRoots = allSourceRoots.asScala.flatMap { node =>
-        val data = node.getData
-        // bsp-side and sbt-side generated sources are still imported as regular sources
-        val generated = data.getPaths(ExternalSystemSourceType.SOURCE_GENERATED).asScala
-        val regular = data.getPaths(ExternalSystemSourceType.SOURCE).asScala
-        generated ++ regular
-      }.map(_.getPath).toSeq.distinct
+      // upstream: the roots were taken from the external project data (ProjectDataManager.getExternalProjectData), which
+      // Consulo doesn't keep, so the source roots of the modules are used
+      val allModules = ModuleManager.getInstance(project).getModules.filterNot(_.hasBuildModuleType)
+      val generatedSourceRoots = allModules.toSeq
+        .flatMap(module => ModuleRootManager.getInstance(module).getSourceRootUrls(true))
+        .map(VirtualFileUtil.urlToPath)
+        .distinct
 
       // Because we don't have an exact way of knowing which modules have been affected, we need to refresh the output
       // directories of all modules in the project. Otherwise, we run the risk that the Run Configuration order
@@ -55,21 +48,20 @@ object ExternalSystemVfsUtil {
       // In Gradle, affected modules are collected using an injected Gradle script, which tracks which modules are
       // affected by a build command.
       // https://github.com/JetBrains/intellij-community/blob/bf3083ca66771e038eb1c64128b4e508f52acfad/plugins/gradle/java/src/execution/build/GradleProjectTaskRunner.java#L60
-      val outputRoots = {
-        val allModules = ModuleManager.getInstance(project).getModules.filterNot(_.hasBuildModuleType)
-        CompilerPaths.getOutputPaths(allModules)
-      }
+      val outputRoots = CompilerPaths.getOutputPaths(allModules)
 
       val toRefresh = generatedSourceRoots ++ outputRoots
-      CompilerUtil.refreshOutputRoots(toRefresh.asJavaCollection)
+      val toRefreshFiles = toRefresh.map(Path.of(_)).asJava
+      // upstream: CompilerUtil.refreshOutputRoots
+      CompilerUtil.refreshDirectories(toRefreshFiles)
 
       // This is most likely not necessary. Gradle only invokes `CompilerUtil.refreshOutputRoots`.
       // Recursively refreshing the output directories is comparatively expensive. It is enough for the Run Configuration
       // order enumerator to just refresh the output directories without their children, but we don't have tests in place
       // in order to be more confident in this change.
       // https://github.com/JetBrains/intellij-community/blob/bf3083ca66771e038eb1c64128b4e508f52acfad/plugins/gradle/java/src/execution/build/GradleProjectTaskRunner.java#L174-L176
-      val toRefreshFiles = toRefresh.map(Path.of(_)).asJava
-      LocalFileSystem.getInstance().refreshNioFiles(toRefreshFiles, true, true, null)
+      // upstream: LocalFileSystem.refreshNioFiles(toRefreshFiles, true, true, null)
+      CompilerUtil.refreshFiles(toRefreshFiles)
     } finally {
       //noinspection ScalaExtractStringToBundle
       indicator.setText("")

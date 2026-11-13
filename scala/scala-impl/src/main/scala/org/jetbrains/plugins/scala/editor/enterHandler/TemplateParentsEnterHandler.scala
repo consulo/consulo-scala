@@ -6,7 +6,7 @@ import consulo.dataContext.DataContext
 import consulo.codeEditor.action.EditorActionHandler
 import consulo.document.Document
 import consulo.codeEditor.Editor
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
@@ -31,8 +31,8 @@ class TemplateParentsEnterHandler extends EnterHandlerDelegateAdapter {
   override def preprocessEnter(
     file: PsiFile,
     editor: Editor,
-    caretOffsetRef: Ref[Integer],
-    caretAdvance: Ref[Integer],
+    caretOffsetRef: SimpleReference[Integer],
+    caretAdvance: SimpleReference[Integer],
     dataContext: DataContext,
     originalHandler: EditorActionHandler
   ): Result = {

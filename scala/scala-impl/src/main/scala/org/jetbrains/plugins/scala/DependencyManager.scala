@@ -5,7 +5,7 @@ import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.application.ApplicationManager
 import consulo.util.lang.ControlFlowException
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.openapi.util.registry.RegistryManager
+import consulo.application.util.registry.Registry
 import consulo.util.lang.SystemProperties
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.module.id.ModuleRevisionId
@@ -37,7 +37,7 @@ abstract class DependencyManagerBase {
     if (ApplicationManager.getApplication == null) //to be able to use DependencyManagerBase outside IntelliJ App
       false
     else
-      RegistryManager.getInstance().is("scala.dependency.manager.use.file.system.resolvers.only")
+      Registry.is("scala.dependency.manager.use.file.system.resolvers.only")
 
   protected val artifactBlackList: Set[String] = Set.empty
 

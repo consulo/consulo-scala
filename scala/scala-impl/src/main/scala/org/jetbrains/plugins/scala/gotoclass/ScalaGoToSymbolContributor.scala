@@ -1,10 +1,15 @@
 package org.jetbrains.plugins.scala.gotoclass
 
-import com.intellij.navigation.GotoClassContributor
+import consulo.ide.navigation.GotoSymbolContributor
+import consulo.application.util.function.Processor
+import consulo.content.scope.SearchScope
+import consulo.language.psi.search.FindSymbolParameters
+import consulo.language.psi.stub.IdFilter
 import consulo.navigation.NavigationItem
 import consulo.application.dumb.PossiblyDumbAware
 import consulo.project.Project
 import consulo.language.psi.scope.GlobalSearchScope
+import consulo.project.content.scope.ProjectAwareSearchScope
 import consulo.language.psi.stub.StubIndex
 import consulo.language.psi.stub.DumbModeAccessType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
@@ -20,7 +25,7 @@ import scala.collection.mutable.ArrayBuffer
  * Other typical contributors which contribute to the final result in Scala code:
  *  - [[com.intellij.ide.util.gotoByName.DefaultSymbolNavigationContributor]]
  */
-class ScalaGoToSymbolContributor extends GotoClassContributor with PossiblyDumbAware {
+class ScalaGoToSymbolContributor extends GotoSymbolContributor with PossiblyDumbAware {
 
   override def getNames(project: Project, includeNonProjectItems: Boolean): Array[String] = {
     val stubIndex: StubIndex = StubIndex.getInstance
@@ -89,7 +94,8 @@ class ScalaGoToSymbolContributor extends GotoClassContributor with PossiblyDumbA
    * @inheritdoc
    * @note this method is only used during filtering but not for displaying
    */
-  override def getQualifiedName(item: NavigationItem): String =
+  // upstream: GotoClassContributor.getQualifiedName (no qualified names in Consulo GotoSymbolContributor)
+  def getQualifiedName(item: NavigationItem): String =
     item match {
       case named: ScNamedElement =>
         val qualifier = named.nameContext match {
@@ -101,7 +107,7 @@ class ScalaGoToSymbolContributor extends GotoClassContributor with PossiblyDumbA
       case _ => null
     }
 
-  override def getQualifiedNameSeparator: String = "."
+  def getQualifiedNameSeparator: String = "."
 
   private def isNonLocal(item: NavigationItem): Boolean = {
     item match {
@@ -109,6 +115,20 @@ class ScalaGoToSymbolContributor extends GotoClassContributor with PossiblyDumbA
       case _ => false
     }
   }
+
+
+  override def processNames(processor: Processor[String], scope: SearchScope, filter: IdFilter): Unit = {
+    val project = scope.asInstanceOf[ProjectAwareSearchScope].getProject
+    val includeNonProjectItems = scope match {
+      case globalScope: GlobalSearchScope => globalScope.isSearchInLibraries
+      case _ => true
+    }
+    getNames(project, includeNonProjectItems).iterator.takeWhile(processor.process).foreach(_ => ())
+  }
+
+  override def processElementsWithName(name: String, processor: Processor[NavigationItem], parameters: FindSymbolParameters): Unit =
+    getItemsByName(name, parameters.getCompletePattern, parameters.getProject, parameters.isSearchInLibraries)
+      .iterator.takeWhile(processor.process).foreach(_ => ())
 
   override def isDumbAware: Boolean = true
 }

@@ -5,7 +5,7 @@ import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
 import consulo.codeEditor.action.EditorActionHandler
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.editor.{AutoBraceUtils, ScalaEditorUtils}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt}
@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
  */
 final class AutoBraceEnterHandler extends EnterHandlerDelegateAdapter {
 
-  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: Ref[Integer], caretAdvance: Ref[Integer],
+  override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],
                                dataContext: DataContext, originalHandler: EditorActionHandler): Result = {
     if (!file.is[ScalaFile])
       return Result.Continue

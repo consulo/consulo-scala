@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.editor.backspaceHandler
 
-import consulo.language.codeStyle.CodeStyle
+import consulo.language.codeStyle.{CodeStyle, CodeStyleManager}
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.{BackspaceHandlerDelegate, LanguageBackspaceModeOverride}
 import consulo.codeEditor.action.SmartBackspaceMode
@@ -106,7 +106,7 @@ class Scala3IndentationBasedSyntaxBackspaceHandler extends BackspaceHandlerDeleg
       case Some(elementIndentSize) =>
         StringUtil.repeatSymbol(' ', elementIndentSize) // TODO: handle TABS
       case None        =>
-        CodeStyle.getLineIndent(editor, file.getLanguage, lineStartOffset, true)
+        CodeStyleManager.getInstance(file.getProject).getLineIndent(document, lineStartOffset) // upstream: CodeStyle.getLineIndent(editor, language, offset, true)
     }
     if (myReplacement == null)
       return false
@@ -131,7 +131,7 @@ class Scala3IndentationBasedSyntaxBackspaceHandler extends BackspaceHandlerDeleg
       val prevLineEndOffset = document.getLineEndOffset(logicalPosition.line - 1)
       myStartOffset = CharArrayUtil.shiftBackward(documentText, prevLineEndOffset - 1, SpaceOrTab) + 1
       if (myStartOffset != document.getLineStartOffset(logicalPosition.line - 1) || myStartOffset == 0) {
-        var spacing = CodeStyle.getJoinedLinesSpacing(editor, file.getLanguage, endOffset, true)
+        var spacing = CodeStyleManager.getInstance(file.getProject).getSpacing(file, endOffset) // upstream: CodeStyle.getJoinedLinesSpacing(editor, language, offset, true)
         if (spacing < 0) {
           Log.error("The call `codeStyleFacade.getJoinedLinesSpacing` should not return the negative value")
           spacing = 0
@@ -189,7 +189,7 @@ object Scala3IndentationBasedSyntaxBackspaceHandler {
   //noinspection SameParameterValue
   private def getBackspaceMode(language: Language) = {
     var mode = CodeInsightSettings.getInstance.getBackspaceMode
-    val overrider = LanguageBackspaceModeOverride.INSTANCE.forLanguage(language)
+    val overrider = LanguageBackspaceModeOverride.forLanguage(language)
     if (overrider != null)
       mode = overrider.getBackspaceMode(mode)
     mode

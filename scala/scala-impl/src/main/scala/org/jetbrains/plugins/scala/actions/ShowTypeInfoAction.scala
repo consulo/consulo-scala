@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.actions
 
-import _root_.com.intellij.codeInsight.TargetElementUtil
-import _root_.com.intellij.psi._
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.TargetElementUtil
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.{Editor, SelectionModel}
 import consulo.project.Project
@@ -38,7 +38,7 @@ class ShowTypeInfoAction extends AnAction(
   ScalaBundle.message("type.info.text"),
   ScalaBundle.message("type.info.description"),
   /* icon = */ null
-) {
+) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit =
     ScalaActionUtil.enableAndShowIfInScalaFile(e)

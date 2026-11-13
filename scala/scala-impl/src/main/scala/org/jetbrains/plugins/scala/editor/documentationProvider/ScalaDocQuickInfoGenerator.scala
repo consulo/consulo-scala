@@ -31,7 +31,6 @@ import scala.annotation.tailrec
 //  (unify with Java behaviour)
 // TODO 3: add minimum required module/location, if class/method is in same scope, do not render module/location at all
 object ScalaDocQuickInfoGenerator {
-  @HintText
   def getQuickNavigateInfo(element: PsiElement, originalElement: PsiElement): Option[String] = {
     val substitutor = originalElement match {
       case ref: ScReference =>
@@ -44,7 +43,6 @@ object ScalaDocQuickInfoGenerator {
     getQuickNavigateInfo(element, originalElement, substitutor)
   }
 
-  @HintText
   def getQuickNavigateInfo(element: PsiElement, originalElement: PsiElement, substitutor: ScSubstitutor): Option[String] = {
     val typeRenderer: TypeRenderer = ScalaDocTypeRenderer.forQuickInfo(originalElement, substitutor)(using ProjectContext.fromPsi(element))
     val generator = new ScalaDocQuickInfoGenerator(typeRenderer)
@@ -102,7 +100,6 @@ class ScalaDocQuickInfoGenerator(
     new ParametersRenderer(paramRenderer, shouldRenderImplicitModifier = true)
   }
 
-  @HintText
   def getQuickNavigateInfo(element: PsiElement): Option[String] = {
     val buffer = new StringBuilder
     element match {

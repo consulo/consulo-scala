@@ -7,7 +7,7 @@ import consulo.language.lexer.StringLiteralLexer
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
 import consulo.codeEditor.action.EditorActionHandler
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.ast.TokenSet
 import consulo.language.psi.{PsiElement, PsiFile}
 import consulo.language.ast.StringEscapesTokenTypes
@@ -38,8 +38,8 @@ class InterpolatedStringEnterHandler extends EnterHandlerDelegateAdapter {
   override def preprocessEnter(
     file: PsiFile,
     editor: Editor,
-    caretOffset: Ref[Integer],
-    caretAdvance: Ref[Integer],
+    caretOffset: SimpleReference[Integer],
+    caretAdvance: SimpleReference[Integer],
     dataContext: DataContext,
     originalHandler: EditorActionHandler
   ): Result = {

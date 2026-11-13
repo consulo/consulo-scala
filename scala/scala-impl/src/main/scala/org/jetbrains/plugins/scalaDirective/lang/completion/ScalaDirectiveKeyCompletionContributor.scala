@@ -16,7 +16,7 @@ final class ScalaDirectiveKeyCompletionContributor extends ScalaCompletionContri
   private def register(keys: String*): Unit = register(keys)
 
   private def register(keys: Iterable[String]): Unit =
-    extend(CompletionType.BASIC, ScalaDirectiveKeyPattern, new CompletionProvider[CompletionParameters] {
+    extend(CompletionType.BASIC, ScalaDirectiveKeyPattern, new CompletionProvider {
       override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit =
         result.addAllElements(keys.map(ScalaDirectiveLookupItem(_)).asJava)
     })

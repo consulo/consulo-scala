@@ -4,10 +4,10 @@ import consulo.ui.image.Image
 import com.intellij.java.language.codeInsight.TestFrameworks
 import consulo.project.DumbService
 import consulo.component.util.Iconable
-import com.intellij.psi.impl.{ElementBase, ElementPresentationUtil}
+import consulo.application.AllIcons
+import consulo.language.icon.IconDescriptor
 import com.intellij.java.language.psi.util.InheritanceUtil
 import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiModifier, PsiModifierListOwner}
-import com.intellij.ui.{IconManager, PlatformIcons}
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.PsiModifierListOwnerExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
@@ -25,20 +25,33 @@ object ScalaElementPresentationUtil {
   private val FLAGS_FINAL = 0x400
   private val FLAGS_JUNIT_TEST = 0x2000
   private val FLAGS_RUNNABLE = 0x4000
+  private val FLAGS_LOCKED = 0x800 // upstream: com.intellij.psi.impl.ElementBase.FLAGS_LOCKED
 
-  private lazy val ExceptionIcon = IconManager.getInstance.getPlatformIcon(PlatformIcons.ExceptionClass)
-  private lazy val AbstractExceptionIcon = IconManager.getInstance.getPlatformIcon(PlatformIcons.AbstractException)
+  private lazy val ExceptionIcon = AllIcons.Nodes.ExceptionClass
+  private lazy val AbstractExceptionIcon = AllIcons.Nodes.AbstractException
 
+  // upstream: IconManager.createLayeredIcon + ElementPresentationUtil.addVisibilityIcon (no layered icon flags in Consulo)
   def getIconWithLayeredFlags(element: PsiModifierListOwner, flags: Int, icon: Image, layerFlags: Int): Image = {
-    val layeredIcon = IconManager.getInstance.createLayeredIcon(element, icon, layerFlags)
-    ElementPresentationUtil.addVisibilityIcon(element, flags, layeredIcon)
+    val descriptor = new IconDescriptor(icon)
+    if ((layerFlags & FLAGS_FINAL) != 0) descriptor.addLayerIcon(AllIcons.Nodes.FinalMark)
+    if ((layerFlags & FLAGS_LOCKED) != 0) descriptor.addLayerIcon(AllIcons.Nodes.Locked)
+    if ((layerFlags & FLAGS_RUNNABLE) != 0) descriptor.addLayerIcon(AllIcons.Nodes.RunnableMark)
+    if ((layerFlags & FLAGS_JUNIT_TEST) != 0) descriptor.addLayerIcon(AllIcons.Nodes.JunitTestMark)
+
+    if ((flags & Iconable.ICON_FLAG_VISIBILITY) != 0) {
+      if (element.hasModifierProperty(PsiModifier.PRIVATE)) descriptor.setRightIcon(AllIcons.Nodes.C_private)
+      else if (element.hasModifierProperty(PsiModifier.PROTECTED)) descriptor.setRightIcon(AllIcons.Nodes.C_protected)
+      else if (element.hasModifierProperty(PsiModifier.PACKAGE_LOCAL)) descriptor.setRightIcon(AllIcons.Nodes.C_plocal)
+      else if (element.hasModifierProperty(PsiModifier.PUBLIC)) descriptor.setRightIcon(AllIcons.Nodes.C_public)
+    }
+    descriptor.toIcon
   }
 
   def getBaseLayerFlags(element: PsiModifierListOwner, flags: Int): Int = {
     val maybeFinalFlag = if (Option(element.getModifierList).exists(_.hasExplicitModifier(PsiModifier.FINAL))) FLAGS_FINAL else 0
     val maybeAbstractFlag = if (element.hasAbstractModifier) FLAGS_ABSTRACT else 0
     val isLocked = (flags & Iconable.ICON_FLAG_READ_STATUS) != 0 && !element.isWritable
-    val maybeLockedFlag = if (isLocked) ElementBase.FLAGS_LOCKED else 0
+    val maybeLockedFlag = if (isLocked) FLAGS_LOCKED else 0
 
     maybeFinalFlag | maybeAbstractFlag | maybeLockedFlag
   }

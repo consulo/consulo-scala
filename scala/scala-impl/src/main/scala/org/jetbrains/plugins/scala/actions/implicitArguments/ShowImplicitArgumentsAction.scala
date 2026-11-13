@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.actions.implicitArguments
 
 import consulo.project.ui.view.tree.AbstractTreeNode
 import consulo.disposer.Disposable
-import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, CustomShortcutSet, IdeActions, Shortcut}
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, CustomShortcutSet, IdeActions, Shortcut}
 import consulo.language.editor.CommonDataKeys
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.Editor
@@ -39,7 +39,7 @@ class ShowImplicitArgumentsAction extends AnAction(
   ScalaBundle.message("show.implicit.arguments.action.text"),
   ScalaBundle.message("show.implicit.arguments.action.description"),
   /* icon = */ null
-) {
+) with AnActionWithSyncUpdate {
   import ShowImplicitArgumentsAction._
 
   override def update(e: AnActionEvent): Unit = ScalaActionUtil.enableAndShowIfInScalaFile(e)
@@ -81,7 +81,7 @@ class ShowImplicitArgumentsAction extends AnAction(
     )
   }
 
-  @RequiresEdt
+  @RequiredUIAccess
   private def showSingleTargetPopup(target: ImplicitArgumentsTarget)(implicit editor: Editor): Unit = {
     val range = target.expression.getTextRange
 
@@ -238,7 +238,7 @@ object ShowImplicitArgumentsAction {
 
     Disposer.register(popup, tempDisposable)
 
-    popup.showInBestPositionFor(editor)
+    editor.showPopupInBestPositionFor(popup)
     popup
   }
 }

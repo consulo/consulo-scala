@@ -4,24 +4,21 @@ import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
-import com.intellij.concurrency.JobScheduler
-import com.intellij.diagnostic.PerformanceWatcher
-import consulo.desktop.awt.ui.IdeEventQueue
+import consulo.application.util.concurrent.AppExecutorUtil
 import consulo.disposer.Disposable
 import consulo.application.ApplicationManager
 import consulo.ui.ModalityState
-import com.intellij.openapi.application.TransactionGuard
 import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager, StandardProgressIndicator}
 import consulo.component.ProcessCanceledException
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 
-import java.awt.Event
+import java.awt.{Event, Toolkit}
 import java.awt.event.MouseEvent
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.{ScheduledFuture, TimeUnit}
-import scala.annotation.nowarn
 import scala.util.control.NoStackTrace
 
 private final class UIFreezingGuard extends ProjectActivity {
@@ -54,7 +51,7 @@ object UIFreezingGuard {
     private final val periodMs = 300
     private var periodicTask: ScheduledFuture[?] =
       if (pceEnabled)
-        JobScheduler.getScheduler.scheduleWithFixedDelay(() => cancelOnUserInput(), periodMs, periodMs, TimeUnit.MILLISECONDS)
+        AppExecutorUtil.getAppScheduledExecutorService.scheduleWithFixedDelay(() => cancelOnUserInput(), periodMs, periodMs, TimeUnit.MILLISECONDS)
       else
         null
 
@@ -123,16 +120,15 @@ object UIFreezingGuard {
 
   private def isWriteAction: Boolean = ApplicationManager.getApplication.isWriteAccessAllowed
 
-  private def isTransaction: Boolean = {
-    (TransactionGuard.getInstance().getContextTransaction != null): @nowarn("cat=deprecation")
-  }
+  // upstream: TransactionGuard.getInstance().getContextTransaction != null (no transactions in Consulo)
+  private def isTransaction: Boolean = false
 
   private def isUnderProgress: Boolean = {
     val indicator = ProgressManager.getInstance().getProgressIndicator
     indicator != progress
   }
 
-  private def hasModalityState: Boolean = ModalityState.current() != ModalityState.nonModal()
+  private def hasModalityState: Boolean = ApplicationManager.getApplication.getCurrentModalityState != ModalityState.nonModal()
 
   private def canInterrupt: Boolean = !isWriteAction && !isTransaction && !isUnderProgress && !hasModalityState
 
@@ -146,7 +142,7 @@ object UIFreezingGuard {
   private def dumpThreads(ms: Long): Unit = {
     val threshold = 1000
     if (ms > threshold) {
-      PerformanceWatcher.getInstance().dumpThreads("scalaEdtFreezing/", false, false)
+      // upstream: PerformanceWatcher.getInstance().dumpThreads("scalaEdtFreezing/", false, false) (internal API in Consulo)
     }
   }
 
@@ -157,7 +153,8 @@ object UIFreezingGuard {
    * we assume that the UI thread is blocked by a long-running resolve computation.
    */
   private def hasPendingUserInput: Boolean = {
-    val queue = IdeEventQueue.getInstance()
+    // upstream: IdeEventQueue.getInstance(), which is the system event queue
+    val queue = Toolkit.getDefaultToolkit.getSystemEventQueue
     val userEventIds = Seq(Event.KEY_ACTION, Event.KEY_PRESS, MouseEvent.MOUSE_PRESSED, MouseEvent.MOUSE_WHEEL)
 
     userEventIds.exists(queue.peekEvent(_) != null)
@@ -195,14 +192,14 @@ object UIFreezingGuard {
     override def isModal: Boolean                                               = delegate.isModal
     override def setFraction(fraction: Double): Unit                            = delegate.setFraction(fraction)
     override def stop(): Unit                                                   = delegate.stop()
-    override def getText: String                                                = delegate.getText
-    override def setText(text: String): Unit                                    = delegate.setText(text)
+    override def getText: LocalizeValue                                          = delegate.getText
+    override def setText(text: LocalizeValue): Unit                             = delegate.setText(text)
     override def isPopupWasShown: Boolean                                       = delegate.isPopupWasShown
-    override def setText2(text: String): Unit                                   = delegate.setText2(text)
+    override def setText2(text: LocalizeValue): Unit                            = delegate.setText2(text)
     override def getModalityState: ModalityState                                = delegate.getModalityState
     override def getFraction: Double                                            = delegate.getFraction
     override def popState(): Unit                                               = delegate.popState()
-    override def getText2: String                                               = delegate.getText2
+    override def getText2: LocalizeValue                                         = delegate.getText2
     override def isShowing: Boolean                                             = delegate.isShowing
   }
 

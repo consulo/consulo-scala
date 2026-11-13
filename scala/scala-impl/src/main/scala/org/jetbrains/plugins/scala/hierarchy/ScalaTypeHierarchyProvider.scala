@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.hierarchy
 
-import consulo.language.editor.TargetElementUtil
-import com.intellij.ide.hierarchy.`type`.JavaTypeHierarchyProvider
+import consulo.language.Language
+import consulo.language.editor.{TargetElementUtil, TargetElementUtilExtender}
+import com.intellij.java.impl.ide.hierarchy.`type`.JavaTypeHierarchyProvider
 import consulo.language.editor.CommonDataKeys
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
@@ -9,6 +10,9 @@ import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.lang.psi.api.base.Constructor
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import java.util.Set as JSet
 
 final class ScalaTypeHierarchyProvider extends JavaTypeHierarchyProvider {
   override def getTarget(dataContext: DataContext): PsiClass = {
@@ -19,11 +23,15 @@ final class ScalaTypeHierarchyProvider extends JavaTypeHierarchyProvider {
       .getOrElse(super.getTarget(dataContext))
   }
 
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   private def getScalaTarget(editor: Editor): Option[PsiClass] = {
     val targetElement = TargetElementUtil.findTargetElement(editor,
-      TargetElementUtil.ELEMENT_NAME_ACCEPTED |
-        TargetElementUtil.REFERENCED_ELEMENT_ACCEPTED |
-        TargetElementUtil.LOOKUP_ITEM_ACCEPTED
+      JSet.of(
+        TargetElementUtilExtender.ELEMENT_NAME_ACCEPTED,
+        TargetElementUtilExtender.REFERENCED_ELEMENT_ACCEPTED,
+        TargetElementUtilExtender.LOOKUP_ITEM_ACCEPTED
+      )
     )
 
     targetElement match {

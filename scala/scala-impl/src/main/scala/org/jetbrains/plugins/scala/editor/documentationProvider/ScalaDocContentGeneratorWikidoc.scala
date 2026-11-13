@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.editor.documentationProvider
 
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.documentation.DocumentationManagerUtil
-import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.component.ProcessCanceledException
@@ -163,7 +162,7 @@ private class ScalaDocContentGeneratorWikidoc(
       }
     }
 
-    QuickDocHighlightingHelper.appendStyledCodeBlock(
+    appendStyledCodeBlock(
       buffer.underlying,
       code.getProject,
       ScalaLanguage.INSTANCE, //NOTE: ScalaDoc tool always uses Scala language syntax highlighting (a least in Scala 2)

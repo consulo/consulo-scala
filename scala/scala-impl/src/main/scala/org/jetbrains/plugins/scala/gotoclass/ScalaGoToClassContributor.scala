@@ -1,16 +1,21 @@
 package org.jetbrains.plugins.scala.gotoclass
 
-import com.intellij.navigation.GotoClassContributor
+import consulo.ide.navigation.GotoClassOrTypeContributor
+import consulo.application.util.function.Processor
+import consulo.content.scope.SearchScope
+import consulo.language.psi.search.FindSymbolParameters
+import consulo.language.psi.stub.IdFilter
 import consulo.navigation.NavigationItem
 import consulo.application.dumb.PossiblyDumbAware
 import consulo.project.Project
 import consulo.language.psi.scope.GlobalSearchScope
+import consulo.project.content.scope.ProjectAwareSearchScope
 import consulo.language.psi.stub.DumbModeAccessType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
-class ScalaGoToClassContributor extends GotoClassContributor with PossiblyDumbAware {
+class ScalaGoToClassContributor extends GotoClassOrTypeContributor with PossiblyDumbAware {
 
   import ScalaIndexKeys._
 
@@ -41,6 +46,20 @@ class ScalaGoToClassContributor extends GotoClassContributor with PossiblyDumbAw
   }
 
   override def getQualifiedNameSeparator: String = "."
+
+
+  override def processNames(processor: Processor[String], scope: SearchScope, filter: IdFilter): Unit = {
+    val project = scope.asInstanceOf[ProjectAwareSearchScope].getProject
+    val includeNonProjectItems = scope match {
+      case globalScope: GlobalSearchScope => globalScope.isSearchInLibraries
+      case _ => true
+    }
+    getNames(project, includeNonProjectItems).iterator.takeWhile(processor.process).foreach(_ => ())
+  }
+
+  override def processElementsWithName(name: String, processor: Processor[NavigationItem], parameters: FindSymbolParameters): Unit =
+    getItemsByName(name, parameters.getCompletePattern, parameters.getProject, parameters.isSearchInLibraries)
+      .iterator.takeWhile(processor.process).foreach(_ => ())
 
   override def isDumbAware: Boolean = true
 }

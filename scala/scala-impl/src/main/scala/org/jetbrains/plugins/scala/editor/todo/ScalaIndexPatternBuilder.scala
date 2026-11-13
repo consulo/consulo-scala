@@ -16,10 +16,10 @@ final class ScalaIndexPatternBuilder extends IndexPatternBuilder {
   import ScalaTokenTypes._
 
   override def getIndexingLexer(file: PsiFile) =
-    byParserDefinition[Lexer](file)(_.createLexer(null))
+    byParserDefinition[Lexer](file)(_.createLexer(file.getLanguageVersion))
 
   override def getCommentTokenSet(file: PsiFile) =
-    byParserDefinition[TokenSet](file)(_.getCommentTokens)
+    byParserDefinition[TokenSet](file)(_.getCommentTokens(file.getLanguageVersion))
 
   override def getCommentStartDelta(tokenType: IElementType) = tokenType match {
     case `tLINE_COMMENT` |

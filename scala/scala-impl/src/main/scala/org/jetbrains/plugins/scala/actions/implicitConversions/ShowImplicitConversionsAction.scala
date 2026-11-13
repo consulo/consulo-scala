@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.actions.implicitConversions
 
 import consulo.language.editor.CodeInsightBundle
 import consulo.application.AllIcons
-import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, IdeActions}
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, IdeActions}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.colorScheme.EditorFontType
@@ -13,6 +13,7 @@ import consulo.language.editor.util.PsiUtilBase
 import consulo.ui.ex.JBColor
 import consulo.ui.ex.awt.JBList
 import consulo.ui.ex.awt.util.Alarm
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.annotation.RequiredUIAccess
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -30,18 +31,17 @@ import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing._
 import javax.swing.border.Border
 import javax.swing.event.{ListSelectionEvent, ListSelectionListener}
-import kotlinx.coroutines.CoroutineScope
 
-final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
+final class ShowImplicitConversionsAction extends AnAction(
   ScalaBundle.message("implicit.conversions.action.text"),
   ScalaBundle.message("implicit.conversions.action.description"),
   AllIcons.Actions.IntentionBulb,
-) {
+) with AnActionWithSyncUpdate {
 
   import MakeExplicitAction._
 
   private var hint: LightBulbHint = scala.compiletime.uninitialized
-  private val hintAlarm: Alarm = new Alarm(cs, Alarm.ThreadToUse.SWING_THREAD)
+  private val hintAlarm: Alarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD)
 
   override def update(e: AnActionEvent): Unit =
     ScalaActionUtil.enableAndShowIfInScalaFile(e)
@@ -193,7 +193,7 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
     (implicitElement, conversions)
   }
 
-  @RequiresEdt
+  @RequiredUIAccess
   private def showConversionsPopup(
     expr: ScExpression,
     @Nullable implicitElement: PsiNamedElement,
@@ -217,11 +217,11 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
     val list = new JBList[Parameters](listModel)
     val renderer = new ScImplicitFunctionListCellRenderer(implicitElement, expr)
 
-    val font = editor.getColorsScheme.getFont(EditorFontType.PLAIN)
+    val font = TargetAWT.to(editor.getColorsScheme.getFont(EditorFontType.PLAIN))
     renderer.setFont(font)
     list.setFont(font)
 
-    list.setCellRenderer(renderer)
+    list.setCellRenderer(renderer.parametersRenderer)
     list.getSelectionModel.addListSelectionListener(new ListSelectionListener {
       override def valueChanged(e: ListSelectionEvent): Unit = {
         hintAlarm.cancelAllRequests
@@ -233,7 +233,7 @@ final class ShowImplicitConversionsAction(cs: CoroutineScope) extends AnAction(
 
     // NOTE: this creates some global static popup =/
     val popup = MakeExplicitAction.createPopup(list)
-    popup.showInBestPositionFor(editor)
+    editor.showPopupInBestPositionFor(popup)
 
     if (actualIndex >= 0 && actualIndex < list.getModel.getSize) {
       list.getSelectionModel.setSelectionInterval(actualIndex, actualIndex)

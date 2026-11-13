@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
 import consulo.language.editor.AutoPopupController
-import consulo.language.editor.completion.CompletionConfidence
+import consulo.language.editor.completion.{CompletionConfidence, CompletionType}
 import consulo.language.editor.action.TypedHandlerDelegate
 import consulo.language.editor.action.TypedHandlerDelegate.Result
 import consulo.codeEditor.Editor
@@ -43,7 +43,7 @@ final class ScalaDirectiveAutoPopupCompletionHandler extends TypedHandlerDelegat
 object ScalaDirectiveAutoPopupCompletionHandler {
   private def scheduleAutoPopup(editor: Editor, project: Project)(condition: Int => PsiFile => Boolean): Unit = {
     val offset = editor.getCaretModel.getOffset - 1
-    AutoPopupController.getInstance(project).scheduleAutoPopup(editor, condition(offset)(_))
+    AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC, (file: PsiFile) => condition(offset)(file))
   }
 
   private[completion] def isEmptyDirectiveComment(element: PsiElement): Boolean =

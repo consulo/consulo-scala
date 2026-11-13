@@ -6,7 +6,8 @@ import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
 import consulo.language.editor.completion.lookup.Lookup
 import consulo.language.editor.completion.lookup.event.{LookupEvent, LookupListener}
-import com.intellij.codeInsight.lookup.LookupManagerListener
+import consulo.language.editor.completion.lookup.LookupManager
+import kava.beans.PropertyChangeEvent
 import consulo.disposer.Disposable
 import consulo.document.RangeMarker
 import consulo.project.Project
@@ -40,17 +41,19 @@ import org.jetbrains.plugins.scala.extensions._
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
 final class AutoBraceLookupListenerService(project: Project) extends Disposable {
+  // upstream: subscribed to LookupManagerListener.TOPIC, Consulo notifies about the active lookup via a property change
   locally {
-    project.getMessageBus.connect(this)
-      .subscribe(classOf[LookupManagerListener],
-        new LookupManagerListener {
-          override def activeLookupChanged(oldLookup: Lookup, newLookup: Lookup): Unit = {
-            if (newLookup != null && AutoBraceInsertionTools.autoBraceInsertionActivated) {
+    LookupManager.getInstance(project).addPropertyChangeListener(
+      (event: PropertyChangeEvent) =>
+        if (LookupManager.PROP_ACTIVE_LOOKUP == event.getPropertyName) {
+          event.getNewValue match {
+            case newLookup: Lookup if AutoBraceInsertionTools.autoBraceInsertionActivated =>
               newLookup.addLookupListener(new AutoBraceLookupListener)
-            }
+            case _ =>
           }
-        }
-      )
+        },
+      this
+    )
   }
 
   override def dispose(): Unit = ()

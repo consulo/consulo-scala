@@ -10,11 +10,10 @@ import consulo.ui.ex.action.AnActionEvent
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import consulo.module.Module
 import consulo.module.content.layer.orderEntry.LibraryOrderEntry
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex}
-import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
+import consulo.virtualFileSystem.util.VirtualFilePathUtil
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import consulo.language.file.light.LightVirtualFile
@@ -96,7 +95,7 @@ object DesugarCodeAction {
 
     if (!isScala3) {
       val file = new LightVirtualFile(s"${cls.name} (desugared)", psiFile.getFileType, pluginText)
-      FileEditorManager.getInstance(project).requestOpenFile(file, FileEditorOpenRequest.withFocus(true))
+      FileEditorManager.getInstance(project).openFile(file, true)
     } else {
       val left = DiffContentFactory.getInstance.create(project, compilerText, Scala3FileType)
       val right = DiffContentFactory.getInstance.create(project, pluginText, Scala3FileType)
@@ -107,7 +106,7 @@ object DesugarCodeAction {
   private def classpathOf(module: Module): Seq[String] =
     ModuleRootManager.getInstance(module)
       .orderEntries.withoutSdk.classes.getRoots.toSeq
-      .map(VfsUtil.getLocalFile(_).getPath)
+      .map(VirtualFilePathUtil.getLocalFile(_).getPath)
 
   private def classAtCaret(editor: Editor, file: ScalaFile): Option[ScTypeDefinition] = {
     val offset = editor.getCaretModel.getOffset

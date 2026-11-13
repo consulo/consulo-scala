@@ -2,13 +2,11 @@ package org.jetbrains.plugins.scala.editor.importOptimizer
 
 import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.concurrency.ConcurrencyUtils
 import consulo.application.util.concurrent.JobLauncher
 import consulo.language.editor.scratch.ScratchUtil
 import consulo.language.editor.refactoring.ImportOptimizer.CollectingInfoRunnable
 import consulo.language.ast.ASTNode
 import consulo.language.editor.refactoring.ImportOptimizer
-import com.intellij.lang.LanguageImportStatements
 import consulo.document.Document
 import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager}
 import consulo.project.Project
@@ -117,9 +115,9 @@ class ScalaImportOptimizer(isOnTheFly: Boolean) extends ImportOptimizer {
 
     def processAllElementsConcurrentlyUnderProgress[T <: PsiElement](elements: util.List[T])(action: T => Unit) = {
       indicator.setIndeterminate(false)
-      //noinspection JetBrainsInternalApiUsage
-      ConcurrencyUtils.runWithIndicatorOrContextCancellation { _ =>
-        JobLauncher.getInstance().invokeConcurrentlyUnderContextProgress(elements, (element: T) => {
+      // upstream: ConcurrencyUtils.runWithIndicatorOrContextCancellation + JobLauncher.invokeConcurrentlyUnderContextProgress
+      locally {
+        JobLauncher.getInstance().invokeConcurrentlyUnderProgress(elements, indicator, (element: T) => {
           ProgressManager.checkCanceled()
 
           val count: Int = counter.getAndIncrement
@@ -297,7 +295,7 @@ class ScalaImportOptimizer(isOnTheFly: Boolean) extends ImportOptimizer {
       vFile.isInstanceOf[LightVirtualFile] ||
       ScratchUtil.isScratch(vFile) ||
       ScalaLanguageConsoleUtils.isConsole(file) ||
-      file.isInstanceOf[SbtFile] && fileIndex.isInProject(vFile)
+      file.isInstanceOf[SbtFile] && (fileIndex.isInContent(vFile) || fileIndex.isInLibrary(vFile))
   }
 
   def replaceWithNewImportInfos(
@@ -648,7 +646,7 @@ object ScalaImportOptimizer {
 
   def findOptimizerFor(file: ScalaFile): Option[ImportOptimizer] = {
     val topLevelFile = file.getViewProvider.getPsi(file.getViewProvider.getBaseLanguage)
-    val optimizers = LanguageImportStatements.INSTANCE.forFile(topLevelFile)
+    val optimizers = ImportOptimizer.forFile(topLevelFile)
     if (optimizers.isEmpty)
       return None
 

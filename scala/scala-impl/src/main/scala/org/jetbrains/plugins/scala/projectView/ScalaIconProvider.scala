@@ -1,18 +1,21 @@
 package org.jetbrains.plugins.scala.projectView
 
-import consulo.ui.image.Image
-import com.intellij.ide.IconProvider
 import consulo.application.progress.ProgressManager
+import consulo.language.icon.{IconDescriptor, IconDescriptorUpdater}
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 
-final class ScalaIconProvider extends IconProvider {
+// upstream: com.intellij.ide.IconProvider, Consulo uses IconDescriptorUpdater
+final class ScalaIconProvider extends IconDescriptorUpdater {
 
-  override def getIcon(element: PsiElement, flags: Int): Image = element match {
+  override def updateIcon(descriptor: IconDescriptor, element: PsiElement, flags: Int): Unit = element match {
     case file: ScalaFile =>
       ProgressManager.checkCanceled()
-      Node(file)(using null, null).getIcon(flags)
-    case _ => null
+      val icon = Node(file)(using null, null).getIcon(flags)
+      if (icon != null) {
+        descriptor.setMainIcon(icon)
+      }
+    case _ =>
   }
 }

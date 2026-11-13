@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala
-import consulo.ui.image.Image
 package projectView
 
+import consulo.ui.image.Image
 
 import org.jetbrains.plugins.scala.api.ScalaFileType
 import consulo.project.ui.view.tree.PsiFileNode

@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.projectView
 
 import consulo.project.ui.view.tree.ViewSettings
 import consulo.project.Project
-import consulo.util.nodep.io.FileUtilRt.getNameWithoutExtension
+import consulo.util.io.FileUtil.getNameWithoutExtension
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement

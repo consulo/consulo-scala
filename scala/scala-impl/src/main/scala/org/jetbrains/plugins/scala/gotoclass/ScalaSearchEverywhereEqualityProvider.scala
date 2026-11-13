@@ -1,14 +1,10 @@
 package org.jetbrains.plugins.scala.gotoclass
 
 import consulo.searchEverywhere.SEResultsEqualityProvider.SEEqualElementsActionType
-import com.intellij.ide.actions.searcheverywhere.PSIPresentationBgRendererWrapper
 import consulo.searchEverywhere.{SEResultsEqualityProvider, SearchEverywhereFoundElementInfo}
-import consulo.language.psi.PsiElement
+import consulo.language.psi.{PsiElement, PsiElementNavigationItem}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
-
-import java.util
-import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 /**
  * @see Java implementation [[com.intellij.ide.JavaClassAndFileEqualityProvider]]
@@ -21,17 +17,10 @@ final class ScalaSearchEverywhereEqualityProvider extends SEResultsEqualityProvi
 
   override def compareItems(
     newItem: SearchEverywhereFoundElementInfo,
-    alreadyFoundItems: util.List[? <: SearchEverywhereFoundElementInfo]
-  ): SEEqualElementsActionType = {
-    val newPsiElement = toPsi(newItem)
-    val action: SEEqualElementsActionType =
-      alreadyFoundItems.iterator().asScala
-        .map(getActionType(newPsiElement, _))
-        .filterNot(_ == null)
-        .nextOption()
-        .getOrElse(SEEqualElementsActionType.DoNothing.INSTANCE)
-    action
-  }
+    alreadyFoundItem: SearchEverywhereFoundElementInfo
+  ): SEEqualElementsActionType =
+    Option(getActionType(toPsi(newItem), alreadyFoundItem))
+      .getOrElse(SEEqualElementsActionType.DO_NOTHING)
 
   /**
    * @return null if we don't want to choose any action for this pair
@@ -46,24 +35,20 @@ final class ScalaSearchEverywhereEqualityProvider extends SEResultsEqualityProvi
       case null =>
         null
       case wrapper: PsiClassWrapper if wrapper.definition eq newPsiElement =>
-        new SEEqualElementsActionType.Replace(alreadyFoundItem)
+        SEEqualElementsActionType.REPLACE
       case _ =>
         newPsiElement match {
           case wrapper: PsiClassWrapper if wrapper.definition eq alreadyFoundPsiElement =>
-            SEEqualElementsActionType.Skip.INSTANCE
+            SEEqualElementsActionType.SKIP
           case _ =>
             null
         }
     }
   }
 
-  private def toPsi(item: SearchEverywhereFoundElementInfo): PsiElement = {
-    //For some reason, sometimes the found elements are wrapped into SearchEverywhereFoundElementInfoWithMl.
-    //In this case PSIPresentationBgRendererWrapper.toPsi returns null and we need to unwrap it one more time
-    val psi: PsiElement = PSIPresentationBgRendererWrapper.toPsi(item)
-    if (psi != null)
-      psi
-    else
-      PSIPresentationBgRendererWrapper.toPsi(item.getElement)
+  private def toPsi(item: SearchEverywhereFoundElementInfo): PsiElement = item.getElement match {
+    case psi: PsiElement => psi
+    case navigationItem: PsiElementNavigationItem => navigationItem.getTargetElement
+    case _ => null
   }
 }

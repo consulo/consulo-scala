@@ -2,19 +2,16 @@ package org.jetbrains.plugins.scala.actions
 
 import consulo.ui.ex.awt.UIUtil
 import consulo.language.editor.hint.HintManager
-import com.intellij.codeInsight.hint.HintManagerImpl
 import consulo.language.editor.ui.awt.HintUtil
 import consulo.ui.ex.action.AnActionEvent
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
-import consulo.ui.ex.awt.hint.LightweightHint
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
-import java.awt.Point
 import java.awt.event.{MouseEvent, MouseMotionAdapter}
 
 object ScalaActionUtil {
@@ -31,9 +28,7 @@ object ScalaActionUtil {
     val label = HintUtil.createInformationLabel(text)
     label.setFont(UIUtil.getLabelFont)
 
-    val hint: LightweightHint = new LightweightHint(label)
-
-    val hintManager: HintManagerImpl = HintManagerImpl.getInstanceImpl
+    val hintManager: HintManager = HintManager.getInstance
 
     label.addMouseMotionListener(new MouseMotionAdapter {
       override def mouseMoved(e: MouseEvent): Unit = {
@@ -41,10 +36,7 @@ object ScalaActionUtil {
       }
     })
 
-    val position = editor.getCaretModel.getLogicalPosition
-    val p: Point = HintManagerImpl.getHintPosition(hint, editor, position, HintManager.ABOVE)
-
-    hintManager.showEditorHint(hint, editor, p,
-      HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE | HintManager.HIDE_BY_SCROLLING, 0, false)
+    // upstream: HintManagerImpl.showEditorHint(hint, editor, position, HIDE_BY_ANY_KEY | HIDE_BY_TEXT_CHANGE | HIDE_BY_SCROLLING, ...)
+    hintManager.showInformationHint(editor, label)
   }
 }

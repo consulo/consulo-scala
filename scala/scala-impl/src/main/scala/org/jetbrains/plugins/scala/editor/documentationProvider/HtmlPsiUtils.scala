@@ -2,7 +2,6 @@ package org.jetbrains.plugins.scala.editor.documentationProvider
 
 import consulo.language.editor.documentation.DocumentationManagerProtocol
 import consulo.colorScheme.{EditorColorsManager, TextAttributesKey}
-import com.intellij.openapi.editor.richcopy.HtmlSyntaxInfoUtil
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.apache.commons.text.StringEscapeUtils
@@ -80,10 +79,9 @@ object HtmlPsiUtils {
   }
 
   def withStyledSpan(text: String, attributesKey: TextAttributesKey): String =
-    HtmlSyntaxInfoUtil.appendStyledSpan(
+    appendStyledSpan(
       new java.lang.StringBuilder,
       EditorColorsManager.getInstance.getGlobalScheme.getAttributes(attributesKey),
-      text,
-      1.0f
+      text
     ).toString
 }

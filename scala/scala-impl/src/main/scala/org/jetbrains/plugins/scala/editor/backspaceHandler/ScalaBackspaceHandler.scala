@@ -474,7 +474,7 @@ class ScalaBackspaceHandler extends BackspaceHandlerDelegate {
     val txt = document.getImmutableCharSequence
     def hasLeft: Option[Boolean] = {
       val iterator = editor.asInstanceOf[EditorEx].getHighlighter.createIterator(offset)
-      val tpe = iterator.getTokenType
+      val tpe = iterator.getTokenType.asInstanceOf[IElementType]
       if (tpe == null)
         return None
 
@@ -485,9 +485,9 @@ class ScalaBackspaceHandler extends BackspaceHandlerDelegate {
 
       iterator.retreat()
       while (!iterator.atEnd() && iterator.getStart > 0 && iterator.getTokenType != null) {
-        if (matcher.isRBraceToken(iterator, txt, fileType)) stack push iterator.getTokenType
+        if (matcher.isRBraceToken(iterator, txt, fileType)) stack push iterator.getTokenType.asInstanceOf[IElementType]
         else if (matcher.isLBraceToken(iterator, txt, fileType)) {
-          if (stack.isEmpty || !matcher.isPairBraces(iterator.getTokenType, stack.pop()))
+          if (stack.isEmpty || !matcher.isPairBraces(iterator.getTokenType.asInstanceOf[IElementType], stack.pop()))
             return Some(false)
         }
 

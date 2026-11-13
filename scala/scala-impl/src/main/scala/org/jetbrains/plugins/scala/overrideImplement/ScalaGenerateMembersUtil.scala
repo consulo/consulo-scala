@@ -36,7 +36,7 @@ object ScalaGenerateMembersUtil {
       new ScalaGenerationInfo(member, needsOverrideModifier, typeAdjuster)
     }
     val caretOffset = ScalaEditorUtils.caretOffsetWithFixedEof(editor)
-    val inserted = GenerateMembersUtil.insertMembersAtOffset(templateDefinition, caretOffset, genInfos.asJava)
+    val inserted = GenerateMembersUtil.insertMembersAtOffset(templateDefinition.getContainingFile, caretOffset, genInfos.asJava)
     typeAdjuster.adjustTypes()
     inserted.asScala.toSeq
   }

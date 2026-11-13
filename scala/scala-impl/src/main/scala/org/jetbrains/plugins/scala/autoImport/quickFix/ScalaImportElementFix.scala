@@ -5,23 +5,18 @@ import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
 import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
-import com.intellij.codeInsight.hint.HintManagerImpl
+import consulo.language.editor.hint.HintManager
 import consulo.language.editor.inspection.PriorityAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.intention.HintAction
-import consulo.application.util.ClientId
-import com.intellij.idea.AppMode
-import com.intellij.model.SideEffectGuard.SideEffectNotAllowedException
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.codeEditor.imaginary.ImaginaryEditor
-import com.intellij.openapi.editor.ClientEditorManager
 import consulo.codeEditor.{Editor, LogicalPosition}
 import consulo.project.Project
 import consulo.component.util.ModificationTracker
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiFile}
 import consulo.application.util.concurrent.AppExecutorUtil
-import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.plugins.scala.autoImport.quickFix.Presentation.htmlWithBody
 import org.jetbrains.plugins.scala.autoImport.quickFix.ScalaImportElementFix._
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker
@@ -67,19 +62,9 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
                            editor: Editor,
                            file: PsiFile): Boolean = {
     if (editor != null) {
-      try {
-        scheduleComputationOnce(editor)
-      } catch {
-        /**
-         * Do not invoke inside a preview. Availability check is performed before the preview session is initiated
-         * so [[com.intellij.codeInsight.intention.preview.IntentionPreviewUtils.isIntentionPreviewActive]] or
-         * [[com.intellij.codeInsight.intention.preview.IntentionPreviewUtils.isPreviewElement(file)]] will return
-         * false. However, this check is performed under [[com.intellij.model.SideEffectGuard.computeWithoutSideEffects]]
-         *
-         * @see [[com.intellij.codeInsight.intention.impl.preview.IntentionPreviewComputable]]
-         */
-        case _: SideEffectNotAllowedException => return false
-      }
+      // upstream: SideEffectNotAllowedException (com.intellij.model.SideEffectGuard, no counterpart in Consulo) was caught here
+      // to not schedule the computation inside an intention preview
+      scheduleComputationOnce(editor)
     }
 
     isAvailable && file.hasScalaPsi
@@ -135,7 +120,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
   }
 
   private def showHintWithAction(editor: Editor): Unit = {
-    val hintManager = HintManagerImpl.getInstanceImpl
+    val hintManager = HintManager.getInstance
     val (elementStart, elementEnd) = getHintRange
 
     if (place.isValid &&
@@ -212,7 +197,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
     }
 
   private def isRelevant(editor: Editor): Boolean =
-    !editor.is[ImaginaryEditor] && !editor.isDisposed && UIUtil.isShowing(editor.getContentComponent)
+    !editor.is[ImaginaryEditor] && !editor.isDisposed && editor.getContentComponent.isShowing
 
   private def currentModCount(): Long =
     if (place.isValid) BlockModificationTracker(place).getModificationCount
@@ -242,9 +227,7 @@ private object ScalaImportElementFix {
       // 2. For non-local editor its visible area is unreliable
       //    (see IJPL-163871 Intentions sometimes don't appear in Remote Dev and Code With Me)
       //    (see SCL-19639 Code With Me: Auto-import quick-fix is offered only after some code editing on host)
-      if (AppMode.isRemoteDevHost || !ClientId.isLocal(ClientEditorManager.getClientId(editor))) {
-        return TextRange.create(0, editor.getDocument.getTextLength)
-      }
+      // upstream: returned the whole document for AppMode.isRemoteDevHost and non-local (ClientEditorManager) editors, no remote dev in Consulo
 
       val visibleRectangle = editor.getScrollingModel.getVisibleArea
 

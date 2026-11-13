@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
-import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
 import consulo.language.editor.completion.{CompletionResultSet, CompletionSorter}
 import consulo.application.AllIcons
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyDescriptor
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveDependencyCompletionProviderBase.DependencyCompletionParameters
+import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveScalaVersionCompletionContributor.RealPrefixMatchingWeigher
 import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirectiveDependencyVersionLookupItem
 
 import scala.jdk.CollectionConverters.IterableHasAsJava
@@ -23,7 +23,7 @@ final class ScalaDirectiveDependencyVersionCompletionProvider extends ScalaDirec
           case ScalaDirectiveDependencyDescriptor(descriptor) =>
             val onlyStableVersions = !params.completionParams.isExtendedCompletion
             val versions = DependencyUtil.getDependencyVersions(descriptor, params.place, onlyStable = onlyStableVersions)
-            val icon = Some(AllIcons.Build.CompletionLocalCache)
+            val icon = Some(AllIcons.Nodes.PpLib) // upstream: AllIcons.Build.CompletionLocalCache
             val lookupElements =
               versions.map(version => ScalaDirectiveDependencyVersionLookupItem(version, descriptor, params.valueKind, icon))
 

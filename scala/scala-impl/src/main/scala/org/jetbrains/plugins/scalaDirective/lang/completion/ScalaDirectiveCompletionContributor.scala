@@ -11,7 +11,7 @@ import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirecti
 final class ScalaDirectiveCompletionContributor extends ScalaCompletionContributor with DumbAware {
   private val pattern = psiComment.withText(StandardPatterns.string.startsWith(DirectivePrefix))
 
-  extend(CompletionType.BASIC, pattern, new CompletionProvider[CompletionParameters] {
+  extend(CompletionType.BASIC, pattern, new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
       val place = positionFromParameters(using parameters)
       val trimmedText = place.getText

@@ -8,7 +8,7 @@ import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.ui.ex.popup.BaseListPopupStep
 import consulo.ui.ex.popup.{JBPopup, JBPopupFactory, PopupStep}
-import com.intellij.openapi.ui.popup.PopupChooserBuilder
+import consulo.ui.ex.awt.ScrollPaneFactory
 import consulo.disposer.Disposer
 import consulo.language.editor.util.PsiUtilBase
 import consulo.language.psi.{NavigatablePsiElement, PsiDocumentManager, PsiElement, PsiNamedElement}
@@ -22,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefin
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
 import java.awt.Point
+import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import javax.swing.JList
 
 final class MakeExplicitAction extends AnAction(
@@ -69,14 +70,9 @@ object MakeExplicitAction {
     popup
   }
 
-  private def createPopupBuilder(list: JList[Parameters]) =
-    new PopupChooserBuilder(list)
-      .setTitle(ScalaBundle.message("title.choose.implicit.conversion.method"))
-      .setAdText(ScalaBundle.message("press.alt.enter"))
-      .setMovable(false)
-      .setResizable(false)
-      .setRequestFocus(true)
-      .setItemChosenCallback(() => list.getSelectedValue match {
+  // upstream: com.intellij.openapi.ui.popup.PopupChooserBuilder(list) (impl class in Consulo)
+  private def createPopupBuilder(list: JList[Parameters]) = {
+    def onItemChosen(): Unit = list.getSelectedValue match {
         case Parameters(navigable: NavigatablePsiElement, _, _, _, _) =>
           val maybeSynthetic = navigable match {
             case function: ScFunction =>
@@ -89,7 +85,31 @@ object MakeExplicitAction {
 
           maybeSynthetic.getOrElse(navigable).navigate(true)
         case _ =>
-      })
+      }
+
+    list.addKeyListener(new KeyAdapter {
+      override def keyPressed(e: KeyEvent): Unit =
+        if (e.getKeyCode == KeyEvent.VK_ENTER && !e.isAltDown) {
+          e.consume()
+          if (popup != null) popup.cancel()
+          onItemChosen()
+        }
+    })
+    list.addMouseListener(new MouseAdapter {
+      override def mouseClicked(e: MouseEvent): Unit =
+        if (e.getButton == MouseEvent.BUTTON1 && e.getClickCount == 2) {
+          if (popup != null) popup.cancel()
+          onItemChosen()
+        }
+    })
+
+    JBPopupFactory.getInstance.createComponentPopupBuilder(ScrollPaneFactory.createScrollPane(list), list)
+      .setTitle(ScalaBundle.message("title.choose.implicit.conversion.method"))
+      .setAdText(ScalaBundle.message("press.alt.enter"))
+      .setMovable(false)
+      .setResizable(false)
+      .setRequestFocus(true)
+  }
 
   def showMakeExplicitPopup(expression: ScExpression, function: ScFunction,
                             elements: Seq[PsiNamedElement])

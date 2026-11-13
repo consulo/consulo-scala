@@ -12,20 +12,17 @@ import consulo.disposer.Disposable
 import consulo.application.util.ApplicationUtil
 import consulo.application.ApplicationManager
 import consulo.ui.ModalityState
-import com.intellij.openapi.application.TransactionGuard
 import consulo.undoRedo.{CommandProcessor, UndoConfirmationPolicy}
 import consulo.language.editor.WriteCommandAction
 import consulo.logging.Logger
 import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.FileEditorOpenRequest
-import consulo.navigation.OpenFileDescriptor
+import consulo.navigation.OpenFileDescriptorFactory
 import consulo.component.ProcessCanceledException
 import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
 import consulo.application.util.function.{Computable, ThrowableComputable}
-import com.intellij.openapi.util.DialogTitle
 import consulo.disposer.Disposer
 import consulo.util.lang.ref.Ref
 import consulo.document.util.TextRange
@@ -38,7 +35,7 @@ import consulo.language.psi.{PsiComment, PsiDirectory, PsiDocumentManager, PsiEl
 import consulo.language.psi.stub.Stub
 import com.intellij.java.language.impl.psi.impl.PsiImplUtil
 import com.intellij.java.language.impl.psi.impl.light.LightMethod
-import consulo.language.impl.ast.{FileElement, SharedImplUtil}
+import consulo.language.impl.ast.SharedImplUtil
 import consulo.language.codeStyle.PostprocessReformattingAspect
 import consulo.language.impl.psi.PsiFileImpl
 import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
@@ -1017,10 +1014,10 @@ package object extensions {
     def requestOpenTextEditor(implicit project: Project): CompletableFuture[Option[Editor]] =
       element.containingVirtualFile match {
         case Some(virtualFile) =>
-          val descriptor = new OpenFileDescriptor(project, virtualFile)
-          FileEditorManager.getInstance(project)
-            .requestOpenTextEditor(descriptor, FileEditorOpenRequest.withFocus(true))
-            .thenApply(editor => Option(editor))
+          val descriptor = OpenFileDescriptorFactory.getInstance(project).builder(virtualFile).build()
+          // upstream: FileEditorManager.requestOpenTextEditor(descriptor, FileEditorOpenRequest.withFocus(true)) (async)
+          val editor = FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+          CompletableFuture.completedFuture(Option(editor))
         case None =>
           CompletableFuture.completedFuture(Option.empty[Editor])
       }
@@ -1686,12 +1683,16 @@ package object extensions {
       ApplicationManager.getApplication.invokeAndWait((() => body): Runnable, modalityState)
     }
 
+  // upstream: TransactionGuard.submitTransactionLater (no transactions in Consulo)
   def invokeLaterInTransaction(disposable: Disposable)(body: => Unit): Unit = {
-    TransactionGuard.getInstance().submitTransactionLater(disposable, () => body): @nowarn("cat=deprecation")
+    val application = ApplicationManager.getApplication
+    application.invokeLater((() => body): Runnable, application.getDefaultModalityState, () => Disposer.isDisposed(disposable))
   }
 
+  // upstream: TransactionGuard.submitTransactionAndWait (no transactions in Consulo)
   def invokeAndWaitInTransaction(body: => Unit): Unit = {
-    TransactionGuard.getInstance().submitTransactionAndWait(() => body): @nowarn("cat=deprecation")
+    val application = ApplicationManager.getApplication
+    application.invokeAndWait((() => body): Runnable, application.getDefaultModalityState)
   }
 
   def invokeWhenSmart(project: Project)(body: => Unit): Unit = {
@@ -1756,6 +1757,16 @@ package object extensions {
     }
   }
 
+  // upstream: PsiFileImpl.withGreenStubOrAst
+  private def withGreenStubOrAst[R](file: PsiFileImpl)(stubProcessor: StubElement[?] => R, astProcessor: () => R): R = {
+    val stub = file.getGreenStub
+    if (stub != null) stubProcessor(stub)
+    else {
+      file.calcTreeElement()
+      astProcessor()
+    }
+  }
+
   implicit class StubBasedExt(val element: PsiElement) extends AnyVal {
     def stubOrPsiChildren[Psi <: PsiElement, Stub <: StubElement[Psi]](elementType: IScalaElementType, f: ArrayFactory[Psi]): Array[Psi] = {
       def findWithNode(): Array[Psi] = {
@@ -1771,11 +1782,11 @@ package object extensions {
       }
 
       element match {
-        case st: StubBasedPsiElementBase[_] => st.getStubOrPsiChildren(elementType, f)
+        case st: StubBasedPsiElementBase[_] => st.getStubOrPsiChildren(TokenSet.create(elementType), f)
         case file: PsiFileImpl =>
-          file.withGreenStubOrAst(
-            (stub: StubElement[?]) => stub.getChildrenByType(elementType, f),
-            (_: FileElement) => findWithNode()
+          withGreenStubOrAst(file)(
+            (stub: StubElement[?]) => stub.getChildrenByType[Psi](elementType, f),
+            () => findWithNode()
           )
         case _ => findWithNode()
       }
@@ -1797,9 +1808,9 @@ package object extensions {
       element match {
         case st: StubBasedPsiElementBase[_] => st.getStubOrPsiChildren(filter, f)
         case file: PsiFileImpl =>
-          file.withGreenStubOrAst(
-            (stub: StubElement[?]) => stub.getChildrenByType(filter, f),
-            (_: FileElement) => findWithNode()
+          withGreenStubOrAst(file)(
+            (stub: StubElement[?]) => stub.getChildrenByType[Psi](filter, f),
+            () => findWithNode()
           )
         case _ => findWithNode()
       }
@@ -1814,11 +1825,11 @@ package object extensions {
       } yield nodeWithType.getPsi.asInstanceOf[Psi]
 
       element match {
-        case st: StubBasedPsiElementBase[_] => Option(st.getStubOrPsiChild(elementType)).map(_.asInstanceOf[Psi])
+        case st: StubBasedPsiElementBase[_] => Option(st.getStubOrPsiChild[Psi](elementType))
         case file: PsiFileImpl =>
-          file.withGreenStubOrAst(
-            (stub: StubElement[?]) => Option(stub.findChildStubByElementType(elementType)).map(_.getPsi.asInstanceOf[Psi]),
-            (_: FileElement) => findWithNode()
+          withGreenStubOrAst(file)(
+            (stub: StubElement[?]) => Option(stub.findChildStubByType[Psi, StubElement[Psi]](elementType)).map(_.getPsi),
+            () => findWithNode()
           )
         case _ => findWithNode()
       }
@@ -1829,9 +1840,9 @@ package object extensions {
         val stub = st.getGreenStub.asInstanceOf[StubElement[?]]
         if (stub == null) treeProcessor()
         else stubProcessor(stub)
-      case file: PsiFileImpl => file.withGreenStubOrAst(
+      case file: PsiFileImpl => withGreenStubOrAst(file)(
         (stub: StubElement[?]) => stubProcessor(stub),
-        (_: FileElement) => treeProcessor()
+        () => treeProcessor()
       )
       case _ => treeProcessor()
     }
@@ -1919,7 +1930,7 @@ package object extensions {
   }
 
   implicit class HighlightInfoExt(private val info: HighlightInfo) extends AnyVal {
-    def range: TextRange = TextRange.create(info.startOffset, info.endOffset)
+    def range: TextRange = TextRange.create(info.getStartOffset, info.getEndOffset)
   }
 
   implicit class PathExt(private val path: Path) extends AnyVal {

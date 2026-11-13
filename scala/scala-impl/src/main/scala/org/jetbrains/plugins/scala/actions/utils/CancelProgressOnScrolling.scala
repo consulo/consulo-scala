@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.actions.utils
 
 import consulo.codeEditor.event.{VisibleAreaEvent, VisibleAreaListener}
 import org.jetbrains.annotations.NotNull
-import org.jetbrains.concurrency.CancellablePromise
+import consulo.util.concurrent.CancellablePromise
 
 import java.util.concurrent.atomic.AtomicReference
 

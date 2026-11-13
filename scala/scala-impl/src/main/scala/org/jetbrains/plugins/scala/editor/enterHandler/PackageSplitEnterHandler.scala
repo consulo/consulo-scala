@@ -6,7 +6,7 @@ import consulo.dataContext.DataContext
 import consulo.codeEditor.action.EditorActionHandler
 import consulo.document.Document
 import consulo.codeEditor.Editor
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.editor.enterHandler.PackageSplitEnterHandler._
@@ -16,8 +16,8 @@ import scala.util.matching.Regex
 class PackageSplitEnterHandler extends EnterHandlerDelegateAdapter {
   override def preprocessEnter(file: PsiFile,
                                editor: Editor,
-                               caretOffset: Ref[Integer],
-                               caretAdvance: Ref[Integer],
+                               caretOffset: SimpleReference[Integer],
+                               caretAdvance: SimpleReference[Integer],
                                dataContext: DataContext,
                                originalHandler: EditorActionHandler
                               ): EnterHandlerDelegate.Result = {

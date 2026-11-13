@@ -1,56 +1,45 @@
 package org.jetbrains.plugins.scala.util.ui.distribution
 
 import consulo.disposer.Disposable
-import com.intellij.openapi.roots.ui.distribution.{DistributionComboBox, DistributionInfo, LocalDistributionInfo}
-import consulo.ui.ex.awt.{ComponentValidator, ValidationInfo}
-import org.jetbrains.annotations.Nullable
+import consulo.ui.ex.awt.{ComponentValidator, TextFieldWithBrowseButton, ValidationInfo}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.PathExt
 
-import java.awt.event.ItemEvent
 import java.nio.file.{Files, Path, StandardOpenOption}
 import javax.swing.JTextField
 import javax.swing.text.{AbstractDocument, AttributeSet, BadLocationException, DocumentFilter}
+import scala.util.Using
 
+/**
+ * upstream: helpers for `com.intellij.openapi.roots.ui.distribution.DistributionComboBox`, which has no Consulo counterpart.
+ * In Consulo the distribution is chosen with a [[TextFieldWithBrowseButton]], an empty path means "bundled".
+ */
 private[scala]
 object DistributionComboBoxUtils {
 
   def installLocalDistributionInfoPointsToExistingJarFileValidator(
-    comboBox: DistributionComboBox,
+    field: TextFieldWithBrowseButton,
     parentDisposable: Disposable
   ): ComponentValidator = {
     val validator = new ComponentValidator(parentDisposable)
-    validator.enableValidation()
-    validator.installOn(comboBox)
-
-    //NOTE: com.intellij.openapi.ui.ComponentValidator.withValidator method doesn't work for some reason
-    // so we use custom listener for our purposes
-    comboBox.addItemListener((itemEvent: ItemEvent) => {
-      val validationInfo = if (isSelectedPathAnExistingJarFile(itemEvent))
-        null
-      else
-        new ValidationInfo(ScalaBundle.message("selected.file.is.not.a.valid.jar.file")).forComponent(comboBox)
-      validator.updateInfo(validationInfo)
-    })
-
+      .withValidator(() =>
+        if (isSelectedPathAnExistingJarFile(field.getText.trim))
+          null
+        else
+          new ValidationInfo(ScalaBundle.message("selected.file.is.not.a.valid.jar.file")).forComponent(field)
+      )
+      .withOutlineProvider(ComponentValidator.CWBB_PROVIDER)
+      .andRegisterOnDocumentListener(field.getTextField)
+      .installOn(field)
+    validator.revalidate()
     validator
   }
 
-  private def isSelectedPathAnExistingJarFile(itemEvent: ItemEvent): Boolean =
-    itemEvent.getItem match {
-      case distribution: DistributionComboBox.Item.Distribution =>
-        isSelectedPathAnExistingJarFile(distribution.getInfo)
-      case _ =>
-        true
-    }
-
-  private def isSelectedPathAnExistingJarFile(distributionInfo: DistributionInfo): Boolean = {
-    val path = getLocalDistributionInfoPath(distributionInfo)
-    path == null || path.nonEmpty && {
+  def isSelectedPathAnExistingJarFile(path: String): Boolean =
+    path == null || path.isEmpty || {
       val file = Path.of(path)
       file.isRegularFile && isValidJar(file)
     }
-  }
 
   // Mostly adapted from `org.jetbrains.plugins.gradle.util.JarUtilKt#isValidJar`
   private def isValidJar(path: Path): Boolean =
@@ -59,31 +48,8 @@ object DistributionComboBoxUtils {
       in.read(signature) == 2 && signature.sameElements(Array(0x50, 0x4B))
     }.getOrElse(false)
 
-  def installLocalDistributionInfoPathTooltip(comboBox: DistributionComboBox): Unit = {
-    comboBox.addItemListener((_: ItemEvent) => {
-      val path = DistributionComboBoxUtils.getLocalDistributionInfoPath(comboBox)
-      comboBox.setToolTipText(path)
-    })
-  }
-
-  @Nullable
-  def getLocalDistributionInfoPath(comboBox: DistributionComboBox): String =
-    getLocalDistributionInfoPath(comboBox.getSelectedDistribution)
-
-  private def getLocalDistributionInfoPath(distribution: DistributionInfo): String =
-    distribution match {
-      case info: LocalDistributionInfo => info.getPath
-      case info: LocalDistributionInfoWithShorterDisplayedPath => info.canonicalPath
-      case _ => null
-    }
-
-  def setCaretToStartOnContentChange(comboBox: DistributionComboBox): Unit = {
-    comboBox.getEditor.getEditorComponent match {
-      case textField: JTextField =>
-        setCaretToStartOnContentChange(textField)
-      case _ =>
-    }
-  }
+  def setCaretToStartOnContentChange(field: TextFieldWithBrowseButton): Unit =
+    setCaretToStartOnContentChange(field.getTextField)
 
   def setCaretToStartOnContentChange(textField: JTextField): Unit = {
     textField.getDocument match {

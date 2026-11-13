@@ -7,6 +7,7 @@ import org.jetbrains.plugins.scala.util.internal.I18nBundleContent._
 import java.io.{OutputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, Paths}
+import scala.util.Using
 
 case class I18nBundleContent(entries: Seq[Entry]) {
   def hasKey(key: String): Boolean = entries.exists(_.key == key)

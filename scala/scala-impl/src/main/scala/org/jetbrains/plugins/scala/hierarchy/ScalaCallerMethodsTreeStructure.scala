@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.hierarchy
 
 import com.intellij.java.impl.ide.hierarchy.call.CallHierarchyNodeDescriptor
-import consulo.language.editor.hierarchy.{HierarchyNodeDescriptor, HierarchyTreeStructure}
+import consulo.language.editor.hierarchy.{HierarchyNodeDescriptor, HierarchyScope, HierarchyTreeStructure}
 import consulo.project.Project
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiReference}
@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
 import scala.collection.mutable
 
-final class ScalaCallerMethodsTreeStructure(project: Project, method: PsiMethod, scopeType: String)
+final class ScalaCallerMethodsTreeStructure(project: Project, method: PsiMethod, scopeType: HierarchyScope)
   extends HierarchyTreeStructure(project, new CallHierarchyNodeDescriptor(project, null, method, true, false)) {
 
   override protected def buildChildren(descriptor: HierarchyNodeDescriptor): Array[AnyRef] = {

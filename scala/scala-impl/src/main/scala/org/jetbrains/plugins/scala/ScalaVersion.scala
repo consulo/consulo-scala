@@ -41,7 +41,7 @@ final class ScalaVersion(
   // `minor` represents the full version as string
   // I would expect this to represent the same but in a format of Version, not string
   // We should rename this to `minorSuffixVersion` or rename `minor` to something else
-  lazy val minorVersion: project.Version = project.Version(minorSuffix)
+  lazy val minorVersion: rt.project.Version = rt.project.Version(minorSuffix)
 
   override def compare(that: ScalaVersion): Int =
     (languageLevel, minorVersion) compare (that.languageLevel, that.minorVersion)

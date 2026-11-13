@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.util
 
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 import consulo.project.Project
-import consulo.util.nodep.io.FileUtilRt
+import consulo.util.io.FileUtil
 import consulo.language.psi.search.FilenameIndex
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.util.PsiTreeUtil
@@ -31,7 +31,7 @@ private[scala] object TopLevelMembers {
       }
 
   def topLevelMemberClassName(file: PsiFile, packaging: Option[ScPackaging]): String = {
-    val fileName    = ScalaNamesUtil.toJavaName(FileUtilRt.getNameWithoutExtension(file.getName))
+    val fileName    = ScalaNamesUtil.toJavaName(FileUtil.getNameWithoutExtension(file.getName))
     val packageName = packaging.fold("")(_.fullPackageName)
 
     val path =

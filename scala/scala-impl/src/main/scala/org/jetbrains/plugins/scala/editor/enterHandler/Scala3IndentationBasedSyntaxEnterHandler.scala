@@ -9,8 +9,8 @@ import consulo.dataContext.DataContext
 import consulo.codeEditor.action.EditorActionHandler
 import consulo.document.Document
 import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.EditorModificationUtilEx
-import consulo.util.lang.ref.Ref
+import consulo.codeEditor.util.EditorModificationUtil
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiWhiteSpace}
 import consulo.language.codeStyle.CommonCodeStyleSettings.IndentOptions
 import consulo.language.psi.util.PsiTreeUtil
@@ -53,15 +53,11 @@ import org.jetbrains.plugins.scala.util.IndentUtil
  */
 class Scala3IndentationBasedSyntaxEnterHandler extends EnterHandlerDelegateAdapter {
 
-  // NOTE: maybe we could move some logic here? investigate whether it has any advantages
-  override def invokeInsideIndent(newLineCharOffset: Int, editor: Editor, dataContext: DataContext): Boolean =
-    super.invokeInsideIndent(newLineCharOffset, editor, dataContext)
-
   override def preprocessEnter(
     file: PsiFile,
     editor: Editor,
-    caretOffsetRef: Ref[Integer],
-    caretAdvance: Ref[Integer],
+    caretOffsetRef: SimpleReference[Integer],
+    caretAdvance: SimpleReference[Integer],
     dataContext: DataContext,
     originalHandler: EditorActionHandler
   ): Result = {
@@ -333,7 +329,7 @@ object Scala3IndentationBasedSyntaxEnterHandler {
     document.insertString(caretOffset, indentString)
     val newCaretOffset = caretOffset + indentString.length
     editor.getCaretModel.moveToOffset(newCaretOffset)
-    EditorModificationUtilEx.scrollToCaret(editor)
+    EditorModificationUtil.scrollToCaret(editor)
     editor.getSelectionModel.removeSelection()
 
     if (needRemoveTrailingSpaces) {

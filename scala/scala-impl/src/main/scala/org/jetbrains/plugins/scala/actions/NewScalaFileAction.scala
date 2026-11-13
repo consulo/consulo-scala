@@ -4,14 +4,12 @@ import consulo.localize.LocalizeValue
 import consulo.ide.action.{CreateFileFromTemplateDialog, CreateTemplateInPackageAction}
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
 import com.intellij.java.language.impl.codeInsight.template.JavaTemplateUtil
-import consulo.language.content.ProjectRootsUtil
 import consulo.dataContext.DataContext
 import consulo.util.lang.ControlFlowException
 import consulo.codeEditor.LogicalPosition
 import consulo.fileEditor.FileEditorManager
-import com.intellij.openapi.fileTypes.ex.FileTypeManagerEx
+import consulo.language.file.FileTypeManager
 import consulo.module.Module
-import com.intellij.openapi.module.ModuleType
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
 import consulo.ui.ex.InputValidatorEx
@@ -20,7 +18,6 @@ import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiFileFactory}
 import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
-import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
@@ -31,7 +28,6 @@ import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaFileType
-import org.jetbrains.sbt.project.module.SbtModuleType
 
 import java.util.Properties
 import java.{util => ju}
@@ -80,13 +76,7 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
           return ScalaBundle.message("this.is.not.a.valid.scala.qualified.name")
         }
 
-        // Specifically make sure that the input string doesn't repeat an existing package prefix (twice).
-        // Technically, "org.example.application.org.example.application.Main" is not an error, but most likely it's so (and there's no way to display a warning).
-        for (sourceFolder <- Option(ProjectRootsUtil.getModuleSourceRoot(directory.getVirtualFile, project));
-             packagePrefix = sourceFolder.getPackagePrefix if packagePrefix.nonEmpty
-             if (inputString + ".").startsWith(packagePrefix + ".")) {
-          return ScalaInspectionBundle.message("package.names.does.not.correspond.to.directory.structure.package.prefix", sourceFolder.getFile.getName, packagePrefix)
-        }
+        // upstream: also reports an input string repeating the source folder package prefix (no package prefixes on Consulo source folders)
 
         null
       }
@@ -105,7 +95,7 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
     for {
       template <- FileTemplateManager.getInstance(project).getAllTemplates
 
-      fileType = FileTypeManagerEx.getInstanceEx.getFileTypeByExtension(template.getExtension)
+      fileType = FileTypeManager.getInstance.getFileTypeByExtension(template.getExtension)
       if fileType == ScalaFileType.INSTANCE && checkPackageExists(directory)
 
       templateName = template.getName
@@ -159,16 +149,9 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
       )
   }
 
-  private def hasScalaInstalledInModule(module: Module): Boolean = {
-    val moduleType = ModuleType.get(module)
-    moduleType match {
-      // Note: technically an sbt module might not have Scala SDK (scalaInstance) configured,
-      // but we still allow creating the files in such modules
-      // (it's some legacy behavior, which shouldn't hurt anyone)
-      case _: SbtModuleType => true
-      case _ => module.hasScala
-    }
-  }
+  // upstream: also returns true for any sbt module (SbtModuleType), Consulo has no module types
+  private def hasScalaInstalledInModule(module: Module): Boolean =
+    module.hasScala
 
   override def checkPackageExists(directory: PsiDirectory): Boolean = JavaDirectoryService.getInstance.getPackage(directory) != null
 }

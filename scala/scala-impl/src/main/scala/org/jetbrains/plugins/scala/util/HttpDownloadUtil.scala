@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.util.net.HttpConnectionUtils
+import consulo.http.HttpProxyManager
 import org.jetbrains.plugins.scala.ScalaBundle
 
 import java.io.IOException
@@ -20,7 +20,7 @@ object HttpDownloadUtil {
    * ProgressIndicator as a parameter because [[com.intellij.openapi.progress.ProgressManager.checkCanceled]] may not work as expected
    */
   def loadLinesFrom(url: String, canBeCanceled: Boolean, indicatorOpt: Option[ProgressIndicator], timeout: FiniteDuration = 10.seconds): Try[Seq[String]] =
-    Try(HttpConnectionUtils.openHttpConnection(url)).map { connection =>
+    Try(HttpProxyManager.getInstance.openHttpConnection(url)).map { connection =>
       try {
         connection.setConnectTimeout(timeout.toMillis.toInt)
         connection.setReadTimeout(timeout.toMillis.toInt)

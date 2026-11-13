@@ -1,11 +1,5 @@
 package org.jetbrains.plugins.scala.util
 
-import com.intellij.application.options.CodeStyleSchemesConfigurable
-import com.intellij.application.options.codeStyle.CodeStyleMainPanel
-import com.intellij.ide.actions.ShowSettingsUtilImpl
-import com.intellij.openapi.options.ex.ConfigurableVisitor
-import consulo.configurable.Configurable
-import com.intellij.openapi.options.ConfigurableGroup
 import consulo.ide.setting.ShowSettingsUtil
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -14,7 +8,6 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOrRemoveStrategy
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, invokeLater}
-import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaTabbedCodeStylePanel
 import org.jetbrains.plugins.scala.lang.formatting.settings.TypeAnnotationsPanelBase.TAB_TITLE
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
@@ -79,32 +72,13 @@ object TypeAnnotationUtil {
     showWindowInvokeLater(project)
   }
 
+  // upstream: found the configurable via ShowSettingsUtilImpl/ConfigurableVisitor and switched CodeStyleMainPanel to the
+  // type annotations tab (impl classes in Consulo), here the code style page is opened with the tab title as a filter
   private def showWindowInvokeLater(project: Project): Unit = {
     invokeLater {
-      val groups: Array[ConfigurableGroup] = ShowSettingsUtilImpl.getConfigurableGroups(project, true)
-      val configurable: Configurable = ConfigurableVisitor.findById("preferences.sourceCode.Scala", groups.toList.asJava)
-
-      assert(configurable != null, "Cannot find configurable: " + classOf[CodeStyleSchemesConfigurable].getName)
-
       if (requestCountsToShow > 0) { // show window only for the first request
-        ShowSettingsUtil.getInstance.editConfigurable(project, configurable, new Runnable() {
-          requestCountsToShow += 1
-
-          override def run(): Unit = {
-            val codeStyleMainPanel: CodeStyleMainPanel = configurable.createComponent.asInstanceOf[CodeStyleMainPanel]
-            assert(codeStyleMainPanel != null, "Cannot find Code Style main panel")
-
-            codeStyleMainPanel.getPanels.headOption.foreach { panel =>
-              val selectedPanel = panel.getSelectedPanel
-              assert(selectedPanel != null)
-              selectedPanel match {
-                case tab: ScalaTabbedCodeStylePanel => tab.changeTab(TAB_TITLE)
-                case _ =>
-              }
-            }
-            requestCountsToShow = 0
-          }
-        })
+        requestCountsToShow = 0
+        ShowSettingsUtil.getInstance.showSettingsDialog(project, "preferences.sourceCode.Scala", TAB_TITLE)
       }
     }
   }
