@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineActionHandler
 import org.jetbrains.plugins.scala.lang.refactoring.inline.method.ScalaInlineMethodHandler.hasNoCallUsages
 
-@ExtensionImpl(id = "scalaInlineMethodHandler", order = "first")
+@ExtensionImpl(id = "scalaInlineMethodHandler")
 final class ScalaInlineMethodHandler extends ScalaInlineActionHandler {
   override protected val helpId: String = ScalaInlineMethodHandler.HelpId
   override protected val refactoringName: String = ScalaInlineMethodHandler.RefactoringName

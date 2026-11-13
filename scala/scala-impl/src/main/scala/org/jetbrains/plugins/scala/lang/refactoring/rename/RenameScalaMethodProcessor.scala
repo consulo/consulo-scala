@@ -29,7 +29,7 @@ import java.util
 import javax.swing._
 import scala.collection.mutable.ArrayBuffer
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class RenameScalaMethodProcessor extends RenameJavaMethodProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = RenameScalaMethodProcessor.canProcessElement(element)
 
@@ -73,7 +73,7 @@ object RenameScalaMethodProcessor {
   }
 }
 
-@ExtensionImpl(order = "last")
+@ExtensionImpl
 class PrepareRenameScalaMethodProcessor extends RenamePsiElementProcessor {
   override def canProcessElement(element: PsiElement): Boolean = RenameScalaMethodProcessor.canProcessElement(element)
 

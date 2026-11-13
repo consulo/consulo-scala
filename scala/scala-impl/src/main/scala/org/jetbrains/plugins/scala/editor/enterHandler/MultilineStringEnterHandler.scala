@@ -21,7 +21,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 import org.jetbrains.plugins.scala.util.{MultilineStringSettings, MultilineStringUtil}
 
 // TODO: add Scala prefix for all handlers for easy debug
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class MultilineStringEnterHandler extends EnterHandlerDelegateAdapter {
   private var wasInMultilineString: Boolean = false
   private var whiteSpaceAfterCaret: String = ""

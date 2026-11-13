@@ -13,13 +13,13 @@ import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.PackageObjectS
 
 import scala.jdk.CollectionConverters._
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaPackageObjectFilterFactory extends ExceptionFilterFactory {
   override def create(scope: GlobalSearchScope): Filter =
     new ScalaPackageObjectFilter(scope)
 }
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaPackageObjectConsoleFilterProvider extends ConsoleFilterProvider {
   override def getDefaultFilters(project: Project): Array[Filter] =
     Array(new ScalaPackageObjectFilter(GlobalSearchScope.allScope(project)))

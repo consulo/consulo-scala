@@ -25,7 +25,7 @@ import java.lang.Boolean.TRUE
 /**
  * @see java analog [[com.intellij.execution.application.ApplicationConfigurationProducer]]
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaApplicationConfigurationProducer
   extends BaseScalaApplicationConfigurationProducer[ApplicationConfiguration](ApplicationConfigurationType.getInstance)
 

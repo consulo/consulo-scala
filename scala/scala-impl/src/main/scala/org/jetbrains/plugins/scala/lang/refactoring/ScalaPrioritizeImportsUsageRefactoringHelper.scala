@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 
 import java.util as ju
 
-@ExtensionImpl(order = "last")
+@ExtensionImpl
 final class ScalaPrioritizeImportsUsageRefactoringHelper extends RefactoringHelper[Unit] {
 
   /**

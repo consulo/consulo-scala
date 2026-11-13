@@ -26,7 +26,7 @@ import java.util
 import javax.swing.{JCheckBox, JComponent, JPanel}
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class RenameScalaClassProcessor extends RenameJavaClassProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = {
     element.is[ScTypeDefinition, PsiClassWrapper, ScTypeParam]

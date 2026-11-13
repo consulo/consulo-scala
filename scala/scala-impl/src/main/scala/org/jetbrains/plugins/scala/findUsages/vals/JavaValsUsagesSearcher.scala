@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiTypedDefinitionWrapper, StaticPsiTypedDefinitionWrapper}
 import java.util.function.Predicate
 
-@ExtensionImpl(order = "last")
+@ExtensionImpl
 class JavaValsUsagesSearcher extends ReferencesSearchQueryExecutor {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)

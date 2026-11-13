@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 import java.util
 import scala.jdk.CollectionConverters.IterableHasAsScala
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class MoveScalaFileHandler extends MoveFileHandler {
   override def canProcessElement(element: PsiFile): Boolean = {
     if (!element.is[ScalaFile])

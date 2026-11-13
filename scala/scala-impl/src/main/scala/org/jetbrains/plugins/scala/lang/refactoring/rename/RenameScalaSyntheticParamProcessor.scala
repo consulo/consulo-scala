@@ -11,7 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 
 import java.util
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class RenameScalaSyntheticParamProcessor extends RenamePsiElementProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = realParamForSyntheticParam(element).isDefined
 

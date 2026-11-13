@@ -35,7 +35,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
  *   After  : s"hello $$"\n + s"CARET world"
  * }}}
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class InterpolatedStringEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(

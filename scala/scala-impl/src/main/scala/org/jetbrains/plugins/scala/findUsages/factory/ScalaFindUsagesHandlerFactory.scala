@@ -25,7 +25,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.refactoring.rename.RenameSuperMembersUtil
 import org.jetbrains.plugins.scala.settings.CompilerIndicesSettings
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaFindUsagesHandlerFactory @Inject()(project: Project) extends FindUsagesHandlerFactory { self =>
 
   override def canFindUsages(element: PsiElement): Boolean =

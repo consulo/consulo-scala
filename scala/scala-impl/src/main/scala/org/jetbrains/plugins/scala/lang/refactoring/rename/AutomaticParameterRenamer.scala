@@ -81,7 +81,7 @@ final class AutomaticParameterRenamer(param: PsiParameter, newName: String) exte
   }
 }
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 final class AutomaticParameterRenamerFactory extends AutomaticRenamerFactory {
   override def isApplicable(element: PsiElement): Boolean = element match {
     case param: PsiParameter => param.getNameIdentifier != null

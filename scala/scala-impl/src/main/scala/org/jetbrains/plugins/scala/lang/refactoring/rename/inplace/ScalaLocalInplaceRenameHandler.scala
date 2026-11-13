@@ -10,7 +10,7 @@ import consulo.language.editor.refactoring.rename.inplace.{InplaceRefactoring, V
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaLocalInplaceRenameHandler extends VariableInplaceRenameHandler with ScalaInplaceRenameHandler {
 
   override def isAvailable(element: PsiElement, editor: Editor, file: PsiFile): Boolean = {

@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 
 import scala.collection.mutable
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class AddUnitFunctionSignatureEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = {

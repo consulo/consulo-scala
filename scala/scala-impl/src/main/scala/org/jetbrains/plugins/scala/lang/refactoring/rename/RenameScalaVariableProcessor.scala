@@ -24,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
 import java.util
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class RenameScalaVariableProcessor extends RenameJavaMemberProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = element match {
     case c: ScNamedElement => c.nameContext match {

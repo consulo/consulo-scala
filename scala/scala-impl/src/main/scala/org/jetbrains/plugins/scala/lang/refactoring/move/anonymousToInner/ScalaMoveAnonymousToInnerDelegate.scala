@@ -14,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 /**
  * @note original implementation was inspired by [[com.intellij.refactoring.anonymousToInner.MoveAnonymousToInnerHandler]]
  */
-@ExtensionImpl(id = "scalaMoveAnonymousToInnerDelegate", order = "first")
+@ExtensionImpl(id = "scalaMoveAnonymousToInnerDelegate")
 class ScalaMoveAnonymousToInnerDelegate extends MoveHandlerDelegate {
 
   // upstream: getActionName override "move.anonymousToInner.name" (no such method in Consulo MoveHandlerDelegate)

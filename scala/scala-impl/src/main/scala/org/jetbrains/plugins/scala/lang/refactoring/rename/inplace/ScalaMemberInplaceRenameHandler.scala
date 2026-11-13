@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.light.{PsiClassWrapper, ScPrimaryConstructorWrapper}
 import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaMemberInplaceRenameHandler extends MemberInplaceRenameHandler with ScalaInplaceRenameHandler {
 
   override def isAvailable(element: PsiElement, editor: Editor, file: PsiFile): Boolean = {

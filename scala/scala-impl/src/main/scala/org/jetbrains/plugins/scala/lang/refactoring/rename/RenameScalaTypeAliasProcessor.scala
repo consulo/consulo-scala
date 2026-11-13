@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaOverridingMemberSea
 
 import java.util
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class RenameScalaTypeAliasProcessor extends RenameJavaMemberProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = element.isInstanceOf[ScTypeAlias]
 

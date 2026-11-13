@@ -15,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
-@ExtensionImpl(id = "scalaNameSuggestionProvider", order = "last")
+@ExtensionImpl(id = "scalaNameSuggestionProvider")
 class ScalaNameSuggestionProvider extends AbstractNameSuggestionProvider {
 
   import NameSuggester.suggestNames

@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters._
  * (ProjectViewModuleGroupNode, ProjectViewModuleNode, ProjectViewProjectNode, ModuleGrouper - impl classes in Consulo,
  * sbt module data from org.jetbrains.sbt.project)
  */
-@ExtensionImpl(order = "last")
+@ExtensionImpl
 final class ScalaTreeStructureProvider extends TreeStructureProvider with DumbAware {
 
   import ScalaTreeStructureProvider._

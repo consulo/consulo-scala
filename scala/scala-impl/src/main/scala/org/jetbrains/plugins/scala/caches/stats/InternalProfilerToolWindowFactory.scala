@@ -38,10 +38,6 @@ class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware
   //noinspection UnstableApiUsage,ApiStatus
   override def getIcon: Image = AllIcons.Toolwindows.ToolWindowRun // upstream: AllIcons.Toolwindows.ToolWindowProfiler
 
-  override def init(toolWindow: ToolWindow): Unit = {
-    toolWindow.setStripeTitle(NlsString.force("Scala plugin profiler"))
-  }
-
   override def createToolWindowContent(project: Project, toolWindow: ToolWindow): Unit = {
     InternalProfilerToolWindowFactory.createContent(project).foreach {
       toolWindow.getContentManager.addContent

@@ -27,7 +27,7 @@ import scala.collection.mutable.ArrayBuffer
  * Other typical contributors which contribute to the final result in Scala code:
  *  - [[com.intellij.ide.util.gotoByName.DefaultSymbolNavigationContributor]]
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaGoToSymbolContributor extends GotoSymbolContributor with PossiblyDumbAware {
 
   override def getNames(project: Project, includeNonProjectItems: Boolean): Array[String] = {

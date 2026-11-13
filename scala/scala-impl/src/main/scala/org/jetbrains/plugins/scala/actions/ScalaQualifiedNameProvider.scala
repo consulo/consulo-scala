@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScOb
  * (Q: What is the difference? Shouldn't they be unified, and one would use another?)
  * Used in [[com.intellij.ide.actions.CopyReferenceAction]], [[com.intellij.ide.actions.FqnUtil]]
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaQualifiedNameProvider extends QualifiedNameProvider {
 
   override def adjustElementToCopy(element: PsiElement): PsiElement = null

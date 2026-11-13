@@ -32,7 +32,7 @@ import org.jetbrains.plugins.scala.util.SAMUtil._
 
 import scala.language.implicitConversions
 
-@ExtensionImpl(id = "scalaUsageTypeProvider", order = "first")
+@ExtensionImpl(id = "scalaUsageTypeProvider")
 final class ScalaUsageTypeProvider extends UsageTypeProviderEx {
 
   import ScalaUsageTypeProvider._

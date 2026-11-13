@@ -24,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
  * upstream: extended `com.intellij.codeInsight.editorActions.enter.EnterAfterUnmatchedBraceHandler`, which is an impl
  * class in Consulo, so its logic is inlined here (from the Consulo version of the class)
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class ScalaEnterAfterUnmatchedBraceHandler extends EnterHandlerDelegateAdapter {
   import ScalaEnterAfterUnmatchedBraceHandler._
 

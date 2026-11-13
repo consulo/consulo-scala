@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
  * used by Find Usages and Show Usages. Long labels include signature clauses;
  * short labels do not, matching the respective ordinary-method conventions.
  */
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 final class ScalaExtensionMethodElementDescriptionProvider extends ElementDescriptionProvider {
   override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): LocalizeValue =
     element match {

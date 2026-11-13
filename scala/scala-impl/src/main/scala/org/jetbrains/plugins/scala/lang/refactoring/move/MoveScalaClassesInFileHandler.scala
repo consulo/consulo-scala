@@ -11,7 +11,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import java.lang.{Boolean => JBoolean}
 import java.{util => ju}
 
-@ExtensionImpl(order = "last")
+@ExtensionImpl
 final class MoveScalaClassesInFileHandler extends MoveAllClassesInFileHandler {
 
   override def processMoveAllClassesInFile(allClasses: ju.Map[PsiClass, JBoolean],

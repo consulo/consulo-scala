@@ -46,7 +46,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScMatch
  * Also see [[org.jetbrains.plugins.scala.editor.enterHandler.Scala3IndentationBasedSyntaxEnterHandlerZ]]
  */
 //noinspection InstanceOf
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class Scala3IndentationBasedSyntaxBackspaceHandler extends BackspaceHandlerDelegate {
 
   private var myEnabled: Boolean = false
