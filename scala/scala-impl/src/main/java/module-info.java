@@ -62,6 +62,17 @@ module org.intellij.scala {
     requires consulo.logging.api;
     requires consulo.execution.test.api;
     requires consulo.markdown.engine;
+    requires consulo.base.icon.library;
+    requires consulo.container.api;
+    requires consulo.localize.api;
+    requires consulo.platform.api;
+    requires consulo.util.concurrent;
+    requires consulo.util.concurrent.coroutine;
+    requires kava.beans;
+    requires org.jdom;
+    requires com.google.gson;
+    requires org.apache.commons.lang3;
+    requires org.slf4j;
     requires scalafmt.interfaces;
     requires typesafe.config;
     requires maven.artifact;
