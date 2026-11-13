@@ -34,6 +34,7 @@ fetch_plugin consulo.java
 for module in java.language.api; do
   local_jar=$(ls ~/.m2/repository/consulo/plugin/consulo.java-$module/3-SNAPSHOT/consulo.java-$module-3-SNAPSHOT.jar)
   cp "$local_jar" "$DEPS/consulo.java/lib/consulo.java-$module-3-SNAPSHOT.jar"
+  python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
 done
 
 (cd "$REPO" && mvn -o -q install -pl scala/scala-impl -am -DskipTests)

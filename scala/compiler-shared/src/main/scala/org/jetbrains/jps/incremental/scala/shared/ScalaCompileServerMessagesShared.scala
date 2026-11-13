@@ -37,5 +37,5 @@ abstract class ScalaCompileServerMessagesShared(bundle: AbstractBundle) {
 }
 
 object ScalaCompileServerMessagesShared {
-  final val BUNDLE = "messages.ScalaCompileServerSharedBundle"
+  final val BUNDLE = "org.jetbrains.jps.incremental.scala.shared.messages.ScalaCompileServerSharedBundle"
 }

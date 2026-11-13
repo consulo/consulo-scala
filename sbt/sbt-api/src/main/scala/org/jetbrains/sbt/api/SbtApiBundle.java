@@ -8,7 +8,7 @@ import org.jetbrains.annotations.PropertyKey;
 // upstream: DynamicBundle instance field, Consulo: AbstractBundle subclass (same as consulo-groovy bundles)
 public final class SbtApiBundle extends AbstractBundle {
     @NonNls
-    private static final String BUNDLE = "messages.SbtApiBundle";
+    private static final String BUNDLE = "org.jetbrains.sbt.api.messages.SbtApiBundle";
     private static final SbtApiBundle INSTANCE = new SbtApiBundle();
 
     private SbtApiBundle() {
