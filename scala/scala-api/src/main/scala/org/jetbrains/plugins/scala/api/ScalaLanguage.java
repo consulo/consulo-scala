@@ -15,10 +15,10 @@
 
 package org.jetbrains.plugins.scala.api;
 
+import com.intellij.java.language.jvm.JvmLanguage;
 import consulo.language.Language;
 
-// TODO upstream implements com.intellij.lang.jvm.JvmLanguage (marker interface), which does not exist in Consulo
-public class ScalaLanguage extends Language {
+public class ScalaLanguage extends Language implements JvmLanguage {
 
     public static final ScalaLanguage INSTANCE = new ScalaLanguage();
 
