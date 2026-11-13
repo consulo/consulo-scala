@@ -46,7 +46,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>scala-parser-combinators_2.13,scala-compiler-indices-protocol_3</includeArtifactIds>
+                            <includeArtifactIds>scala-parser-combinators_2.13,scala-compiler-indices-protocol_3,scalafmt-dynamic-core_2.13,scalafmt-sysops_2.13</includeArtifactIds>
                             <includes>**/*.class</includes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
@@ -59,6 +59,41 @@
                 <extensions>true</extensions>
                 <configuration>
                     <dependencies>
+        <!-- scalafmt-dynamic: _2.13 artifacts have no valid automatic module name, bundled into the module (see bundle-libraries) -->
+        <dependency>
+            <groupId>org.scalameta</groupId>
+            <artifactId>scalafmt-dynamic-core_2.13</artifactId>
+            <version>3.11.5</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.scalameta</groupId>
+            <artifactId>scalafmt-sysops_2.13</artifactId>
+            <version>3.11.5</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.scalameta</groupId>
+            <artifactId>scalafmt-interfaces</artifactId>
+            <version>3.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.4.9</version>
+        </dependency>
                         <dependency>consulo.java</dependency>
                     </dependencies>
                     <packaging>
@@ -78,6 +113,7 @@
             </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <!-- packaging takes only direct dependencies - all runtime libraries must be listed here -->
