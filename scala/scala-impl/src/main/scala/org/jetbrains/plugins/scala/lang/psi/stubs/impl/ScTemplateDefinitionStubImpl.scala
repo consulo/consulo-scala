@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
 import consulo.language.psi.stub.IStubElementType
-import com.intellij.java.language.LanguageLevel
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.StubElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
@@ -33,7 +32,7 @@ class ScTemplateDefinitionStubImpl[TypeDef <: ScTemplateDefinition](
     with ScTemplateDefinitionStub[TypeDef] {
 
   //todo PsiClassStub methods
-  override def getLanguageLevel: LanguageLevel = LanguageLevel.JDK_1_5
+  // upstream: override def getLanguageLevel = LanguageLevel.JDK_1_5 (Consulo PsiClassStub has no getLanguageLevel)
 
   override def isEnum: Boolean = false
 

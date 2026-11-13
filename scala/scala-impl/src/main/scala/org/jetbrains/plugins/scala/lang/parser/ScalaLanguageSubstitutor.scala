@@ -21,6 +21,8 @@ import scala.util.matching.Regex
 @ExtensionImpl
 final class ScalaLanguageSubstitutor extends LanguageSubstitutor {
 
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   /** @note for worksheet language substitutions see<br>
    *        org.jetbrains.plugins.scala.worksheet.WorksheetLanguageSubstitutor */
   override def getLanguage(file: VirtualFile, project: Project): Language = {

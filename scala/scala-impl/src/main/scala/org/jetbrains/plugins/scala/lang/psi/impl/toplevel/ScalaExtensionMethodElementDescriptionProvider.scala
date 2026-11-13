@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
+import consulo.localize.LocalizeValue
 import consulo.usage.{UsageViewLongNameLocation, UsageViewShortNameLocation}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiPresentationUtils.{extensionMethodPresentableText, extensionMethodShortText}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
@@ -14,12 +15,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
  */
 @ExtensionImpl(order = "first")
 final class ScalaExtensionMethodElementDescriptionProvider extends ElementDescriptionProvider {
-  override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String =
+  override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): LocalizeValue =
     element match {
       case function: ScFunction if function.isExtensionMethod && location == UsageViewLongNameLocation.INSTANCE =>
-        extensionMethodPresentableText(function)
+        LocalizeValue.ofNullable(extensionMethodPresentableText(function))
       case function: ScFunction if function.isExtensionMethod && location == UsageViewShortNameLocation.INSTANCE =>
-        extensionMethodShortText(function)
-      case _ => null
+        LocalizeValue.ofNullable(extensionMethodShortText(function))
+      case _ => LocalizeValue.empty()
     }
 }

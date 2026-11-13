@@ -31,7 +31,7 @@ final class ScalaLibraryType extends LibraryType[ScalaLibraryProperties](ScalaLi
 
   override def getCreateActionName: String = ScalaBundle.message("library.type.scala.sdk")
 
-  override def createNewLibrary(parent: java.awt.Component,
+  override def createNewLibrary(parent: Component,
                                 contextDirectory: VirtualFile,
                                 project: Project): CompletableFuture[NewLibraryConfiguration] =
     ScalaLibraryType.Description.createNewLibrary(contextDirectory) match {

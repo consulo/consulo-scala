@@ -40,6 +40,8 @@ class ScStubFileElementType(debugName: String, language: Language)
 
   override final def indexStub(stub: PsiFileStub[?], sink: IndexSink): Unit = {}
 
+  override final def indexStub(stub: ScFileStub, sink: IndexSink): Unit = {}
+
   protected class ScFileStubBuilderImpl extends DefaultStubBuilder {
 
     override def buildStubTree(file: PsiFile): PsiFileStubImpl[? <: PsiFile] =

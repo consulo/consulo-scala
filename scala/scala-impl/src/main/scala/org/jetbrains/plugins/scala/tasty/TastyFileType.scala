@@ -9,7 +9,7 @@ import org.jetbrains.plugins.scala.api.ScalaFileType
 
 
 object TastyFileType extends FileType {
-  override def getName: String = tastyName
+  override def getId: String = tastyName
 
   override def getDescription: LocalizeValue = LocalizeValue.of(tastyName)
 

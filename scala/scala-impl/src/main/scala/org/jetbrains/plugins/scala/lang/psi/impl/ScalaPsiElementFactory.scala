@@ -129,6 +129,8 @@ final class ScalaPsiElementFactoryImpl(project: Project) extends JVMElementFacto
 
   override def createType(resolve: PsiClass, substitutor: PsiSubstitutor, languageLevel: LanguageLevel): PsiClassType = ???
 
+  override def createType(resolve: PsiClass, substitutor: PsiSubstitutor, languageLevel: LanguageLevel, annotations: Array[PsiAnnotation]): PsiClassType = ???
+
   override def createType(aClass: PsiClass, parameters: PsiType): PsiClassType = ???
 
   override def createRawSubstitutor(owner: PsiTypeParameterListOwner): PsiSubstitutor = ???

@@ -7,7 +7,9 @@ import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.language.psi.search.PsiShortNamesCache
 import consulo.util.collection.ArrayUtil
-import consulo.application.util.function.Processor
+import consulo.language.psi.stub.IdFilter
+
+import java.util.function.Predicate
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTrait, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
@@ -69,10 +71,29 @@ class ScalaShortNamesCache(implicit project: Project) extends PsiShortNamesCache
     res.toArray
   }
 
-  override def processMethodsWithName(name: String, scope: GlobalSearchScope, processor: Processor[? >: PsiMethod]): Boolean = {
+  override def processMethodsWithName(name: String, scope: GlobalSearchScope, processor: Predicate[PsiMethod]): Boolean = {
     //todo:
     true
   }
+
+  // upstream: the following are default implementations in IntelliJ's PsiShortNamesCache
+  override def processMethodsWithName(name: String, processor: Predicate[? >: PsiMethod], scope: GlobalSearchScope, filter: IdFilter): Boolean =
+    processMethodsWithName(name, scope, (m: PsiMethod) => processor.test(m))
+
+  override def processFieldsWithName(name: String, processor: Predicate[? >: PsiField], scope: GlobalSearchScope, filter: IdFilter): Boolean =
+    getFieldsByName(name, scope).forall(processor.test)
+
+  override def processClassesWithName(name: String, processor: Predicate[? >: PsiClass], scope: GlobalSearchScope, filter: IdFilter): Boolean =
+    getClassesByName(name, scope).forall(processor.test)
+
+  override def getAllClassNames(dest: java.util.HashSet[String]): Unit =
+    dest.addAll(java.util.Arrays.asList(getAllClassNames*))
+
+  override def getAllMethodNames(set: java.util.HashSet[String]): Unit =
+    set.addAll(java.util.Arrays.asList(getAllMethodNames*))
+
+  override def getAllFieldNames(set: java.util.HashSet[String]): Unit =
+    set.addAll(java.util.Arrays.asList(getAllFieldNames*))
 
   override def getAllClassNames: Array[String] = {
     import ScalaIndexKeys._

@@ -25,7 +25,7 @@ final class RegisterSyntheticClassesProjectActivity extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // See current class ScalaDoc for details
     DumbService.getInstance(project).queueTask(new DumbModeTask() {
-      override def performInDumbMode(indicator: ProgressIndicator): Unit = {
+      override def performInDumbMode(indicator: ProgressIndicator, trace: Exception): Unit = {
         registerClassesBlocking(project)
       }
     })

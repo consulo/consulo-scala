@@ -10,6 +10,7 @@ import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.ScalaBundle
 
 import scala.annotation.nowarn
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
 private class ScalaSdkFilesChooserDescriptor extends FileChooserDescriptor(true, true, true, true, false, true) {
@@ -23,7 +24,10 @@ private class ScalaSdkFilesChooserDescriptor extends FileChooserDescriptor(true,
     (super.isFileSelectable(file): @nowarn("cat=deprecation")) && file.isDirectory || file.getExtension == "jar"
   }
 
-  override def validateSelectedFiles(virtualFiles: Array[VirtualFile]): Unit = {
+  // upstream: overrides FileChooserDescriptor.validateSelectedFiles; Consulo uses a virtual files validator instead
+  withVirtualFilesValidator((files: java.util.List[VirtualFile]) => validateSelectedFiles(files.asScala.toArray))
+
+  private def validateSelectedFiles(virtualFiles: Array[VirtualFile]): Unit = {
     Try(SystemDetector.buildSdkDescriptor(virtualFiles.toSeq)) match {
       case Success(Right(sdk)) =>
         _resultSdkDescriptor = Some(sdk)

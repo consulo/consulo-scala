@@ -5,7 +5,9 @@ import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.{DebuggerManager, NameMapper}
 import consulo.application.ApplicationManager
 import consulo.project.Project
-import consulo.project.startup.StartupActivity
+import consulo.project.startup.PostStartupActivity
+import consulo.application.dumb.DumbAware
+import consulo.ui.UIAccess
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTemplateDefinition}
@@ -13,8 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.compiled.ScalaCompilerLoader._
 import org.jetbrains.plugins.scala.project.ProjectExt
 
 @ExtensionImpl
-class ScalaCompilerLoader extends StartupActivity.DumbAware {
-  override def runActivity(project: Project): Unit = {
+class ScalaCompilerLoader extends PostStartupActivity with DumbAware {
+  override def runActivity(project: Project, uiAccess: UIAccess): Unit = {
     if (!isDisabled) {
       val mapper = new ScalaNameMapper()
       DebuggerManager.getInstance(project).addClassNameMapper(mapper)

@@ -7,11 +7,11 @@ import consulo.application.util.concurrent.AppExecutorUtil
 import consulo.application.AllIcons
 import consulo.project.ui.notification.{NotificationGroup, NotificationService, NotificationType}
 import consulo.localize.LocalizeValue
-import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, DefaultActionGroup}
 import consulo.application.ApplicationManager
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
-import consulo.ui.ex.toolWindow.ToolWindow
+import consulo.ui.ex.toolWindow.{ToolWindow, ToolWindowAnchor}
 import consulo.project.ui.wm.ToolWindowFactory
 import consulo.ui.ex.awt.JBScrollPane
 import consulo.ui.ex.content.{Content, ContentFactory}
@@ -26,6 +26,14 @@ import scala.jdk.CollectionConverters._
 
 @ExtensionImpl(id = "internal-profiler")
 class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware {
+
+  override def getId: String = InternalProfilerToolWindowFactory.ID
+
+  override def getAnchor: ToolWindowAnchor = ToolWindowAnchor.BOTTOM
+
+  override def getDisplayName: LocalizeValue = LocalizeValue.of("Scala plugin profiler")
+
+  override def isDoNotActivateOnStart: Boolean = true
 
   //noinspection UnstableApiUsage,ApiStatus
   override def getIcon: Image = AllIcons.Toolwindows.ToolWindowRun // upstream: AllIcons.Toolwindows.ToolWindowProfiler
@@ -161,7 +169,7 @@ object InternalProfilerToolWindowFactory {
       }, 0, refreshRateMs, TimeUnit.MILLISECONDS)
   }
 
-  class RunPauseAction(dataSource: DataSource[?]) extends AnAction with DumbAware {
+  class RunPauseAction(dataSource: DataSource[?]) extends AnAction with AnActionWithSyncUpdate with DumbAware {
 
     private def currentIcon(): Image = {
       if (dataSource.isActive)
@@ -178,7 +186,7 @@ object InternalProfilerToolWindowFactory {
       else dataSource.resume()
     }
 
-    def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
+    override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
   }
 
   class ClearAction(dataSource: DataSource[?], tableModel: DataByIdTableModel[?]) extends AnAction with DumbAware {

@@ -5,7 +5,7 @@ import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiPackage}
 import consulo.language.psi.resolve.ResolveState
 import consulo.language.psi.PsiPackageManager
-import com.intellij.java.language.psi.JavaPsiFacade
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiJavaPackage}
 import consulo.java.language.module.extension.JavaModuleExtension
 import com.intellij.java.language.impl.psi.impl.file.PsiPackageImpl
 import com.intellij.java.language.impl.psi.scope.NameHint
@@ -75,7 +75,8 @@ final class ScPackageImpl private (val pack: PsiPackage)
       true
   }
 
-  override def findPackage(qName: String): PsiPackageImpl =
+  // upstream: overrides PsiPackageImpl.findPackage (no such hook in Consulo; getParentPackage is overridden instead)
+  def findPackage(qName: String): PsiPackageImpl =
     ScPackageImpl.findPackage(getProject, qName).map(ScPackageImpl(_)).orNull
 
   override def findPackageObject(scope: GlobalSearchScope): Option[ScObject] = cachedInUserData(
@@ -92,24 +93,23 @@ final class ScPackageImpl private (val pack: PsiPackage)
   override def getParentPackage: PsiPackageImpl =
     ScalaPsiUtil.parentPackage(getQualifiedName, getProject).orNull
 
-  override def getSubPackages: Array[PsiPackage] = cachedInUserData(
+  // Consulo: PsiJavaPackage narrows PsiPackage.getSubPackages to PsiJavaPackage[]; Scala arrays are invariant,
+  // so the result type is the intersection (erased to PsiJavaPackage[])
+  override def getSubPackages: Array[PsiJavaPackage] & Array[PsiPackage] = cachedInUserData(
     "ScPackageImpl.getSubPackages",
     this,
     ScalaPsiManager.instance(getProject).TopLevelModificationTracker
   ) {
-    super.getSubPackages
-      .map(ScPackageImpl(_))
+    asJavaPackages(super.getSubPackages.map[PsiJavaPackage](ScPackageImpl(_)))
   }
 
-  override def getSubPackages(scope: GlobalSearchScope): Array[PsiPackage] = cachedInUserData(
+  override def getSubPackages(scope: GlobalSearchScope): Array[PsiJavaPackage] & Array[PsiPackage] = cachedInUserData(
     "getSubPackages(GlobalSearchScope)",
     this,
     ScalaPsiManager.instance(getProject).TopLevelModificationTracker,
     Tuple1(scope)
   ) {
-    super
-      .getSubPackages(scope)
-      .map(ScPackageImpl(_))
+    asJavaPackages(super.getSubPackages(scope).map[PsiJavaPackage](ScPackageImpl(_)))
   }
 
   override def isValid: Boolean = true
@@ -121,6 +121,10 @@ final class ScPackageImpl private (val pack: PsiPackage)
 }
 
 object ScPackageImpl {
+
+  /** see [[ScPackageImpl.getSubPackages]] */
+  def asJavaPackages(packages: Array[PsiJavaPackage]): Array[PsiJavaPackage] & Array[PsiPackage] =
+    packages.asInstanceOf[Array[PsiJavaPackage] & Array[PsiPackage]]
 
   def apply(psiPackage: PsiPackage): ScPackageImpl = psiPackage match {
     case impl: ScPackageImpl => impl

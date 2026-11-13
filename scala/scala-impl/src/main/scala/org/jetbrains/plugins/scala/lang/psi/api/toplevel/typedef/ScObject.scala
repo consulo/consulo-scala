@@ -30,8 +30,9 @@ trait ScObject extends ScTypeDefinition
 
   def fakeCompanionClassOrCompanionClass: PsiClass
 
-  /** Is this object accessible from a stable path from the root package? */
-  def isStatic: Boolean = containingClass match {
+  /** Is this object accessible from a stable path from the root package?
+   * (Consulo: also overrides PsiMember.isStatic default, which upstream IntelliJ does not have) */
+  override def isStatic: Boolean = containingClass match {
     case obj: ScObject => obj.isStatic
     case null => true
     case _ => false

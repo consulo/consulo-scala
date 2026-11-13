@@ -55,6 +55,8 @@ class SigFileStubBuilder extends ClassFileStubBuilder(Application.get()) {
 
 @ExtensionImpl
 class SigFileDecompiler extends BinaryFileDecompiler {
+  override def getFileType: FileType = SigFileType
+
   override def decompile(file: VirtualFile): CharSequence = {
     DecompilationResult.sourceNameAndText(file).map(_._2).getOrElse(ScalaBundle.message("could.not.decompile.file.comment", file.getName))
   }

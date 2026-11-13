@@ -4,6 +4,7 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.virtualFileSystem.BinaryFileDecompiler
 import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.fileType.FileType
 
 /**
  * Implementation of IntelliJ decompiler interface ([[BinaryFileDecompiler]])
@@ -14,6 +15,8 @@ import consulo.virtualFileSystem.VirtualFile
  */
 @ExtensionImpl
 class TastyDecompiler extends BinaryFileDecompiler {
+  override def getFileType: FileType = TastyFileType
+
   override def decompile(file: VirtualFile): String =
     TastyReader.read(file.contentsToByteArray())
       .map(_._2)

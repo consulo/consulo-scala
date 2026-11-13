@@ -76,7 +76,8 @@ abstract class ScalaStubBasedElementImpl[T <: PsiElement, S <: StubElement[T]](@
                                                                                nodeType: ScStubElementType[T],
                                                                                node: ASTNode)
   extends StubBasedPsiElementBase[S](stub, if (stub == null) null else nodeType, node)
-    with StubBasedPsiElement[S]
+    // Consulo: StubBasedPsiElementBase already implements StubBasedPsiElement[S]; re-mixing it makes its default
+    // getGreenStub conflict with the final getGreenStub of the base class
     with ScalaPsiElement {
 
   override def getStartOffsetInParent: Int = this.child match {

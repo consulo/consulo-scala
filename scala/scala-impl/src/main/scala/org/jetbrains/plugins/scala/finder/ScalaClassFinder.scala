@@ -9,7 +9,7 @@ import consulo.virtualFileSystem.VirtualFile
 import com.intellij.java.language.impl.psi.impl.java.stubs.index.JavaStubIndexKeys
 import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
 import consulo.language.psi.stub.StubIndex
-import com.intellij.java.language.psi.{PsiClass, PsiElementFinder}
+import com.intellij.java.language.psi.{PsiClass, PsiElementFinder, PsiJavaPackage}
 import consulo.language.psi.PsiPackage
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScObject, ScTrait, ScTypeDefinition}
@@ -112,20 +112,20 @@ class ScalaClassFinder(project: Project) extends PsiElementFinder {
     findClasses(qualifiedName, scope).headOption.orNull
   }
 
-  override def findPackage(qName: String): PsiPackage = {
+  override def findPackage(qName: String): PsiJavaPackage = {
     if (psiManager == null || DumbService.isDumb(project)) {
       return null
     }
     psiManager.syntheticPackage(qName)
   }
 
-  override def getClassNames(psiPackage: PsiPackage, scope: GlobalSearchScope): util.Set[String] = {
+  override def getClassNames(psiPackage: PsiJavaPackage, scope: GlobalSearchScope): util.Set[String] = {
     if (psiManager == null) Collections.emptySet()
     else psiManager.getJavaPackageClassNames(psiPackage, scope).asJava
 
   }
 
-  override def getClasses(psiPackage: PsiPackage, scope: GlobalSearchScope): Array[PsiClass] = {
+  override def getClasses(psiPackage: PsiJavaPackage, scope: GlobalSearchScope): Array[PsiClass] = {
     if (psiManager == null || psiManager.isInJavaPsiFacade) {
       return Array.empty
     }
