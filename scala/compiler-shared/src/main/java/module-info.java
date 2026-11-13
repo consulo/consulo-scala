@@ -14,6 +14,7 @@ module org.intellij.scala.compiler.shared {
     requires consulo.util.io;
     requires consulo.util.lang;
     requires consulo.util.xml.serializer;
+    requires com.dslplatform.json;
     requires transitive org.intellij.scala.utils.language.rt;
 
     exports org.jetbrains.jps.incremental.scala.shared;
