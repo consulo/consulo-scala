@@ -63,6 +63,7 @@ module org.intellij.scala {
     requires consulo.language.editor.ui.api;
     requires consulo.language.impl;
     requires consulo.logging.api;
+    requires consulo.execution.test.api;
     requires consulo.markdown.engine;
     requires scalafmt.interfaces;
     requires typesafe.config;

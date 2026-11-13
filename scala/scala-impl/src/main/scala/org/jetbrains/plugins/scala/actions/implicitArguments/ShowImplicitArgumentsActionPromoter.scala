@@ -14,7 +14,7 @@ class ShowImplicitArgumentsActionPromoter extends ActionPromoter {
   private def isShowExpressionTypeAction(action: AnAction): Boolean =
     ActionManager.getInstance.getId(action) == "ExpressionTypeInfo"
 
-  override def promote(actions: util.List[? <: AnAction], context: DataContext): util.List[AnAction] = {
+  override def promote(actions: util.List[AnAction], context: DataContext): util.List[AnAction] = {
     val filtered = actions.asScala.filter {
       case _: ShowImplicitArgumentsAction => true
       case action => isShowExpressionTypeAction(action)

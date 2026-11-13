@@ -81,6 +81,12 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>consulo</groupId>
+            <artifactId>consulo-execution-test-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- coursier api: automatic module name "interface" is invalid, bundled into the module (see bundle-libraries) -->
         <dependency>
             <groupId>io.get-coursier</groupId>

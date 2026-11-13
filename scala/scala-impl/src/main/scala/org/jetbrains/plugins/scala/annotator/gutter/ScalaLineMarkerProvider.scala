@@ -251,8 +251,8 @@ final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
     if (isEnabled(OverridingMethod) && member.hasModifierProperty("override")) arrowUpLineMarker(element, OverridingMethod, overridingMember).toOption
     else None
 
-  override def collectSlowLineMarkers(elements: ju.List[? <: PsiElement],
-                                      result: ju.Collection[? >: LineMarkerInfo[?]]): Unit = {
+  override def collectSlowLineMarkers(elements: ju.List[PsiElement],
+                                      result: ju.Collection[LineMarkerInfo[?]]): Unit = {
     import scala.jdk.CollectionConverters._
 
     lazy val file = elements.getFirst.getContainingFile
