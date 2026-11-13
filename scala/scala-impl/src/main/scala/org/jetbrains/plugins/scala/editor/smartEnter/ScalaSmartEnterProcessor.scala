@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.smartEnter
 
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.CodeInsightUtilCore
 import com.intellij.java.impl.codeInsight.editorActions.smartEnter.EnterProcessor
 import consulo.language.editor.action.SmartEnterProcessor
@@ -37,6 +39,8 @@ object ScalaSmartEnterProcessor {
 }
 
 class ScalaSmartEnterProcessor extends SmartEnterProcessor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   private final val SMART_ENTER_TIMESTAMP: Key[java.lang.Long]  = Key.create("smartEnterOriginalTimestamp")
 
   override def process(project: Project, editor: Editor, psiFile: PsiFile): Boolean = {

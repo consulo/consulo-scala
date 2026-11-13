@@ -6,7 +6,8 @@ import consulo.language.impl.psi.ASTWrapperPsiElement
 import consulo.language.ast.ASTNode
 import consulo.language.parser.ParserDefinition
 import consulo.language.lexer.FlexAdapter
-import consulo.project.Project
+import consulo.language.Language
+import consulo.language.version.LanguageVersion
 import consulo.language.ast.{IFileElementType, TokenSet}
 import consulo.language.file.FileViewProvider
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -14,18 +15,18 @@ import org.jetbrains.plugins.scalaDirective.lang.lexer._ScalaDirectiveLexer
 
 class ScalaDirectiveParserDefinition extends ParserDefinition {
 
+  override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
+
   override val getFileNodeType = new IFileElementType(ScalaDirectiveLanguage.INSTANCE)
 
-  //noinspection TypeAnnotation
-  override val getCommentTokens = TokenSet.create()
+  override def getCommentTokens(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
 
-  //noinspection TypeAnnotation
-  override val getStringLiteralElements = TokenSet.create()
+  override def getStringLiteralElements(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
 
-  override def createLexer(project: Project): consulo.language.lexer.FlexAdapter =
+  override def createLexer(languageVersion: LanguageVersion): consulo.language.lexer.FlexAdapter =
     new FlexAdapter(new _ScalaDirectiveLexer(null.asInstanceOf[java.io.Reader]))
 
-  override def createParser(project: Project): org.jetbrains.plugins.scalaDirective.lang.parser.ScalaDirectiveParser = new ScalaDirectiveParser
+  override def createParser(languageVersion: LanguageVersion): org.jetbrains.plugins.scalaDirective.lang.parser.ScalaDirectiveParser = new ScalaDirectiveParser
 
   override def createElement(node: ASTNode): PsiElement = new ASTWrapperPsiElement(node)
 

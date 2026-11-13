@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -32,7 +33,9 @@ import org.jetbrains.plugins.scala.compilersettings.settings._
 final class ScalaImportTypeFix private (ref: ScReference)
   extends ScalaImportElementFix[ElementToImport](ref) {
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(head) =>
       ScalaBundle.message("import.with", head.qualifiedName)
     case _ =>
@@ -53,7 +56,7 @@ final class ScalaImportTypeFix private (ref: ScReference)
     super.shouldShowHint() && (showForClasses || showForMethods)
   }
 
-  override def getFamilyName: String = ScalaBundle.message("import.class")
+  def getFamilyName: String = ScalaBundle.message("import.class")
 
   override def isAvailable: Boolean =
     super.isAvailable && ref.qualifier.isEmpty && !isSugarCallReference

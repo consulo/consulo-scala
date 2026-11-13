@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.language.psi.PsiClass
@@ -35,14 +36,16 @@ final class ImportImplicitInstanceFix private (notFoundImplicitParams: () => Seq
 
   override def isAddUnambiguous: Boolean = false
 
-  override def getText: String = {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = {
     if (elements.size == 1)
       ScalaBundle.message("import.with", elements.head.qualifiedName)
     else
       ScalaBundle.message("import.implicit")
   }
 
-  override def getFamilyName: String =
+  def getFamilyName: String =
     ScalaBundle.message("import.implicit")
 
   override protected def getHintRange: (Int, Int) = {

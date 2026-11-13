@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
@@ -14,12 +15,14 @@ class ImportExtensionMethodFix(ref: ScReferenceExpression,
 
   override def isAddUnambiguous: Boolean = false
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(extensionMethod) => ScalaBundle.message("import.with", extensionMethod.qualifiedName)
     case _ => getFamilyName
   }
 
-  override def getFamilyName: String = ScalaBundle.message("import.extension.method")
+  def getFamilyName: String = ScalaBundle.message("import.extension.method")
 
   override def shouldShowHint(): Boolean =
     super.shouldShowHint() && ScalaApplicationSettings.getInstance().SHOW_IMPORT_POPUP_EXTENSION_METHODS

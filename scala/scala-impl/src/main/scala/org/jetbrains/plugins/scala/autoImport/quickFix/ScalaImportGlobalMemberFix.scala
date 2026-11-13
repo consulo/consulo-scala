@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.inspection.PriorityAction
 import consulo.codeEditor.Editor
@@ -42,12 +43,14 @@ private class ScalaImportGlobalMemberFix(computation: MemberToImportComputation,
       computation.hasCompatible &&
       ScalaApplicationSettings.getInstance().SHOW_IMPORT_POPUP_STATIC_METHODS
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(element) => ScalaBundle.message("import.with", element.qualifiedName)
     case _            => ScalaBundle.message("import.something")
   }
 
-  override def getFamilyName: String = ScalaBundle.message("import.global.member")
+  def getFamilyName: String = ScalaBundle.message("import.global.member")
 
   override protected def findElementsToImport(): Seq[MemberToImport] = computation.forImportWithoutPrefix
 }
@@ -63,12 +66,14 @@ private class ScalaImportGlobalMemberWithPrefixFix(computation: MemberToImportCo
 
   override def getPriority: PriorityAction.Priority = PriorityAction.Priority.HIGH
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(elem) => ScalaBundle.message("import.as", elem.owner.name + "." + elem.name)
     case _         => ScalaBundle.message("import.with.prefix.ellipsis")
   }
 
-  override def getFamilyName: String =
+  def getFamilyName: String =
     ScalaBundle.message("import.with.prefix")
 
   override protected def findElementsToImport(): Seq[MemberToImport] = computation.forImportWithPrefix

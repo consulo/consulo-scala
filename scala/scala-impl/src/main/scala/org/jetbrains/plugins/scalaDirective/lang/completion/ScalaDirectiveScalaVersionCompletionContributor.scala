@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.language.Language
+import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
 import consulo.language.editor.completion.{CompletionContributor, CompletionService, WeighingContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.application.dumb.DumbAware
@@ -8,13 +10,15 @@ import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.plugins.scala.lang.completion.positionFromParameters
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
-import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveScalaVersionCompletionContributor.fetchVersions
+import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveScalaVersionCompletionContributor.{RealPrefixMatchingWeigher, fetchVersions}
 import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirectiveDependencyVersionLookupItem
 import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
 final class ScalaDirectiveScalaVersionCompletionContributor extends CompletionContributor with DumbAware {
+  override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
+
   extend(CompletionType.BASIC, ScalaDirectiveScalaVersionPattern, new CompletionProvider {
     override def addCompletions(params: CompletionParameters, processingContext: ProcessingContext, resultSet: CompletionResultSet): Unit = {
       val place = positionFromParameters(using params)

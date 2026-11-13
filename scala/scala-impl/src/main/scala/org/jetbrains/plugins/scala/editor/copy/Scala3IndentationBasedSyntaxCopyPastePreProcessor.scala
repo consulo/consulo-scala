@@ -29,7 +29,7 @@ import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType}
 import scala.collection.immutable.SortedMap
 
 class Scala3IndentationBasedSyntaxCopyPastePreProcessor extends CopyPastePreProcessor {
-  override def requiresAllDocumentsToBeCommitted(editor: Editor, project: Project): Boolean = false
+  // upstream: requiresAllDocumentsToBeCommitted(editor, project) = false (no such method in Consulo CopyPastePreProcessor)
 
   override def preprocessOnCopy(file: PsiFile, startOffsets: Array[Int], endOffsets: Array[Int], text: String): String =
     null

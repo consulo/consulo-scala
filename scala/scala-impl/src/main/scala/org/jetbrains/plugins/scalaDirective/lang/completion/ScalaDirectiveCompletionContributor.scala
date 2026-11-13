@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.completion.{CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.application.dumb.DumbAware
 import consulo.language.pattern.PlatformPatterns.psiComment
@@ -9,6 +11,8 @@ import org.jetbrains.plugins.scala.lang.completion.{ScalaCompletionContributor, 
 import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirectiveLookupItem
 
 final class ScalaDirectiveCompletionContributor extends ScalaCompletionContributor with DumbAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   private val pattern = psiComment.withText(StandardPatterns.string.startsWith(DirectivePrefix))
 
   extend(CompletionType.BASIC, pattern, new CompletionProvider {

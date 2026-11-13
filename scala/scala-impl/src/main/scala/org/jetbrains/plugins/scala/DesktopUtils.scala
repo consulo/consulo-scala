@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala
 
 import consulo.project.ui.notification.NotificationType
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.project.Project
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
@@ -29,8 +29,6 @@ object DesktopUtils {
             val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
             clipboard.setContents(new StringSelection(url), null)
           }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
         })
         .notify(project)
     }

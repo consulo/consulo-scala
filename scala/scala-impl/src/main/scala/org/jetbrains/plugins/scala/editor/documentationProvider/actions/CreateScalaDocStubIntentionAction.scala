@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.PriorityAction.Priority
 import consulo.language.editor.inspection.{FileModifier, PriorityAction}
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
@@ -19,9 +20,11 @@ final class CreateScalaDocStubIntentionAction
     with PriorityAction
     with DumbAware {
 
-  override def getText: String = ScalaEditorBundle.message("add.scaladoc.intention.action.text")
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
 
-  override def getFamilyName: String = ScalaEditorBundle.message("add.scaladoc.intention.action.family.name")
+  private def textString: String = ScalaEditorBundle.message("add.scaladoc.intention.action.text")
+
+  def getFamilyName: String = ScalaEditorBundle.message("add.scaladoc.intention.action.family.name")
 
   //Setting priority to LOW primarily to move it below "Add type annotation action"
   //Because the latter seems to be a more frequent action

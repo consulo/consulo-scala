@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.actions.internal
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
@@ -13,8 +13,6 @@ final class CleanScalaCachesAction extends AnAction("Clean Scala Plugin Caches")
       CleanScalaCachesAction.cleanAllCaches(project)
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
 
 object CleanScalaCachesAction {

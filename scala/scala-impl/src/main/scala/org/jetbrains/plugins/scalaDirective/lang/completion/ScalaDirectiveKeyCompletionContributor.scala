@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.language.Language
+import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.application.dumb.DumbAware
 import consulo.language.util.ProcessingContext
@@ -10,6 +12,8 @@ import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirecti
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
 final class ScalaDirectiveKeyCompletionContributor extends ScalaCompletionContributor with DumbAware {
+  override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
+
   register(ScalaDirectiveDependencyKeys)
   register(ScalaDirectiveScalaKey)
 

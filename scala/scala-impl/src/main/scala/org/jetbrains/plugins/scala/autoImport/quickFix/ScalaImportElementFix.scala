@@ -7,7 +7,6 @@ import jakarta.inject.Singleton
 import com.intellij.java.impl.codeInsight.JavaProjectCodeInsightSettings
 import consulo.language.editor.hint.HintManager
 import consulo.language.editor.inspection.PriorityAction
-import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.intention.HintAction
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.codeEditor.imaginary.ImaginaryEditor
@@ -106,8 +105,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
 
   override def startInWriteAction: Boolean = true
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo =
-    IntentionPreviewInfo.EMPTY
+  // upstream: generatePreview returned IntentionPreviewInfo.EMPTY (no intention preview in Consulo)
 
   protected def getHintRange: (Int, Int) = hintRange(place)
 

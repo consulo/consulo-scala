@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
+import consulo.language.Language
+import consulo.localize.LocalizeValue
 import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.application.util.concurrent.JobLauncher
@@ -60,6 +62,8 @@ import scala.jdk.CollectionConverters.*
 import scala.util.chaining.scalaUtilChainingOps
 
 class ScalaImportOptimizer(isOnTheFly: Boolean) extends ImportOptimizer {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   def this() = this(isOnTheFly = false)
 
@@ -230,7 +234,10 @@ class ScalaImportOptimizer(isOnTheFly: Boolean) extends ImportOptimizer {
         }
       }
 
-      override def getUserNotificationInfo: String = {
+      override def getUserNotificationInfo: LocalizeValue =
+        Option(userNotificationInfo).fold(LocalizeValue.empty())(LocalizeValue.of)
+
+      private def userNotificationInfo: String = {
         val ImportOptimizationResult(deleted, inserted, rearranged) = optimizationResult
 
         if (deleted == 0) {

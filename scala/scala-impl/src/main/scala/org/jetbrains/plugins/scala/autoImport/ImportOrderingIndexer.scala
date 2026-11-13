@@ -78,8 +78,8 @@ final class ImportOrderingIndexer extends FileBasedIndexExtension[String, Void] 
   }
 
   override def getKeyDescriptor: KeyDescriptor[String] = new KeyDescriptor[String] {
-    override def getHashCode(value: String): Int = value.hashCode()
-    override def isEqual(val1: String, val2: String): Boolean = val1 == val2
+    override def hashCode(value: String): Int = value.hashCode()
+    override def equals(val1: String, val2: String): Boolean = val1 == val2
     override def save(out: DataOutput, value: String): Unit = out.writeUTF(value)
     override def read(in: DataInput): String = in.readUTF()
   }

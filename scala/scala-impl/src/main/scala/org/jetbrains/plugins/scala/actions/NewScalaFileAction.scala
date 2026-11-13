@@ -43,8 +43,8 @@ final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiEle
   true
 ) with DumbAware {
 
-  override def getActionName(directory: PsiDirectory, newName: String, templateName: String): String =
-    ScalaBundle.message("newclassorfile.menu.action.text")
+  override def getActionName(directory: PsiDirectory, newName: String, templateName: String): LocalizeValue =
+    LocalizeValue.of(ScalaBundle.message("newclassorfile.menu.action.text"))
 
   override protected def buildDialog(
     project: Project,

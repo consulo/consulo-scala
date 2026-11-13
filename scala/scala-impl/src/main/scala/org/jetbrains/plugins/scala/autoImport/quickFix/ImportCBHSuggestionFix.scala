@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -13,12 +14,14 @@ final class ImportCBHSuggestionFix private(variants: Seq[CBHSuggestionToImport],
 
   override def isAddUnambiguous: Boolean = false
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(element) => ScalaBundle.message("import.with", element.qualifiedName)
     case _            => ScalaBundle.message("import.something")
   }
 
-  override def getFamilyName: String = ScalaBundle.message("import.compiler.suggestion")
+  def getFamilyName: String = ScalaBundle.message("import.compiler.suggestion")
 }
 
 object ImportCBHSuggestionFix {

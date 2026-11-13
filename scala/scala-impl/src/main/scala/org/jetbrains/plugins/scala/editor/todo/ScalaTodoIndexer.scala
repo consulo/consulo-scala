@@ -3,9 +3,14 @@ package org.jetbrains.plugins.scala.editor.todo
 import consulo.language.psi.stub.todo.LexerBasedTodoIndexer
 import consulo.language.psi.stub.{BaseFilterLexer, OccurrenceConsumer}
 import consulo.language.psi.search.UsageSearchContext.IN_COMMENTS
+import consulo.virtualFileSystem.fileType.FileType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaLexer, ScalaTokenTypes}
 
-final class ScalaTodoIndexer extends LexerBasedTodoIndexer {
+// upstream: also registered for the sbt and Scala Worksheet file types, Consulo needs an indexer class per file type
+class ScalaTodoIndexer extends LexerBasedTodoIndexer {
+
+  override def getFileType: FileType = ScalaFileType.INSTANCE
 
   override def createLexer(consumer: OccurrenceConsumer): BaseFilterLexer =
     new ScalaTodoIndexer.ScalaFilterLexer(consumer)

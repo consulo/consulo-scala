@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.actions
 
 import consulo.language.editor.PlatformDataKeys
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -50,8 +50,6 @@ final class MakeExplicitAction extends AnAction(
       case _ =>
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
 
 object MakeExplicitAction {

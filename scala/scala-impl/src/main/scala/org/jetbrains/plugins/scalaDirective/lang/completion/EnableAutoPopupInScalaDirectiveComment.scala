@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.AutoPopupController
 import consulo.language.editor.completion.{CompletionConfidence, CompletionType}
 import consulo.language.editor.action.TypedHandlerDelegate
@@ -16,7 +18,9 @@ import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependenc
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveAutoPopupCompletionHandler._
 
 final class EnableAutoPopupInScalaDirectiveComment extends CompletionConfidence {
-  override def shouldSkipAutopopup(editor: Editor, contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = contextElement match {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override def shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = contextElement match {
     case comment: PsiComment if isEmptyDirectiveComment(comment) =>
       ThreeState.NO
     case _ => ThreeState.UNSURE

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.actions
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
 import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -19,8 +19,6 @@ final class ScalaHighlightingModeAction extends AnAction(
       case null =>
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
 
 object ScalaHighlightingModeAction {

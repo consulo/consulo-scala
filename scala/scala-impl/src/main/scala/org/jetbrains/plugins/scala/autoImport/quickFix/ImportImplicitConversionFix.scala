@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
 import com.intellij.java.language.psi.PsiDocCommentOwner
@@ -34,12 +35,14 @@ class ImportImplicitConversionFix private (ref: ScReferenceExpression,
 
   override def isAddUnambiguous: Boolean = false
 
-  override def getText: String = elements match {
+  override def getText: LocalizeValue = LocalizeValue.of(textString)
+
+  private def textString: String = elements match {
     case Seq(conversion) => ScalaBundle.message("import.with", conversion.qualifiedName)
     case _               => ScalaBundle.message("import.implicit.conversion")
   }
 
-  override def getFamilyName: String =
+  def getFamilyName: String =
     ScalaBundle.message("import.implicit.conversion")
 
   override def shouldShowHint(): Boolean =
