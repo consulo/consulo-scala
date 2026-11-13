@@ -42,7 +42,7 @@ import org.jetbrains.plugins.scala.extensions._
 final class AutoBraceLookupListenerService(project: Project) extends Disposable {
   locally {
     project.getMessageBus.connect(this)
-      .subscribe(LookupManagerListener.TOPIC,
+      .subscribe(classOf[LookupManagerListener],
         new LookupManagerListener {
           override def activeLookupChanged(oldLookup: Lookup, newLookup: Lookup): Unit = {
             if (newLookup != null && AutoBraceInsertionTools.autoBraceInsertionActivated) {

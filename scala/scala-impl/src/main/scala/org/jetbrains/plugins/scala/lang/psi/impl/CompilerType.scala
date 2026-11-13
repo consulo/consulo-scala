@@ -2,14 +2,16 @@ package org.jetbrains.plugins.scala.lang.psi.impl
 
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiElement
-import com.intellij.util.messages
+import consulo.annotation.component.{ComponentScope, TopicAPI}
 
 object CompilerType {
   private val TypeKey: Key[String] = Key.create("SCALA_COMPILER_TYPE_KEY")
 
   private val TypeRequestedKey: Key[AnyRef] = Key.create("SCALA_COMPILER_TYPE_REQUESTED_KEY")
 
-  val Topic: messages.Topic[Listener] = messages.Topic.create("completion events", classOf[Listener])
+  val Topic: Class[CompilerTypeListener] = classOf[CompilerTypeListener]
+
+  type Listener = CompilerTypeListener
 
   def apply(e: PsiElement): Option[String] =
     Option(e.getCopyableUserData(TypeKey))
@@ -25,8 +27,10 @@ object CompilerType {
       e.getProject.getMessageBus.syncPublisher(Topic).onCompilerTypeRequest(e)
     }
   }
+}
 
-  trait Listener {
-    def onCompilerTypeRequest(e: PsiElement): Unit
-  }
+// upstream: CompilerType.Listener (Consulo topics must be top level)
+@TopicAPI(ComponentScope.PROJECT)
+trait CompilerTypeListener {
+  def onCompilerTypeRequest(e: PsiElement): Unit
 }

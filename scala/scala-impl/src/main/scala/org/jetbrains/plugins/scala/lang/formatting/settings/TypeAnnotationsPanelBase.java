@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.formatting.settings;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.language.codeStyle.CodeStyleSettings;
-import com.intellij.ui.ContextHelpLabel;
+import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

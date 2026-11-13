@@ -1,59 +1,61 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.openapi.options.BoundConfigurable
-import consulo.configurable.SearchableConfigurable
-import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.dsl.builder.BuilderKt
+import consulo.annotation.component.ExtensionImpl
+import consulo.configurable.{ApplicationConfigurable, SimpleConfigurableByProperties}
+import consulo.disposer.Disposable
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.layout.{LabeledLayout, VerticalLayout}
+import consulo.ui.{CheckBox, Component}
 import org.jetbrains.plugins.scala.ScalaBundle
-import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
-import org.jetbrains.plugins.scala.util.ui.KotlinDslWrappers._
 
-final class ScalaEditorSmartKeysConfigurable extends BoundConfigurable(
-  //noinspection ScalaExtractStringToBundle
-  "Scala",
-  null
-) with SearchableConfigurable {
-  private val settings = ScalaApplicationSettings.getInstance
+/**
+ * upstream: `editorSmartKeysConfigurable` built with Kotlin UI DSL ("Scala" child page of Smart Keys)
+ */
+@ExtensionImpl
+final class ScalaEditorSmartKeysConfigurable extends SimpleConfigurableByProperties with ApplicationConfigurable {
 
-  override def getId: String = "ScalaSmartKeys"
+  @RequiredUIAccess
+  override protected def createLayout(propertyBuilder: SimpleConfigurableByProperties.PropertyBuilder, uiDisposable: Disposable): Component = {
+    val settings = ScalaApplicationSettings.getInstance
 
-  override def enableSearch(option: String): Runnable = null
-
-  override def disposeUIResources(): Unit = super.disposeUIResources()
-
-  override def getHelpTopic: String =
-    ScalaWebHelpProvider.HelpPrefix + "scala-features-overview-scala.html"
-
-  override def createPanel(): DialogPanel = BuilderKt.panel { panel =>
-    panel.checkBoxCell(ScalaBundle.message("indent.pasted.lines.at.caret"),
-      settings.INDENT_PASTED_LINES_AT_CARET,
-      settings.INDENT_PASTED_LINES_AT_CARET = _)
-    panel.checkBoxCell(ScalaBundle.message("insert.pair.multiline.quotes"),
-      settings.INSERT_MULTILINE_QUOTES,
-      settings.INSERT_MULTILINE_QUOTES = _)
-    panel.checkBoxCell(ScalaBundle.message("upgrade.to.interpolated"),
-      settings.UPGRADE_TO_INTERPOLATED,
-      settings.UPGRADE_TO_INTERPOLATED = _)
-    panel.checkBoxCell(ScalaBundle.message("wrap.single.expression.body"),
-      settings.WRAP_SINGLE_EXPRESSION_BODY,
-      settings.WRAP_SINGLE_EXPRESSION_BODY = _)
-    panel.checkBoxCell(ScalaBundle.message("delete.closing.brace"),
-      settings.DELETE_CLOSING_BRACE,
-      settings.DELETE_CLOSING_BRACE = _)
-
-    panel.buttonsGroup(ScalaBundle.message("control.curly.braces.based.on.line.indents")) { groupPanel =>
-      groupPanel.checkBoxCellWithTooltip(
-        ScalaBundle.message("insert.block.braces.automatically.based.on.indentation"),
-        ScalaBundle.message("insert.block.braces.automatically.based.on.indentation.tooltip"),
-        settings.HANDLE_BLOCK_BRACES_INSERTION_AUTOMATICALLY,
-        settings.HANDLE_BLOCK_BRACES_INSERTION_AUTOMATICALLY = _)
-      groupPanel.checkBoxCellWithTooltip(
-        ScalaBundle.message("remove.block.braces.automatically.based.on.indentation"),
-        ScalaBundle.message("remove.block.braces.automatically.based.on.indentation.tooltip"),
-        settings.HANDLE_BLOCK_BRACES_REMOVAL_AUTOMATICALLY,
-        settings.HANDLE_BLOCK_BRACES_REMOVAL_AUTOMATICALLY = _)
+    def checkBox(layout: VerticalLayout, text: String, tooltip: Option[String], getter: => Boolean, setter: Boolean => Unit): Unit = {
+      val box = CheckBox.create(LocalizeValue.of(text))
+      tooltip.foreach(t => box.setToolTipText(LocalizeValue.of(t)))
+      propertyBuilder.add(box, () => java.lang.Boolean.valueOf(getter), (value: java.lang.Boolean) => setter(value))
+      layout.add(box)
     }
 
-    kotlin.Unit.INSTANCE
+    val root = VerticalLayout.create()
+    checkBox(root, ScalaBundle.message("indent.pasted.lines.at.caret"), None,
+      settings.INDENT_PASTED_LINES_AT_CARET, settings.INDENT_PASTED_LINES_AT_CARET = _)
+    checkBox(root, ScalaBundle.message("insert.pair.multiline.quotes"), None,
+      settings.INSERT_MULTILINE_QUOTES, settings.INSERT_MULTILINE_QUOTES = _)
+    checkBox(root, ScalaBundle.message("upgrade.to.interpolated"), None,
+      settings.UPGRADE_TO_INTERPOLATED, settings.UPGRADE_TO_INTERPOLATED = _)
+    checkBox(root, ScalaBundle.message("wrap.single.expression.body"), None,
+      settings.WRAP_SINGLE_EXPRESSION_BODY, settings.WRAP_SINGLE_EXPRESSION_BODY = _)
+    checkBox(root, ScalaBundle.message("delete.closing.brace"), None,
+      settings.DELETE_CLOSING_BRACE, settings.DELETE_CLOSING_BRACE = _)
+
+    val bracesGroup = VerticalLayout.create()
+    checkBox(bracesGroup,
+      ScalaBundle.message("insert.block.braces.automatically.based.on.indentation"),
+      Some(ScalaBundle.message("insert.block.braces.automatically.based.on.indentation.tooltip")),
+      settings.HANDLE_BLOCK_BRACES_INSERTION_AUTOMATICALLY, settings.HANDLE_BLOCK_BRACES_INSERTION_AUTOMATICALLY = _)
+    checkBox(bracesGroup,
+      ScalaBundle.message("remove.block.braces.automatically.based.on.indentation"),
+      Some(ScalaBundle.message("remove.block.braces.automatically.based.on.indentation.tooltip")),
+      settings.HANDLE_BLOCK_BRACES_REMOVAL_AUTOMATICALLY, settings.HANDLE_BLOCK_BRACES_REMOVAL_AUTOMATICALLY = _)
+    root.add(LabeledLayout.create(LocalizeValue.of(ScalaBundle.message("control.curly.braces.based.on.line.indents")), bracesGroup))
+
+    root
   }
+
+  override def getId: String = "editor.preferences.smartKeys.scala"
+
+  override def getParentId: String = "editor.preferences.smartKeys"
+
+  //noinspection ScalaExtractStringToBundle
+  override def getDisplayName: LocalizeValue = LocalizeValue.of("Scala")
 }

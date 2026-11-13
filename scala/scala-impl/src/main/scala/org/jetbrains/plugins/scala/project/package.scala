@@ -22,7 +22,6 @@ import consulo.module.content.layer.{ModifiableRootModel, OrderEnumerator}
 import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex, ProjectRootManager}
 import consulo.content.OrderRootType
-import com.intellij.openapi.roots.impl.libraries.Library
 import consulo.content.library.{Library, LibraryTablesRegistrar}
 import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
 import consulo.virtualFileSystem.VirtualFile
@@ -46,6 +45,8 @@ import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerConfiguration,
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.tasty.reader.CompilerOptions
 import org.jetbrains.plugins.scala.util.ScalaPluginJars
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.api.util.UnloadAwareDisposable
 import org.jetbrains.sbt.api.language.SbtFile
 import org.jetbrains.sbt.project.module.SbtModuleType
@@ -416,7 +417,7 @@ package object project {
     def subscribeToModuleRootChanged(parentDisposable: Disposable = unloadAwareDisposable)
                                     (onRootsChanged: ModuleRootEvent => Unit): Unit =
       project.getMessageBus.connect(parentDisposable).subscribe(
-        ModuleRootListener.TOPIC,
+        classOf[ModuleRootListener],
         new ModuleRootListener {
           override def rootsChanged(event: ModuleRootEvent): Unit = onRootsChanged(event)
         }

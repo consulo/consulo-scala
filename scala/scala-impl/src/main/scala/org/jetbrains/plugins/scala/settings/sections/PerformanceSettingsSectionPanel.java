@@ -1,19 +1,18 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
+import consulo.ui.ex.awt.HideableDecorator;
+import java.awt.BorderLayout;
 import consulo.project.Project;
-import com.intellij.openapi.ui.DialogPanel;
 import consulo.util.lang.Pair;
 import consulo.ui.ex.awt.BrowserHyperlinkListener;
 import consulo.ui.ex.awt.util.ColorUtil;
-import com.intellij.ui.ContextHelpLabel;
+import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 import consulo.ui.ex.awt.EnumComboBoxModel;
 import consulo.ui.ex.awt.TitledSeparator;
 import consulo.ui.ex.awt.JBLabel;
-import com.intellij.ui.dsl.builder.BuilderKt;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import kotlin.Unit;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 import org.jetbrains.plugins.scala.settings.SimpleMappingListCellRenderer;
@@ -84,16 +83,11 @@ public class PerformanceSettingsSectionPanel extends SettingsSectionPanel {
 
         myAdvancedLabel.getParent().remove(myAdvancedLabel);
         myAdvancedPanelContainer.remove(myAdvancedPanel);
-        DialogPanel collapsiblePanel = BuilderKt.panel(panel -> {
-            panel.collapsibleGroup(ScalaBundle.message("scala.project.settings.form.performance.advanced"), true, group -> {
-                group.row((JLabel) null, row -> {
-                    row.cell(myAdvancedPanel);
-                    return Unit.INSTANCE;
-                });
-                return Unit.INSTANCE;
-            });
-            return Unit.INSTANCE;
-        });
+        // upstream: Kotlin UI DSL collapsible group
+        JPanel collapsiblePanel = new JPanel(new BorderLayout());
+        HideableDecorator decorator = new HideableDecorator(collapsiblePanel, ScalaBundle.message("scala.project.settings.form.performance.advanced"), false);
+        decorator.setContentComponent(myAdvancedPanel);
+        decorator.setOn(false);
         myAdvancedPanelContainer.add(collapsiblePanel);
 
         reset();

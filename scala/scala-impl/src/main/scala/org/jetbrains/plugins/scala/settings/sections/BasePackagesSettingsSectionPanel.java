@@ -4,7 +4,7 @@ import com.intellij.compiler.options.ModuleOptionsTableModel;
 import com.intellij.compiler.options.ModuleTableCellRenderer;
 import consulo.java.compiler.JavaCompilerBundle;
 import consulo.project.Project;
-import com.intellij.ui.ContextHelpLabel;
+import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
 import consulo.ui.ex.awt.util.TableUtil;
 import consulo.ui.ex.awt.ToolbarDecorator;

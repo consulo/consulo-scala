@@ -1,14 +1,13 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.util.messages.Topic
+import consulo.annotation.component.{ComponentScope, TopicAPI}
 
+@TopicAPI(ComponentScope.APPLICATION)
 trait CompilerHighlightingListener {
   def compilerHighlightingScala2Changed(enabled: Boolean): Unit
   def compilerHighlightingScala3Changed(enabled: Boolean): Unit
 }
 
 object CompilerHighlightingListener {
-  val Topic = new Topic[CompilerHighlightingListener](
-    "compiler-based highlighting setting",
-    classOf[CompilerHighlightingListener])
+  val Topic: Class[CompilerHighlightingListener] = classOf[CompilerHighlightingListener]
 }

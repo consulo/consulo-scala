@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.actions.utils
 
+import consulo.annotation.component.{ComponentScope, TopicAPI}
 import consulo.ui.ex.action.AnAction
-import com.intellij.util.messages.Topic
 import org.jetbrains.annotations.TestOnly
 
 import scala.util.Try
@@ -10,6 +10,7 @@ import scala.util.Try
  * The current primary purpose of this listener is to make asynchronous actions testable
  */
 @TestOnly
+@TopicAPI(ComponentScope.PROJECT)
 private[actions]
 trait ScalaAsyncActionListener {
   /**
@@ -21,5 +22,5 @@ trait ScalaAsyncActionListener {
 }
 
 object ScalaAsyncActionListener {
-  val Topic = new Topic[ScalaAsyncActionListener]("ScalaAsyncActionListenerTopic", classOf[ScalaAsyncActionListener])
+  val Topic: Class[ScalaAsyncActionListener] = classOf[ScalaAsyncActionListener]
 }

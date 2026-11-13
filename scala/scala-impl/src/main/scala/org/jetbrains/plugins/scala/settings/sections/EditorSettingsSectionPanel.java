@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
+import consulo.ui.ex.awt.HideableDecorator;
+import java.awt.BorderLayout;
 import consulo.dataContext.DataManager;
 import consulo.application.ApplicationManager;
 import consulo.ui.ModalityState;
@@ -8,20 +10,17 @@ import consulo.codeEditor.EditorFactory;
 import consulo.configurable.ConfigurationException;
 import consulo.configurable.Settings;
 import consulo.project.Project;
-import com.intellij.openapi.ui.DialogPanel;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.util.lang.Pair;
 import consulo.virtualFileSystem.VirtualFile;
-import com.intellij.ui.ContextHelpLabel;
+import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 import consulo.ui.ex.awt.TitledSeparator;
 import com.intellij.ui.components.ActionLink;
 import consulo.ui.ex.awt.IntegerField;
-import com.intellij.ui.dsl.builder.BuilderKt;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import consulo.fileEditor.util.FileContentUtil;
-import kotlin.Unit;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.incremental.Highlighting;
@@ -156,16 +155,11 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
 
         myAdvancedLabel.getParent().remove(myAdvancedLabel);
         myAdvancedPanelContainer.remove(myAdvancedPanel);
-        DialogPanel collapsiblePanel = BuilderKt.panel(panel -> {
-            panel.collapsibleGroup(ScalaBundle.message("scala.project.settings.form.advanced"), true, group -> {
-                group.row((JLabel) null, row -> {
-                    row.cell(myAdvancedPanel);
-                    return Unit.INSTANCE;
-                });
-                return Unit.INSTANCE;
-            });
-            return Unit.INSTANCE;
-        });
+        // upstream: Kotlin UI DSL collapsible group
+        JPanel collapsiblePanel = new JPanel(new BorderLayout());
+        HideableDecorator decorator = new HideableDecorator(collapsiblePanel, ScalaBundle.message("scala.project.settings.form.advanced"), false);
+        decorator.setContentComponent(myAdvancedPanel);
+        decorator.setOn(false);
         myAdvancedPanelContainer.add(collapsiblePanel);
     }
 

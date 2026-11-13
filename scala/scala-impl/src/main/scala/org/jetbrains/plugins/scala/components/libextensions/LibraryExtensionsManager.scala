@@ -18,7 +18,6 @@ import consulo.content.library.{Library, LibraryTable, LibraryTablesRegistrar}
 import consulo.component.util.ModificationTracker
 import com.intellij.openapi.vfs.JarFileSystem
 import consulo.util.nodep.classloader.UrlClassLoader
-import com.intellij.util.messages.Topic
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.DependencyManagerBase._
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -60,9 +59,7 @@ final class LibraryExtensionsManager(project: Project) {
   private val myLoadedLibraries     = mutable.ArrayBuffer[ExtensionJarData]()
 
   { // init
-    ApplicationManager.getApplication.getMessageBus
-      .syncPublisher(Notifications.TOPIC)
-      .register(PopupHelper.GROUP_ID, NotificationDisplayType.STICKY_BALLOON)
+    // upstream: registers the PopupHelper.GROUP_ID notification group, see ScalaNotificationGroups.scalaLibraryExtension
     if (ScalaProjectSettings.getInstance(project).isEnableLibraryExtensions)
       loadCachedExtensions()
     LibraryTablesRegistrar.getInstance().getLibraryTable(project).addListener(LibraryListener, project.unloadAwareDisposable)
@@ -241,7 +238,7 @@ final class LibraryExtensionsManager(project: Project) {
 
 object LibraryExtensionsManager {
 
-  val EXTENSIONS_TOPIC = new Topic[LibraryExtensionsListener]("EXTENSIONS_TOPIC", classOf[LibraryExtensionsListener])
+  val EXTENSIONS_TOPIC: Class[LibraryExtensionsListener] = classOf[LibraryExtensionsListener]
 
   private[libextensions] val MANIFEST_PATH      = "META-INF/intellij-compat.xml"
   private[libextensions] val PROPS_NAME         = "intellij-compat.json"

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
-import com.intellij.notification.NotificationGroupManager
+import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 import consulo.project.ui.notification.event.NotificationListener
 import consulo.project.Project
 
@@ -14,9 +14,9 @@ import scala.ref.WeakReference
 private[formatting]
 object ScalafmtNotifications {
 
-  private def scalafmtInfoBalloonGroup        = NotificationGroupManager.getInstance().getNotificationGroup("scalafmt")
-  private def scalafmtFatalErrorBalloonGroup  = NotificationGroupManager.getInstance().getNotificationGroup("scalafmt.fatal.errors")
-  private def scalafmtFormatErrorBalloonGroup = NotificationGroupManager.getInstance().getNotificationGroup("scalafmt.format.errors")
+  private def scalafmtInfoBalloonGroup        = ScalaNotificationGroups.scalafmt
+  private def scalafmtFatalErrorBalloonGroup  = ScalaNotificationGroups.scalafmtFatalErrors
+  private def scalafmtFormatErrorBalloonGroup = ScalaNotificationGroups.scalafmtFormatErrors
 
   // do not display notification with same content several times
   private val messagesShown: concurrent.Map[String, WeakReference[Notification]] =
