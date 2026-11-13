@@ -1,9 +1,6 @@
 package org.jetbrains.plugins.scala.shared.project;
 
 import consulo.util.collection.ArrayUtil;
-import consulo.util.xml.serializer.Constants;
-import consulo.util.xml.serializer.annotation.Tag;
-import consulo.util.xml.serializer.annotation.AbstractCollection;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
@@ -13,20 +10,17 @@ import java.util.Objects;
  * Contains Scala SDK properties, which are used both in IDEA process and JPS process.<br>
  * Child classes are used in communication between IDEA and JPS
  */
+// upstream: serialized by xmlb, Consulo: dsl-json (@CompiledJson on concrete state class)
 public abstract class ScalaLibraryPropertiesStateSharedInIdeaAndJps {
 
-    @Tag("compiler-classpath")
-    // upstream: @XCollection( elementName = "root", valueAttributeName = "url" )
-    @AbstractCollection(surroundWithTag = false, elementTag = "root", elementValueAttribute = "url")
+    // upstream: @Tag("compiler-classpath") @XCollection(elementName = "root", valueAttributeName = "url")
     protected final String[] compilerClasspath;
 
-    @Tag("compiler-bridge-binary-jar")
+    // upstream: @Tag("compiler-bridge-binary-jar")
     @Nullable
     protected final String compilerBridgeBinaryJar;
 
-    @Tag("repl-classpath")
-    // upstream: @XCollection( elementName = Constants.ENTRY, valueAttributeName = "url" )
-    @AbstractCollection(surroundWithTag = false, elementTag = Constants.ENTRY, elementValueAttribute = "url")
+    // upstream: @Tag("repl-classpath") @XCollection(elementName = Constants.ENTRY, valueAttributeName = "url")
     protected final String[] replClasspath;
 
     public ScalaLibraryPropertiesStateSharedInIdeaAndJps() {

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.data;
 
-import consulo.util.xml.serializer.annotation.Tag;
-import consulo.util.xml.serializer.annotation.AbstractCollection;
+import com.dslplatform.json.CompiledJson;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -9,6 +9,8 @@ import java.util.Objects;
 /**
  * @see ScalaCompilerSettingsStateBuilder
  */
+// upstream: serialized by xmlb (@Tag/@XCollection on array fields), Consulo: dsl-json
+@CompiledJson
 public final class ScalaCompilerSettingsState {
     public CompileOrder compileOrder = CompileOrder.Mixed;
     public boolean nameHashing = SbtIncrementalOptions.Default().nameHashing();
@@ -36,10 +38,9 @@ public final class ScalaCompilerSettingsState {
     public DebuggingInfoLevel debuggingInfoLevel = DebuggingInfoLevel.Vars;
 
     // Why serialization doesn't work when elementTag is "option"?
-    @Tag("parameters")
-    // upstream: @XCollection(elementName = "parameter")
-    @AbstractCollection(surroundWithTag = false, elementTag = "parameter")
-    public String[] additionalCompilerOptions = new String[]{};
+    // upstream: @Tag("parameters") @XCollection(elementName = "parameter")
+    // nullable for dsl-json (as other Consulo @CompiledJson states)
+    public String @Nullable [] additionalCompilerOptions = new String[]{};
 
     /**
      * IMPORTANT !! <br>
@@ -50,10 +51,8 @@ public final class ScalaCompilerSettingsState {
      *
      * @see org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin
      */
-    @Tag("plugins")
-    // upstream: @XCollection(elementName = "plugin", valueAttributeName = "path")
-    @AbstractCollection(surroundWithTag = false, elementTag = "plugin", elementValueAttribute = "path")
-    public String[] pluginsClasspath = new String[]{};
+    // upstream: @Tag("plugins") @XCollection(elementName = "plugin", valueAttributeName = "path")
+    public String @Nullable [] pluginsClasspath = new String[]{};
 
     @Override
     public boolean equals(Object o) {

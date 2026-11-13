@@ -110,6 +110,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>consulo.internal.com.dslplatform</groupId>
+            <artifactId>dsl-json</artifactId>
+            <version>${dsl.json.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-util-xml-serializer</artifactId>
             <version>${project.version}</version>
