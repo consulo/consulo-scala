@@ -26,7 +26,7 @@ final class ScVariableDeclarationImpl private[psi] (
 
   override def typeElement: Option[ScTypeElement] = byPsiOrStub(findChild[ScTypeElement])(_.typeElement)
 
-  override def getIdList: ScIdList = getStubOrPsiChild(ScalaElementType.IDENTIFIER_LIST, classOf[ScIdList])
+  override def getIdList: ScIdList = getStubOrPsiChild(ScalaElementType.IDENTIFIER_LIST)
 
   override protected def acceptScala(visitor: ScalaElementVisitor): Unit = {
     visitor.visitVariableDeclaration(this)

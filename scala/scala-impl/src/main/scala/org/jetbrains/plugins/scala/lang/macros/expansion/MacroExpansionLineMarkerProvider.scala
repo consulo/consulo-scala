@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
+import consulo.language.editor.Pass
+import consulo.language.navigation.GotoRelatedItem
 import consulo.ui.image.Image
 import consulo.language.editor.gutter.{GutterIconNavigationHandler, RelatedItemLineMarkerInfo, RelatedItemLineMarkerProvider}
 import consulo.application.AllIcons
@@ -51,10 +53,11 @@ abstract class MacroExpansionLineMarkerProvider extends RelatedItemLineMarkerPro
       _ => caption
 
     new RelatedItemLineMarkerInfo[PsiElement](element, range, icon,
+      Pass.LINE_MARKERS,
       tooltipProvider,
       navigationHandler,
       GutterIconRenderer.Alignment.RIGHT,
-      () => util.Collections.emptyList
+      util.Collections.emptyList[GotoRelatedItem]()
     )
   }
 

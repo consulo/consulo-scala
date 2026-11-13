@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements.params
 
-import com.intellij.lang.jvm.JvmElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
 trait ScClassParameter
@@ -50,6 +49,4 @@ trait ScClassParameter
 
   /** Returns true if parameter is a class member ([[isClassMember]]) and has `private[this]` modifier */
   def isPrivateThis: Boolean
-
-  override def accept[T](visitor: JvmElementVisitor[T]): T = super[WithBaseIconProvider].accept(visitor)
 }

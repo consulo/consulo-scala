@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.lang.references
 
 import consulo.document.util.TextRange
-import com.intellij.java.language.patterns.PsiJavaPatterns.psiElement
+import com.intellij.java.language.patterns.PsiJavaPatterns.psiJavaElement
+import consulo.language.Language
+import consulo.language.psi.{PsiReferenceProviderByType, ReferenceProviderType}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.pattern.PlatformPatterns
 import com.intellij.java.language.patterns.PsiJavaElementPattern
 import consulo.language.psi.{PsiElement, PsiReference, PsiReferenceContributor, PsiReferenceProvider, PsiReferenceRegistrar}
 import com.intellij.java.impl.psi.impl.source.resolve.reference.impl.providers.FilePathReferenceProvider
-import com.intellij.psi.impl.source.resolve.reference.{ArbitraryPlaceUrlReferenceProvider, CommentsReferenceContributor}
 import consulo.language.ast.TokenSet
 import consulo.language.util.{IncorrectOperationException, ProcessingContext}
 import org.jetbrains.plugins.scala.extensions._
@@ -26,17 +28,24 @@ import scala.collection.mutable.ListBuffer
 final class ScalaReferenceContributor extends PsiReferenceContributor {
 
   override def registerReferenceProviders(registrar: PsiReferenceRegistrar): Unit = {
-    def literalCapture: PsiJavaElementPattern.Capture[ScStringLiteral] = psiElement(classOf[ScStringLiteral])
+    def literalCapture: PsiJavaElementPattern.Capture[ScStringLiteral] = psiJavaElement(classOf[ScStringLiteral])
 
     registrar.registerReferenceProvider(literalCapture, new ScalaFilePathReferenceProvider(), PsiReferenceRegistrar.LOWER_PRIORITY)
     registrar.registerReferenceProvider(literalCapture, new InterpolatedStringReferenceProvider())
-    registrar.registerReferenceProvider(literalCapture, new ArbitraryPlaceUrlReferenceProvider())
+    // upstream: ArbitraryPlaceUrlReferenceProvider and CommentsReferenceContributor.COMMENTS_REFERENCE_PROVIDER_TYPE;
+    // in Consulo the url reference provider is the provider of the comments type
+    val commentsProvider = PsiReferenceProviderByType.forType(ReferenceProviderType.COMMENTS)
+    if (commentsProvider != null) {
+      registrar.registerReferenceProvider(literalCapture, commentsProvider)
 
-    registrar.registerReferenceProvider(
-      PlatformPatterns.psiElement(classOf[ScPsiDocToken]),
-      CommentsReferenceContributor.COMMENTS_REFERENCE_PROVIDER_TYPE.getProvider
-    )
+      registrar.registerReferenceProvider(
+        PlatformPatterns.psiElement(classOf[ScPsiDocToken]),
+        commentsProvider
+      )
+    }
   }
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 }
 
 private final class InterpolatedStringReferenceProvider extends PsiReferenceProvider {

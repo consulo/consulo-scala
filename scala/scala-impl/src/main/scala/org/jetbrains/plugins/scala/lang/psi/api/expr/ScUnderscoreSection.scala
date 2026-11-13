@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.api.expr
 
 import consulo.language.ast.ASTNode
-import consulo.logging.attachment.Attachment
+import consulo.logging.attachment.AttachmentFactory
 import consulo.logging.Logger
 import consulo.language.impl.ast.CompositeElement
 import consulo.language.psi.util.PsiTreeUtil
@@ -120,7 +120,7 @@ object ScUnderScoreSectionUtil {
           LOG.error(
             "Stackoverflow in collectUnderscoreNodes",
             e,
-            new Attachment("underscore_section_code", expr.withParents.take(4).toSeq.last.getText)
+            AttachmentFactory.get().create("underscore_section_code", expr.withParents.take(4).toSeq.last.getText)
           )
       }
 

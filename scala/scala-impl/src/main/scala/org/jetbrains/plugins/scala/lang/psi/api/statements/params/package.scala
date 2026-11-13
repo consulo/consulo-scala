@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.api.statements
 
-import com.intellij.concurrency.ConcurrentCollectionFactory
 import com.intellij.java.language.psi.{PsiClass, PsiTypeParameter}
 import consulo.language.psi.PsiNamedElement
-import consulo.util.collection.primitive.longs.ConcurrentLongObjectMap
+import consulo.util.collection.primitive.longs.{ConcurrentLongObjectMap, LongMaps}
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiClassExt, PsiElementExt, PsiNamedElementExt, StubBasedExt}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
@@ -21,18 +20,18 @@ package object params {
 
   //for better debugging, cleared by ScalaPsiManager on every change
   val idToName: ConcurrentLongObjectMap[String] =
-    ConcurrentCollectionFactory.createConcurrentLongObjectMap()
+    LongMaps.newConcurrentLongObjectHashMap()
 
   //never cleared
   private val reusableIdToName: ConcurrentLongObjectMap[String] =
-    ConcurrentCollectionFactory.createConcurrentLongObjectMap()
+    LongMaps.newConcurrentLongObjectHashMap()
 
   def typeParamName(id: Long): String = {
     val name =
       idToName
-        .get(id)
+        .get(java.lang.Long.valueOf(id))
         .toOption
-        .getOrElse(reusableIdToName.get(id)).toOption
+        .getOrElse(reusableIdToName.get(java.lang.Long.valueOf(id))).toOption
 
     name match {
       case Some(n) => TypeParameterDebugRendering.withTypeParamId(n, id)

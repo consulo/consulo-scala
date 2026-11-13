@@ -12,7 +12,7 @@ import consulo.language.psi.resolve.PsiScopeProcessor
 import consulo.language.ast.TokenSet
 import com.intellij.java.language.psi.util.MethodSignatureBackedByPsiMethod
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.ui.{IconManager, PlatformIcons}
+import consulo.platform.base.icon.PlatformIconGroup
 import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, ModTracker, cached, cachedInUserData}
@@ -86,7 +86,7 @@ abstract class ScFunctionImpl[F <: ScFunction](stub: ScFunctionStub[F],
   override def paramClauses: ScParameters = _paramClauses()
 
   private val _paramClauses = cached("paramClauses", ModTracker.anyScalaPsiChange, () => {
-    getStubOrPsiChild(ScalaElementType.PARAM_CLAUSES, classOf[ScParameters])
+    getStubOrPsiChild(ScalaElementType.PARAM_CLAUSES)
   })
 
   override def syntheticContextAppliedDefs: Seq[ScalaPsiElement] = cachedInUserData("syntheticContextAppliedDefs", this, BlockModificationTracker(this)) {
@@ -145,8 +145,7 @@ abstract class ScFunctionImpl[F <: ScFunction](stub: ScFunctionStub[F],
     while (parent != null) {
       parent match {
         case _: ScExtendsBlock =>
-          val iconId = if (isAbstractMember) PlatformIcons.AbstractMethod else PlatformIcons.Method
-          return IconManager.getInstance.getPlatformIcon(iconId)
+          return if (isAbstractMember) PlatformIconGroup.nodesAbstractmethod() else PlatformIconGroup.nodesMethod()
         case _: ScBlock | _: ScalaFile | _: ScExtension  =>
           return Icons.FUNCTION
         case _ =>
@@ -355,7 +354,7 @@ abstract class ScFunctionImpl[F <: ScFunction](stub: ScFunctionStub[F],
   override def findDeepestSuperMethods: Array[PsiMethod] = PsiMethod.EMPTY_ARRAY
 
   override def findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): java.util.List[MethodSignatureBackedByPsiMethod] =
-    ContainerUtil.emptyList()
+    java.util.Collections.emptyList()
 
   override def getSignature(substitutor: PsiSubstitutor): MethodSignatureBackedByPsiMethod = MethodSignatureBackedByPsiMethod.create(this, substitutor)
 

@@ -2,44 +2,54 @@ package org.jetbrains.plugins.scala.lang.psi.stubs.elements
 
 import consulo.language.Language
 import consulo.virtualFileSystem.{StandardFileSystems, VirtualFile}
-import consulo.language.psi.stub.{DefaultStubBuilder, PsiFileStubImpl}
-import consulo.language.template.TemplateLanguage
-import consulo.language.ast.{IElementType, IFileElementType}
-import consulo.language.psi.stub.IStubFileElementType
-import com.intellij.psi.tree.TemplateLanguageStubBaseVersion
+import consulo.language.psi.stub.{DefaultStubBuilder, IStubFileElementType, IndexSink, PsiFileStub, PsiFileStubImpl, StubElement, StubInputStream, StubOutputStream}
 import com.intellij.java.language.psi.PsiClass
-import consulo.language.psi.PsiFile
+import consulo.language.ast.ASTNode
+import consulo.language.parser.{ParserDefinition, PsiBuilderFactory}
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.version.LanguageVersion
+import org.jetbrains.plugins.scala.lang.parser.parsing.builder.ScalaPsiBuilderImpl
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.TokenSets
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScClassFileDecompiler
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScFileStub
 
-/**
- * A plain [[IFileElementType]] loadable on the Remote Development frontend. Stub support is provided independently:
- *  - stub building / versioning via [[org.jetbrains.plugins.scala.lang.psi.stubs.ScalaLanguageStubDefinitionBase]]
- *  - file stub serialization via [[org.jetbrains.plugins.scala.lang.psi.stubs.ScalaFileStubSerializer]]
- */
+// upstream: a plain IFileElementType with stub support via LanguageStubDefinition and a file stub serializer
 //noinspection TypeAnnotation
 class ScStubFileElementType(debugName: String, language: Language)
-  extends IFileElementType(debugName, language) {
+  extends IStubFileElementType[ScFileStub](debugName, language) {
 
-  /** External id used by the file stub serializer (formerly [[IStubFileElementType.getExternalId]]). */
-  val stubExternalId: String = debugName
+  override final def getExternalId: String = super.toString
 
   /**
    * Stub serialization format version for this language
    */
-  def stubVersion: Int =
-    ScStubFileElementType.getStubVersion(language) + ScClassFileDecompiler.ScClsStubBuilder.getStubVersion
+  override final def getStubVersion: Int =
+    super.getStubVersion + ScStubFileElementType.BaseStubVersion + ScClassFileDecompiler.ScClsStubBuilder.getStubVersion
 
-  def shouldBuildStubFor(file: VirtualFile): Boolean =
+  override def shouldBuildStubFor(file: VirtualFile): Boolean =
     file.getFileSystem.getProtocol != StandardFileSystems.JAR_PROTOCOL
 
-  def stubBuilder = new ScFileStubBuilderImpl
+  override def getBuilder = new ScFileStubBuilderImpl
 
-  /** Used by [[org.jetbrains.plugins.scala.lang.psi.stubs.ScalaFileStubSerializer]] on deserialize. */
-  def createFileStub(@Nullable file: ScalaFile): ScFileStub = new ScFileStubImpl(file)
+  // upstream: the platform PsiBuilderImpl stores the containing file under FileContextUtil.CONTAINING_FILE_KEY
+  override protected def doParseContents(chameleon: ASTNode, psi: PsiElement): ASTNode = {
+    val project = psi.getProject
+    val languageForParser = getLanguageForParser(psi)
+    val languageVersion = Option(chameleon.getUserData(LanguageVersion.KEY)).getOrElse(psi.getLanguageVersion)
+    val builder = PsiBuilderFactory.getInstance.createBuilder(project, chameleon, null, languageForParser, languageVersion, chameleon.getChars)
+    builder.putUserData(ScalaPsiBuilderImpl.ContainingFileKey, psi.getContainingFile)
+    val parser = ParserDefinition.forLanguage(languageForParser).createParser(languageVersion)
+    parser.parse(this, builder, languageVersion).getFirstChildNode
+  }
+
+  override final def serialize(stub: ScFileStub, dataStream: StubOutputStream): Unit = {}
+
+  override final def deserialize(dataStream: StubInputStream, parentStub: StubElement[?]): ScFileStub =
+    new ScFileStubImpl(null)
+
+  override final def indexStub(stub: PsiFileStub[?], sink: IndexSink): Unit = {}
 
   protected class ScFileStubBuilderImpl extends DefaultStubBuilder {
 
@@ -56,12 +66,7 @@ class ScStubFileElementType(debugName: String, language: Language)
   protected final class ScFileStubImpl(@Nullable file: ScalaFile)
     extends PsiFileStubImpl(file) with ScFileStub {
 
-    override def getType: IStubFileElementType[?] =
-      throw new UnsupportedOperationException("Use getFileElementType() instead")
-
-    override def getFileElementType: IElementType = ScStubFileElementType.this
-
-    override def getElementType: IElementType = getFileElementType
+    override def getType: IStubFileElementType[?] = ScStubFileElementType.this
 
     override def getClasses: Array[PsiClass] = getChildrenByType(
       TokenSets.TYPE_DEFINITIONS,
@@ -74,16 +79,9 @@ class ScStubFileElementType(debugName: String, language: Language)
 object ScStubFileElementType {
 
   def apply(language: Language) = new ScStubFileElementType(
-    s"${language.getDisplayName.toLowerCase} FILE".replace(' ', '.'),
+    s"${language.getID.toLowerCase} FILE".replace(' ', '.'),
     language
   )
-
-  private def getStubVersion(language: Language): Int = language match {
-    case _: TemplateLanguage =>
-      //noinspection ApiStatus,UnstableApiUsage
-      BaseStubVersion + TemplateLanguageStubBaseVersion.getVersion
-    case _ => BaseStubVersion
-  }
 
   /**
    * Should be incremented each time when stub tree changes (e.g. elements added/removed,

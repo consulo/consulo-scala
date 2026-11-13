@@ -10,6 +10,7 @@ import consulo.language.psi.resolve.ResolveState
 import consulo.language.psi.resolve.PsiScopeProcessor
 import consulo.language.ast.IElementType
 import com.intellij.java.language.psi.util.PsiUtil
+import com.intellij.java.language.impl.lexer.JavaLexer
 import org.jetbrains.plugins.scala.caches.{BlockModificationTracker, cached}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
@@ -141,7 +142,7 @@ class ScObjectImpl(
 
   private val getModuleField: () => Option[PsiField] = cached("getModuleField", BlockModificationTracker(this), () => {
     def hasJavaKeywords(qName: String) =
-      qName.split('.').exists(PsiUtil.isKeyword(_, PsiUtil.getLanguageLevel(this.getProject)))
+      qName.split('.').exists(JavaLexer.isKeyword(_, PsiUtil.getLanguageLevel(this)))
 
     if (Option(getQualifiedName).forall(hasJavaKeywords))
       None

@@ -4,7 +4,9 @@ import consulo.application.progress.ProgressManager
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiPackage}
 import consulo.language.psi.resolve.ResolveState
-import com.intellij.psi.impl.PsiManagerEx
+import consulo.language.psi.PsiPackageManager
+import com.intellij.java.language.psi.JavaPsiFacade
+import consulo.java.language.module.extension.JavaModuleExtension
 import com.intellij.java.language.impl.psi.impl.file.PsiPackageImpl
 import com.intellij.java.language.impl.psi.scope.NameHint
 import consulo.language.psi.resolve.PsiScopeProcessor
@@ -22,7 +24,10 @@ import org.jetbrains.plugins.scala.api.{ScalaLanguage, ScalaLowerCase}
 
 final class ScPackageImpl private (val pack: PsiPackage)
     extends PsiPackageImpl(
-      pack.getManager.asInstanceOf[PsiManagerEx],
+      pack.getManager,
+      PsiPackageManager.getInstance(pack.getProject),
+      JavaPsiFacade.getInstance(pack.getProject),
+      classOf[JavaModuleExtension[?]],
       pack.getQualifiedName
     )
     with ScPackage {

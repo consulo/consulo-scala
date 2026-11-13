@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
-import consulo.ui.image.Image
 package patterns
+import consulo.ui.image.Image
 
 import consulo.navigation.NavigationItem
 import com.intellij.java.language.psi.{PsiClass, PsiDocCommentOwner, PsiMember, PsiModifierList, PsiModifierListOwner}

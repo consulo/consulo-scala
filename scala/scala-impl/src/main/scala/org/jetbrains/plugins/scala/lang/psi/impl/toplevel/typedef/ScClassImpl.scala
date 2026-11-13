@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
-import consulo.ui.image.Image
 package typedef
+import consulo.ui.image.Image
 
 import consulo.language.ast.ASTNode
 import consulo.component.ProcessCanceledException

@@ -1,27 +1,27 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
+import consulo.language.psi.stub.IStubElementType
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.{StubBase, StubElement}
-import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.{ScExportStmt, ScImportOrExportStmt, ScImportStmt}
 import org.jetbrains.plugins.scala.lang.psi.stubs.{ScExportStmtStub, ScImportOrExportStmtStub, ScImportStmtStub}
 
 abstract sealed class ScImportOrExportStmtStubImpl[T <: ScImportOrExportStmt](
   parent: StubElement[? <: PsiElement],
-  elementType: IElementType,
+  elementType: IStubElementType[?, ?],
   override val importText: String
 ) extends StubBase[T](parent, elementType)
   with ScImportOrExportStmtStub[T]
 
 class ScImportStmtStubImpl(
   parent: StubElement[? <: PsiElement],
-  elementType: IElementType,
+  elementType: IStubElementType[?, ?],
   importText: String
 ) extends ScImportOrExportStmtStubImpl[ScImportStmt](parent, elementType, importText) with ScImportStmtStub
 
 class ScExportStmtStubImpl(
   parent: StubElement[? <: PsiElement],
-  elementType: IElementType,
+  elementType: IStubElementType[?, ?],
   importText: String,
   override val isTopLevel: Boolean,
   override val topLevelQualifier: Option[String]

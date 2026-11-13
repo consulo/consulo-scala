@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
-import com.intellij.openapi.module
+import consulo.module
 import consulo.language.util.ModuleUtilCore
 import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
 import consulo.content.scope.SearchScope
@@ -37,7 +37,7 @@ class ScalaSharedSourcesUseScopeEnlarger extends UseScopeEnlarger {
     if (useScope.isInstanceOf[LocalSearchScope])
       return null
 
-    val sharedModuleScopes = sharedModules.map(_.getModuleScope(true))
+    val sharedModuleScopes = sharedModules.map(m => GlobalSearchScope.moduleScope(m, true))
     GlobalSearchScope.union(sharedModuleScopes)
   }
 }

@@ -3,7 +3,11 @@ package org.jetbrains.plugins.scala.lang.resolve.processor
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiTypeParameterListOwner}
 import consulo.language.psi.{PsiElement, PsiNamedElement, PsiPackage}
 import consulo.language.psi.resolve.ResolveState
-import com.intellij.psi.impl.light.LightDefaultConstructor
+import com.intellij.java.language.impl.psi.impl.light.LightMethod
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiAnonymousClass, PsiIdentifier, PsiTypeParameter}
+import com.intellij.java.language.psi.util.PsiUtil
+import consulo.language.psi.{PsiCompiledElement, PsiFile, SyntheticElement}
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.*
@@ -1463,5 +1467,45 @@ object MethodResolveProcessor {
       resolveResult.isApplicable(withExpectedType)
 
     def resetTypeArgsFlag(): Unit = stripTypeArgs = false
+  }
+}
+
+// upstream: com.intellij.psi.impl.light.LightDefaultConstructor (absent in Consulo)
+private object LightDefaultConstructor {
+  private val DefaultConstructorKey: Key[PsiMethod] = Key.create("scala.light.default.constructor")
+
+  def create(aClass: PsiClass): PsiMethod = {
+    val cached = aClass.getUserData(DefaultConstructorKey)
+    if (cached != null) return cached
+
+    if (aClass.isInterface || aClass.isRecord ||
+      aClass.isInstanceOf[PsiAnonymousClass] || aClass.isInstanceOf[PsiTypeParameter] ||
+      aClass.isInstanceOf[PsiCompiledElement] || aClass.getContainingFile.isInstanceOf[PsiCompiledElement])
+      return null
+
+    val className = aClass.getName
+    if (className == null || aClass.getConstructors.nonEmpty) return null
+
+    val nonPhysical = JavaPsiFacade.getElementFactory(aClass.getProject).createConstructor(className)
+    val classModifierList = aClass.getModifierList
+    if (classModifierList != null) {
+      val modifier = PsiUtil.getAccessModifier(PsiUtil.getAccessLevel(classModifierList))
+      nonPhysical.getModifierList.setModifierProperty(modifier, true)
+    }
+    val constructor = new LightMethod(aClass.getManager, nonPhysical, aClass) with SyntheticElement {
+      override def getParent: PsiElement = getContainingClass
+
+      override def getNameIdentifier: PsiIdentifier = getContainingClass.getNameIdentifier
+
+      override def getTextOffset: Int = getNavigationElement.getTextOffset
+
+      override def getNavigationElement: PsiElement = getContainingClass
+
+      override def getContainingFile: PsiFile = getContainingClass.getContainingFile
+
+      override def toString: String = "LightDefaultConstructor:" + getName
+    }
+    aClass.putUserData(DefaultConstructorKey, constructor)
+    constructor
   }
 }

@@ -69,7 +69,7 @@ final class ScPatternDefinitionImpl private[psi](stub: ScPropertyStub[ScPatternD
       case _                   => None
     })
 
-  override def pList: ScPatternList = getStubOrPsiChild(ScalaElementType.PATTERN_LIST, classOf[ScPatternList])
+  override def pList: ScPatternList = getStubOrPsiChild(ScalaElementType.PATTERN_LIST)
 
   override protected def keywordTokenType: IElementType = ScalaTokenTypes.kVAL
 

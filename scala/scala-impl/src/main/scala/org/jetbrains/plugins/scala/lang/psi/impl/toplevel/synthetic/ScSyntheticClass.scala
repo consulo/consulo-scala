@@ -4,7 +4,6 @@ import consulo.ui.image.Image
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
 import consulo.navigation.ItemPresentation
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.logging.Logger
@@ -19,7 +18,7 @@ import consulo.language.psi.resolve.ResolveState
 import consulo.language.impl.psi.LightElement
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.util.IncorrectOperationException
-import com.intellij.util.concurrency.ThreadingAssertions
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.util.collection.MultiMap
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.{Nullable, TestOnly}
@@ -174,7 +173,7 @@ final class ScSyntheticClass(
 
       override def getPresentableText: String = NlsString.force(This.className)
 
-      override def getIcon(open: Boolean): Image = This.getIcon(0)
+      override def getIcon(open: Boolean): Image = IconDescriptorUpdaters.getIcon(This, 0)
     }
   }
 
@@ -322,7 +321,7 @@ sealed class ScSyntheticFunction(
 }
 
 // upstream: @Service(Array(Service.Level.PROJECT))
-@Singleton
+@jakarta.inject.Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
 final class SyntheticClasses(project: Project) {
@@ -408,7 +407,7 @@ final class SyntheticClasses(project: Project) {
   private[synthetic] def registerClasses(): Unit = {
     if (!ApplicationManager.getApplication.isUnitTestMode) {
       /** See comments about unit tests in [[RegisterSyntheticClassesProjectActivity]] */
-      ThreadingAssertions.assertBackgroundThread()
+      assert(!ApplicationManager.getApplication.isDispatchThread, "Access from the event dispatch thread is not allowed")
     }
 
     val stagedLogger = new StagedLogger(Log)
@@ -419,7 +418,7 @@ final class SyntheticClasses(project: Project) {
 
     /** See docs of [[registerClasses]] */
     def inCancellableReadAction[T](debugName: String)(body: => T): T = {
-      val task: Callable[? <: T] = () => {
+      val task: Callable[T] = () => {
         try {
           body
         } catch {

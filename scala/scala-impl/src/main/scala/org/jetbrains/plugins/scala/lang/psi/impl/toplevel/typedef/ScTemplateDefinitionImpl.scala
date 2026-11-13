@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
-import com.intellij.execution.junit.JUnitUtil
+import com.intellij.java.execution.impl.junit.JUnitUtil
 import consulo.language.ast.ASTNode
 import consulo.application.progress.ProgressManager
 import consulo.project.DumbService
@@ -282,7 +282,7 @@ abstract class ScTemplateDefinitionImpl[T <: ScTemplateDefinition] private[impl]
     case _ =>
       val languageLevel = processor match {
         case methodProcessor: MethodsProcessor => methodProcessor.getLanguageLevel
-        case _                                 => PsiUtil.getLanguageLevel(getProject)
+        case _                                 => PsiUtil.getLanguageLevel(this)
       }
       PsiClassImplUtil.processDeclarationsInClass(
         this,

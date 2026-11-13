@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
+import consulo.language.psi.stub.IStubElementType
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.{StubBase, StubElement}
-import consulo.language.ast.IElementType
 import consulo.application.util.SofterReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportSelector
@@ -10,7 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createRe
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScImportSelectorStub
 
 class ScImportSelectorStubImpl(parent: StubElement[? <: PsiElement],
-                               elementType: IElementType,
+                               elementType: IStubElementType[?, ?],
                                override val referenceText: Option[String],
                                override val importedName: Option[String],
                                override val aliasName: Option[String],

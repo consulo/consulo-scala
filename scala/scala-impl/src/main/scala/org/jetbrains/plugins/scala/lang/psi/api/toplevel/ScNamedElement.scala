@@ -6,7 +6,8 @@ import consulo.navigation.ItemPresentation
 import consulo.util.lang.StringUtil
 import consulo.language.psi.{NavigatablePsiElement, PsiElement, PsiNameIdentifierOwner, PsiNamedElement}
 import com.intellij.java.language.psi.PsiIdentifier
-import com.intellij.psi.PsiNamedElementWithCustomPresentation
+import consulo.component.util.Iconable
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.language.psi.stub.{NamedStub, StubElement}
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nullable
@@ -37,7 +38,7 @@ import scala.annotation.tailrec
 trait ScNamedElement extends ScalaPsiElement
   with PsiNameIdentifierOwner
   with NavigatablePsiElement
-  with PsiNamedElementWithCustomPresentation
+  with Iconable
 {
 
   // upstream: @NlsSafe
@@ -53,7 +54,8 @@ trait ScNamedElement extends ScalaPsiElement
     }
   })
 
-  override def getPresentationName: String = name
+  // upstream: PsiNamedElementWithCustomPresentation (absent in Consulo)
+  def getPresentationName: String = name
 
   /**
    * NOTE: implementors that can be anonymous and who's `nameId` can be null should explicitly override this method<br>
@@ -174,7 +176,7 @@ trait ScNamedElement extends ScalaPsiElement
               }
           }
         }
-      override def getIcon(open: Boolean): Image = parentMember.map(_.getIcon(0)).orNull
+      override def getIcon(open: Boolean): Image = parentMember.map(IconDescriptorUpdaters.getIcon(_, 0)).orNull
     }
   }
 
@@ -182,7 +184,7 @@ trait ScNamedElement extends ScalaPsiElement
     nameContext match {
       case null => null
       case _: ScCaseClause => Icons.PATTERN_VAL
-      case x => x.getIcon(flags)
+      case x => IconDescriptorUpdaters.getIcon(x, flags)
     }
 
   // See: ScReference.isIndirectReferenceTo

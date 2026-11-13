@@ -179,7 +179,7 @@ abstract class ScTemplateDefinitionStubFactory[TypeDef <: ScTemplateDefinition](
     }
     val javaFqn = stub.javaQualifiedName
     if (javaFqn != null && !stub.isLocal && stub.isVisibleInJava) {
-      sink.occurrence[PsiClass, CharSequence](JavaStubIndexKeys.CLASS_FQN, javaFqn)
+      sink.occurrence[PsiClass, Integer](JavaStubIndexKeys.CLASS_FQN, javaFqn.hashCode)
       val i = javaFqn.lastIndexOf(".")
       val pack =
         if (i == -1) ""

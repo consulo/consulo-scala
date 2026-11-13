@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
+import consulo.language.psi.stub.IStubElementType
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.StubElement
-import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScTypeParamStub
 
 class ScTypeParamStubImpl(
   parent: StubElement[? <: PsiElement],
-  elementType: IElementType,
+  elementType: IStubElementType[?, ?],
   name: String,
   override val text: String,
   override val lowerBoundText: Option[String],

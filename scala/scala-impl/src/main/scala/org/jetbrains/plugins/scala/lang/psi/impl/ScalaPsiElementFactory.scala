@@ -11,7 +11,8 @@ import consulo.util.dataholder.Key
 import consulo.util.lang.StringUtil.convertLineSeparators
 import com.intellij.java.language.LanguageLevel
 import com.intellij.java.language.psi.{JVMElementFactory, PsiAnnotation, PsiClass, PsiClassInitializer, PsiClassType, PsiField, PsiMethod, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiSubstitutor, PsiType, PsiTypeParameter, PsiTypeParameterList, PsiTypeParameterListOwner}
-import com.intellij.psi.LanguageFileViewProviders
+import consulo.language.file.LanguageFileViewProviderFactory
+import consulo.language.version.LanguageVersionUtil
 import consulo.language.psi.{PsiComment, PsiElement, PsiManager}
 import com.intellij.java.language.impl.psi.impl.compiled.ClsParameterImpl
 import consulo.language.impl.psi.CodeEditUtil
@@ -203,7 +204,7 @@ object ScalaPsiElementFactory {
         .append(" ")
         .append(name)
 
-      val firstNonNullOfContextAndChild = ObjectUtil.firstNonNull(context, child)
+      val firstNonNullOfContextAndChild = ObjectUtil.chooseNotNull(context, child)
       implicit val ctx: ProjectContext = projectContext.getOrElse(firstNonNullOfContextAndChild)
       val features: ScalaFeatures = scalaFeatures.getOrElse(firstNonNullOfContextAndChild)
 
@@ -1476,7 +1477,7 @@ object ScalaPsiElementFactory {
 
     val language = if (features.isScala3) Scala3Language.INSTANCE else ScalaLanguage.INSTANCE
     val lightVirtualFile = new LightVirtualFile("dummy.scala", "")
-    val fileViewProviderFactory = LanguageFileViewProviders.INSTANCE.forLanguage(language)
+    val fileViewProviderFactory = LanguageFileViewProviderFactory.forLanguage(language)
 
     val viewProvider =
       fileViewProviderFactory.createFileViewProvider(lightVirtualFile, language, PsiManager.getInstance(ctx.getProject), eventSystemEnabled)
@@ -1489,11 +1490,13 @@ object ScalaPsiElementFactory {
 
     val chameleon = scalaFile.getTreeElement
 
+    val languageVersion = LanguageVersionUtil.findDefaultVersion(language)
     val delegate = PsiBuilderFactory.getInstance.createBuilder(
       project,
       chameleon,
-      parserDefinition.createLexer(project),
+      parserDefinition.createLexer(languageVersion),
       language,
+      languageVersion,
       textFinal
     )
 

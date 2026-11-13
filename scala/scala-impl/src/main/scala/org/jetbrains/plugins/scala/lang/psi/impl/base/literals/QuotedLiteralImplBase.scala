@@ -3,7 +3,7 @@ package literals
 
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
-import com.intellij.psi.util
+import consulo.language.psi.PsiModificationTracker
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 
 abstract class QuotedLiteralImplBase(node: ASTNode,
@@ -22,7 +22,7 @@ abstract class QuotedLiteralImplBase(node: ASTNode,
 
   protected def toValue(text: String): V
 
-  override final def getValue: V = cachedInUserData("getValue", this, util.PsiModificationTracker.MODIFICATION_COUNT) {
+  override final def getValue: V = cachedInUserData("getValue", this, PsiModificationTracker.MODIFICATION_COUNT) {
     getText match {
       case text if text.startsWith(startQuote) =>
         val trimLeft = startQuote.length

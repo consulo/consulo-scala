@@ -49,8 +49,8 @@ class ScExtensionImpl(@Nullable stub: ScExtensionStub, @Nullable node: ASTNode)
   override def parameters: Seq[ScParameter] =
     clauses.toSeq.flatMap(_.clauses.flatMap(_.parameters))
 
-  override def clauses: Option[ScParameters]          = getStubOrPsiChild(PARAM_CLAUSES, classOf[ScParameters]).toOption
-  override def extensionBody: Option[ScExtensionBody] = getStubOrPsiChild(EXTENSION_BODY, classOf[ScExtensionBody]).toOption
+  override def clauses: Option[ScParameters]          = getStubOrPsiChild(PARAM_CLAUSES).toOption
+  override def extensionBody: Option[ScExtensionBody] = getStubOrPsiChild(EXTENSION_BODY).toOption
 
   override def getContainingClass: PsiClass = null
 

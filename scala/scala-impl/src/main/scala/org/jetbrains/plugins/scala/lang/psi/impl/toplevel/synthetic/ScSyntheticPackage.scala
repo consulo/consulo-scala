@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.java.language.psi.{PsiClass, PsiModifierList}
+import com.intellij.java.language.psi.{PsiClass, PsiJavaPackage, PsiModifierList}
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiManager, PsiPackage}
 import consulo.language.psi.resolve.ResolveState
 import consulo.language.impl.psi.LightElement
@@ -25,7 +25,7 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 abstract class ScSyntheticPackage(name: String, manager: PsiManager)
-  extends LightElement(manager, ScalaLanguage.INSTANCE) with PsiPackage {
+  extends LightElement(manager, ScalaLanguage.INSTANCE) with PsiJavaPackage {
 
   override def handleQualifiedNameChange(newQualifiedName: String): Unit = {
   }

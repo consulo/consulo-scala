@@ -9,13 +9,14 @@ import consulo.virtualFileSystem.VirtualFile
 import consulo.language.file.FileViewProvider
 import consulo.language.psi.{PsiFile, PsiFileFactory, PsiManager}
 import consulo.language.impl.file.SingleRootFileViewProvider
-import com.intellij.psi.{compiled, stubs}
-import consulo.language.psi.stub.FileContent
+import com.intellij.java.language.psi.compiled.{ClassFileDecompiler, ClsStubBuilder}
+import consulo.language.psi.stub.{FileContent, PsiFileStubImpl}
+import consulo.language.version.LanguageVersionUtil
 import org.jetbrains.plugins.scala.lang.parser.{Scala3ParserDefinition, ScalaParserDefinition}
 import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.tasty.TastyFileType
 
-final class ScClassFileDecompiler extends compiled.ClassFileDecompilers.Full {
+final class ScClassFileDecompiler extends ClassFileDecompiler.Full {
 
   import ScClassFileDecompiler._
 
@@ -41,11 +42,11 @@ object ScClassFileDecompiler {
 
   import DecompilationResult._
 
-  object ScClsStubBuilder extends compiled.ClsStubBuilder {
+  object ScClsStubBuilder extends ClsStubBuilder {
 
     override val getStubVersion = 486
 
-    override def buildFileStub(content: FileContent): stubs.PsiFileStubImpl[? <: PsiFile] = {
+    override def buildFileStub(content: FileContent): PsiFileStubImpl[? <: PsiFile] = {
       val psiFile = decompiledScalaFile(content)
       psiFile
         .map((if (isTasty(content.getFile)) stub3Builder else stub2Builder).buildStubTree)
@@ -56,13 +57,13 @@ object ScClassFileDecompiler {
       ParserDefinition.forLanguage(ScalaLanguage.INSTANCE)
         .asInstanceOf[ScalaParserDefinition]
         .getFileNodeType
-        .stubBuilder
+        .getBuilder
 
     private def stub3Builder =
       ParserDefinition.forLanguage(Scala3Language.INSTANCE)
         .asInstanceOf[Scala3ParserDefinition]
         .getFileNodeType
-        .stubBuilder
+        .getBuilder
   }
 
   private def decompiledScalaFile(content: FileContent): Option[PsiFile] = {
@@ -75,7 +76,7 @@ object ScClassFileDecompiler {
         val language = if (isTasty(file)) Scala3Language.INSTANCE else ScalaLanguage.INSTANCE
         val psiFile = PsiFileFactory.getInstance(content.getProject).createFileFromText(
           sourceName,
-          language,
+          LanguageVersionUtil.findDefaultVersion(language),
           sourceText,
           true,
           false,

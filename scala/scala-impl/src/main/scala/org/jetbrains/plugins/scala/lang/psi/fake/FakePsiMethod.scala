@@ -4,7 +4,9 @@ import consulo.ui.image.Image
 import consulo.language.Language
 import com.intellij.java.language.psi.{HierarchicalMethodSignature, PsiAnnotation, PsiClass, PsiClassType, PsiCodeBlock, PsiExpression, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMember, PsiMethod, PsiModifierList, PsiParameter, PsiParameterList, PsiReferenceList, PsiSubstitutor, PsiType, PsiTypeElement, PsiTypeParameter, PsiTypeParameterList, PsiTypeParameterListOwner}
 import consulo.language.psi.{PsiElement, PsiManager}
-import com.intellij.psi.Role
+import consulo.component.util.Iconable
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.platform.base.icon.PlatformIconGroup
 import consulo.language.impl.psi.LightElement
 import com.intellij.java.language.impl.psi.impl.source.HierarchicalMethodSignatureImpl
 import com.intellij.java.language.psi.javadoc.PsiDocComment
@@ -26,7 +28,7 @@ import java.util
 
 abstract class FakePsiMethod(navElement: PsiElement,
                              psiMember: Option[PsiMember],
-                             name: String) extends LightElement(navElement.getManager, navElement.getLanguage) with PsiMethod with PsiTypeParametersOwnerAdapter {
+                             name: String) extends LightElement(navElement.getManager, navElement.getLanguage) with PsiMethod with PsiTypeParametersOwnerAdapter with Iconable {
 
   def params: Array[Parameter]
 
@@ -108,9 +110,9 @@ abstract class FakePsiMethod(navElement: PsiElement,
   override def getIcon(flags: Int): Image = navElement match {
     case t: ScTypedDefinition =>
       val context = t.nameContext
-      if (context != null) context.getIcon(flags)
-      else super.getIcon(flags)
-    case _ => super.getIcon(flags)
+      if (context != null) IconDescriptorUpdaters.getIcon(context, flags)
+      else PlatformIconGroup.nodesMethod()
+    case _ => PlatformIconGroup.nodesMethod()
   }
 
   override def getReturnTypeElement: PsiTypeElement = null

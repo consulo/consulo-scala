@@ -14,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsin
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 
 final class ScalaDocCompletionContributor extends ScalaCompletionContributor with DumbAware {
-  extend(CompletionType.BASIC, PlatformPatterns.psiElement(ScalaDocTokenType.DOC_TAG_NAME), new CompletionProvider[CompletionParameters] {
+  extend(CompletionType.BASIC, PlatformPatterns.psiElement(ScalaDocTokenType.DOC_TAG_NAME), new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
       val position = positionFromParameters(using parameters)
       val posParent = position.contexts

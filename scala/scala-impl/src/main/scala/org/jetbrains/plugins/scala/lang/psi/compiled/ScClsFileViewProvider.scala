@@ -4,7 +4,8 @@ import consulo.language.Language
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.module.Module
 import consulo.project.Project
-import consulo.language.psi.scope.LibraryScopeCache
+import consulo.language.impl.psi.ResolveScopeManager
+import scala.jdk.CollectionConverters._
 import consulo.module.content.{ProjectFileIndex, ProjectRootManager}
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.search.FilenameIndex
@@ -12,7 +13,6 @@ import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.language.psi.PsiClassOwner
 import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
 import consulo.language.impl.file.SingleRootFileViewProvider
-import consulo.application.util.function.CommonProcessors.FindProcessor
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.extensions.{ClassQualifiedName, ObjectExt, PsiClassExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiImplementationHelper.findAssociatedEntities
@@ -87,8 +87,7 @@ object ScClsFileViewProvider {
 
     override protected def defaultFileResolveScope(file: VirtualFile): GlobalSearchScope = cachedInUserData("defaultFileResolveScope",  this, ProjectRootManager.getInstance(getProject), Tuple1(file)) {
       // this cache is very inefficient when orderEntries.size is large
-      LibraryScopeCache.getInstance(manager.getProject)
-        .getLibraryScope(file)
+      ResolveScopeManager.getInstance(manager.getProject).getDefaultResolveScope(file)
     }
 
     def findSourceByRelativePath: Option[VirtualFile] = {
@@ -172,16 +171,13 @@ object ScClsFileViewProvider {
         override def isSearchInLibraries: Boolean = true
         override def contains(file: VirtualFile): Boolean = fileIndex.isInSource(file)
       }
-      val processor: FindProcessor[VirtualFile] = item => !item.isDirectory && predicate(item)
-
       val caseSensitively = true
-      FilenameIndex.processFilesByName(
+      FilenameIndex.getVirtualFilesByName(
+        project,
         name,
         caseSensitively,
         GlobalSearchScope.allScope(project).intersectWith(sourcesScope),
-        processor,
-      )
-      Option(processor.getFoundValue)
+      ).asScala.find(item => !item.isDirectory && predicate(item))
     }
 
     private def findPsiFile(file: VirtualFile): Option[PsiClassOwner] =

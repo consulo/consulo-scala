@@ -7,6 +7,7 @@ import consulo.language.psi.PsiElement
 import com.intellij.java.language.impl.psi.impl.light.LightParameter
 import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType
 import com.intellij.java.language.psi.util.PsiUtil
+import com.intellij.java.language.impl.lexer.JavaLexer
 import org.jetbrains.plugins.scala.lang.psi.ElementScope
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}
@@ -73,5 +74,5 @@ private object ScLightParameter {
   }
 
   private def escapeJavaKeywords(name: String): String =
-    if (PsiUtil.isKeyword(name, LanguageLevel.HIGHEST)) name + "$" else name
+    if (JavaLexer.isKeyword(name, LanguageLevel.HIGHEST)) name + "$" else name
 }

@@ -44,7 +44,7 @@ trait ScTypeParametersOwner extends ScalaPsiElement {
    */
   def leadingTypeParametersClause: Option[ScTypeParamClause] = {
     this.withGreenStub(
-      stub => Option(stub.findChildStubByElementType(ScalaElementType.TYPE_PARAM_CLAUSE))
+      stub => Option(stub.findChildStubByType(ScalaElementType.TYPE_PARAM_CLAUSE))
         .map(_.getPsi.asInstanceOf[ScTypeParamClause]),
       () => Option(getNode).flatMap(_ => findChild[ScTypeParamClause])
     )

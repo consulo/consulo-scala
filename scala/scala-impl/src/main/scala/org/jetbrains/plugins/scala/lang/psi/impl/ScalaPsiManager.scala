@@ -9,7 +9,7 @@ import consulo.module.content.ProjectRootManager
 import consulo.application.util.LowMemoryWatcher
 import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiClass, PsiType, PsiTypeParameter}
+import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiClass, PsiJavaPackage, PsiType, PsiTypeParameter}
 import consulo.language.psi.{PsiElement, PsiPackage}
 import com.intellij.java.language.impl.psi.impl.JavaPsiFacadeImpl
 import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
@@ -242,7 +242,10 @@ class ScalaPsiManager(implicit val project: Project) extends Disposable {
     scope: GlobalSearchScope
   ): Boolean =
     `package`.getSubPackages(scope).isEmpty &&
-      `package`.getClasses(scope).isEmpty
+      (`package` match {
+        case javaPackage: PsiJavaPackage => javaPackage.getClasses(scope).isEmpty
+        case _ => true
+      })
 
   private def isScalaPackageInScope(fqn: String)
                                          (implicit scope: GlobalSearchScope): Boolean = {
@@ -395,7 +398,7 @@ class ScalaPsiManager(implicit val project: Project) extends Disposable {
       JavaPsiFacade
         .getInstance(project)
         .asInstanceOf[JavaPsiFacadeImpl]
-        .getClasses(`package`, scope)
+        .getClasses(`package`.asInstanceOf[PsiJavaPackage], scope)
         .filter {
           case _: ScTemplateDefinition | _: PsiClassWrapper => false
           case _                                            => true

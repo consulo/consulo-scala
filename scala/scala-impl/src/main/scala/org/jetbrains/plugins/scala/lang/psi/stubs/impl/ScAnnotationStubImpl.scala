@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
+import consulo.language.psi.stub.IStubElementType
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.{StubBase, StubElement}
-import consulo.language.ast.IElementType
 import consulo.application.util.SofterReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScAnnotationExpr}
@@ -10,7 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScAnnotationStub
 
 class ScAnnotationStubImpl(parent: StubElement[? <: PsiElement],
-                           elementType: IElementType,
+                           elementType: IStubElementType[?, ?],
                            override val annotationText: String,
                            override val name: Option[String])
   extends StubBase[ScAnnotation](parent, elementType) with ScAnnotationStub with PsiOwner[ScAnnotation] {

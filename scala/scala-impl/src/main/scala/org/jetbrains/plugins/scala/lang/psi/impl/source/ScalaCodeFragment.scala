@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.source
 
 import consulo.language.Language
-import consulo.undoRedo.{BasicUndoableAction, UndoManager}
+import consulo.undoRedo.{BasicUndoableAction, ProjectUndoManager}
 import consulo.project.Project
 import consulo.language.editor.intention.IntentionFilterOwner.IntentionActionsFilter
 import com.intellij.java.language.psi.JavaCodeFragment.{ExceptionHandler, VisibilityChecker}
@@ -10,7 +10,6 @@ import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass, PsiType}
 import consulo.language.psi.{PsiElement, PsiManager}
 import consulo.language.psi.resolve.ResolveState
 import consulo.language.impl.file.SingleRootFileViewProvider
-import com.intellij.psi.impl.PsiManagerEx
 import consulo.language.impl.psi.PsiFileImpl
 import consulo.language.impl.ast.FileElement
 import consulo.language.psi.resolve.PsiScopeProcessor
@@ -99,7 +98,7 @@ final class ScalaCodeFragment private(private var viewProvider: SingleRootFileVi
     imports += pathFqn
     myManager.beforeChange(false)
 
-    UndoManager.getInstance(myManager.getProject)
+    ProjectUndoManager.getInstance(myManager.getProject)
       .undoableActionPerformed(new ImportClassUndoableAction(pathFqn))
 
     val newRef = ref match {
@@ -148,9 +147,9 @@ final class ScalaCodeFragment private(private var viewProvider: SingleRootFileVi
     clone.myOriginalFile = this
     clone.imports = imports
 
-    val fileManager = getManager.asInstanceOf[PsiManagerEx].getFileManager
     val virtualFile = new LightVirtualFile(getName, getLanguage, getText)
-    val cloneViewProvider = fileManager.createFileViewProvider(virtualFile, false).asInstanceOf[SingleRootFileViewProvider]
+    // upstream: PsiManagerEx.getFileManager.createFileViewProvider (internal in Consulo)
+    val cloneViewProvider = new SingleRootFileViewProvider(getManager, virtualFile, false)
 
     cloneViewProvider.forceCachedPsi(clone)
     clone.viewProvider = cloneViewProvider

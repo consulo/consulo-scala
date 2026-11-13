@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.light
 
 import consulo.util.lang.StringUtil
-import com.intellij.java.language.psi.{PsiAnnotation, PsiClass, PsiElementFactory, PsiParameter}
+import com.intellij.java.language.psi.{CommonClassNames, PsiAnnotation, PsiClass, PsiElementFactory, PsiParameter}
 import consulo.language.psi.{PsiElement, PsiManager}
 import com.intellij.java.language.impl.psi.impl.light.LightModifierList
 import com.intellij.java.language.psi.util.PsiUtil
+import com.intellij.java.language.impl.lexer.JavaLexer
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
@@ -147,8 +148,8 @@ private[light] class ScLightModifierList(
   }
 
   private def hasJavaKeywordInQualifiedName(qualifiedName: String): Boolean = {
-    val javaLanguageLevel = PsiUtil.getLanguageLevel(getProject)
-    ScalaNamesUtil.cleanFqn(qualifiedName).split('.').exists(PsiUtil.isKeyword(_, javaLanguageLevel))
+    val javaLanguageLevel = PsiUtil.getLanguageLevel(this)
+    ScalaNamesUtil.cleanFqn(qualifiedName).split('.').exists(JavaLexer.isKeyword(_, javaLanguageLevel))
   }
 
   private def annotationText(annotation: ScAnnotation): String =

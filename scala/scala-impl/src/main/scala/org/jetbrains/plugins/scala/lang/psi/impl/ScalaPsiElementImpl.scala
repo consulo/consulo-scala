@@ -79,16 +79,6 @@ abstract class ScalaStubBasedElementImpl[T <: PsiElement, S <: StubElement[T]](@
     with StubBasedPsiElement[S]
     with ScalaPsiElement {
 
-  // After the stub/PSI decoupling Scala element types are plain IElementTypes, not IStubElementTypes,
-  // so the deprecated getElementType can no longer return one.
-  // It is intentionally unsupported; every caller must use getIElementType (below) instead.
-  override final def getElementType: IStubElementType[? <: StubElement[? <: PsiElement], ? <: PsiElement] =
-    throw new UnsupportedOperationException("Use getIElementType() instead of the deprecated getElementType()")
-
-  // The frontend-safe element-type accessor. Unlike the deprecated getElementType, this returns the raw
-  // element type via the platform's getElementTypeImpl, so it works for migrated plain IElementTypes.
-  override def getIElementType: IElementType = getElementTypeImpl
-
   override def getStartOffsetInParent: Int = this.child match {
     case null => super.getStartOffsetInParent
     case element => element.getStartOffsetInParent

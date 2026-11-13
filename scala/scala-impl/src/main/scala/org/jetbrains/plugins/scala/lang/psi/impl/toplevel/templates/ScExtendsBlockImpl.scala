@@ -41,7 +41,7 @@ class ScExtendsBlockImpl private(stub: ScExtendsBlockStub, node: ASTNode)
 
   private val _templateBody = cached("templateBody", ModTracker.anyScalaPsiChange, () => {
     def childStubTemplate(stub: ScExtendsBlockStub) =
-      Option(stub.findChildStubByElementType(TEMPLATE_BODY))
+      Option(stub.findChildStubByType(TEMPLATE_BODY))
         .map(_.getPsi.asInstanceOf[ScTemplateBody])
 
     def lastChildTemplateBody = getLastChild match {

@@ -7,11 +7,11 @@ import consulo.document.Document
 import consulo.language.file.LanguageFileType
 import consulo.project.Project
 import consulo.document.util.TextRange
-import consulo.util.nodep.io.FileUtilRt
+import consulo.util.io.FileUtil
 import consulo.virtualFileSystem.VirtualFile
 import com.intellij.java.language.impl.psi.impl.light.LightPsiClassBuilder
 import consulo.language.codeStyle.PostprocessReformattingAspect
-import com.intellij.psi.impl.source.codeStyle
+import consulo.language.impl.psi.CodeEditUtil
 import consulo.language.impl.DebugUtil
 import consulo.language.impl.psi.ResolveScopeManager
 import consulo.language.psi.scope.GlobalSearchScope
@@ -153,7 +153,7 @@ class ScalaFileImpl(
     block
 
     for ((newElement, oldElement) <- this.namedElements.zip(data)) {
-      codeStyle.CodeEditUtil.setNodeGenerated(oldElement.getNode, true)
+      CodeEditUtil.setNodeGenerated(oldElement.getNode, true)
       PostprocessReformattingAspect.getInstance(getProject).disablePostprocessFormattingInside {
         new Runnable {
           override def run(): Unit = {
@@ -351,7 +351,7 @@ class ScalaFileImpl(
       val hasTopLevelMembers = topLevelMembers.nonEmpty
 
       Option.when(hasTopLevelMembers) {
-        val wrapperName = ScalaNamesUtil.toJavaName(FileUtilRt.getNameWithoutExtension(getName)) + TopLevelDefinitionsClassNameSuffix
+        val wrapperName = ScalaNamesUtil.toJavaName(FileUtil.getNameWithoutExtension(getName)) + TopLevelDefinitionsClassNameSuffix
         val wrapper = new LightPsiClassBuilder(this, wrapperName)
 
         members.foreach {

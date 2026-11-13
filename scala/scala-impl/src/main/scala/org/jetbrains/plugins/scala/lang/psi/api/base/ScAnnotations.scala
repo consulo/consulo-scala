@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.api.base
 
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass, PsiClassType, PsiJavaCodeReferenceElement, PsiReferenceList}
-import com.intellij.psi.Role
 import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement

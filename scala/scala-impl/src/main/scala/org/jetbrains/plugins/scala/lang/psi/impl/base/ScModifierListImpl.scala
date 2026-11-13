@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
+import consulo.language.ast.TokenSet
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiAnnotation, PsiModifier}
 import consulo.language.psi.PsiElement
@@ -72,7 +73,7 @@ class ScModifierListImpl private (stub: ScModifiersStub, node: ASTNode)
   }
 
   override def accessModifier: Option[ScAccessModifier] = Option {
-    getStubOrPsiChild(ScalaElementType.ACCESS_MODIFIER, classOf[ScAccessModifier])
+    getStubOrPsiChild(ScalaElementType.ACCESS_MODIFIER)
   }
 
   override def setModifierProperty(name: String, value: Boolean): Unit = {
@@ -124,7 +125,7 @@ class ScModifierListImpl private (stub: ScModifiersStub, node: ASTNode)
     case null => PsiAnnotation.EMPTY_ARRAY
     case parent =>
       parent.stubOrPsiChildren(
-        ScalaElementType.ANNOTATIONS,
+        TokenSet.create(ScalaElementType.ANNOTATIONS),
         JavaArrayFactoryUtil.ScAnnotationsFactory
       ) match {
         case Array() => PsiAnnotation.EMPTY_ARRAY

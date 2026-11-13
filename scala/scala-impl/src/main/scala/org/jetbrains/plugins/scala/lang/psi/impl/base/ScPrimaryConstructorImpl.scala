@@ -37,7 +37,7 @@ class ScPrimaryConstructorImpl private(stub: ScPrimaryConstructorStub, node: AST
   override def toString: String = "PrimaryConstructor"
 
   override def parameterList: ScParameters = {
-    getStubOrPsiChild(ScalaElementType.PARAM_CLAUSES, classOf[ScParameters])
+    getStubOrPsiChild(ScalaElementType.PARAM_CLAUSES)
   }
 
   override def getName: String = this.containingClass.name

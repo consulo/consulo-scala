@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
 import com.intellij.java.language.impl.JavaFileType
-import consulo.project.util.ProjectUtil
+import consulo.project.ProjectCoreUtil
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.psi.impl.PsiTreeChangeEventImpl
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.ast.TokenSet
 import consulo.language.psi.util.PsiTreeUtil
@@ -41,13 +40,11 @@ private object ScalaPsiEventFilter {
           if (fileType == ScalaFileType.INSTANCE || fileType == JavaFileType.INSTANCE) None
           else Option(file.getVirtualFile)
       }
-      vFile.exists(ProjectUtil.isProjectOrWorkspaceFile)
+      vFile.exists(ProjectCoreUtil.isProjectOrWorkspaceFile(_))
     }
 
-    private def isGenericChange(event: PsiTreeChangeEvent) = event match {
-      case impl: PsiTreeChangeEventImpl => impl.isGenericChange
-      case _ => false
-    }
+    // upstream: PsiTreeChangeEventImpl.isGenericChange (internal in Consulo)
+    private def isGenericChange(event: PsiTreeChangeEvent) = false
   }
 
   private object NonSignificantParentsFilter extends ScalaPsiEventFilter {

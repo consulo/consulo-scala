@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.impl
 
+import consulo.language.psi.stub.IStubElementType
 import com.intellij.java.language.LanguageLevel
 import consulo.language.psi.PsiElement
 import consulo.language.psi.stub.StubElement
-import consulo.language.ast.IElementType
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScTemplateDefinitionStub
 
 class ScTemplateDefinitionStubImpl[TypeDef <: ScTemplateDefinition](
   parent:                                             StubElement[? <: PsiElement],
-  elementType:                                        IElementType,
+  elementType:                                        IStubElementType[?, ?],
   nameRef:                                            String,
   override val getQualifiedName:                      String,
   override val getSourceFileName:                     String,

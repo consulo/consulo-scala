@@ -66,14 +66,8 @@ object TokenSets {
     val members = FUNCTIONS ++ ALIASES_SET ++ TYPE_DEFINITIONS ++ PROPERTIES + PRIMARY_CONSTRUCTOR ++ EXTENSION ++
       MemberElementTypesExtension.getExtraMemberTypes
     assert(members != null)
-    val old = _MEMBERS.getAndSet(members)
-    if (old == null) {
-      // register a listener that will recompute the member types if the extension point is changed
-      MemberElementTypesExtension.EP_NAME.addChangeListener(
-        kotlinx.coroutines.CoroutineScopeKt.MainScope(),
-        () => computeMemberTypes(): Unit
-      )
-    }
+    // upstream: on first computation registers an EP change listener to recompute (no dynamic extensions in Consulo)
+    _MEMBERS.set(members)
     members
   }
 

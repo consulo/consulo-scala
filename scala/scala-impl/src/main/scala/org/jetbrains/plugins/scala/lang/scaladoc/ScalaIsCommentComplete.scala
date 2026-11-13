@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc
 
 import consulo.language.parser.ParserDefinition
-import consulo.language.editor.action.{CommentCompleteHandler, JavaLikeQuoteHandler, QuoteHandler}
-import com.intellij.codeInsight.editorActions.TypedHandler
+import consulo.language.editor.action.{CommentCompleteHandler, FileQuoteHandler, JavaLikeQuoteHandler, LanguageQuoteHandler, QuoteHandler}
+import consulo.language.version.LanguageVersionUtil
 import consulo.language.{CodeDocumentationAwareCommenter, Language}
 import consulo.language.lexer.Lexer
 import consulo.codeEditor.Editor
@@ -24,10 +24,12 @@ class ScalaIsCommentComplete extends CommentCompleteHandler {
     if (!commentText.endsWith(expectedCommentEnd)) return false
     val containingFile: PsiFile = comment.getContainingFile
     val language: Language = comment.getParent.getLanguage
-    val lexer: Lexer = ParserDefinition.forLanguage(language).createLexer(containingFile.getProject)
+    val lexer: Lexer = ParserDefinition.forLanguage(language).createLexer(LanguageVersionUtil.findDefaultVersion(language))
     val commentPrefix: String = if (docComment) commenter.getDocumentationCommentPrefix else commenter.getBlockCommentPrefix
     lexer.start(commentText, if (commentPrefix eq null) 0 else commentPrefix.length, commentText.length)
-    val fileTypeHandler: QuoteHandler = TypedHandler.getQuoteHandler(containingFile, editor)
+    // upstream: TypedHandler.getQuoteHandler (internal in Consulo)
+    val fileTypeHandler: QuoteHandler = Option[QuoteHandler](FileQuoteHandler.forFileType(containingFile.getFileType))
+      .getOrElse(LanguageQuoteHandler.forLanguage(containingFile.getViewProvider.getBaseLanguage))
     val javaLikeQuoteHandler: JavaLikeQuoteHandler =
       fileTypeHandler match {
         case quoteHandler: JavaLikeQuoteHandler => quoteHandler

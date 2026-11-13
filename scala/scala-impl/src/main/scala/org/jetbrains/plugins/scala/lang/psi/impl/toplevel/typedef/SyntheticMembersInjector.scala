@@ -2,6 +2,7 @@ package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
 import consulo.util.lang.ControlFlowException
 import consulo.logging.Logger
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
 import consulo.component.extension.ExtensionPointName
 import consulo.project.{DumbService, Project}
 import consulo.language.psi.PsiElement
@@ -17,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import scala.collection.immutable.ArraySeq
 import scala.util.control.ControlThrowable
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 class SyntheticMembersInjector {
   /**
     * This method allows to add custom functions to any class, object or trait.
@@ -69,9 +71,7 @@ object SyntheticMembersInjector {
     val Class, Object, Trait = Value
   }
 
-  private val CLASS_NAME = "org.intellij.scala.syntheticMemberInjector"
-
-  val EP_NAME: ExtensionPointName[SyntheticMembersInjector] = ExtensionPointName.create(CLASS_NAME)
+  val EP_NAME: ExtensionPointName[SyntheticMembersInjector] = ExtensionPointName.create(classOf[SyntheticMembersInjector])
   val DYN_EP: DynamicExtensionPoint[SyntheticMembersInjector] = new DynamicExtensionPoint[SyntheticMembersInjector]
 
   private def implementations(implicit p: Project): Seq[SyntheticMembersInjector] =

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
-import consulo.ui.image.Image
 package params
+import consulo.ui.image.Image
 
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.PsiClass

@@ -286,7 +286,6 @@ object NewGivenImpl {
 
   private def parseStructuralCase()(implicit builder: ScalaPsiBuilder): IElementType = {
     val extendsBlockMarker = builder.mark()
-    builder.getProductions
     if (builder.getTokenType == ScalaTokenTypes.kWITH) {
       builder.error(ScalaBundle.message("type.expected"))
       builder.advanceLexer()

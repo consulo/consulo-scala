@@ -2,6 +2,7 @@ package org.jetbrains.plugins.scala.lang.psi.api
 
 import consulo.language.impl.psi.PsiFileBase
 import consulo.util.dataholder.Key
+import consulo.language.ast.{IElementType, TokenSet}
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import consulo.language.psi.util.PsiTreeUtil.isContextAncestor
 import org.jetbrains.plugins.scala.extensions.Valid
@@ -60,7 +61,7 @@ trait ScalaPsiElement extends PsiElement
   protected final def findChildren[T >: Null <: ScalaPsiElement: ClassTag]: Seq[T] =
     ArraySeq.unsafeWrapArray(findChildrenByClassScala(classTag[T].runtimeClass.asInstanceOf[Class[T]]))
 
-  def findLastChildByTypeScala[T <: PsiElement](t: tree.IElementType): Option[T] = {
+  def findLastChildByTypeScala[T <: PsiElement](t: IElementType): Option[T] = {
     var node = getNode.getLastChildNode
     while (node != null && node.getElementType != t) {
       node = node.getTreePrev
@@ -68,7 +69,7 @@ trait ScalaPsiElement extends PsiElement
     Option(node).map(_.getPsi.asInstanceOf[T])
   }
 
-  def findFirstChildByType(t: tree.IElementType): Option[PsiElement] = {
+  def findFirstChildByType(t: IElementType): Option[PsiElement] = {
     var node = getNode.getFirstChildNode
     while (node != null && node.getElementType != t) {
       node = node.getTreeNext
@@ -76,7 +77,7 @@ trait ScalaPsiElement extends PsiElement
     Option(node).map(_.getPsi)
   }
 
-  def findFirstChildByType(set: tree.TokenSet): Option[PsiElement] = {
+  def findFirstChildByType(set: TokenSet): Option[PsiElement] = {
     var node = getNode.getFirstChildNode
     while (node != null && !set.contains(node.getElementType)) {
       node = node.getTreeNext
@@ -84,10 +85,10 @@ trait ScalaPsiElement extends PsiElement
     Option(node).map(_.getPsi)
   }
 
-  def findFirstChildByTypeScala[T <: PsiElement](t: tree.IElementType): Option[T] =
+  def findFirstChildByTypeScala[T <: PsiElement](t: IElementType): Option[T] =
     findFirstChildByType(t).map(_.asInstanceOf[T])
 
-  def findChildrenByType(t: tree.IElementType): Seq[PsiElement] = {
+  def findChildrenByType(t: IElementType): Seq[PsiElement] = {
     val builder = Seq.newBuilder[PsiElement]
     var node = getNode.getFirstChildNode
     while (node != null) {
@@ -97,7 +98,7 @@ trait ScalaPsiElement extends PsiElement
     builder.result()
   }
 
-  def findLastChildByType(set: tree.TokenSet): Option[PsiElement] = {
+  def findLastChildByType(set: TokenSet): Option[PsiElement] = {
     var node = getNode.getLastChildNode
     while (node != null && !set.contains(node.getElementType)) {
       node = node.getTreePrev

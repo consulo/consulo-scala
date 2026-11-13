@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
 
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
 import consulo.component.extension.ExtensionPointName
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScInterpolatedStringLiteral, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
@@ -9,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
   * interpolated strings.
   *
   */
+@ExtensionAPI(ComponentScope.APPLICATION)
 abstract class InterpolatedStringMacroTypeProvider {
 
   /**
@@ -30,9 +32,7 @@ abstract class InterpolatedStringMacroTypeProvider {
 }
 
 object InterpolatedStringMacroTypeProvider {
-  private val CLASS_NAME = "org.intellij.scala.interpolatedStringMacroTypeProvider"
-
-  val EP_NAME: ExtensionPointName[InterpolatedStringMacroTypeProvider] = ExtensionPointName.create(CLASS_NAME)
+  val EP_NAME: ExtensionPointName[InterpolatedStringMacroTypeProvider] = ExtensionPointName.create(classOf[InterpolatedStringMacroTypeProvider])
 
   def getTypeProvider(ref: ScReference): Option[InterpolatedStringMacroTypeProvider] =
     EP_NAME.getExtensions.find(_.handlesInterpolatedString(ref))

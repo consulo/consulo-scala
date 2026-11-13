@@ -2,17 +2,17 @@ package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
 import consulo.language.editor.scope.AnalysisScope
 import consulo.process.ExecutionException
-import com.intellij.java.execution.configurations.{JavaCommandLineState, JavaCommandLineStateUtil}
-import com.intellij.execution.configurations.JavaParameters
+import com.intellij.java.execution.configurations.JavaCommandLineState
+import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.execution.ui.console.TextConsoleBuilderFactory
-import com.intellij.execution.process.OSProcessHandler
+import consulo.process.ProcessHandler
 import consulo.process.event.{ProcessEvent, ProcessListener}
 import consulo.execution.runner.ExecutionEnvironment
 import consulo.webBrowser.BrowserUtil
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import com.intellij.java.language.impl.projectRoots.ex.PathUtilEx
-import consulo.process.cmd.JdkUtil
+import consulo.language.psi.scope.GlobalSearchScope
 import consulo.content.bundle.Sdk
 import consulo.module.content.layer.OrderEnumerator
 import consulo.virtualFileSystem.VirtualFile
@@ -68,20 +68,19 @@ class ScaladocCommandLineState(env: ExecutionEnvironment, project: Project)
   def setOutputDir(dir: String): Unit =
     outputDir = dir
 
-  override protected def startProcess: OSProcessHandler = {
-    val handler: OSProcessHandler =
-      JavaCommandLineStateUtil.startProcess(createCommandLine)
+  // upstream: overrides startProcess (final in Consulo)
+  override protected def setupProcessHandler(handler: ProcessHandler): Unit = {
+    super.setupProcessHandler(handler)
     if (showInBrowser) {
       handler.addProcessListener(new ProcessListener {
         override def processTerminated(event: ProcessEvent): Unit = {
           val url = Paths.get(outputDir, "index.html")
           if (Files.exists(url) && event.getExitCode == 0) {
-            BrowserUtil.browse(url)
+            BrowserUtil.browse(url.toUri)
           }
         }
       })
     }
-    handler
   }
 
   private def visitAll(
@@ -157,8 +156,8 @@ class ScaladocCommandLineState(env: ExecutionEnvironment, project: Project)
     result.result()
   }
 
-  override def createJavaParameters(): JavaParameters = {
-    val jp = new JavaParameters
+  override def createJavaParameters(): OwnJavaParameters = {
+    val jp = new OwnJavaParameters
 
     val jdk: Sdk = PathUtilEx.getAnyJdk(project)
     assert(jdk != null, "JDK IS NULL")
@@ -176,7 +175,7 @@ class ScaladocCommandLineState(env: ExecutionEnvironment, project: Project)
 
     def filterModulesList(files: VirtualFile*): Unit = {
       modulesNeeded ++= allModules.filter(m =>
-        files.exists(f => m.getModuleScope.contains(f))
+        files.exists(f => GlobalSearchScope.moduleScope(m).contains(f))
       )
       allModules --= modulesNeeded
     }
@@ -275,7 +274,7 @@ class ScaladocCommandLineState(env: ExecutionEnvironment, project: Project)
     // NOTE: do not accidentally add all-project classes scope (e.g. using JDK_AND_CLASSES):
     // it adds jars from sbt-build module which contains scala library with version different from users scala version
     // which can leads to runtime exceptions
-    jp.configureByProject(project, JavaParameters.JDK_ONLY, jdk)
+    jp.configureByProject(project, OwnJavaParameters.JDK_ONLY, jdk)
     jp.setWorkingDirectory(project.baseDir.getPath)
     jp.setCharset(null)
     jp.setMainClass(MainClassScala2)
@@ -312,7 +311,8 @@ class ScaladocCommandLineState(env: ExecutionEnvironment, project: Project)
 
     paramListSimple ++= documentableFilesList
 
-    if (JdkUtil.useDynamicClasspath(project)) {
+    // upstream: if (JdkUtil.useDynamicClasspath(project)); Consulo Java parameters always use dynamic classpath
+    if (true) {
       try {
         val tempParamsFile =
           Files.createTempFile("scaladocfileargs", ".tmp")

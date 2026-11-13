@@ -58,9 +58,8 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
 
   @Nullable
   private def getAnnotationName(parameters: AnnotatedElementsSearch.Parameters): String = {
-    val annotationName = parameters.getAnnotationName
-    if (annotationName != null) annotationName
-    else ReadAction.computeBlocking { () =>
+    // upstream: Parameters.getAnnotationName (Consulo parameters carry only the annotation class)
+    ReadAction.compute[String, RuntimeException] { () =>
       val annotationClass = parameters.getAnnotationClass
       if (annotationClass == null) null
       else {
@@ -84,7 +83,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
 
     import ScalaIndexKeys._
     val shortName = StringUtil.getShortName(annotationFQN)
-    val elements = ANNOTATED_MEMBER_KEY.elements(shortName, scope)(using parameters.getProject)
+    val elements = ANNOTATED_MEMBER_KEY.elements(shortName, scope)(using parameters.getAnnotationClass.getProject)
     val iterator = elements.iterator
     while (iterator.hasNext) {
       val annotation = iterator.next()

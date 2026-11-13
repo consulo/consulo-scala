@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
+import consulo.application.Application
 import consulo.language.Language
 import consulo.virtualFileSystem.BinaryFileDecompiler
 import consulo.virtualFileSystem.fileType.FileType
@@ -11,7 +12,8 @@ import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import javax.swing._
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 
 /**
  * Scala signatures which are usually stored in .class files, as a separate files
@@ -19,19 +21,17 @@ import javax.swing._
  * */
 object SigFileType extends FileType {
   @NonNls
-  override def getName = "SIG"
+  override def getId = "SIG"
 
-  override def getDescription: String = ScalaBundle.message("file.type.scala.outlines")
+  override def getDescription: LocalizeValue = LocalizeValue.of(ScalaBundle.message("file.type.scala.outlines"))
 
   override def getDefaultExtension = "sig"
 
-  override def getIcon: Icon = null
+  override def getIcon: Image = Image.empty(Image.DEFAULT_ICON_SIZE)
 
   override def isBinary = true
 
   override def isReadOnly = true
-
-  override def getCharset(file: VirtualFile, content: Array[Byte]): String = null
 }
 
 
@@ -45,7 +45,9 @@ class SigFileViewProviderFactory extends FileViewProviderFactory {
   }
 }
 
-class SigFileStubBuilder extends ClassFileStubBuilder
+class SigFileStubBuilder extends ClassFileStubBuilder(Application.get()) {
+  override def getFileType: FileType = SigFileType
+}
 
 class SigFileDecompiler extends BinaryFileDecompiler {
   override def decompile(file: VirtualFile): CharSequence = {

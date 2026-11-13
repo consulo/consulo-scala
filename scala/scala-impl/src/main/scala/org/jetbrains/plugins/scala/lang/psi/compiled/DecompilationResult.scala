@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.lang.psi.compiled
 import consulo.util.dataholder.Key
 import consulo.virtualFileSystem.FileAttribute
 import consulo.virtualFileSystem.{VirtualFile, VirtualFileWithId}
-import com.intellij.openapi.vfs.newvfs
 import org.jetbrains.plugins.scala.decompiler.Decompiler
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScClassFileDecompiler.ScClsStubBuilder.getStubVersion
@@ -63,7 +62,7 @@ private object DecompilationResult {
   // Underlying VFS implementation may not support attributes (e.g. Upsource's file system).
   private[compiled] val DecompilerFileAttribute: Option[FileAttribute] =
     if (ScalaCompilerLoader.isDisabled) None
-    else Some(new newvfs.FileAttribute("_is_scala_compiled_new_key_", getStubVersion, true))
+    else Some(new FileAttribute("_is_scala_compiled_new_key_", getStubVersion, true))
 
   private def getFromUserData(file: VirtualFile): DecompilationResult =
     file.getUserData(Key) match {
@@ -144,7 +143,7 @@ private object DecompilationResult {
   private def getFromFileAttribute(file: VirtualFile): Option[DecompilationResult.WritableResult] = {
     for {
       attribute <- DecompilerFileAttribute
-      readAttribute <- Option(attribute.readFileAttribute(file))
+      readAttribute <- Option(attribute.readAttribute(file))
 
       result <- readFrom(readAttribute)
       if result.timeStamp == file.getTimeStamp
@@ -167,7 +166,7 @@ private object DecompilationResult {
   private def writeToFileAttribute(file: VirtualFile, result: DecompilationResult): Unit = {
     for {
       attribute <- DecompilerFileAttribute
-      outputStream = attribute.writeFileAttribute(file)
+      outputStream = attribute.writeAttribute(file)
     } {
       try {
         toWritable(result).writeTo(outputStream)

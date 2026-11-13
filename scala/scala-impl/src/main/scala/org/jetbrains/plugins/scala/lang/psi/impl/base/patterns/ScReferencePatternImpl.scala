@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.base
-import consulo.ui.image.Image
 package patterns
+import consulo.ui.image.Image
 
 import consulo.language.ast.ASTNode
 import consulo.language.psi.{ContributedReferenceHost, PsiElement, PsiReference, PsiReferenceService}

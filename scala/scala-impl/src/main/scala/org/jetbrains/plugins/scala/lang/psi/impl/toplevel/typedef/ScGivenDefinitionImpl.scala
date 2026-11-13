@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
-import consulo.ui.image.Image
 package typedef
+import consulo.ui.image.Image
 
 import consulo.language.ast.ASTNode
 import consulo.component.ProcessCanceledException
@@ -75,7 +75,7 @@ class ScGivenDefinitionImpl(
   override def clauses: Option[ScParameters] = _clauses()
 
   private val _clauses = cached("clauses", ModTracker.anyScalaPsiChange, () => {
-    getStubOrPsiChild(PARAM_CLAUSES, classOf[ScParameters]).toOption
+    getStubOrPsiChild(PARAM_CLAUSES).toOption
   })
 
   override def parameters: Seq[ScParameter] =

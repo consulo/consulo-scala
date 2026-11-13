@@ -8,7 +8,6 @@ import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.PsiNamedElement
 import consulo.util.collection.{ContainerUtil, SmartHashSet}
-import com.intellij.util.AstLoadingFilter
 import consulo.util.collection.SmartList
 import it.unimi.dsi.fastutil.Hash
 import it.unimi.dsi.fastutil.objects.{Object2ObjectMap, Object2ObjectMaps, Object2ObjectOpenCustomHashMap}
@@ -79,11 +78,9 @@ abstract class MixinNodes[T <: Signature](signatureCollector: SignatureProcessor
         map
       }
 
-      if (ScalaApplicationSettings.PRECISE_TEXT) { // SCL-21199
-        build0
-      } else {
-        AstLoadingFilter.disallowTreeLoading(() => build0, () => "Tree access is disallowed in MixinNodes.build")
-      }
+      // upstream: unless ScalaApplicationSettings.PRECISE_TEXT (SCL-21199), wrapped in AstLoadingFilter.disallowTreeLoading
+      // (AstLoadingFilter is internal in Consulo)
+      build0
     }
   }
 
@@ -523,8 +520,8 @@ object MixinNodes {
     override def forName(name: String): AllNodes[T] = {
       val cleanName = ScalaNamesUtil.clean(name)
       def calculate: AllNodes[T] = {
-        val thisSignatures  = thisSignaturesByName.getOrDefault(cleanName, ContainerUtil.emptyList[StoredSignature])
-        val superSignatures = supersSignaturesByName.getOrDefault(cleanName, ContainerUtil.emptyList[StoredSignature])
+        val thisSignatures  = thisSignaturesByName.getOrDefault(cleanName, java.util.Collections.emptyList[StoredSignature])
+        val superSignatures = supersSignaturesByName.getOrDefault(cleanName, java.util.Collections.emptyList[StoredSignature])
         merge(thisSignatures, superSignatures)
       }
 

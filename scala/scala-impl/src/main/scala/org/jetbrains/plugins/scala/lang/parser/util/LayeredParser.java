@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.parser.util;
 import consulo.language.ast.ASTNode;
 import consulo.language.parser.ITokenTypeRemapper;
 import consulo.language.ast.LighterASTNode;
-import com.intellij.lang.Marker;
+import consulo.language.parser.PsiBuilder.Marker;
 import consulo.language.parser.PsiBuilder;
 import consulo.language.parser.PsiParser;
 import consulo.language.parser.WhitespaceSkippedCallback;

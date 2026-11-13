@@ -3,6 +3,7 @@ package org.jetbrains.plugins.scala.lang.psi.impl
 import consulo.language.editor.scratch.ScratchUtil
 import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
 import com.intellij.java.language.psi.search.PackageScope
+import com.intellij.java.language.psi.PsiJavaPackage
 import consulo.content.scope.SearchScope
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement, PsiPackage, PsiReference}
@@ -199,7 +200,7 @@ private object ScalaUseScope {
     } yield target
 
     maybeTarget.collect {
-      case p: PsiPackage =>
+      case p: PsiJavaPackage =>
 
         /**
          * This case is only entered if `private[foo]` refers to a valid package.

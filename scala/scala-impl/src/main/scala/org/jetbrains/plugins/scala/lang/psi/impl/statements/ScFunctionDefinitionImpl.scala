@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.statements
 
+import consulo.language.ast.TokenSet
 import consulo.language.ast.ASTNode
 import consulo.application.progress.ProgressManager
 import consulo.util.dataholder.Key
@@ -74,7 +75,7 @@ class ScFunctionDefinitionImpl[S <: ScFunctionDefinition](stub: ScFunctionStub[S
       else {
         isCalculating.value = true
         try {
-          val children = parent.stubOrPsiChildren(FUNCTION_DEFINITION, ScFunctionDefinitionFactory).iterator
+          val children = parent.stubOrPsiChildren(TokenSet.create(FUNCTION_DEFINITION), ScFunctionDefinitionFactory).iterator
 
           while (children.hasNext) {
             val nextFun = children.next()

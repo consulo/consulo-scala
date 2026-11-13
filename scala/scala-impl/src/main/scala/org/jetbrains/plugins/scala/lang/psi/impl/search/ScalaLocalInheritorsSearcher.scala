@@ -26,7 +26,11 @@ class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInhe
     val scope = params.getScope
     val (_, virtualFiles) = scope match {
       case local: LocalSearchScope if clazz.isInstanceOf[ScalaPsiElement] =>
-        (local, local.getVirtualFiles)
+        // upstream: LocalSearchScope.getVirtualFiles
+        val files = inReadAction {
+          local.getScope.toSeq.flatMap(e => Option(e.getContainingFile).flatMap(f => Option(f.getVirtualFile))).distinct
+        }
+        (local, files)
       case _ =>
         return
     }
@@ -64,7 +68,7 @@ class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInhe
     else candidate match {
       case _: ScNewTemplateDefinition => true
       case td: ScTypeDefinition =>
-        parameters.getNameCondition.value(td.name)
+        parameters.getNameCondition.test(td.name)
     }
   }
 }
