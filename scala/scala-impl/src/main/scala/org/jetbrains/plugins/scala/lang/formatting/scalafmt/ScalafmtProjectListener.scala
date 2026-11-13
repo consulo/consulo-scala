@@ -1,24 +1,25 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
-import consulo.annotation.component.ComponentScope
-import consulo.annotation.component.TopicImpl
-
-import consulo.annotation.component.ExtensionImpl
-
+import consulo.annotation.component.{ComponentScope, ExtensionImpl, TopicImpl}
+import consulo.application.dumb.DumbAware
 import consulo.project.Project
 import consulo.project.event.ProjectManagerListener
-import consulo.project.startup.StartupActivity
+import consulo.project.startup.PostStartupActivity
 import consulo.ui.UIAccess
 
-//noinspection UsagesOfObsoleteApi
+// upstream: one class registered both as postStartupActivity and as ProjectManagerListener;
+// Consulo: split into a startup activity and a topic listener
 @ExtensionImpl
-@TopicImpl(ComponentScope.APPLICATION)
-class ScalafmtProjectListener extends StartupActivity.DumbAware with ProjectManagerListener {
+class ScalafmtProjectListener extends PostStartupActivity with DumbAware {
 
   override def runActivity(project: Project, uiAccess: UIAccess): Unit = {
     ScalaFmtSuggesterService.instance(using project).init()
     ScalafmtDynamicConfigService.instanceIn(project).init()
   }
+}
+
+@TopicImpl(ComponentScope.APPLICATION)
+class ScalafmtProjectManagerListener extends ProjectManagerListener {
 
   override def projectClosing(project: Project): Unit =
     ScalafmtDynamicConfigService.instanceIn(project).clearCaches()

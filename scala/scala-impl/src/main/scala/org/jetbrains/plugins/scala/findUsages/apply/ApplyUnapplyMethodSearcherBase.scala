@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.apply
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.language.psi.PsiReference
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.search.ReferencesSearch.SearchParameters
@@ -13,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import java.util.function.Predicate
 
-abstract class ApplyUnapplyMethodSearcherBase extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+abstract class ApplyUnapplyMethodSearcherBase extends ReferencesSearchQueryExecutor {
 
   protected val names: Set[String]
 

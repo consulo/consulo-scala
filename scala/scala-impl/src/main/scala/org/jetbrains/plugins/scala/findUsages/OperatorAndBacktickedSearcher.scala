@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.Application
@@ -29,7 +31,7 @@ import scala.jdk.CollectionConverters._
 import java.util.function.Predicate
 
 @ExtensionImpl
-class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+class OperatorAndBacktickedSearcher extends ReferencesSearchQueryExecutor {
 
   override def execute(
     queryParameters: ReferencesSearch.SearchParameters,

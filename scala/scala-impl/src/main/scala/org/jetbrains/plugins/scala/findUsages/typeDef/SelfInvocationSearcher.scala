@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.typeDef
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.psi.search.ReferencesSearch
@@ -15,7 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScConstructorO
 import java.util.function.Predicate
 
 @ExtensionImpl
-class SelfInvocationSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+class SelfInvocationSearcher extends ReferencesSearchQueryExecutor {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     queryParameters.getElementToSearch match {
       case ml: ScMethodLike if inReadAction(ml.isConstructor) =>

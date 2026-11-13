@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import com.intellij.java.indexing.search.searches.MethodReferencesSearchExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.project.util.query.QueryExecutorBase
@@ -19,7 +21,7 @@ import java.util.function.Predicate
  * These are not considered by [[com.intellij.psi.impl.search.MethodUsagesSearcher]]
  */
 @ExtensionImpl
-class NonMemberMethodUsagesSearcher extends QueryExecutorBase[PsiReference, MethodReferencesSearch.SearchParameters] {
+class NonMemberMethodUsagesSearcher extends QueryExecutorBase[PsiReference, MethodReferencesSearch.SearchParameters] with MethodReferencesSearchExecutor {
   override def processQuery(@NotNull p: MethodReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {
     inReadAction {
       val method: PsiMethod = p.getMethod

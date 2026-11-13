@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.{ComponentScope, ServiceAPI}
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -10,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtDynamicServi
 import org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtNotifications.FmtVerbosity
 import org.scalafmt.dynamic.{ScalafmtReflectConfig, ScalafmtVersion}
 
+@ServiceAPI(ComponentScope.PROJECT)
 trait ScalafmtDynamicConfigService {
 
   def init(): Unit

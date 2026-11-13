@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.types
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -14,7 +16,7 @@ import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectContextOwner}
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final case class Scala3Bounds(project: Project)
+final case class Scala3Bounds @Inject()(project: Project)
   extends ScalaBoundsBase
     with ProjectContextOwner
     with BoundsUtil {

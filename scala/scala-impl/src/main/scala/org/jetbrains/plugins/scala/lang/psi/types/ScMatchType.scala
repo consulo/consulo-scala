@@ -103,17 +103,9 @@ object ScMatchType {
   private val maxRecursionDepth = 50
 
   private def reductionCache(project: Project): ConcurrentMap[ScType, ContextDependent[TypeResult]] =
-    project.getInstance(classOf[MatchTypeReductionCacheService]).reductionCache
+    project.getInstance(classOf[ScMatchTypeMatchTypeReductionCacheService]).reductionCache
 
   def clearReductionCache(project: Project): Unit = reductionCache(project).clear()
-
-  // upstream: @Service(Array(Service.Level.PROJECT))
-  @Singleton
-  @ServiceAPI(ComponentScope.PROJECT)
-  @ServiceImpl
-  private final class MatchTypeReductionCacheService {
-    val reductionCache: ConcurrentMap[ScType, ContextDependent[TypeResult]] = new ConcurrentHashMap()
-  }
 
   def reduce(tpe: ScMatchType): TypeResult = {
     val cache           = reductionCache(tpe.projectContext)
@@ -376,4 +368,12 @@ object ScMatchType {
       case _ => false
     }
   }
+}
+
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+private final class ScMatchTypeMatchTypeReductionCacheService {
+  val reductionCache: ConcurrentMap[ScType, ContextDependent[TypeResult]] = new ConcurrentHashMap()
 }

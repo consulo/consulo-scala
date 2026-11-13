@@ -5,10 +5,12 @@ import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.codeEditor.DefaultLineWrapPositionStrategy
+import consulo.language.editor.LanguageLineWrapPositionStrategy
 import consulo.document.Document
 
 @ExtensionImpl
-class ScalaLineWrapPositionStrategy extends DefaultLineWrapPositionStrategy {
+class ScalaLineWrapPositionStrategy extends DefaultLineWrapPositionStrategy with LanguageLineWrapPositionStrategy {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def canUseOffset(document: Document, offset: Int, virtual: Boolean): Boolean = {
     val chars = document.getCharsSequence

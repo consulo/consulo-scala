@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -41,7 +43,7 @@ import scala.xml.{Elem, SAXParser}
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class LibraryExtensionsManager(project: Project) {
+final class LibraryExtensionsManager @Inject()(project: Project) {
   import LibraryExtensionsManager._
 
   private val EXT_JARS_KEY = "extensionJars"

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.dfa.analysis
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -98,20 +100,20 @@ object DfaManager {
     extends Exception(s"Failed to analyze function ${fun.name}, cfg:\n$cfg", cause)
 
   private def dfaCache(project: Project): ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] =
-    project.getInstance(classOf[DfaCacheService]).cache
+    project.getInstance(classOf[DfaManagerDfaCacheService]).cache
+}
 
-  // upstream: @Service(Array(Service.Level.PROJECT))
-  @Singleton
-  @ServiceAPI(ComponentScope.PROJECT)
-  @ServiceImpl
-  private final class DfaCacheService(project: Project) {
-    private val cachedDfaResults: () => ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] =
-      cached(
-        "DfaManager.dfaCaches",
-        ModTracker.physicalPsiChange(project),
-        () => new ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]]()
-      )
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+private final class DfaManagerDfaCacheService @Inject()(project: Project) {
+  private val cachedDfaResults: () => ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] =
+    cached(
+      "DfaManager.dfaCaches",
+      ModTracker.physicalPsiChange(project),
+      () => new ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]]()
+    )
 
-    def cache: ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] = cachedDfaResults()
-  }
+  def cache: ConcurrentHashMap[ScFunctionDefinition, Future[Option[ScalaDfaResult]]] = cachedDfaResults()
 }

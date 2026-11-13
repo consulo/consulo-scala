@@ -4,13 +4,16 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.Language
 import consulo.virtualFileSystem.VirtualFile
-import consulo.language.file.{FileViewProvider, FileViewProviderFactory}
+import consulo.language.file.{FileViewProvider, VirtualFileViewProviderFactory}
+import consulo.virtualFileSystem.fileType.FileType
 import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScClassFileDecompiler
 
 @ExtensionImpl
-class TastyFileViewProviderFactory extends FileViewProviderFactory {
+class TastyFileViewProviderFactory extends VirtualFileViewProviderFactory {
+  override def getFileType: FileType = TastyFileType
+
   override def createFileViewProvider(file: VirtualFile, language: Language, manager: PsiManager, eventSystemEnabled: Boolean): FileViewProvider = {
     ScClassFileDecompiler.createFileViewProviderImpl(manager, file, eventSystemEnabled, Scala3Language.INSTANCE)
   }

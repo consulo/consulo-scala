@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.project.Project
@@ -23,7 +25,7 @@ import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMet
  * @see [[org.jetbrains.plugins.scala.runner.Scala3MainMethodProvider]]
  */
 @ExtensionImpl
-private final class Scala3MainMethodSyntheticClassFinder(project: Project)
+private final class Scala3MainMethodSyntheticClassFinder @Inject()(project: Project)
   extends PsiElementFinder {
 
   override def findClass(qualifiedName: String, scope: GlobalSearchScope): PsiClass = {

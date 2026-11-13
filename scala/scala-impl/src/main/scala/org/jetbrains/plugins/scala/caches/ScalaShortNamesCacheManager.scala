@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.caches
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -24,7 +26,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class ScalaShortNamesCacheManager(implicit project: Project) {
+final class ScalaShortNamesCacheManager @Inject()(project: Project) {
+  private implicit def implicitProject: Project = project
 
   def getClassByFQName(fqn: String, scope: GlobalSearchScope): PsiClass = {
     if (DumbService.getInstance(project).isDumb) {

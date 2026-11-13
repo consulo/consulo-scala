@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import com.intellij.java.indexing.search.searches.{AllOverridingMethodsSearchExecutor, OverridingMethodsSearchExecutor}
+
 import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
@@ -72,7 +74,7 @@ import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
  * supermethod-overrider pairs for every relevant method in a class.
  */
 @ExtensionImpl(order = "last")
-class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
+class ScalaAwareJavaOverridingSearcher extends OverridingMethodsSearchExecutor {
   override def execute(searchParams: OverridingMethodsSearch.SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = searchParams.getMethod
     method match {
@@ -115,7 +117,7 @@ class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, Overridi
  * only its overriding methods, this executor emits supermethod-overrider pairs for the complete class.
  */
 @ExtensionImpl(order = "last")
-class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, PsiMethod], AllOverridingMethodsSearch.SearchParameters] {
+class ScalaAwareJavaAllOverridingSearcher extends AllOverridingMethodsSearchExecutor {
   import ScalaAwareJavaAllOverridingSearcher._
 
   override def execute(

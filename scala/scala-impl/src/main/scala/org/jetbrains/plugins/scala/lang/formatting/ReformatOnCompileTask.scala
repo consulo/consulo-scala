@@ -4,7 +4,7 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.codeStyle.CodeStyle
 import consulo.undoRedo.CommandProcessor
-import consulo.compiler.CompileContext
+import consulo.compiler.{BeforeCompileTask, CompileContext}
 import consulo.compiler.scope.CompileScope
 import consulo.logging.Logger
 import consulo.project.Project
@@ -22,13 +22,15 @@ import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
 import scala.jdk.CollectionConverters._
 
 @ExtensionImpl
-final class ReformatOnCompileTask(project: Project) extends ScalaCompileTask {
+final class ReformatOnCompileTask extends ScalaCompileTask with BeforeCompileTask {
 
+  // Consulo: BeforeCompileTask is application-level, the project comes from the compile context
   override protected def run(context: CompileContext): Boolean = {
-    val scalaSettings = codeStyleSettings
+    val project = context.getProject
+    val scalaSettings = codeStyleSettings(project)
     if (scalaSettings.REFORMAT_ON_COMPILE) {
       ScalaFmtPreFormatProcessor.inFailSilentMode {
-        reformatScopeFiles(context.getCompileScope, scalaSettings)
+        reformatScopeFiles(project, context.getCompileScope, scalaSettings)
       }
     }
     true
@@ -38,10 +40,10 @@ final class ReformatOnCompileTask(project: Project) extends ScalaCompileTask {
 
   override protected def log: Logger = ReformatOnCompileTask.Log
 
-  private def codeStyleSettings: ScalaCodeStyleSettings =
+  private def codeStyleSettings(project: Project): ScalaCodeStyleSettings =
     CodeStyle.getSettings(project).getCustomSettings(classOf[ScalaCodeStyleSettings])
 
-  private def reformatScopeFiles(compileScope: CompileScope, scalaSettings: ScalaCodeStyleSettings): Unit = for {
+  private def reformatScopeFiles(project: Project, compileScope: CompileScope, scalaSettings: ScalaCodeStyleSettings): Unit = for {
     path <- compileScope.getFiles(ScalaFileType.INSTANCE).asScala
     virtualFile <- Option(LocalFileSystem.getInstance.findFileByNioFile(path))
     psiFile = inReadAction(PsiManager.getInstance(project).findFile(virtualFile))

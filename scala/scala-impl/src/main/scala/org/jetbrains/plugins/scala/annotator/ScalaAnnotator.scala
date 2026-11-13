@@ -4,7 +4,7 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
+import consulo.language.editor.annotation.{AnnotationHolder, Annotator, AnnotatorFactory}
 import consulo.language.inject.InjectedLanguageManager
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -38,7 +38,6 @@ import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 import org.jetbrains.plugins.scala.statistics.ScalaAnnotatorUsagesCollector
 import org.jetbrains.plugins.scala.{ScalaBundle, Tracing}
 
-@ExtensionImpl
 class ScalaAnnotator extends Annotator
   with FunctionAnnotator
   with OverridingAnnotator
@@ -429,4 +428,11 @@ class ScalaAnnotator extends Annotator
     }
     typeParam.recursiveVarianceUpdate(variance)(functionToSendIn)
   }
+}
+
+@ExtensionImpl
+final class ScalaAnnotatorFactory extends AnnotatorFactory with DumbAware {
+  override def createAnnotator(): Annotator = new ScalaAnnotator
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 }

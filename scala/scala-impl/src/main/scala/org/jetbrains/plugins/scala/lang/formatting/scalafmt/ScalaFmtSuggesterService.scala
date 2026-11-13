@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import jakarta.inject.Inject
+
 import consulo.localize.LocalizeValue
 import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
 import consulo.language.codeStyle.{CodeStyle, CodeStyleSettingsManager}
@@ -25,7 +27,7 @@ import scala.beans.BeanProperty
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class ScalaFmtSuggesterService(private val project: Project)
+final class ScalaFmtSuggesterService @Inject()(private val project: Project)
   extends PersistentStateComponent[ScalaFmtSuggesterService.State] {
 
   import ScalaFmtSuggesterService._

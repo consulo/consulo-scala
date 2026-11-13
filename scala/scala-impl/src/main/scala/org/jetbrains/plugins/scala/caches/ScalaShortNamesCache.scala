@@ -5,7 +5,8 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.project.Project
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import consulo.language.psi.scope.GlobalSearchScope
-import com.intellij.java.language.psi.search.PsiShortNamesCache
+import com.intellij.java.language.psi.search.PsiShortNameProvider
+import jakarta.inject.Inject
 import consulo.util.collection.ArrayUtil
 import consulo.language.psi.stub.IdFilter
 
@@ -18,7 +19,9 @@ import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplement
 import scala.collection.mutable.ArrayBuffer
 
 @ExtensionImpl
-class ScalaShortNamesCache(implicit project: Project) extends PsiShortNamesCache {
+class ScalaShortNamesCache @Inject()(project: Project) extends PsiShortNameProvider {
+  private implicit def implicitProject: Project = project
+
   override def getClassesByName(name: String, scope: GlobalSearchScope): Array[PsiClass] = {
     def isOkForJava(elem: ScalaPsiElement): Boolean = {
       var res = true

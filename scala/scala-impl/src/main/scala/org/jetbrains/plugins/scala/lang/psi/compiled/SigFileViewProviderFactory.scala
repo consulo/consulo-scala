@@ -8,7 +8,7 @@ import consulo.virtualFileSystem.BinaryFileDecompiler
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.virtualFileSystem.VirtualFile
 import com.intellij.java.language.impl.psi.impl.compiled.ClassFileStubBuilder
-import consulo.language.file.{FileViewProvider, FileViewProviderFactory}
+import consulo.language.file.{FileViewProvider, VirtualFileViewProviderFactory}
 import consulo.language.psi.PsiManager
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -38,7 +38,9 @@ object SigFileType extends FileType {
 
 
 @ExtensionImpl
-class SigFileViewProviderFactory extends FileViewProviderFactory {
+class SigFileViewProviderFactory extends VirtualFileViewProviderFactory {
+  override def getFileType: FileType = SigFileType
+
   override def createFileViewProvider(file: VirtualFile,
                                       language: Language,
                                       manager: PsiManager,

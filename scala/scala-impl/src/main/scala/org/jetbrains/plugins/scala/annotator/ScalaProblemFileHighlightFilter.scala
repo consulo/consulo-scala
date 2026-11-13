@@ -6,7 +6,8 @@ import consulo.compiler.CompilerManager
 import consulo.language.file.FileTypeManager
 import consulo.project.Project
 import consulo.module.content.ProjectRootManager
-import consulo.util.lang.function.Condition
+import consulo.language.editor.wolfAnalyzer.WolfFileProblemFilter
+import jakarta.inject.Inject
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.annotator.ScalaProblemFileHighlightFilter._
@@ -14,11 +15,11 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.settings.{ScalaHighlightingMode, ScalaProjectSettings}
 
 @ExtensionImpl
-class ScalaProblemFileHighlightFilter(project: Project) extends Condition[VirtualFile] {
+class ScalaProblemFileHighlightFilter @Inject()(project: Project) extends WolfFileProblemFilter {
   /**
     * @see [[com.intellij.codeInsight.problems.DefaultProblemFileHighlightFilter]]
     */
-  override def value(file: VirtualFile): Boolean = PsiManager.getInstance(project).findFile(file) match {
+  override def isToBeHighlighted(file: VirtualFile): Boolean = PsiManager.getInstance(project).findFile(file) match {
     case sf: ScalaFile =>
       (isEnabled || ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(sf)) &&
         isScalaSourceFile(project, file) &&

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearchExecutor
+
 import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
@@ -22,7 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefi
   * TODO: show inheritors via gutter doesn't work in Scratch files (see IDEA-313012)
   */
 @ExtensionImpl
-class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInheritorsSearch.SearchParameters] {
+class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInheritorsSearch.SearchParameters] with ClassInheritorsSearchExecutor {
 
   override def processQuery(params: SearchParameters, consumer: Predicate[? >: PsiClass]): Unit = {
     val clazz = params.getClassToProcess

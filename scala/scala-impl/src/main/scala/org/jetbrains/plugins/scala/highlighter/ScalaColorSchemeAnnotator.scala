@@ -5,7 +5,7 @@ import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.rawHighlight.HighlightInfoType
-import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
+import consulo.language.editor.annotation.{AnnotationHolder, Annotator, AnnotatorFactory}
 import consulo.colorScheme.TextAttributesKey
 import consulo.document.util.TextRange
 import com.intellij.java.language.psi.PsiClass
@@ -39,7 +39,6 @@ import org.jetbrains.plugins.scala.statistics.ScalaAnnotatorUsagesCollector
  * @see [[org.jetbrains.plugins.scala.highlighter.ScalaSyntaxHighlightingVisitor]]
  * @see [[org.jetbrains.plugins.scala.codeInsight.daemon.ScalaRainbowVisitor]]
  */
-@ExtensionImpl
 final class ScalaColorSchemeAnnotator extends Annotator {
 
   import ScalaColorSchemeAnnotator._
@@ -230,4 +229,11 @@ object ScalaColorSchemeAnnotator {
       .textAttributes(attributes)
       .create()
   }
+}
+
+@ExtensionImpl
+final class ScalaColorSchemeAnnotatorFactory extends AnnotatorFactory {
+  override def createAnnotator(): Annotator = new ScalaColorSchemeAnnotator
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 }

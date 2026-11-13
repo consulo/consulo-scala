@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -23,7 +25,7 @@ import org.jetbrains.plugins.scala.settings.CompilerIndicesSettings
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class ScalaFindUsagesConfiguration(project: Project) {
+final class ScalaFindUsagesConfiguration @Inject()(project: Project) {
   private var typeDefinitionOptions: ScalaTypeDefinitionFindUsagesOptions = scala.compiletime.uninitialized
   private var memberOptions: ScalaMemberFindUsagesOptions = scala.compiletime.uninitialized
   private var localOptions: ScalaLocalFindUsagesOptions = scala.compiletime.uninitialized

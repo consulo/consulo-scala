@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.find.{FindUsagesHandler, FindUsagesHandlerFactory}
@@ -24,7 +26,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.rename.RenameSuperMembersUti
 import org.jetbrains.plugins.scala.settings.CompilerIndicesSettings
 
 @ExtensionImpl(order = "first")
-class ScalaFindUsagesHandlerFactory(project: Project) extends FindUsagesHandlerFactory { self =>
+class ScalaFindUsagesHandlerFactory @Inject()(project: Project) extends FindUsagesHandlerFactory { self =>
 
   override def canFindUsages(element: PsiElement): Boolean =
     element match {

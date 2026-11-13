@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import jakarta.inject.Inject
+
 import consulo.localize.LocalizeValue
 
 import consulo.annotation.component.ComponentScope
@@ -333,7 +335,7 @@ sealed class ScSyntheticFunction(
 @jakarta.inject.Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class SyntheticClasses(project: Project) {
+final class SyntheticClasses @Inject()(project: Project) {
   implicit def ctx: ProjectContext = project
 
   private val Log = Logger.getInstance(this.getClass)
@@ -723,7 +725,7 @@ final class SyntheticClasses(project: Project) {
 }
 
 @ExtensionImpl
-final class SyntheticClassElementFinder(project: Project) extends PsiElementFinder {
+final class SyntheticClassElementFinder @Inject()(project: Project) extends PsiElementFinder {
   private val instance = SyntheticClasses.get(project)
 
   // TODO(SCL-22349): Remove this visibility workaround once synthetic classes are registered per module/version.

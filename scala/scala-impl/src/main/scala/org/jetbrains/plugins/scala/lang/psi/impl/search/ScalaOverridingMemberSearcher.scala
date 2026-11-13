@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import com.intellij.java.indexing.search.searches.OverridingMethodsSearchExecutor
+import consulo.language.psi.search.{DefinitionsScopedSearch, DefinitionsScopedSearchExecutor}
+
 import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
@@ -28,9 +31,9 @@ import scala.collection.mutable
  * This class is required for Ctrl+Alt+B action for cases when not PsiMethod overrides not PsiMethod (one of two cases)
  */
 @ExtensionImpl
-class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] {
-  override def execute(sourceElement: PsiElement, consumer: Predicate[? >: PsiElement]): Boolean = {
-    sourceElement match {
+class MethodImplementationsSearch extends DefinitionsScopedSearchExecutor {
+  override def execute(parameters: DefinitionsScopedSearch.SearchParameters, consumer: Predicate[? >: PsiElement]): Boolean = {
+    parameters.getElement match {
       case namedElement: ScNamedElement =>
         for (implementation <- ScalaOverridingMemberSearcher.getOverridingMethodsForNavigation(namedElement)
              //to avoid duplicates with ScalaOverridingMemberSearcher
@@ -52,7 +55,7 @@ class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] 
  * Java analogue: [[com.intellij.psi.impl.search.JavaOverridingMethodsSearcher]]
  */
 @ExtensionImpl(order = "first")
-class ScalaOverridingMemberSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
+class ScalaOverridingMemberSearcher extends OverridingMethodsSearchExecutor {
   override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = queryParameters.getMethod
     method match {

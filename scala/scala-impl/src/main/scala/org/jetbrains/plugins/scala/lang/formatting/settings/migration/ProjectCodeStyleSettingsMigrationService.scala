@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -18,7 +20,7 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.migration.CodeStyleS
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class ProjectCodeStyleSettingsMigrationService(private val project: Project)
+final class ProjectCodeStyleSettingsMigrationService @Inject()(private val project: Project)
   extends CodeStyleSettingsMigrationServiceBase  {
 
   def init(): Unit = {

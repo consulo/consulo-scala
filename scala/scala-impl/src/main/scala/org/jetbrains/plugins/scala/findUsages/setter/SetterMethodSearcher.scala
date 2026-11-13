@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.setter
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.project.Project
@@ -22,7 +24,7 @@ import java.util.function.Predicate
 
 
 @ExtensionImpl
-class SetterMethodSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+class SetterMethodSearcher extends ReferencesSearchQueryExecutor {
   private val suffixScala = "_="
   private val suffixJava = "_$eq"
 

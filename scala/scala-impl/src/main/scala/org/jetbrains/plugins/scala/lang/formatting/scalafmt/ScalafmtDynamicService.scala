@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
 import consulo.application.ApplicationManager
+import consulo.annotation.component.{ComponentScope, ServiceAPI}
 import consulo.project.Project
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
@@ -12,6 +13,7 @@ import org.scalafmt.dynamic.{ScalafmtReflect, ScalafmtVersion}
 
 import java.net.URL
 
+@ServiceAPI(ComponentScope.APPLICATION)
 trait ScalafmtDynamicService {
   def clearCaches(): Unit
 

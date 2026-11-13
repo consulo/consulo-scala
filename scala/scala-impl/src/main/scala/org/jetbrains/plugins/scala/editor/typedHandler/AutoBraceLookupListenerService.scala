@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -40,7 +42,7 @@ import org.jetbrains.plugins.scala.extensions._
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class AutoBraceLookupListenerService(project: Project) extends Disposable {
+final class AutoBraceLookupListenerService @Inject()(project: Project) extends Disposable {
   // upstream: subscribed to LookupManagerListener.TOPIC, Consulo notifies about the active lookup via a property change
   locally {
     LookupManager.getInstance(project).addPropertyChangeListener(

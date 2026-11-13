@@ -7,7 +7,8 @@ import consulo.application.ReadAction
 import consulo.util.lang.StringUtil
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.indexing.search.searches.AnnotatedElementsSearch
-import com.intellij.java.language.psi.{PsiField, PsiMember, PsiModifier}
+import com.intellij.java.language.psi.{PsiField, PsiMember, PsiModifier, PsiModifierListOwner}
+import com.intellij.java.indexing.search.searches.AnnotatedElementsSearchExecutor
 import consulo.application.util.function.Processor
 import consulo.application.util.query.QueryExecutor
 import org.jetbrains.annotations.Nullable
@@ -21,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
 import scala.collection.mutable
 
 @ExtensionImpl
-class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedElementsSearch.Parameters] {
+class ScalaAnnotatedMembersSearcher extends AnnotatedElementsSearchExecutor {
 
   private def convertToLightField(fieldLike: ScValueOrVariable): Option[PsiField] =
     for {
@@ -51,7 +52,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
       )
     }
 
-  override def execute(p: AnnotatedElementsSearch.Parameters, consumer: Predicate[? >: PsiMember]): Boolean = {
+  override def execute(p: AnnotatedElementsSearch.Parameters, consumer: Predicate[? >: PsiModifierListOwner]): Boolean = {
     val annotationFQN = getAnnotationName(p)
     assert(annotationFQN != null, "Annotation qualifier can't be null")
 
@@ -75,7 +76,7 @@ class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedEl
 
   private def executeInner(
     parameters: AnnotatedElementsSearch.Parameters,
-    consumer: Predicate[? >: PsiMember],
+    consumer: Predicate[? >: PsiModifierListOwner],
     annotationFQN: String,
   ): Boolean = {
     val scope = parameters.getScope match {

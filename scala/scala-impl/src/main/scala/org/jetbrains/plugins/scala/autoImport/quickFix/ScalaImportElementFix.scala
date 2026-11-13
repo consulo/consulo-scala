@@ -205,16 +205,7 @@ abstract class ScalaImportElementFix[Element <: ElementToImport](val place: PsiE
 private object ScalaImportElementFix {
 
   private def boundedExecutor: ExecutorService =
-    ApplicationManager.getApplication.getInstance(classOf[ExecutorHolder]).boundedTaskExecutor
-
-  // upstream: @Service
-  @Singleton
-  @ServiceAPI(ComponentScope.APPLICATION)
-  @ServiceImpl
-  private final class ExecutorHolder {
-    val boundedTaskExecutor: ExecutorService =
-      AppExecutorUtil.createBoundedApplicationPoolExecutor("ScalaImportElementFixExecutor", 2)
-  }
+    ApplicationManager.getApplication.getInstance(classOf[ScalaImportElementFixExecutorHolder]).boundedTaskExecutor
 
   implicit class EditorEx(val editor: Editor) extends AnyVal {
     def caretNear(place: PsiElement): Boolean =
@@ -257,4 +248,13 @@ private object ScalaImportElementFix {
     case ref: ScReference if ref.qualifier.isEmpty => softKeywords.contains(ref.refName)
     case _ => false
   }
+}
+
+// upstream: @Service
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+private final class ScalaImportElementFixExecutorHolder {
+  val boundedTaskExecutor: ExecutorService =
+    AppExecutorUtil.createBoundedApplicationPoolExecutor("ScalaImportElementFixExecutor", 2)
 }

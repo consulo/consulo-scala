@@ -1,11 +1,17 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import consulo.configurable.{Configurable, ConfigurationException}
+import consulo.configurable.{ConfigurationException, ProjectConfigurable}
 import consulo.disposer.Disposable
+import org.jetbrains.plugins.scala.settings.ScalaProjectSettingsConfigurable
 import consulo.ui.Component
 import consulo.ui.ex.awtUnsafe.TargetAWT
 
-abstract class SettingsSectionConfigurable extends Configurable {
+abstract class SettingsSectionConfigurable extends ProjectConfigurable {
+
+  // upstream: projectConfigurable parentId="configurable.scala.root" without explicit id (class name was used)
+  override def getId: String = getClass.getName
+
+  override def getParentId: String = ScalaProjectSettingsConfigurable.ID
 
   def createPanel(): SettingsSectionPanel
 

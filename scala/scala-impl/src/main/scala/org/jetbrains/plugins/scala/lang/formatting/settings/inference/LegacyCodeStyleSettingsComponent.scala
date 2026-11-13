@@ -18,30 +18,31 @@ import org.jetbrains.plugins.scala.startup.ProjectActivity
 private final class LegacyCodeStyleSettingsComponent extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getInstance(classOf[LegacyCodeStyleSettingsComponent.AppService])
+    ApplicationManager.getApplication.getInstance(classOf[LegacyCodeStyleSettingsComponentAppService])
   }
 }
 
 private object LegacyCodeStyleSettingsComponent {
-  // upstream: @Service(Array(Service.Level.APP))
-  @Singleton
-  @ServiceAPI(ComponentScope.APPLICATION)
-  @ServiceImpl
-  private final class AppService {
-    // Executed in the service constructor.
-    setupCodeStyleSchemes()
+}
 
-    private def setupCodeStyleSchemes(): Unit = {
-      val codeStyleSchemes = CodeStyleSchemes.getInstance.getSchemes
-      codeStyleSchemes.foreach { scheme =>
-        val scalaSettings = scheme.getCodeStyleSettings.getCustomSettings(classOf[ScalaCodeStyleSettings])
-        val commonSettings = scheme.getCodeStyleSettings.getCommonSettings(ScalaLanguage.INSTANCE)
-        if (commonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE &&
-          scalaSettings.CALL_PARAMETERS_NEW_LINE_AFTER_LPAREN == ScalaCodeStyleSettings.NO_NEW_LINE
-        ) {
-          commonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE = false
-          scalaSettings.CALL_PARAMETERS_NEW_LINE_AFTER_LPAREN = ScalaCodeStyleSettings.NEW_LINE_ALWAYS
-        }
+// upstream: @Service(Array(Service.Level.APP))
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+private final class LegacyCodeStyleSettingsComponentAppService {
+  // Executed in the service constructor.
+  setupCodeStyleSchemes()
+
+  private def setupCodeStyleSchemes(): Unit = {
+    val codeStyleSchemes = CodeStyleSchemes.getInstance.getSchemes
+    codeStyleSchemes.foreach { scheme =>
+      val scalaSettings = scheme.getCodeStyleSettings.getCustomSettings(classOf[ScalaCodeStyleSettings])
+      val commonSettings = scheme.getCodeStyleSettings.getCommonSettings(ScalaLanguage.INSTANCE)
+      if (commonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE &&
+        scalaSettings.CALL_PARAMETERS_NEW_LINE_AFTER_LPAREN == ScalaCodeStyleSettings.NO_NEW_LINE
+      ) {
+        commonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE = false
+        scalaSettings.CALL_PARAMETERS_NEW_LINE_AFTER_LPAREN = ScalaCodeStyleSettings.NEW_LINE_ALWAYS
       }
     }
   }

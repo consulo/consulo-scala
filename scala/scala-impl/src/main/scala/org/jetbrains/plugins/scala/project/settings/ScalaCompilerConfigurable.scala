@@ -6,7 +6,8 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.configurable.Configurable.Composite
-import consulo.configurable.{Configurable, SearchableConfigurable}
+import consulo.configurable.{Configurable, ProjectConfigurable, SearchableConfigurable, StandardConfigurableIds}
+import jakarta.inject.Inject
 import consulo.project.Project
 import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
@@ -21,12 +22,15 @@ import consulo.ui.ex.awtUnsafe.TargetAWT
  * @see [[org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState]]
  */
 @ExtensionImpl(id = "scala.compiler")
-class ScalaCompilerConfigurable(project: Project)
+class ScalaCompilerConfigurable @Inject()(project: Project)
   extends SearchableConfigurable
+    with ProjectConfigurable
     with Configurable.NoScroll
     with Composite {
 
   override def getId: String = ScalaCompilerConfigurable.Id
+
+  override def getParentId: String = StandardConfigurableIds.COMPILER_GROUP
 
   //NOTE: duplicated in XML file
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("displayname.scala.compiler"))

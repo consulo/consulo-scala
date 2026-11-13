@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import com.intellij.java.indexing.search.searches.DirectClassInheritorsSearchExecutor
+
 import java.util.function.Predicate
 import consulo.annotation.component.ExtensionImpl
 
@@ -24,7 +26,7 @@ import scala.collection.mutable.ArrayBuffer
  * @see [[ScalaLocalInheritorsSearcher]]
  */
 @ExtensionImpl
-class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectClassInheritorsSearch.SearchParameters] {
+class ScalaDirectClassInheritorsSearcher extends DirectClassInheritorsSearchExecutor {
 
   override def execute(queryParameters: DirectClassInheritorsSearch.SearchParameters, consumer: Predicate[? >: PsiClass]): Boolean = {
     val clazz = queryParameters.getClassToProcess

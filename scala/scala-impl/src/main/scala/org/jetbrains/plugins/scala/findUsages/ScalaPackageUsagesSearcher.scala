@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.project.util.query.QueryExecutorBase
@@ -15,7 +17,7 @@ import java.util.function.Predicate
 
 
 @ExtensionImpl
-class ScalaPackageUsagesSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
+class ScalaPackageUsagesSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) with ReferencesSearchQueryExecutor {
 
   override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {
     val data = inReadAction {

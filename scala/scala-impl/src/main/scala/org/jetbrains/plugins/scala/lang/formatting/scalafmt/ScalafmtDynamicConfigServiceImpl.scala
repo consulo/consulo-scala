@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -41,8 +43,9 @@ import scala.util.Try
 
 @Singleton
 @ServiceImpl
-final class ScalafmtDynamicConfigServiceImpl(private implicit val project: Project)
+final class ScalafmtDynamicConfigServiceImpl @Inject()(project: Project)
   extends ScalafmtDynamicConfigService {
+  private implicit def implicitProject: Project = project
 
   private val Log = Logger.getInstance(classOf[ScalafmtDynamicConfigService])
 

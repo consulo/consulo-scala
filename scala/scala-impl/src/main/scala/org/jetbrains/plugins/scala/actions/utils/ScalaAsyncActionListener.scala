@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.actions.utils
 
 import consulo.annotation.component.{ComponentScope, TopicAPI}
-import consulo.ui.ex.action.AnAction
 import org.jetbrains.annotations.TestOnly
 
 import scala.util.Try
@@ -18,7 +17,7 @@ trait ScalaAsyncActionListener {
    * @param result      Success if the action was completed successfully<br>
    *                    Failure(exception) if the action failed with the given exception (on any thread)
    */
-  def actionCompleted(actionClass: Class[? <: AnAction], result: Try[Unit]): Unit
+  def actionCompleted(actionClass: Class[?], result: Try[Unit]): Unit // Consulo: bound dropped, binding generator erases wildcards
 }
 
 object ScalaAsyncActionListener {

@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.lang.refactoring.rename
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.util.lang.function.Condition
+import consulo.language.editor.refactoring.rename.VetoRenameCondition
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScEnd
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScGivenPattern
@@ -13,8 +13,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScGivenPattern
  * This class can prevent that and prevent any renaming on the given element.
  */
 @ExtensionImpl
-class ScalaVetoDefaultRenameCondition extends Condition[PsiElement]{
-  override def value(t: PsiElement): Boolean = shouldNotRename(t)
+class ScalaVetoDefaultRenameCondition extends VetoRenameCondition {
+  override def isVetoed(t: PsiElement): Boolean = shouldNotRename(t)
 
   private def shouldNotRename(element: PsiElement): Boolean = element match {
     case _: ScEnd =>

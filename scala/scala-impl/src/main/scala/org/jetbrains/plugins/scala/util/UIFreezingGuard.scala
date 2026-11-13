@@ -34,7 +34,7 @@ private final class UIFreezingGuard extends ProjectActivity {
    */
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getInstance(classOf[UIFreezingGuard.AppService])
+    ApplicationManager.getApplication.getInstance(classOf[UIFreezingGuardAppService])
   }
 }
 
@@ -46,34 +46,15 @@ object UIFreezingGuard {
    * If such events are detected, it issues a cancellation, to hopefully stop the long-running resolve computation which
    * is blocking the UI thread.
    */
-  // upstream: @Service(Array(Service.Level.APP))
-  @Singleton
-  @ServiceAPI(ComponentScope.APPLICATION)
-  @ServiceImpl
-  private final class AppService extends Disposable {
-    private final val periodMs = 300
-    private var periodicTask: ScheduledFuture[?] =
-      if (pceEnabled)
-        AppExecutorUtil.getAppScheduledExecutorService.scheduleWithFixedDelay(() => cancelOnUserInput(), periodMs, periodMs, TimeUnit.MILLISECONDS)
-      else
-        null
 
-    override def dispose(): Unit = {
-      if (periodicTask ne null) {
-        periodicTask.cancel(false)
-        periodicTask = null
-      }
-    }
-  }
-
-  private def cancelOnUserInput(): Unit = {
+  private[util] def cancelOnUserInput(): Unit = {
     val timestamp = progress.timestamp
     if (progress.isRunning && hasPendingUserInput) {
       progress.cancel(timestamp)
     }
   }
 
-  private val pceEnabled = System.getProperty("idea.ProcessCanceledException") != "disabled"
+  private[util] val pceEnabled = System.getProperty("idea.ProcessCanceledException") != "disabled"
 
   private var isGuarded: Boolean = false
 
@@ -208,5 +189,25 @@ object UIFreezingGuard {
 
   private object UnfreezeException extends ProcessCanceledException with NoStackTrace {
     override def getMessage: String = "Long scala calculation on UI thread canceled"
+  }
+}
+
+// upstream: @Service(Array(Service.Level.APP))
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+private final class UIFreezingGuardAppService extends Disposable {
+  private final val periodMs = 300
+  private var periodicTask: ScheduledFuture[?] =
+    if (UIFreezingGuard.pceEnabled)
+      AppExecutorUtil.getAppScheduledExecutorService.scheduleWithFixedDelay(() => UIFreezingGuard.cancelOnUserInput(), periodMs, periodMs, TimeUnit.MILLISECONDS)
+    else
+      null
+
+  override def dispose(): Unit = {
+    if (periodicTask ne null) {
+      periodicTask.cancel(false)
+      periodicTask = null
+    }
   }
 }

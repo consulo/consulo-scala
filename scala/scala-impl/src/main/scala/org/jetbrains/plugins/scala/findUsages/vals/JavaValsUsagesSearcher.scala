@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.vals
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.psi.search.ReferencesSearch
@@ -17,7 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.{PsiTypedDefinitionWrapper, St
 import java.util.function.Predicate
 
 @ExtensionImpl(order = "last")
-class JavaValsUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+class JavaValsUsagesSearcher extends ReferencesSearchQueryExecutor {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)
     val element = queryParameters.getElementToSearch

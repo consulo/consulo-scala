@@ -19,7 +19,7 @@ import consulo.application.util.LowMemoryWatcher
 import consulo.component.util.{ModificationTracker, SimpleModificationTracker}
 import consulo.virtualFileSystem.VirtualFile
 import com.intellij.java.language.psi.{CommonClassNames, JavaPsiFacade, PsiClass, PsiJavaPackage, PsiType, PsiTypeParameter}
-import consulo.language.psi.{PsiElement, PsiPackage}
+import consulo.language.psi.{PsiElement, PsiManager, PsiPackage}
 import com.intellij.java.language.impl.psi.impl.JavaPsiFacadeImpl
 import consulo.language.psi.scope.{DelegatingGlobalSearchScope, GlobalSearchScope}
 import com.intellij.java.language.psi.search.PsiShortNamesCache
@@ -68,7 +68,12 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-class ScalaPsiManager(implicit val project: Project) extends Disposable {
+class ScalaPsiManager @Inject()(val project: Project) extends Disposable {
+  private implicit def implicitProject: Project = project
+
+  // upstream: ScalaPsiChangeListener is registered via the psi.treeChangeListener EP;
+  // Consulo has no such EP, so it is attached to PsiManager for the lifetime of this service
+  PsiManager.getInstance(project).addPsiTreeChangeListener(new ScalaPsiChangeListener(project), this)
 
   private val inJavaPsiFacade: UnloadableThreadLocal[Boolean] = new UnloadableThreadLocal(false)
 

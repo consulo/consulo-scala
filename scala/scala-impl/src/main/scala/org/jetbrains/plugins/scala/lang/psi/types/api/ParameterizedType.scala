@@ -60,19 +60,19 @@ trait ParameterizedType extends ValueType {
 object ParameterizedType {
 
   def substitutorCache(project: Project): ConcurrentMap[ParameterizedType, ScSubstitutor] =
-    project.getInstance(classOf[SubstitutorCacheService]).substitutorCache
-
-  // upstream: @Service(Array(Service.Level.PROJECT))
-  @Singleton
-  @ServiceAPI(ComponentScope.PROJECT)
-  @ServiceImpl
-  private final class SubstitutorCacheService {
-    val substitutorCache: ConcurrentMap[ParameterizedType, ScSubstitutor] = new ConcurrentHashMap()
-  }
+    project.getInstance(classOf[ParameterizedTypeSubstitutorCacheService]).substitutorCache
 
   def apply(designator: ScType, typeArguments: Seq[ScType]): ScType =
     designator.typeSystem.parameterizedType(designator, typeArguments)
 
   def unapply(p: ParameterizedType): Option[(ScType, Seq[ScType])] =
     Some((p.designator, p.typeArguments))
+}
+
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+private final class ParameterizedTypeSubstitutorCacheService {
+  val substitutorCache: ConcurrentMap[ParameterizedType, ScSubstitutor] = new ConcurrentHashMap()
 }

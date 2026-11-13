@@ -2,6 +2,7 @@ package org.jetbrains.plugins.scala.annotator.gutter
 
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
+import consulo.language.editor.action.GotoSuperActionHander
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.application.Application
@@ -27,7 +28,7 @@ import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 
 @ExtensionImpl
-class ScalaGoToSuperActionHandler extends ScalaCodeInsightActionHandler {
+class ScalaGoToSuperActionHandler extends ScalaCodeInsightActionHandler with GotoSuperActionHander {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.typeDef
 
+import consulo.language.psi.search.ReferencesSearchQueryExecutor
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.dumb.IndexNotReadyException
@@ -14,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import java.util.function.Predicate
 
 @ExtensionImpl
-class ObjectTraitReferenceSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
+class ObjectTraitReferenceSearcher extends ReferencesSearchQueryExecutor {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)
     val element = queryParameters.getElementToSearch

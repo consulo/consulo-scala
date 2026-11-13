@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.cheapRefSearch
 
+import jakarta.inject.Inject
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -14,7 +16,7 @@ import consulo.project.Project
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-private[declarationRedundancy] final class SearchMethodsWithProjectBoundCache private(project: Project) {
+private[declarationRedundancy] final class SearchMethodsWithProjectBoundCache @Inject()(project: Project) {
   val LocalSearchMethods: Seq[Search.Method] = Seq(
     new LocalImplicitSearch(c => c.isOnlyVisibleInLocalFile && c.isImplicit),
     new RefCountHolderSearch(c => c.isOnTheFly && (c.isMemberOfUnusedTypeDefinition || (c.isOnlyVisibleInLocalFile && !c.isImplicit))),
