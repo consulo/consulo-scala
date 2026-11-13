@@ -33,7 +33,7 @@ private[changeInfo] trait ParametersChangeInfo {
   }
 
   val wasVararg: Boolean = false
-  val isObtainsVarags: Boolean = false
+  val isObtainsVarargs: Boolean = false
   val isRetainsVarargs: Boolean = false
   val isArrayToVarargs: Boolean = false
 

@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
 
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.Language
 import consulo.language.editor.refactoring.RefactoringSupportProvider
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.action.RefactoringActionHandler
@@ -17,6 +19,8 @@ import org.jetbrains.plugins.scala.lang.refactoring.introduceParameter.ScalaIntr
 import org.jetbrains.plugins.scala.lang.refactoring.introduceVariable.ScalaIntroduceVariableHandler
 
 class ScalaRefactoringSupportProvider extends RefactoringSupportProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isInplaceRenameAvailable(element: PsiElement, context: PsiElement): Boolean = {
     false // handled by ScalaInplaceRenameHandler
   }

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
@@ -24,6 +25,8 @@ import org.jetbrains.plugins.scala.lang.refactoring.ScalaRefactoringActionHandle
 import java.util
 
 class XmlRenameHandler extends RenameHandler with ScalaRefactoringActionHandler {
+  override def getActionTitleValue: LocalizeValue = LocalizeValue.localizeTODO("Rename XML tag")
+
   override def isAvailableOnDataContext(dataContext: DataContext): Boolean = {
     val editor = dataContext.getData(CommonDataKeys.EDITOR)
     if (editor == null || !editor.getSettings.isVariableInplaceRenameEnabled) return false

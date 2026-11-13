@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.Language
 import consulo.language.cacheBuilder.WordsScanner
 import consulo.language.findUsage.FindUsagesProvider
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiSubstitutor, PsiVariable}
@@ -15,6 +17,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.PsiClassFake
 
 class ScalaFindUsagesProvider extends FindUsagesProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   @Nullable
   override def getWordsScanner: WordsScanner = new ScalaWordsScanner()
 

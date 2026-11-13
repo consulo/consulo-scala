@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.language.Language
 import consulo.language.editor.refactoring.NamesValidator
 import consulo.project.Project
 import consulo.util.lang.StringUtil.isEmpty
@@ -9,6 +10,8 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{KEYWORDS, SOFT_KE
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
 class ScalaNamesValidator extends NamesValidator {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import ScalaNamesValidator.lexerCache
 
   private val keywordNames: Set[String] = KEYWORDS.getTypes

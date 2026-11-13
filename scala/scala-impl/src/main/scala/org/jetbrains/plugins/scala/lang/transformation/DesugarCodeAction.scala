@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.lang.transformation
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.project.Project
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -13,7 +13,7 @@ class DesugarCodeAction extends AnAction(
   ScalaBundle.message("desugar.scala.code.action.text"),
   ScalaBundle.message("desugar.scala.code.action.description"),
   /* icon = */ null
-) {
+) with AnActionWithSyncUpdate {
   // TODO support read-only files (create duplicate scratch buffer)
   override def actionPerformed(event: AnActionEvent): Unit = {
     ScalaActionUsagesCollector.logDesugarCode(event.getData(Project.KEY))

@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.lang.rearranger
+import consulo.language.Language
 import consulo.document.Document
 import consulo.util.lang.Pair
 import consulo.document.util.TextRange
@@ -24,6 +25,8 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class ScalaRearranger extends Rearranger[ScalaArrangementEntry] with ArrangementStandardSettingsAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def parseWithNew(
     root:     PsiElement,
     document: Document,

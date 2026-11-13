@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.members
 
+import consulo.localize.LocalizeValue
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiModifierList}
 import consulo.language.psi.{PsiElement, PsiReference}
 import com.intellij.java.impl.refactoring.move.moveMembers.MoveMembersProcessor.MoveMembersUsageInfo
@@ -24,7 +25,7 @@ final class ScalaMoveMemberHandler extends MoveJavaMemberHandler {
                                       modifiedListCopy: PsiModifierList,
                                       targetClass: PsiClass,
                                       membersToMove: ju.Set[PsiMember],
-                                      conflicts: MultiMap[PsiElement, String]): Unit = {
+                                      conflicts: MultiMap[PsiElement, LocalizeValue]): Unit = {
     val targetName = targetClass.name
     for {
       nameInTarget <- targetClass.getAllMethods.map(_.name)
@@ -32,7 +33,7 @@ final class ScalaMoveMemberHandler extends MoveJavaMemberHandler {
       if nameInTarget == movedName
     } {
       val message = ScalaBundle.message("target.0.already.contains.definition.of.1", targetName, movedName)
-      conflicts.putValue(member, message)
+      conflicts.putValue(member, LocalizeValue.of(message))
     }
   }
 

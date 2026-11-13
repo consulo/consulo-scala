@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import java.util.Map
 
 class ScalaChangeUtilSupport extends TreeCopyHandler {
-  override def encodeInformation(element: TreeElement, original: ASTNode, encodingState: Map[Object, Object]): Unit = {
+  override def encodeInformation(element: ASTNode, original: ASTNode, encodingState: Map[Object, Object]): Unit = {
     if (!element.isInstanceOf[ScalaPsiElement]) return
     if (original.isInstanceOf[CompositeElement]) {
       original.getElementType match {
@@ -34,7 +34,7 @@ class ScalaChangeUtilSupport extends TreeCopyHandler {
     }
   }
 
-  override def decodeInformation(element: TreeElement, decodingState: Map[Object, Object]): TreeElement = {
+  override def decodeInformation(element: ASTNode, decodingState: Map[Object, Object]): ASTNode = {
     if (!element.isInstanceOf[ScalaPsiElement]) return null
     if (element.isInstanceOf[CompositeElement]) {
       if (element.getElementType == ScalaElementType.REFERENCE || element.getElementType == ScalaElementType.REFERENCE_EXPRESSION ||
@@ -44,7 +44,7 @@ class ScalaChangeUtilSupport extends TreeCopyHandler {
         if (named != null) {
           element.putCopyableUserData(ScalaChangeUtilSupport.REFERENCED_MEMBER_KEY, null)
           val res = ref.resolve
-          if (!element.getManager.areElementsEquivalent(res, named)) {
+          if (!element.getPsi.getManager.areElementsEquivalent(res, named)) {
             try {
               if (ref.qualifier == None) {
                 ref = ref.bindToElement(named).asInstanceOf[ScReference]
@@ -53,7 +53,7 @@ class ScalaChangeUtilSupport extends TreeCopyHandler {
             catch {
               case _: IncorrectOperationException =>
             }
-            return SourceTreeToPsiMap.psiElementToTree(ref).asInstanceOf[TreeElement]
+            return SourceTreeToPsiMap.psiElementToTree(ref)
           } //todo: else
         }
       }

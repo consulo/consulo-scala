@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
+import consulo.language.Language
+import consulo.language.editor.completion.lookup.LookupElement
 import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoHandlerWithTabActionSupport, UpdateParameterInfoContext}
 import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
 abstract class ScalaParameterInfoHandler[
@@ -11,6 +14,12 @@ abstract class ScalaParameterInfoHandler[
 ] extends ParameterInfoHandlerWithTabActionSupport[ParameterOwner, ParameterType, ActualParameterType] {
 
   protected def findCall(context: ParameterInfoContext): ParameterOwner
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override def couldShowInLookup: Boolean = false
+
+  override def getParametersForLookup(item: LookupElement, context: ParameterInfoContext): Array[AnyRef] = null
 
   override def findElementForParameterInfo(context: CreateParameterInfoContext): ParameterOwner =
     findCall(context)
