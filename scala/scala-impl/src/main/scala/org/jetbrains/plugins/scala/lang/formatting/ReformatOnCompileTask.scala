@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.undoRedo.CommandProcessor
 import consulo.compiler.CompileContext
@@ -19,6 +21,7 @@ import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ReformatOnCompileTask(project: Project) extends ScalaCompileTask {
 
   override protected def run(context: CompileContext): Boolean = {

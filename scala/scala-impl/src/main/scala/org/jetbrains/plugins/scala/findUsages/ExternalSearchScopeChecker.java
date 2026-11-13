@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.findUsages;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ExtensionAPI;
 import consulo.component.extension.ExtensionPointName;
 import consulo.language.psi.PsiNamedElement;
 
 // upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 public interface ExternalSearchScopeChecker {
     ExtensionPointName<ExternalSearchScopeChecker> EP_NAME =
-            ExtensionPointName.create("org.intellij.scala.findUsages.externalSearchScopeChecker");
+            ExtensionPointName.create(ExternalSearchScopeChecker.class);
 
     boolean checkSearchScopeIsSufficient(PsiNamedElement target, UsageType usageType);
 

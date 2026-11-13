@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.relativeImports
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemsHolder}
@@ -17,7 +22,18 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl
 class RelativeImportInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.relative.import"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import org.jetbrains.plugins.scala.codeInspection.relativeImports.RelativeImportInspection.qual
 
   override def isAvailableForFile(file: PsiFile): Boolean =

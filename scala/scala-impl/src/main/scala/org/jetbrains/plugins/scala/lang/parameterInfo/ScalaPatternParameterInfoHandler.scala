@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.CodeInsightBundle
 import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoUIContext, UpdateParameterInfoContext}
 import com.intellij.java.language.psi.{PsiMethod, PsiParameter}
@@ -24,7 +28,10 @@ import org.jetbrains.plugins.scala.project.ProjectContext
 import java.awt.Color
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl
 class ScalaPatternParameterInfoHandler extends ScalaParameterInfoHandler[ScPatternArgumentList, Any, ScPattern] {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getArgListStopSearchClasses: java.util.Set[? <: Class[?]] = {
     java.util.Collections.singleton(classOf[PsiMethod]) //todo: ?
   }

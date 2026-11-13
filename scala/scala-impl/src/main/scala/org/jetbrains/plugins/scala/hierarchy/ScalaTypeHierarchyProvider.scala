@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.hierarchy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.language.editor.{TargetElementUtil, TargetElementUtilExtender}
 import com.intellij.java.impl.ide.hierarchy.`type`.JavaTypeHierarchyProvider
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import java.util.Set as JSet
 
+@ExtensionImpl
 final class ScalaTypeHierarchyProvider extends JavaTypeHierarchyProvider {
   override def getTarget(dataContext: DataContext): PsiClass = {
     val editor = Option(dataContext.getData(CommonDataKeys.EDITOR))

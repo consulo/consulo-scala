@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.InsertionContext
 import consulo.language.editor.completion.lookup.LookupElementPresentation
@@ -13,7 +17,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression.ScalaPsiElementExt
 
+@ExtensionImpl(id = "exhaustiveMatchCompletionContributor", order = "before scalaIdentifierCompletionContributor")
 final class ExhaustiveMatchCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ExhaustiveMatchCompletionContributor._
   import PlatformPatterns.psiElement

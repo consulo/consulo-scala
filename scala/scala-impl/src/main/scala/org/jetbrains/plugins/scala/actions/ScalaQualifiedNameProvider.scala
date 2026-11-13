@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.impl.ide.actions.JavaQualifiedNameProvider
 import consulo.language.editor.QualifiedNameProvider
 import consulo.codeEditor.Editor
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScOb
  * (Q: What is the difference? Shouldn't they be unified, and one would use another?)
  * Used in [[com.intellij.ide.actions.CopyReferenceAction]], [[com.intellij.ide.actions.FqnUtil]]
  */
+@ExtensionImpl(order = "first")
 class ScalaQualifiedNameProvider extends QualifiedNameProvider {
 
   override def adjustElementToCopy(element: PsiElement): PsiElement = null

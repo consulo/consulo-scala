@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScDerivesClauseOwner, ScObject, ScTypeDefinition}
 
 /**
  * Injects synthetic given definitions generated from data-type derives clause
  * into companion object.
  */
+@ExtensionImpl
 class DerivesInjector extends SyntheticMembersInjector{
   override def needsCompanionObject(source: ScTypeDefinition): Boolean = source match {
     case owner: ScDerivesClauseOwner => owner.derivesClause.exists(_.derivedReferences.nonEmpty)

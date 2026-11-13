@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
@@ -20,7 +26,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenDefinit
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
 final class ScalaFileNameInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("fileName.does.not.match"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import ProblemDescriptor.EMPTY_ARRAY
   import ScalaFileNameInspection._
 

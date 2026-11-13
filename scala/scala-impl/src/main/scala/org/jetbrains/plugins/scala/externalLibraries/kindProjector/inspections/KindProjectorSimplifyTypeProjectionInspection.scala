@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.project.Project
@@ -26,7 +32,14 @@ import scala.collection.mutable
  * Simplifies types, so that they use Kind Projector plugin (if Kind Projector is enabled)
  * @see https://github.com/non/kind-projector
  */
+@ExtensionImpl(id = "KindProjectorSimplifyTypeProjection")
 class KindProjectorSimplifyTypeProjectionInspection extends LocalInspectionTool {
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import KindProjectorSimplifyTypeProjectionInspection._
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =

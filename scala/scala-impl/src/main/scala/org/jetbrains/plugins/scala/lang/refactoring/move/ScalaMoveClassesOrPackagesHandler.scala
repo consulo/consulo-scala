@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.ui.ex.awt.{DialogWrapper, Messages}
 import com.intellij.java.language.psi.PsiClass
@@ -21,6 +23,7 @@ import java.{util => ju}
 import javax.swing._
 import scala.annotation.nowarn
 
+@ExtensionImpl(order = "first, after scalaMoveMembersHandler")
 final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesHandler {
   override def doMove(project: Project, elements: Array[PsiElement], targetContainer: PsiElement, callback: MoveCallback): Unit = {
     def refactoringIsNotSupported(): Unit = {

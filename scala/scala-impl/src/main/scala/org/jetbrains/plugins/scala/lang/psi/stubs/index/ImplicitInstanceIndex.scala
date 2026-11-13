@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.stub.IndexSink
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
+@ExtensionImpl
 final class ImplicitInstanceIndex extends ScStringStubIndexExtension[ScMember] {
 
   //noinspection TypeAnnotation

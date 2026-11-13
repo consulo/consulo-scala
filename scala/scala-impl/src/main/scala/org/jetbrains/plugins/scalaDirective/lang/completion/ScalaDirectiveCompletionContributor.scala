@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.completion.{CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
@@ -10,6 +12,7 @@ import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion.{ScalaCompletionContributor, positionFromParameters}
 import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirectiveLookupItem
 
+@ExtensionImpl(id = "scalaDirectiveCompletionContributor")
 final class ScalaDirectiveCompletionContributor extends ScalaCompletionContributor with DumbAware {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

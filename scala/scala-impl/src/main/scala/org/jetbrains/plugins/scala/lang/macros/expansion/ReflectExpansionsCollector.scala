@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.logging.Logger
 import consulo.fileEditor.FileEditorManager
@@ -15,7 +21,10 @@ import java.nio.file.{Files, Paths}
 import scala.collection.mutable
 import scala.util.Using
 
-class ReflectExpansionsCollector(project: Project) {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class ReflectExpansionsCollector @Inject()(project: Project) {
   import ReflectExpansionsCollector._
 
   private val collectedExpansions: mutable.HashMap[Place, MacroExpansion] = mutable.HashMap.empty

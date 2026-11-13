@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import java.util.function.Consumer
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiElement
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.{PsiTypedDefinitionWrapper, Sc
 
 import java.util
 
+@ExtensionImpl(order = "first, before KotlinAwareJavaGetter")
 class RenameLightProcessor extends RenamePsiElementProcessor {
   override def canProcessElement(element: PsiElement): Boolean = {
     element match {

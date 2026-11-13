@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.ui.awt.HintUtil
 import com.intellij.java.language.impl.codeInsight.javadoc.JavaDocUtil
 import consulo.language.editor.documentation.CodeDocumentationProvider
@@ -25,7 +29,10 @@ import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScDocRefQuery
 import java.util.function.Consumer
 import scala.annotation.tailrec
 
+@ExtensionImpl(id = "ScalaDocumentationProvider")
 class ScalaDocumentationProvider extends CodeDocumentationProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getDocumentationElementForLookupItem(
     psiManager: PsiManager,

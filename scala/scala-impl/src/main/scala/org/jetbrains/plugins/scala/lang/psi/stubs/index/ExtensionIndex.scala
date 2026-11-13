@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.stub.StubIndexKey
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}
 
+@ExtensionImpl
 final class ExtensionIndex extends ScStringStubIndexExtension[ScExtension] {
   override def getKey: StubIndexKey[String, ScExtension] = ExtensionIndex.indexKey
 }

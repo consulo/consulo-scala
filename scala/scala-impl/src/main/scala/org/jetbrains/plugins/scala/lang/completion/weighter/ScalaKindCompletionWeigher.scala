@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
 import consulo.language.editor.completion.lookup.LookupElement
 import com.intellij.java.language.psi.{PsiField, PsiMember, PsiMethod}
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
  * lift fields before methods. threat class params as field.
  * on 1/18/16
  */
+@ExtensionImpl(id = "scalaKindWeigher", order = "after prefix, before proximity")
 final class ScalaKindCompletionWeigher extends CompletionWeigher {
 
   override def weigh(element: LookupElement, location: CompletionLocation): Comparable[?] = {

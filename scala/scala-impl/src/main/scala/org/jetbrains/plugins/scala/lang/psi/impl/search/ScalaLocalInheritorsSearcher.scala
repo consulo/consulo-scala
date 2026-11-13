@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.util.query.QueryExecutorBase
 import consulo.application.progress.ProgressManager
 import com.intellij.java.language.psi.PsiClass
@@ -18,6 +20,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefi
   * @see [[ScalaDirectClassInheritorsSearcher]]<br>
   * TODO: show inheritors via gutter doesn't work in Scratch files (see IDEA-313012)
   */
+@ExtensionImpl
 class ScalaLocalInheritorsSearcher extends QueryExecutorBase[PsiClass, ClassInheritorsSearch.SearchParameters] {
 
   override def processQuery(params: SearchParameters, consumer: Processor[? >: PsiClass]): Unit = {

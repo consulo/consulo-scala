@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.references
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.document.util.TextRange
 import com.intellij.java.language.patterns.PsiJavaPatterns.psiJavaElement
 import consulo.language.Language
@@ -25,6 +27,7 @@ import scala.collection.mutable.ListBuffer
 /**
  * @see [[com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaReferenceContributor]]
  */
+@ExtensionImpl
 final class ScalaReferenceContributor extends PsiReferenceContributor {
 
   override def registerReferenceProviders(registrar: PsiReferenceRegistrar): Unit = {

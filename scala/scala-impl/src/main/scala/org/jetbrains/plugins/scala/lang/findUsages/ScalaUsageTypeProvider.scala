@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.psi.util.PsiTreeUtil
@@ -30,6 +32,7 @@ import org.jetbrains.plugins.scala.util.SAMUtil._
 
 import scala.language.implicitConversions
 
+@ExtensionImpl(id = "scalaUsageTypeProvider", order = "first")
 final class ScalaUsageTypeProvider extends UsageTypeProviderEx {
 
   import ScalaUsageTypeProvider._

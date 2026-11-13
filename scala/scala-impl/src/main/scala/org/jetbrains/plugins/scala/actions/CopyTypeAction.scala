@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
@@ -22,6 +27,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScTypeExt, TypePrese
 
 import scala.annotation.tailrec
 
+@ActionImpl(id = "Scala.CopyType", parents = Array(new ActionParentRef(value = new ActionRef(id = "Copy.Paste.Special"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "CopyReference"))))
 final class CopyTypeAction extends AnAction(ScalaBundle.message("copy.scala.type")) with AnActionWithSyncUpdate {
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 

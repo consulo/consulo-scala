@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.util.ModuleUtilCore
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
@@ -9,6 +11,7 @@ import consulo.content.scope.SearchScope
 import org.jetbrains.plugins.scala.project.ModuleExt
 
 // upstream: @ApiStatus.Internal
+@ExtensionImpl
 final class ScalaSharedSourcesResolveScopeEnlarger extends ResolveScopeEnlarger {
 
   override def getAdditionalResolveScope(file: VirtualFile, project: Project): SearchScope = {

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.language.editor.PlatformDataKeys
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.ui.ex.action.{AnAction, AnActionEvent}
@@ -25,6 +27,7 @@ import java.awt.Point
 import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import javax.swing.JList
 
+@ActionImpl(id = "Scala.MakeExplicit")
 final class MakeExplicitAction extends AnAction(
   ScalaBundle.message("make.implicit.conversion.explicit.action.text"),
   ScalaBundle.message("make.implicit.conversion.explicit.action.description"),

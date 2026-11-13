@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.impl.highlight.MainHighlightingPassFactory
 import consulo.language.editor.Pass
 import consulo.language.editor.highlight.TextEditorHighlightingPassFactory
@@ -10,6 +12,7 @@ import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
 
+@ExtensionImpl
 final class ScalaUnusedImportsPassFactory
   extends TextEditorHighlightingPassFactory
     with MainHighlightingPassFactory {

@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.shadow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.intention.{HighPriorityAction, LowPriorityAction}
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
@@ -25,7 +30,16 @@ import org.jetbrains.plugins.scala.util.EnumSet.EnumSetOps
 import scala.beans.BooleanBeanProperty
 import scala.collection.mutable
 
+@ExtensionImpl
 final class PrivateShadowInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("private.shadow.description"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import PrivateShadowInspection._
 

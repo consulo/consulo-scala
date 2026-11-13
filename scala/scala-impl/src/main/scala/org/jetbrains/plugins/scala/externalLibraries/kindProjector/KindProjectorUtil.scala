@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import org.apache.maven.artifact.versioning.ComparableVersion
@@ -22,7 +28,10 @@ import org.jetbrains.plugins.scala.shared.project._
  * Partially based on and inspired by contribution from @vovapolu
  * (https://github.com/JetBrains/intellij-scala/pull/435).
  */
-class KindProjectorUtil(project: Project) {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class KindProjectorUtil @Inject()(project: Project) {
   import KindProjectorUtil._
 
   /**

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.todo
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.impl.psi.PsiFileBase
 import consulo.language.parser.ParserDefinition
 import consulo.language.lexer.Lexer
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes.SCALA_DOC_COMMENT
 
 //noinspection TypeAnnotation
+@ExtensionImpl
 final class ScalaIndexPatternBuilder extends IndexPatternBuilder {
 
   import ScalaTokenTypes._

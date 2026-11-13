@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import jakarta.inject.Singleton;
+
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
@@ -13,6 +18,9 @@ import java.util.function.Supplier;
         name = "ScalaCodeInsightSettings",
         storages = {@Storage("scala_code_insight_settings.xml")}
 )
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 public class ScalaCodeInsightSettings implements PersistentStateComponent<ScalaCodeInsightSettings> {
 
     public static final boolean SHOW_PARAMETER_NAMES_DEFAULT = false;

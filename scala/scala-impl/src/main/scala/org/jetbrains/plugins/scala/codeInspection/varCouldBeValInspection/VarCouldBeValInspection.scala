@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement
@@ -17,7 +22,16 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createVa
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class VarCouldBeValInspection extends HighlightingPassInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.var.could.be.a.val"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import VarCouldBeValInspection._
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.codeEditor.Editor
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.overrideImplement.ScalaOIUtil.invokeOverrideI
 /**
  * Handler for "Override methods" action (Ctrl + I)
  */
+@ExtensionImpl
 class ScalaImplementMethodsHandler extends ScalaCodeInsightActionHandler {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
 import consulo.language.editor.completion.lookup.LookupElement
 import com.intellij.java.language.psi.PsiMethod
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
 import java.util.{Comparator, Objects}
 
+@ExtensionImpl(id = "scalaMethodCompletionWeigher", order = "after scalaContainingClassWeigher, before proximity")
 final class ScalaMethodCompletionWeigher extends CompletionWeigher {
   case class MethodNameComparable(@Nullable name: String, hasParameters: Boolean) extends Comparable[MethodNameComparable] {
     override def compareTo(o: MethodNameComparable): Int = {

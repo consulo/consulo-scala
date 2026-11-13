@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.AutoPopupController
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyPattern
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveAutoPopupCompletionHandler._
 
+@ExtensionImpl
 final class EnableAutoPopupInScalaDirectiveComment extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
@@ -27,6 +30,7 @@ final class EnableAutoPopupInScalaDirectiveComment extends CompletionConfidence 
   }
 }
 
+@ExtensionImpl
 final class ScalaDirectiveAutoPopupCompletionHandler extends TypedHandlerDelegate {
 
   override def checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result = {

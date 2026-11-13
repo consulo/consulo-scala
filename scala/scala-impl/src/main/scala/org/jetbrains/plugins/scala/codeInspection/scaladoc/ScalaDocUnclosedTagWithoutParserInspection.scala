@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.scaladoc
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
@@ -15,7 +20,14 @@ import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxE
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsing
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocSyntaxElement
 
+@ExtensionImpl
 final class ScalaDocUnclosedTagWithoutParserInspection extends LocalInspectionTool with DumbAware {
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.scaladoc"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isEnabledByDefault: Boolean = true
 
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("display.name.unclosed.tag"))

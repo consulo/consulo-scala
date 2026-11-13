@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType, CompletionUtilCore}
@@ -19,7 +23,10 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.NamedTupleType
 import scala.annotation.tailrec
 import scala.collection.mutable
 
+@ExtensionImpl(order = "before sameSignatureCallParametersProvider")
 class ScalaNamedTupleCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   extend(
     CompletionType.BASIC,
     identifierWithParentsPattern(classOf[ScNamedTupleExprComponent], classOf[ScNamedTuple]),

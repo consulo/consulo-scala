@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.shebang
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.hint.HintManager
@@ -22,7 +27,16 @@ import java.io.File
 
 // Similar to Kotlin's ScriptShebangExecPermissionInspection:
 // https://github.com/JetBrains/intellij-community/blob/43f59a59e0360809fb08461e1023c725b27358b3/plugins/kotlin/code-insight/inspections-k2/src/org/jetbrains/kotlin/idea/codeInsight/inspections/ScriptShebangExecPermissionInspection.kt
+@ExtensionImpl
 final class ScalaShebangExecutableInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("shebang.executable.inspection"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import ProblemDescriptor.EMPTY_ARRAY
   import ScalaShebangExecutableInspection._
 

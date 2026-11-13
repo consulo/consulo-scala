@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.module
 import consulo.language.util.ModuleUtilCore
 import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.project.ModuleExt
 
 // upstream: @ApiStatus.Internal
+@ExtensionImpl
 class ScalaSharedSourcesUseScopeEnlarger extends UseScopeEnlarger {
   override def getAdditionalUseScope(element: PsiElement): SearchScope = {
     val psiMember = element match {

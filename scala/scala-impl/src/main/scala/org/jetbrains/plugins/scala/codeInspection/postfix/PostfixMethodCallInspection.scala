@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.postfix
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
@@ -9,7 +15,18 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
+@ExtensionImpl
 class PostfixMethodCallInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.use.of.postfix.method.call"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case pexpr: ScPostfixExpr if !safe(pexpr) =>

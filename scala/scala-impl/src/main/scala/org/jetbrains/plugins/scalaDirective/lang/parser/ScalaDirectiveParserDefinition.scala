@@ -2,6 +2,9 @@ package org.jetbrains.plugins.scalaDirective
 package lang
 package parser
 
+import consulo.annotation.component.ExtensionImpl
+import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
+
 import consulo.language.impl.psi.ASTWrapperPsiElement
 import consulo.language.ast.ASTNode
 import consulo.language.parser.ParserDefinition
@@ -13,6 +16,7 @@ import consulo.language.file.FileViewProvider
 import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scalaDirective.lang.lexer._ScalaDirectiveLexer
 
+@ExtensionImpl
 class ScalaDirectiveParserDefinition extends ParserDefinition {
 
   override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE

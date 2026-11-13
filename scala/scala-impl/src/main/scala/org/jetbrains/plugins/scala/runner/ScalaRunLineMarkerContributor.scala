@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.ui.image.Image
 import consulo.execution.lineMarker.RunLineMarkerContributor.Info
 import consulo.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
@@ -12,7 +16,10 @@ import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.util.ScalaMainMethodUtil
 
 
+@ExtensionImpl(id = "ScalaRunLineMarkerContributor")
 class ScalaRunLineMarkerContributor extends RunLineMarkerContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getInfo(element: PsiElement): Info = {
     val file = element.getContainingFile
     val project = if (file != null) file.getProject else element.getProject // Avoid tree walk-up

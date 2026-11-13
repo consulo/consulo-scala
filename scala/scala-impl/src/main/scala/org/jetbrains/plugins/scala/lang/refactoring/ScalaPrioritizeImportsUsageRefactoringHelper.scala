@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.RefactoringHelper
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 
 import java.util as ju
 
+@ExtensionImpl(order = "last")
 final class ScalaPrioritizeImportsUsageRefactoringHelper extends RefactoringHelper[Unit] {
 
   /**

@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.rawHighlight.HighlightInfo
@@ -31,7 +36,18 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
 final class ScalaAccessCanBeTightenedInspection extends HighlightingPassInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.access.can.be.weaker"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "ScalaWeakerAccess"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private def computeCanBePrivate(element: ScNamedElement): Boolean =
     Search.Util.shouldProcessElement(element) && {

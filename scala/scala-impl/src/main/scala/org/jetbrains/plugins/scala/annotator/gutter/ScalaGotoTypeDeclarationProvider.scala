@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.TypeDeclarationProvider
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScCompoundType, ScType, ScTypeExt}
 
+@ExtensionImpl
 class ScalaGotoTypeDeclarationProvider extends TypeDeclarationProvider {
   override def getSymbolTypeDeclarations(symbol: PsiElement): Array[PsiElement] = {
     implicit val context: Context = Context(symbol)

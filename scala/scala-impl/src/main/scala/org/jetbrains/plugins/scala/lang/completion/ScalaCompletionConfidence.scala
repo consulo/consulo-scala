@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.CompletionConfidence
 import consulo.language.Language
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScInterpolatedExpressionPrefix
 import org.jetbrains.plugins.scala.lang.psi.types.{ScOrType, ScTypeExt}
 
+@ExtensionImpl
 final class ScalaCompletionConfidence extends CompletionConfidence {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE

@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.reflinks
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
 import consulo.language.impl.psi.ASTWrapperPsiElement
 import consulo.language.ast.ASTNode
 import consulo.language.parser.{ParserDefinition, PsiParser}
@@ -14,7 +17,10 @@ import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.parser.ScalaDocRefLink
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.ScalaDocRefLinkFile
 import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.impl.{ScDocRefQuerySegmentImpl, ScDocRefStrictMemberIdQueryImpl, ScDocRefThisQueryImpl, ScPackageQueryImpl}
 
+@ExtensionImpl
 class ScalaDocRefLinkParserDefinition extends ParserDefinition {
+  override def getLanguage: Language = ScalaDocRefLinkLanguage
+
   override def createLexer(project: Project): Lexer = new ScalaDocRefLinkLexer
 
   override def createParser(project: Project): PsiParser = new ScalaDocRefLinkParser

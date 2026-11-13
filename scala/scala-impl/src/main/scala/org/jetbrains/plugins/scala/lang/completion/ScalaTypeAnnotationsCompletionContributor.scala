@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElementBuilder, LookupElementDecorator}
@@ -19,7 +23,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
 import scala.collection.mutable
 
+@ExtensionImpl(id = "scalaTypeAnnotationsCompletionContributor", order = "before keywordCompletionContributor")
 final class ScalaTypeAnnotationsCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaTypeAnnotationsCompletionContributor._
 

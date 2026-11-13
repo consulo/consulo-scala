@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.typeDef
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScSelfInvocation
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScConstructorOwner, ScTemplateDefinition}
 import java.util.function.Predicate
 
+@ExtensionImpl
 class SelfInvocationSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     queryParameters.getElementToSearch match {

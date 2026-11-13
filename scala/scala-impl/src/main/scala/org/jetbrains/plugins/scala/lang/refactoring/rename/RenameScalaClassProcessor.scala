@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.ui.{CheckBox, Component}
 import consulo.codeEditor.Editor
@@ -24,6 +26,7 @@ import java.util
 import javax.swing.{JCheckBox, JComponent, JPanel}
 import scala.jdk.CollectionConverters.SetHasAsScala
 
+@ExtensionImpl(order = "first")
 class RenameScalaClassProcessor extends RenameJavaClassProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = {
     element.is[ScTypeDefinition, PsiClassWrapper, ScTypeParam]

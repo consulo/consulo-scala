@@ -26,7 +26,7 @@ object TypeIntrinsics {
       case ScProjectionType.withActual(alias: ScTypeAlias, _) =>
         implicit def project: Project = designator.projectContext.project
 
-        val matchTypeIntrinsicsEnabled = Registry.is("scala.enable.match.type.intrinsics")
+        val matchTypeIntrinsicsEnabled = Registry.is("scala.enable.match.type.intrinsics", true)
         val containingClassName        = Option(alias.containingClass).map(_.qualifiedName).orNull
 
         //TODO: question of de-aliasing/reducing type aliases is more general and complicated

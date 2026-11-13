@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import consulo.language.psi.event.{PsiTreeChangeAdapter, PsiTreeChangeEvent}
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiChangeListener._
 
+@ExtensionImpl
 final class ScalaPsiChangeListener(project: Project) extends PsiTreeChangeAdapter {
   import ScalaPsiChangeListener.EventType._
 

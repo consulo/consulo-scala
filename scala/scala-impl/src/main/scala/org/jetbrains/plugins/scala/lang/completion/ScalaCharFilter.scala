@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.lookup.{CharFilter, Lookup}
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
 
+@ExtensionImpl
 class ScalaCharFilter extends CharFilter {
 
   import CharFilter.Result

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.completion.CompletionType
 import consulo.language.editor.action.TypedHandlerDelegate
@@ -42,6 +44,7 @@ import scala.annotation.tailrec
 import scala.language.implicitConversions
 
 //noinspection HardCodedStringLiteral
+@ExtensionImpl(order = "first")
 final class ScalaTypedHandler extends TypedHandlerDelegate
   with IndentAdjustor
 {

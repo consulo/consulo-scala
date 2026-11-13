@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
@@ -19,6 +21,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 import org.jetbrains.plugins.scala.util.{MultilineStringSettings, MultilineStringUtil}
 
 // TODO: add Scala prefix for all handlers for easy debug
+@ExtensionImpl(order = "first")
 class MultilineStringEnterHandler extends EnterHandlerDelegateAdapter {
   private var wasInMultilineString: Boolean = false
   private var whiteSpaceAfterCaret: String = ""

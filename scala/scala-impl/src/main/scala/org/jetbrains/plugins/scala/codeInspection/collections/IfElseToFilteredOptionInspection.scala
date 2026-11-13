@@ -1,12 +1,29 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScMethodCall}
 import org.jetbrains.plugins.scala.util.SideEffectsUtil
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 class IfElseToFilteredOptionInspection extends OperationOnCollectionInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.change.to.filter"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.options"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "IfElseToFilterdOption"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def possibleSimplificationTypes: ArraySeq[SimplificationType] = ArraySeq(FilterOption)
 }
 

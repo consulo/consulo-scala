@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter.usages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.TargetElementUtil
 import consulo.language.editor.highlight.usage.{HighlightUsagesHandlerBase, HighlightUsagesHandlerFactory}
 import consulo.codeEditor.Editor
@@ -19,6 +21,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTypeDefinitionLike}
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
+@ExtensionImpl(id = "ScalaHighlightUsagesHandlerFactory")
 final class ScalaHighlightUsagesHandlerFactory extends HighlightUsagesHandlerFactory {
 
   import ScalaTokenType._

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.settings;
 
+import consulo.annotation.component.ExtensionImpl;
+
 import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
 import consulo.disposer.Disposable;
@@ -8,6 +10,7 @@ import consulo.project.Project;
 import consulo.ui.Component;
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider$;
 
+@ExtensionImpl(id = "configurable.scala.root")
 public class ScalaProjectSettingsConfigurable implements Configurable {
 
   public ScalaProjectSettingsConfigurable(Project project) {

@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.typeAnnotation
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
@@ -21,7 +26,16 @@ import org.jetbrains.plugins.scala.rt.util._
 import org.jetbrains.plugins.scala.shared.util._
 
 
+@ExtensionImpl
 class TypeAnnotationInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.type.annotation.required"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import TypeAnnotationInspection._
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {

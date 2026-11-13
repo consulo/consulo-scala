@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.moveLeftRight.MoveElementLeftRightHandler
 import consulo.util.lang.StringUtil
 import consulo.language.psi.PsiElement
@@ -12,7 +16,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameterClause, ScTypeParamClause}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
+@ExtensionImpl
 class ScalaMoveLeftRightHandler extends MoveElementLeftRightHandler {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getMovableSubElements(element: PsiElement): Array[PsiElement] = {
     element match {
       case argList: ScArgumentExprList =>

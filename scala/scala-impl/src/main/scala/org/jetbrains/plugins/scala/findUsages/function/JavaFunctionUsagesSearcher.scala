@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.function
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.{PsiElement, PsiReference}
 import com.intellij.java.language.psi.{PsiMethod, PsiModifier, PsiReferenceExpression}
 import consulo.language.psi.search.ReferencesSearch
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.{ScFunctionWrapper, StaticPsiM
 import scala.collection.mutable
 import java.util.function.Predicate
 
+@ExtensionImpl
 class JavaFunctionUsagesSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val scope = inReadAction(queryParameters.getEffectiveSearchScope)

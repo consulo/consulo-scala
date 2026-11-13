@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -18,6 +21,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
   * mattfowler
   * 5/21/2016
   */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.CreateCompanionObjectIntention", fileExtensions = Array("scala"), categories = Array("Scala"))
 class CreateCompanionObjectIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getText: String = ScalaBundle.message("create.companion.object.for.class")
 

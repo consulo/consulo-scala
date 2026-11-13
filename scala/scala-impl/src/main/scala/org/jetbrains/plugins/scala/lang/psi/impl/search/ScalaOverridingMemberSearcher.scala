@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.progress.ProgressManager
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
@@ -24,6 +26,7 @@ import scala.collection.mutable
 /**
  * This class is required for Ctrl+Alt+B action for cases when not PsiMethod overrides not PsiMethod (one of two cases)
  */
+@ExtensionImpl
 class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] {
   override def execute(sourceElement: PsiElement, consumer: Processor[? >: PsiElement]): Boolean = {
     sourceElement match {
@@ -47,6 +50,7 @@ class MethodImplementationsSearch extends QueryExecutor[PsiElement, PsiElement] 
  *
  * Java analogue: [[com.intellij.psi.impl.search.JavaOverridingMethodsSearcher]]
  */
+@ExtensionImpl(order = "first")
 class ScalaOverridingMemberSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
   override def execute(queryParameters: SearchParameters, consumer: Processor[? >: PsiMethod]): Boolean = {
     val method = queryParameters.getMethod

@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.LocalQuickFix
 import com.intellij.java.analysis.impl.codeInspection.RemoveAnnotationQuickFix
 import consulo.project.Project
@@ -67,7 +73,16 @@ abstract class OverridingTargetNameInspectionBase extends TargetNameInspectionBa
   protected def checkSuperAnnotation(superElement: ScAnnotationsHolder, element: ScAnnotationsHolder): Boolean
 }
 
+@ExtensionImpl(id = "OverridingAddingTargetName")
 class OverridingAddingTargetNameInspection extends OverridingTargetNameInspectionBase {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.member.has.targetname.when.overridden.does.not"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.ERROR
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import OverridingAddingTargetNameInspection._
 
@@ -90,7 +105,16 @@ object OverridingAddingTargetNameInspection {
     ScalaInspectionBundle.message("override.definition.should.not.have.targetname.annotation")
 }
 
+@ExtensionImpl(id = "OverridingRemovingTargetName")
 class OverridingRemovingTargetNameInspection extends OverridingTargetNameInspectionBase {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.definition.misses.targetname.annotation"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.ERROR
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import OverridingRemovingTargetNameInspection._
 
@@ -114,7 +138,16 @@ object OverridingRemovingTargetNameInspection {
     ScalaInspectionBundle.message("override.definition.misses.targetname.annotation", superExtName)
 }
 
+@ExtensionImpl(id = "OverridingWithDifferentTargetName")
 class OverridingWithDifferentTargetNameInspection extends OverridingTargetNameInspectionBase {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.definition.and.overridden.member.have.different.targetname.annotations"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.ERROR
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import OverridingWithDifferentTargetNameInspection._
 

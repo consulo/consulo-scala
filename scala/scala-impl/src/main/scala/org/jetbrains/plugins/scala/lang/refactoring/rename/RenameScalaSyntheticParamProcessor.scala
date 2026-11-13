@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.content.scope.SearchScope
 import consulo.language.psi.{PsiElement, PsiReference}
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 
 import java.util
 
+@ExtensionImpl(order = "first")
 class RenameScalaSyntheticParamProcessor extends RenamePsiElementProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = realParamForSyntheticParam(element).isDefined
 

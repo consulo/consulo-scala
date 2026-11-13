@@ -2,6 +2,10 @@ package org.jetbrains.plugins.scala.lang
 package completion
 package aot
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionInitializationContext, CompletionParameters, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.InsertionContext
 import consulo.language.editor.completion.lookup.Lookup
@@ -21,7 +25,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, 
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.*
 
+@ExtensionImpl(id = "scalaIdentifierCompletionContributor", order = "before scalaCompletionContrubutor")
 final class ScalaAotCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import CompletionType.BASIC
   import ScalaAotCompletionContributor._

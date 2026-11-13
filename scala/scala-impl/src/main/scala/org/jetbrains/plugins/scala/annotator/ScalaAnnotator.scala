@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
 import consulo.language.inject.InjectedLanguageManager
 import consulo.application.dumb.DumbAware
@@ -34,10 +38,13 @@ import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 import org.jetbrains.plugins.scala.statistics.ScalaAnnotatorUsagesCollector
 import org.jetbrains.plugins.scala.{ScalaBundle, Tracing}
 
+@ExtensionImpl
 class ScalaAnnotator extends Annotator
   with FunctionAnnotator
   with OverridingAnnotator
   with DumbAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def annotate(element: PsiElement, holder: AnnotationHolder): Unit = {
     val file = element.getContainingFile

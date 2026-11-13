@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.logging.Logger
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import consulo.project.{DumbService, Project}
@@ -34,6 +36,7 @@ import scala.collection.mutable
  * @see [[com.intellij.refactoring.OptimizeImportsRefactoringHelper]]<br>
  *      (our implementation differs from Java and Kotlin)
  */
+@ExtensionImpl
 final class ScalaProcessImportsRefactoringHelper extends RefactoringHelper[MyData] {
 
   override def prepareOperation(usages: Array[UsageInfo]): MyData = {

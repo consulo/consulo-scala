@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.AutoPopupController
 import consulo.language.editor.action.TypedHandlerDelegate
 import consulo.language.editor.action.TypedHandlerDelegate.Result
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.completion.ScalaAutoPopupCompletionHandl
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScPatternDefinition, ScVariableDefinition}
 
+@ExtensionImpl
 final class ScalaAutoPopupCompletionHandler extends TypedHandlerDelegate {
   override def charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result =
     if (!file.is[ScalaFile] || char != ':') super.charTyped(char, project, editor, file)

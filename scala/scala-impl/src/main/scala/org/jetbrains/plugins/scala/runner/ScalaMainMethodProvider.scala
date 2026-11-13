@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.language.codeInsight.runner.JavaMainMethodProvider
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import org.jetbrains.plugins.scala.extensions.OptionExt
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import org.jetbrains.plugins.scala.util.ScalaMainMethodUtil
 
+@ExtensionImpl
 class ScalaMainMethodProvider extends JavaMainMethodProvider {
   override def isApplicable(clazz: PsiClass): Boolean = clazz match {
     case _: ScTemplateDefinition => true

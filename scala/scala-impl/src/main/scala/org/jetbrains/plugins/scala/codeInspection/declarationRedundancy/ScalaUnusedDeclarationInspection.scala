@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
 import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
 import consulo.language.editor.inspection.{InspectionToolState, UpdateInspectionOptionFix}
@@ -32,7 +37,18 @@ import org.jetbrains.plugins.scala.util.SAMUtil.PsiClassToSAMExt
 
 import scala.beans.{BeanProperty, BooleanBeanProperty}
 
+@ExtensionImpl
 final class ScalaUnusedDeclarationInspection extends HighlightingPassInspection with ScalaUnusedDeclarationIncrementalInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.unused.declaration"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "ScalaUnusedSymbol"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaUnusedDeclarationInspection._
   import org.jetbrains.plugins.scala.codeInspection.ui.CompilerInspectionOptions._

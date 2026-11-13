@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.statistician
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionStatistician}
 import consulo.language.editor.completion.lookup.LookupElement
 import consulo.language.statistician.StatisticsInfo
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScModifierListOwner
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
+@ExtensionImpl(order = "first")
 class ScalaCompletionStatistician extends CompletionStatistician {
   override def serialize(element: LookupElement, location: CompletionLocation): StatisticsInfo = {
     ScalaLookupItem.delegate(element) match {

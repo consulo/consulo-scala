@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.projectView
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.ui.view.tree.{TreeStructureProvider, ViewSettings}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -15,6 +17,7 @@ import scala.jdk.CollectionConverters._
  * (ProjectViewModuleGroupNode, ProjectViewModuleNode, ProjectViewProjectNode, ModuleGrouper - impl classes in Consulo,
  * sbt module data from org.jetbrains.sbt.project)
  */
+@ExtensionImpl(order = "last")
 final class ScalaTreeStructureProvider extends TreeStructureProvider with DumbAware {
 
   import ScalaTreeStructureProvider._

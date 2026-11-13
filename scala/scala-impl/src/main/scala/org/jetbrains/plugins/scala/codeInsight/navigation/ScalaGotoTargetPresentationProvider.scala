@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.navigation
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.impl.ide.util.PsiClassOrFunctionalExpressionPresentationProvider
 import consulo.application.Application
 import consulo.ide.navigation.GotoTargetPresentationProvider
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScExportStmt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 //noinspection ApiStatus,UnstableApiUsage
+@ExtensionImpl(order = "first")
 final class ScalaGotoTargetPresentationProvider extends GotoTargetPresentationProvider {
 
   override def getPresentation(element: PsiElement, options: GotoTargetPresentationProvider.Options): TargetPresentation = element match {

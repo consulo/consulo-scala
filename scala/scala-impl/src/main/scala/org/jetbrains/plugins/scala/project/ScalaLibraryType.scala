@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+import consulo.annotation.component.ExtensionImpl
+
 
 import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.application.Application
@@ -22,6 +24,7 @@ import java.nio.file.Path
 import java.util.concurrent.{CancellationException, CompletableFuture}
 import scala.annotation.nowarn
 
+@ExtensionImpl
 final class ScalaLibraryType extends LibraryType[ScalaLibraryProperties](ScalaLibraryType.Kind) {
 
   override def getIcon: Image = Icons.SCALA_SDK

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.postfix
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.postfixTemplate.{PostfixTemplate, PostfixTemplateProvider}
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
@@ -7,7 +11,10 @@ import consulo.language.psi.PsiFile
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ScalaPostfixTemplateProvider extends PostfixTemplateProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getTemplates: ju.Set[PostfixTemplate] = {
     ScalaPostfixTemplateProvider.Templates.asJava

@@ -1,5 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.xml
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
+
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -12,7 +19,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.xml.{ScXmlEndTag, ScXmlStar
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaElementVisitor, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._
 
+@ExtensionImpl
 final class ScalaXmlUnmatchedTagInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.unmatched.tag"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.ERROR
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isEnabledByDefault: Boolean = true
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = {

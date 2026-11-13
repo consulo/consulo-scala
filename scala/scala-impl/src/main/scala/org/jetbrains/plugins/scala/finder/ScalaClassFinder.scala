@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.finder
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.virtualFileSystem.fileType.FileTypeRegistry
 import consulo.project.{DumbService, Project}
 import consulo.module.content.ProjectRootManager
@@ -20,6 +22,7 @@ import java.util
 import java.util.Collections
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaClassFinder(project: Project) extends PsiElementFinder {
   private def psiManager  : ScalaPsiManager             = ScalaPsiManager.instance(project)
   private def cacheManager: ScalaShortNamesCacheManager = ScalaShortNamesCacheManager.getInstance(using project)

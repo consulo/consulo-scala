@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.{ExtendWordSelectionHandlerBase, SelectWordUtil}
 import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaStringLiteralSelectioner extends ExtendWordSelectionHandlerBase {
 
   override def canSelect(e: PsiElement): Boolean =

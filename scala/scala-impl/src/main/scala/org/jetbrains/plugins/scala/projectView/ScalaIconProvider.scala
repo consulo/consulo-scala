@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.projectView
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.progress.ProgressManager
 import consulo.language.icon.{IconDescriptor, IconDescriptorUpdater}
 import consulo.language.psi.PsiElement
@@ -7,6 +9,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 
 // upstream: com.intellij.ide.IconProvider, Consulo uses IconDescriptorUpdater
+@ExtensionImpl
 final class ScalaIconProvider extends IconDescriptorUpdater {
 
   override def updateIcon(descriptor: IconDescriptor, element: PsiElement, flags: Int): Unit = element match {

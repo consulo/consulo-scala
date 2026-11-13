@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.AutoPopupController
 import consulo.language.editor.{CodeInsightBundle, TargetElementUtil}
 import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoUIContext, UpdateParameterInfoContext}
@@ -36,7 +40,10 @@ import java.util
 import scala.annotation.tailrec
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 class ScalaFunctionParameterInfoHandler extends ScalaParameterInfoHandler[PsiElement, Any, ScExpression] {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getArgListStopSearchClasses: util.Set[? <: Class[?]] =
     util.Collections.singleton(classOf[PsiMethod])

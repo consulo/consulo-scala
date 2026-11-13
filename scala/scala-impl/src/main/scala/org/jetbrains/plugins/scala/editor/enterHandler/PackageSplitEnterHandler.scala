@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.{EnterHandlerDelegate, EnterHandlerDelegateAdapter}
 import consulo.dataContext.DataContext
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.editor.enterHandler.PackageSplitEnterHandler.
 
 import scala.util.matching.Regex
 
+@ExtensionImpl
 class PackageSplitEnterHandler extends EnterHandlerDelegateAdapter {
   override def preprocessEnter(file: PsiFile,
                                editor: Editor,

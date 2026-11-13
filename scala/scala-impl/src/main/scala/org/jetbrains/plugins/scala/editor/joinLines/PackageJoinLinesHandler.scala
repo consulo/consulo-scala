@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.joinLines
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.{JoinLinesHandlerDelegate, JoinRawLinesHandlerDelegate}
 import consulo.document.Document
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -7,6 +9,7 @@ import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 
 /** `package a\npackageb` => `package a.b` */
+@ExtensionImpl
 class PackageJoinLinesHandler extends JoinRawLinesHandlerDelegate {
 
   override def tryJoinRawLines(document: Document, file: PsiFile, start: Int, end: Int): Int = {

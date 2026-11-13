@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.inference
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.index.io.{DataIndexer, ID}
 import consulo.language.psi.stub.{FileBasedIndex, FileBasedIndexExtension, FileContent}
@@ -16,6 +18,7 @@ import scala.jdk.CollectionConverters._
 
 // NOTE: low-level imperative style is intentionally used to avoid unnecessary allocations
 // and not to explode indexing time for such a tiny feature
+@ExtensionImpl
 final class ScalaDocAsteriskAlignStyleIndexer extends FileBasedIndexExtension[AsteriskAlignStyle, Integer] {
   override val getName: ID[AsteriskAlignStyle, Integer] = ScalaDocAsteriskAlignStyleIndexer.Id
 

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.generate
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
 import consulo.localize.LocalizeValue
 import consulo.application.CommonBundle
 import consulo.language.editor.scope.AnalysisScope
@@ -18,6 +22,7 @@ import org.jetbrains.plugins.scala.ScalaBundle
 
 import javax.swing.event.DocumentEvent
 
+@ActionImpl(id = "Scala.GenerateScaladoc", parents = Array(new ActionParentRef(value = new ActionRef(id = "ToolsMenu"))))
 class ScaladocAction extends BaseAnalysisAction(
   LocalizeValue.of(ScalaBundle.message("generate.scaladoc.action.text")),
   LocalizeValue.of(ScalaBundle.message("generate.scaladoc.action.description")),

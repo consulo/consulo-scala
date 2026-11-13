@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemDescriptor, ProblemHighlightType}
 import consulo.project.Project
@@ -12,7 +18,16 @@ import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
 class ChainedPackageInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.chained.package.clause.inspection"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ChainedPackageInspection._
 

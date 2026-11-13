@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.syntacticSimplification
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
@@ -17,7 +23,16 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.{FunctionType, TupleType}
 
 import scala.util.matching.Regex
 
+@ExtensionImpl(id = "FunctionTupleSyntacticSugar")
 class FunctionTupleSyntacticSugarInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.syntactic.sugar"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.syntactic.simplification"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WEAK_WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isEnabledByDefault: Boolean = true
 
   override def getID: String = "ScalaSyntacticSugar"

@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.types.api
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import consulo.disposer.Disposable
 import com.intellij.java.language.psi.CommonClassNames._
 import com.intellij.java.language.psi.PsiClass
@@ -82,6 +87,9 @@ sealed class ValType(override val name: String)(implicit projectContext: Project
   override def isFinalType(implicit context: Context) = true
 }
 
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 class StdTypes(implicit private val projectContext: ProjectContext) extends Disposable {
   // Scala 2 library bootstrap classes, which are not present in the `.class` files
   // https://github.com/scala/scala/tree/2.13.x/src/library-aux/scala

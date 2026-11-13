@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
 import consulo.language.content.ProjectRootsUtil
@@ -23,7 +29,16 @@ import scala.jdk.CollectionConverters._
 
 // TODO Handle content and source roots that are files rather than directories
 // TODO Handle nested content and source roots
+@ExtensionImpl(id = "ScalaPackageName")
 class ScalaPackageNameInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.package.name.inspection"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isEnabledByDefault: Boolean = true
 
   override def getID: String = ScalaPackageNameInspection.ToolId

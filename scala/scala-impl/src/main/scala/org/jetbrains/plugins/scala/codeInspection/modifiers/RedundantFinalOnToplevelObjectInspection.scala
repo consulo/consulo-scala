@@ -1,5 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.modifiers
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.{PsiElementVisitor, PsiFile}
@@ -10,7 +17,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
+@ExtensionImpl
 final class RedundantFinalOnToplevelObjectInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("final.modifier.is.redundant.for.toplevel.objects"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def isAvailableForFile(file: PsiFile): Boolean = file match {
     case file: ScalaFile =>
       // Since Scala 2.13 'final' is redundant on all objects.

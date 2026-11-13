@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType}
 
@@ -17,6 +19,7 @@ abstract class TwoTypesNamesProvider extends GenericTypeNamesProviderBase {
     argumentNames(arguments, 1)
 }
 
+@ExtensionImpl
 class EitherTypeNamesProvider extends TwoTypesNamesProvider {
 
   override protected val separator: String = "Or"
@@ -26,6 +29,7 @@ class EitherTypeNamesProvider extends TwoTypesNamesProvider {
       (`type`.designator.canonicalText == "_root_.scala.util.Either")
 }
 
+@ExtensionImpl
 class FromTypeToTypeNamesProvider extends TwoTypesNamesProvider {
 
   override protected val separator: String = "To"

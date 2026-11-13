@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.caches.stats
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.ui.image.Image
 import consulo.application.util.concurrent.AppExecutorUtil
 import consulo.application.AllIcons
@@ -22,6 +24,7 @@ import java.util.concurrent.{Future, TimeUnit}
 import javax.swing.JPanel
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "internal-profiler")
 class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware {
 
   //noinspection UnstableApiUsage,ApiStatus

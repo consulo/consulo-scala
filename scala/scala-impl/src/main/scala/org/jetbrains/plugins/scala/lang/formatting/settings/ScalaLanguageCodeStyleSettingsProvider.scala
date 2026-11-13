@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
 import consulo.language.codeStyle.ui.setting.{CodeStyleAbstractConfigurable, CodeStyleAbstractPanel, SmartIndentOptionsEditor}
@@ -23,6 +25,7 @@ import org.jetbrains.plugins.scala.ScalaBundle
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.ListHasAsScala
 
+@ExtensionImpl
 class ScalaLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
 
   override def createSettingsPage(baseSettings: CodeStyleSettings, modelSettings: CodeStyleSettings): Configurable =

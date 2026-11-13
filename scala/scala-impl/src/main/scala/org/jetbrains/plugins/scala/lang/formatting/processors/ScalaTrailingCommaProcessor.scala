@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.document.util.TextRange
 import consulo.language.codeStyle.CodeStyleSettings
 import consulo.language.impl.psi.SourceTreeToPsiMap
@@ -21,6 +23,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
 
+@ExtensionImpl
 class ScalaTrailingCommaProcessor extends PostFormatProcessor {
   override def processElement(source: PsiElement, settings: CodeStyleSettings): PsiElement = {
     new ScalaTrailingCommaVisitor(settings).processElement(source)

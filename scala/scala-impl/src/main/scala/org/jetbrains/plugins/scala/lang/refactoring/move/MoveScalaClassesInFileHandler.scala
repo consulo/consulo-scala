@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveAllClassesInFileHandler
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import java.lang.{Boolean => JBoolean}
 import java.{util => ju}
 
+@ExtensionImpl(order = "last")
 final class MoveScalaClassesInFileHandler extends MoveAllClassesInFileHandler {
 
   override def processMoveAllClassesInFile(allClasses: ju.Map[PsiClass, JBoolean],

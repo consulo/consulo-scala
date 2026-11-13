@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.typeChecking
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.PsiEquivalenceUtil
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
@@ -31,7 +37,16 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.chaining.scalaUtilChainingOps
 
+@ExtensionImpl
 final class TypeCheckCanBeMatchInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.type.check.can.be.pattern.matching"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import TypeCheckCanBeMatchInspection._
 

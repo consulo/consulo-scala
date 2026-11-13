@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.navigation.GotoDeclarationHandler
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
@@ -29,6 +31,7 @@ import org.jetbrains.plugins.scala.lang.resolve.processor.DynamicResolveProcesso
 import scala.annotation.tailrec
 
 //TODO: move to a proper package, it doesn't belong to "annotator.gutter"
+@ExtensionImpl
 class ScalaGoToDeclarationHandler extends GotoDeclarationHandler {
 
   override def getGotoDeclarationTargets(element: PsiElement, offset: Int, editor: Editor): Array[PsiElement] = {

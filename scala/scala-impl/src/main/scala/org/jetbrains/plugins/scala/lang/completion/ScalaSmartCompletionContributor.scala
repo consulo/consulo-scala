@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.CodeInsightUtilCore
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
@@ -48,7 +52,10 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ScalaSmartCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaSmartCompletionContributor._
 

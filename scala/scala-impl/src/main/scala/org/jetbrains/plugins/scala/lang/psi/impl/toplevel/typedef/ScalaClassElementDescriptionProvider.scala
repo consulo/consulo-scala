@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
 import consulo.usage.UsageViewTypeLocation
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 //It's not clear what was the original primary purpose of this class
 //This provider doesn't use "location" and returns name in too many possible locations
 //Ideally it should be specific on which locations it should handle
+@ExtensionImpl
 class ScalaClassElementDescriptionProvider extends ElementDescriptionProvider {
   override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String = {
     if (location == UsageViewTypeLocation.INSTANCE)

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.util.lang.function.Condition
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineActionHandler
 import org.jetbrains.plugins.scala.lang.refactoring.inline.method.ScalaInlineMethodHandler.hasNoCallUsages
 
+@ExtensionImpl(id = "scalaInlineMethodHandler", order = "first")
 final class ScalaInlineMethodHandler extends ScalaInlineActionHandler {
   override protected val helpId: String = ScalaInlineMethodHandler.HelpId
   override protected val refactoringName: String = ScalaInlineMethodHandler.RefactoringName

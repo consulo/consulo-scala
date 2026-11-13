@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 package typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{Model, PsiElementExt, PsiModifierListOwnerExt, PsiNamedElementExt, StringsExt}
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTyp
 import org.jetbrains.plugins.scala.lang.psi.stubs.ScAnnotationStub
 import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames._
 
+@ExtensionImpl
 class CaseClassAndCompanionMembersInjector extends SyntheticMembersInjector {
 
   override def injectFunctions(source: ScTypeDefinition): Seq[String] = {

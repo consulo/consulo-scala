@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import consulo.ui.image.Image
 import consulo.language.editor.DaemonCodeAnalyzerSettings
@@ -42,7 +46,10 @@ import consulo.ui.event.ComponentEvent
 import java.util.Collections.singletonList
 import java.{util => ju}
 
+@ExtensionImpl
 final class ScalaLineMarkerProvider extends LineMarkerProviderDescriptor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import Gutter._
   import GutterIconRenderer.Alignment

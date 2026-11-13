@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.simulacrum
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.{ParameterizedType, TypePa
 import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
+@ExtensionImpl
 class SimulacrumInjector extends SyntheticMembersInjector {
   import SimulacrumInjector._
 

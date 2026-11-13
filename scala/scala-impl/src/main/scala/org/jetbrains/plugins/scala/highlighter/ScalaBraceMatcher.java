@@ -15,6 +15,10 @@
 
 package org.jetbrains.plugins.scala.highlighter;
 
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
+import org.jetbrains.plugins.scala.api.ScalaLanguage;
+
 import consulo.language.BracePair;
 import consulo.language.PairedBraceMatcher;
 import consulo.language.psi.PsiFile;
@@ -26,7 +30,13 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaXmlTokenTypes;
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType;
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes;
 
+@ExtensionImpl
 public class ScalaBraceMatcher implements PairedBraceMatcher {
+    @Override
+    public Language getLanguage() {
+        return ScalaLanguage.INSTANCE;
+    }
+
 
   private static final BracePair[] PAIRS = new BracePair[]{
       new BracePair(ScalaTokenTypes.tLPARENTHESIS, ScalaTokenTypes.tRPARENTHESIS, false),

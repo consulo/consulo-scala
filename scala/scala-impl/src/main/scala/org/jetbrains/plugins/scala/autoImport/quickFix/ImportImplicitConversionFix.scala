@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -148,15 +150,6 @@ private class ConversionToImportComputation(ref: ScReferenceExpression) {
 
 object ImportImplicitConversionFixes {
 
-  final class Provider extends UnresolvedReferenceFixProvider {
-    override def fixesFor(reference: ScReference): Seq[IntentionAction] =
-      reference match {
-        case refExpr: ScReferenceExpression if refExpr.isQualified                                  => ImportImplicitConversionFixes(refExpr)
-        case ChildOf(ScSugarCallExpr(_, refExpr: ScReferenceExpression, _)) if refExpr == reference => ImportImplicitConversionFixes(refExpr)
-        case _ => Nil
-      }
-  }
-
   def apply(ref: ScReferenceExpression): Seq[ScalaImportElementFix[? <: ElementToImport]] = {
     val computation = new ConversionToImportComputation(ref)
     Seq(
@@ -165,4 +158,16 @@ object ImportImplicitConversionFixes {
       ImportImplicitInstanceFix(() => computation.missingImplicits, ref)
     )
   }
+}
+
+@ExtensionImpl
+final class ImportImplicitConversionFixesProvider extends UnresolvedReferenceFixProvider {
+  import ImportImplicitConversionFixes._
+
+  override def fixesFor(reference: ScReference): Seq[IntentionAction] =
+    reference match {
+      case refExpr: ScReferenceExpression if refExpr.isQualified                                  => ImportImplicitConversionFixes(refExpr)
+      case ChildOf(ScSugarCallExpr(_, refExpr: ScReferenceExpression, _)) if refExpr == reference => ImportImplicitConversionFixes(refExpr)
+      case _ => Nil
+    }
 }

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.members
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.dataContext.DataContext
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
 import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.ScalaBundle
 
+@ExtensionImpl(id = "scalaMoveMembersHandler", order = "first, after scalaMoveAnonymousToInnerDelegate")
 class ScalaMoveMembersHandler extends MoveHandlerDelegate {
 
   override def tryToMove(element: PsiElement, project: Project, dataContext: DataContext, reference: PsiReference, editor: Editor): Boolean = {

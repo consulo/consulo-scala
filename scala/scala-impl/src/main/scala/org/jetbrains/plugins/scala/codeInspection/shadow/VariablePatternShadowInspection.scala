@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.shadow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
@@ -11,7 +17,18 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.{createP
 import org.jetbrains.plugins.scala.lang.resolve.StdKinds
 import org.jetbrains.plugins.scala.lang.resolve.processor.ResolveProcessor
 
+@ExtensionImpl
 class VariablePatternShadowInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.suspicious.shadowing.by.a.variable.pattern"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import VariablePatternShadowInspection._
 

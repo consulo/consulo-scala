@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.imports
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.{IntentionPreviewInfo, IntentionPreviewUtils}
 import consulo.codeEditor.Editor
@@ -17,6 +20,8 @@ import scala.annotation.tailrec
   * Jason Zaugg
   */
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ImportAdditionalIdentifiersIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Import"))
 class ImportAdditionalIdentifiersIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.import.additional.identifiers")
 

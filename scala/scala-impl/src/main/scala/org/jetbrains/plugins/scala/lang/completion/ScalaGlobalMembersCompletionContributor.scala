@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.ui.ex.action.{ActionManager, IdeActions}
 import consulo.ui.ex.keymap.util.KeymapUtil.getFirstKeyboardShortcutText
@@ -13,7 +17,10 @@ import org.jetbrains.plugins.scala.lang.completion.filters.toplevel.IsTopLevelEl
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScReferenceExpression, ScSugarCallExpr}
 
+@ExtensionImpl(order = "before scalaClassNameCompletionContributor")
 final class ScalaGlobalMembersCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaGlobalMembersCompletionContributor._
   import global._

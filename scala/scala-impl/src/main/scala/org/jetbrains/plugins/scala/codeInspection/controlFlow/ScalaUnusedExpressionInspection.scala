@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import consulo.document.util.TextRange
@@ -16,7 +22,16 @@ import org.jetbrains.plugins.scala.util.SideEffectsUtil.{hasNoSideEffects, hasNo
 
 import scala.collection.mutable
 
+@ExtensionImpl
 final class ScalaUnusedExpressionInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("unused.expression.name"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WEAK_WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case expression: ScExpression if IntentionAvailabilityChecker.checkInspection(this, expression.getParent) &&
       expressionResultIsNotUsed(expression, e => IntentionAvailabilityChecker.checkInspection(this, e.getParent)) =>

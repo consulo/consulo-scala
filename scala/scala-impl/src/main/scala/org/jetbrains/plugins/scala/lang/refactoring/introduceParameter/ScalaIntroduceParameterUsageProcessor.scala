@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.document.RangeMarker
 import consulo.project.Project
 import consulo.util.lang.ref.SimpleReference
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
 import java.util
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl(id = "scalaIntroduceParamterProcessor", order = "first")
 class ScalaIntroduceParameterUsageProcessor extends ChangeSignatureUsageProcessor {
 
   override def findUsages(info: ChangeInfo): Array[UsageInfo] = info match {

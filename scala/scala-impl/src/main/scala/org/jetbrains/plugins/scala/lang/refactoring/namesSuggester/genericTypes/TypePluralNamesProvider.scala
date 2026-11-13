@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType}
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester.namesByType
 
+@ExtensionImpl
 class TypePluralNamesProvider extends GenericTypeNamesProvider {
 
   import TypePluralNamesProvider._

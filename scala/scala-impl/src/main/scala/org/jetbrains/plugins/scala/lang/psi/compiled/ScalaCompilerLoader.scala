@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.debugger.{DebuggerManager, NameMapper}
 import consulo.application.ApplicationManager
 import consulo.project.Project
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTe
 import org.jetbrains.plugins.scala.lang.psi.compiled.ScalaCompilerLoader._
 import org.jetbrains.plugins.scala.project.ProjectExt
 
+@ExtensionImpl
 class ScalaCompilerLoader extends StartupActivity.DumbAware {
   override def runActivity(project: Project): Unit = {
     if (!isDisabled) {

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.util.lang.ref.SimpleReference
 import consulo.localize.LocalizeValue
@@ -33,6 +35,7 @@ import _root_.scala.annotation.tailrec
 import _root_.scala.collection.mutable.ArrayBuffer
 import _root_.scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "scalaProcessor", order = "first")
 class ScalaChangeSignatureUsageProcessor extends ChangeSignatureUsageProcessor with ScalaChangeSignatureUsageHandler {
 
   override def findUsages(info: ChangeInfo): Array[UsageInfo] = {

@@ -76,14 +76,14 @@ object ScalaHighlightingMode {
   private def isShowErrorsFromCompilerEnabled(javaFile: PsiJavaFile): Boolean =
     showCompilerErrorsScala3(javaFile.getProject) && javaFile.isInScala3Module
 
-  private def nonNegativeDuration(key: String): FiniteDuration =
-    math.max(Registry.intValue(key), 0).millis
+  private def nonNegativeDuration(key: String, defaultValue: Int): FiniteDuration =
+    math.max(Registry.intValue(key, defaultValue), 0).millis
 
   def compilationDelay(project: Project): FiniteDuration =
     ScalaProjectSettings.in(project).getCompilerHighlightingDelay.millis
 
   def compilationTimeoutToShowProgress: FiniteDuration =
-    nonNegativeDuration("scala.highlighting.compilation.timeout.to.show.progress.millis")
+    nonNegativeDuration("scala.highlighting.compilation.timeout.to.show.progress.millis", 7000)
 
-  def useCompilerRanges: Boolean = Registry.is("scala.compiler.highlighting.use.compiler.ranges")
+  def useCompilerRanges: Boolean = Registry.is("scala.compiler.highlighting.use.compiler.ranges", true)
 }

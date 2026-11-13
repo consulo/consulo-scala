@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.{ElementDescriptionLocation, ElementDescriptionProvider, PsiElement}
 import consulo.usage.{UsageViewLongNameLocation, UsageViewShortNameLocation}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiPresentationUtils.{extensionMethodPresentableText, extensionMethodShortText}
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
  * used by Find Usages and Show Usages. Long labels include signature clauses;
  * short labels do not, matching the respective ordinary-method conventions.
  */
+@ExtensionImpl(order = "first")
 final class ScalaExtensionMethodElementDescriptionProvider extends ElementDescriptionProvider {
   override def getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String =
     element match {

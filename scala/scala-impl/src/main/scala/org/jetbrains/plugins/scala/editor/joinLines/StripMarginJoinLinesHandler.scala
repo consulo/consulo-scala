@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.joinLines
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.{JoinLinesHandlerDelegate, JoinRawLinesHandlerDelegate}
 import consulo.document.Document
 import consulo.language.psi.PsiFile
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 
 import scala.util.matching.Regex
 
+@ExtensionImpl
 class StripMarginJoinLinesHandler extends JoinRawLinesHandlerDelegate {
   private val Prefix = new Regex("\n\\s*\\|")
 

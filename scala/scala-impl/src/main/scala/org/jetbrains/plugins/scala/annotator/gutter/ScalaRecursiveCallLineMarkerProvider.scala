@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.Pass
 import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
 import consulo.application.AllIcons
@@ -19,7 +23,10 @@ import java.util
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.ListHasAsScala
 
+@ExtensionImpl
 class ScalaRecursiveCallLineMarkerProvider extends LineMarkerProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaRecursiveCallLineMarkerProvider.{PossibleMethodCall, createLineMarkerInfo, isRecursiveCall}
 

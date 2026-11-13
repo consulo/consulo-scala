@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.scalazDeriving
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, ResolvesTo}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.ScalaTypePresentation
  * provide a much faster editing experience. Users may experience
  * deriving failures when they run the real compiler.
  */
+@ExtensionImpl
 class ScalazDerivingInjector extends SyntheticMembersInjector {
   // fast check
   private def hasDeriving(source: ScTypeDefinition): Boolean =

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.util.query.QueryExecutorBase
 import consulo.util.lang.StringUtil
 import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
@@ -18,6 +20,7 @@ import scala.annotation.nowarn
 import java.util.function.Predicate
 
 
+@ExtensionImpl
 class ScalaAliasedImportedElementSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
 
   override def processQuery(parameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Unit = {

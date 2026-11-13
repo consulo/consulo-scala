@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
@@ -25,6 +27,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBod
  *
  * Works in combination with [[ScalaEnterAfterUnmatchedBraceHandler]]
  */
+@ExtensionImpl
 final class FormatEmptyTemplateBodyAfterEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = measure("FormatEmptyTemplateBodyAfterEnterHandler.postProcessEnter") {

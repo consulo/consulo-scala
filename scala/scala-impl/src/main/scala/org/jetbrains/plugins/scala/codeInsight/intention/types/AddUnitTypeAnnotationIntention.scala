@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
@@ -12,6 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.AddUnitTypeAnnotationIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class AddUnitTypeAnnotationIntention extends PsiElementBaseIntentionAction {
 
   import AddUnitTypeAnnotationIntention._

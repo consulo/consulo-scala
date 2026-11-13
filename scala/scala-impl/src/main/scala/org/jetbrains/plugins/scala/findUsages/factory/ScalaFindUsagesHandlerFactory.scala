@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.factory
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.find.{FindUsagesHandler, FindUsagesHandlerFactory}
 import com.intellij.java.impl.find.findUsages.JavaFindUsagesHandlerFactory
 import com.intellij.java.language.JavaLanguage
@@ -21,6 +23,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.refactoring.rename.RenameSuperMembersUtil
 import org.jetbrains.plugins.scala.settings.CompilerIndicesSettings
 
+@ExtensionImpl(order = "first")
 class ScalaFindUsagesHandlerFactory(project: Project) extends FindUsagesHandlerFactory { self =>
 
   override def canFindUsages(element: PsiElement): Boolean =

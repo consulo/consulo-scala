@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.source3
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, LocalQuickFix, ProblemsHolder}
 import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
 import consulo.localize.LocalizeValue
@@ -25,7 +30,18 @@ import org.jetbrains.sbt.api.language.SbtLanguage
 
 import scala.beans.BeanProperty
 
+@ExtensionImpl
 class Source3Inspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.source3.scala2.syntax"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.code.style"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "scala2InSource3"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def isAvailableForFile(file: PsiFile): Boolean = {
     file.isSource3Enabled && {

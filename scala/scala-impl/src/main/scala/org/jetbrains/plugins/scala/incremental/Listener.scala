@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala
 package incremental
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.codeEditor.event.{EditorFactoryEvent, EditorFactoryListener, VisibleAreaEvent, VisibleAreaListener}
 import consulo.codeEditor.{EditorEx, FoldingModelEx}
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.incremental.Listener.INCREMENTAL_HIGHLIGHTING
 
 import java.awt.event.{KeyAdapter, KeyEvent}
 
+@ExtensionImpl
 class Listener extends EditorFactoryListener {
   private val MaxDoubleKeyPressDuration = 500L * 1000000L // ns (0.5 s)
 

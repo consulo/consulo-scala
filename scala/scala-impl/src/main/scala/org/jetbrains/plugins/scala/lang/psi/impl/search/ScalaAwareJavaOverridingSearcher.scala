@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.util.lang.Pair
 import com.intellij.java.language.psi.{PsiClass, PsiClassType, PsiMethod, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiSubstitutor, PsiType, PsiTypeParameter}
 import com.intellij.java.language.impl.psi.impl.light.{LightMethod, LightParameter, LightParameterListBuilder}
@@ -68,6 +70,7 @@ import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
  * used by gutter markers. Unlike this executor, which returns overriding methods for one queried method, it emits
  * supermethod-overrider pairs for every relevant method in a class.
  */
+@ExtensionImpl(order = "last")
 class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, OverridingMethodsSearch.SearchParameters] {
   override def execute(searchParams: OverridingMethodsSearch.SearchParameters, consumer: Processor[? >: PsiMethod]): Boolean = {
     val method = searchParams.getMethod
@@ -110,6 +113,7 @@ class ScalaAwareJavaOverridingSearcher extends QueryExecutor[PsiMethod, Overridi
  * Unlike [[ScalaAwareJavaOverridingSearcher]], which processes one method for implementation navigation and returns
  * only its overriding methods, this executor emits supermethod-overrider pairs for the complete class.
  */
+@ExtensionImpl(order = "last")
 class ScalaAwareJavaAllOverridingSearcher extends QueryExecutor[Pair[PsiMethod, PsiMethod], AllOverridingMethodsSearch.SearchParameters] {
   import ScalaAwareJavaAllOverridingSearcher._
 

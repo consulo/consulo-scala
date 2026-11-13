@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.vals
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.dumb.IndexNotReadyException
 import consulo.project.Project
 import consulo.language.psi.search.ReferencesSearch
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import java.util.function.Predicate
 
+@ExtensionImpl
 class ApplyUnapplyForBindingSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
   override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val project = queryParameters.getProject

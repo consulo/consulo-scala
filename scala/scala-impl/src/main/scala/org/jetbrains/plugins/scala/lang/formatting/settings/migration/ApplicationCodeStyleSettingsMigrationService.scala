@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.migration
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import consulo.application.ApplicationManager
 import consulo.component.persist.{State, Storage}
 import consulo.language.codeStyle.{CodeStyleScheme, CodeStyleSchemes}
@@ -11,6 +16,9 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
   name = "ApplicationCodeStyleSettingsMigration",
   storages = Array[Storage](new Storage(ScalaApplicationSettings.STORAGE_FILE_NAME))
 )
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 class ApplicationCodeStyleSettingsMigrationService extends CodeStyleSettingsMigrationServiceBase {
 
   override protected def migrate(migrations: Seq[MigrationItem], currentVersion: Int, latestVersion: Int): Unit = {

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionParameters, CompletionType}
 import consulo.language.editor.completion.lookup.LookupElementBuilder
 import consulo.language.psi.PsiElement
@@ -10,7 +14,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 
+@ExtensionImpl(id = "memberNameCompletionContributor")
 final class ScalaMemberNameCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   //suggest class name
   extend(
     CompletionType.BASIC,

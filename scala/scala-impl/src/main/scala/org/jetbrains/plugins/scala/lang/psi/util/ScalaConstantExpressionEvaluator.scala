@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.psi.util
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import com.intellij.java.language.psi.PsiConstantEvaluationHelper.AuxEvaluator
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.impl.psi.impl.ConstantExpressionEvaluator
@@ -12,7 +16,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScPatternDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScMember, ScObject}
 
+@ExtensionImpl
 class ScalaConstantExpressionEvaluator extends ConstantExpressionEvaluator {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def computeExpression(expression: PsiElement, throwExceptionOnOverflow: Boolean,
                                  auxEvaluator: AuxEvaluator): AnyRef = computeConstantExpression(expression, throwExceptionOnOverflow)
 

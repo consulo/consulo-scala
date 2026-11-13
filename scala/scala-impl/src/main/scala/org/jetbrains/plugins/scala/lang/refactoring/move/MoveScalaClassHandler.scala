@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.progress.ProgressManager
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.PsiClass
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(order = "first")
 final class MoveScalaClassHandler extends MoveClassHandler {
 
   import MoveScalaClassHandler._

@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.rawHighlight.HighlightDisplayKey
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -12,6 +15,8 @@ import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ParenthesizedElement.Ops
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScParenthesizedElement
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.RemoveUnnecessaryParenthesesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class RemoveUnnecessaryParenthesesIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("remove.unnecessary.parentheses")
 

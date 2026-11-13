@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.util.ModuleUtilCore
 import consulo.util.dataholder.Key
 import com.intellij.java.language.psi.{PsiClass, PsiMember}
@@ -21,6 +23,7 @@ import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl(id = "scalaExplicitlyImportedWeigher", order = "before explicitlyImported")
 class ScalaExplicitlyImportedWeigher extends ProximityWeigher {
   def applyQualifier(qual: String, position: PsiElement): Option[Integer] = {
     if (position == null) return None

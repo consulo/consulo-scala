@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.dataContext.DataContext
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiReference}
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 
 // Basically just a wrapper around Java implementation that calls `ScalaFileImpl.performMoveRefactoring` on move
+@ExtensionImpl(id = "moveScalaFileOrDir", order = "first, before moveJavaFileOrDir")
 final class ScalaMoveFilesOrDirectoriesHandler extends MoveFilesOrDirectoriesHandler {
   private lazy val javaHandler: JavaMoveFilesOrDirectoriesHandler = new JavaMoveFilesOrDirectoriesHandler
 

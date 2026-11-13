@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.html.language.HTMLLanguage
 import consulo.language.Language
 import consulo.language.editor.highlight.SyntaxHighlighterFactory
@@ -18,7 +20,10 @@ import org.jetbrains.plugins.scalaDoc.ScalaDocLanguage
 /**
  * @see java analog in [[com.intellij.lang.java.JavaSyntaxHighlighterFactory]]
  */
+@ExtensionImpl
 final class ScalaSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getSyntaxHighlighter(
     @Nullable project: Project,

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionType}
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
@@ -32,7 +36,10 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
 import consulo.ui.image.{Image, ImageEffects}
 
+@ExtensionImpl(id = "sameSignatureCallParametersProvider", order = "before keywordCompletionContributor, before scalaClassParamContributor")
 final class SameSignatureCallParametersProvider extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import SameSignatureCallParametersProvider._
 

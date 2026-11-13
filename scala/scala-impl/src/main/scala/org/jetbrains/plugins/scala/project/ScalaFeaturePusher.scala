@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.project
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.virtualFileSystem.fileType.FileType
 import consulo.language.file.LanguageFileType
 import consulo.module.Module
@@ -42,6 +44,7 @@ import scala.util.Using
  */
 //noinspection UnstableApiUsage,ApiStatus
 // upstream: extends FilePropertyPusherBase with a persistent FilePropertyKey
+@ExtensionImpl
 class ScalaFeaturePusher extends FilePropertyPusher[SerializedScalaFeatures] {
 
   override def persistAttribute(project: Project, fileOrDir: VirtualFile, value: SerializedScalaFeatures): Unit = {

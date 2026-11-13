@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scalaDirective.highlighter;
 
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
+
 import consulo.language.parser.ParserDefinition;
 import consulo.language.lexer.Lexer;
 import consulo.colorScheme.TextAttributesKey;
@@ -12,7 +15,13 @@ import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage;
 import java.util.HashMap;
 import java.util.Map;
 
+@ExtensionImpl
 public final class ScalaDirectiveSyntaxHighlighter extends SyntaxHighlighterBase {
+    @Override
+    public Language getLanguage() {
+        return ScalaDirectiveLanguage.INSTANCE;
+    }
+
 
     private static final Map<IElementType, TextAttributesKey> ATTRIBUTES;
 

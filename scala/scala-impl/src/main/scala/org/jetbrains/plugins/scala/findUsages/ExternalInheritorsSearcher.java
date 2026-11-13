@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ExtensionAPI;
 import consulo.component.extension.ExtensionPointName;
 import com.intellij.java.language.psi.PsiClass;
 import consulo.language.psi.PsiElement;
@@ -7,9 +9,10 @@ import consulo.content.scope.SearchScope;
 import consulo.application.util.query.Query;
 
 // upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 public interface ExternalInheritorsSearcher {
     ExtensionPointName<ExternalInheritorsSearcher> EP_NAME =
-            ExtensionPointName.create("org.intellij.scala.findUsages.externalInheritorsSearcher");
+            ExtensionPointName.create(ExternalInheritorsSearcher.class);
 
     Query<PsiElement> search(PsiClass cls, SearchScope scope, boolean checkDeep);
 

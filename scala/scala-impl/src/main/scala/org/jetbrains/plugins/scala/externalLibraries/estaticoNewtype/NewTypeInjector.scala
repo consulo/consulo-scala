@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.externalLibraries.estaticoNewtype
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.SyntheticMembersInjector
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 
+@ExtensionImpl
 class NewTypeInjector extends SyntheticMembersInjector {
 
   import NewTypeInjector._

@@ -1,5 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.impl
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.TopicImpl
+import jakarta.inject.Inject
+
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import consulo.util.lang.ObjectUtil
 import consulo.disposer.Disposable
 import consulo.logging.Logger
@@ -56,6 +65,9 @@ import scala.annotation.tailrec
 import scala.collection.immutable.ArraySeq
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 class ScalaPsiManager(implicit val project: Project) extends Disposable {
 
   private val inJavaPsiFacade: UnloadableThreadLocal[Boolean] = new UnloadableThreadLocal(false)
@@ -714,7 +726,7 @@ class ScalaPsiManager(implicit val project: Project) extends Disposable {
 }
 
 object ScalaPsiManager {
-  private val LOG = Logger.getInstance("#org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager")
+  private[impl] val LOG = Logger.getInstance("#org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager")
 
   def instance(
     implicit
@@ -732,10 +744,14 @@ object ScalaPsiManager {
       override def clear(cache:               CacheType): Unit = cache.clear()
     }
 
-  class SPMModuleRootListener(project: Project) extends ModuleRootListener {
-    override def rootsChanged(event: ModuleRootEvent): Unit = {
-      LOG.debug("Clear caches on root change")
-      ScalaPsiManager.instance(project).clearOnRootsChange()
-    }
+}
+
+@TopicImpl(ComponentScope.PROJECT)
+class ScalaPsiManagerSPMModuleRootListener @Inject()(project: Project) extends ModuleRootListener {
+  import ScalaPsiManager._
+
+  override def rootsChanged(event: ModuleRootEvent): Unit = {
+    LOG.debug("Clear caches on root change")
+    ScalaPsiManager.instance(project).clearOnRootsChange()
   }
 }

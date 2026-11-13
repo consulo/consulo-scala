@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import consulo.localize.LocalizeValue
 import consulo.project.ui.notification.{Notification, NotificationAction}
 import consulo.ui.ex.action.AnActionEvent
@@ -35,6 +40,8 @@ import scala.util.Try
   name = "ScalafmtDynamicService",
   storages = Array(new Storage("scalafmt_dynamic_resolve_cache.xml"))
 )
+@Singleton
+@ServiceImpl
 final class ScalafmtDynamicServiceImpl
   extends ScalafmtDynamicService
   with PersistentStateComponent[ScalafmtDynamicServiceImpl.ServiceState] {

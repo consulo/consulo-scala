@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.Application
 import consulo.language.Language
 import consulo.virtualFileSystem.BinaryFileDecompiler
@@ -35,6 +37,7 @@ object SigFileType extends FileType {
 }
 
 
+@ExtensionImpl
 class SigFileViewProviderFactory extends FileViewProviderFactory {
   override def createFileViewProvider(file: VirtualFile,
                                       language: Language,
@@ -45,10 +48,12 @@ class SigFileViewProviderFactory extends FileViewProviderFactory {
   }
 }
 
+@ExtensionImpl
 class SigFileStubBuilder extends ClassFileStubBuilder(Application.get()) {
   override def getFileType: FileType = SigFileType
 }
 
+@ExtensionImpl
 class SigFileDecompiler extends BinaryFileDecompiler {
   override def decompile(file: VirtualFile): CharSequence = {
     DecompilationResult.sourceNameAndText(file).map(_._2).getOrElse(ScalaBundle.message("could.not.decompile.file.comment", file.getName))

@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.ui.ex.action.{ActionManager, ActionPromoter, AnAction}
 import consulo.dataContext.DataContext
 
 import java.util
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ShowImplicitArgumentsActionPromoter extends ActionPromoter {
   // upstream: matched `com.intellij.codeInsight.hint.actions.ShowExpressionTypeAction` by class (impl class in Consulo)
   private def isShowExpressionTypeAction(action: AnAction): Boolean =

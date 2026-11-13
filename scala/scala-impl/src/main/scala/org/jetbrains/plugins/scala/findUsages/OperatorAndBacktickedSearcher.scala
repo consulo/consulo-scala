@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.Application
 import consulo.language.editor.TargetElementUtilExtender
 import consulo.application.dumb.IndexNotReadyException
@@ -26,6 +28,7 @@ import java.{util => ju}
 import scala.jdk.CollectionConverters._
 import java.util.function.Predicate
 
+@ExtensionImpl
 class OperatorAndBacktickedSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
 
   override def execute(

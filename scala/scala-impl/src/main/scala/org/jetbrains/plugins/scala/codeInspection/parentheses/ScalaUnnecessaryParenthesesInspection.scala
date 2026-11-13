@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.codeInspection.parentheses
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
 import consulo.language.editor.inspection.InspectionToolState
 import consulo.localize.LocalizeValue
@@ -9,7 +14,16 @@ import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 
 import scala.beans.BooleanBeanProperty
 
+@ExtensionImpl(id = "ScalaUnnecessaryParentheses")
 class ScalaUnnecessaryParenthesesInspection extends ScalaUnnecessaryParenthesesInspectionBase {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.unnecessary.parentheses"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def createStateProvider(): InspectionToolState[?] = new ScalaUnnecessaryParenthesesInspectionState
 
   override protected def settingsOf(state: Object): UnnecessaryParenthesesSettings =

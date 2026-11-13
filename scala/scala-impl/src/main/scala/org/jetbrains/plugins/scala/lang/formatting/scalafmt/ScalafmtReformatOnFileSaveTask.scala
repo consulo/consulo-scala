@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.TopicImpl
+
 import consulo.dataContext.DataContext
 import consulo.ui.ex.action.event.AnActionListener
 import consulo.ui.ex.action.{ActionManager, AnAction, AnActionEvent, IdeActions}
@@ -19,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettin
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.sbt.api.language.SbtFile
 
+@TopicImpl(ComponentScope.APPLICATION)
 final class ScalafmtReformatOnFileSaveTask extends AnActionListener {
 
   override def afterActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent): Unit = {
@@ -119,6 +123,6 @@ private object ScalafmtReformatOnFileSaveTask {
   private var LastFormatOnSaveTimeMs: Long = 0
 
   private def MinTimeBetweenFormatOnSaveActionMs: Int = {
-    Registry.intValue("scalafmt.min.time.between.format.on.save.action.ms")
+    Registry.intValue("scalafmt.min.time.between.format.on.save.action.ms", 300)
   }
 }

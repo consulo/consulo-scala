@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.hierarchy
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.impl.ide.hierarchy.call.{JavaCallHierarchyModel, JavaCallHierarchyProvider}
 import com.intellij.java.language.psi.PsiMethod
 import consulo.language.Language
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 // upstream: the call hierarchy view was customized by ScalaCallHierarchyBrowser (CallHierarchyBrowserBase),
 // in Consulo the view is driven by the HierarchyModel
+@ExtensionImpl
 class ScalaCallHierarchyProvider extends JavaCallHierarchyProvider {
   override def createModel(project: Project, target: PsiMethod): HierarchyModel[PsiMethod] =
     new ScalaCallHierarchyModel(project, target)

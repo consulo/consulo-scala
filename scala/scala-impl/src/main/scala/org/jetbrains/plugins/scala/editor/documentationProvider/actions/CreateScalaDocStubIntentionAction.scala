@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.PriorityAction.Priority
 import consulo.language.editor.inspection.{FileModifier, PriorityAction}
@@ -15,6 +18,8 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumCase, ScEnumCases}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScDocCommentOwner
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.CreateScalaDocStubIntentionAction", fileExtensions = Array("scala"), categories = Array("Scala"))
 final class CreateScalaDocStubIntentionAction
   extends PsiElementBaseIntentionAction
     with PriorityAction

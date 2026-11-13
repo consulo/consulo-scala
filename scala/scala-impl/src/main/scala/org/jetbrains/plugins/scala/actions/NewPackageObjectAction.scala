@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
 import consulo.ide.action.CreateFromTemplateAction.moveCaretAfterNameIdentifier
 import consulo.fileTemplate.AttributesDefaults
 import consulo.ide.action.ui.CreateFromTemplateDialog
@@ -21,6 +26,7 @@ import org.jetbrains.plugins.scala.shared.project._
 /**
  * @see [[NewScalaFileAction]]
  */
+@ActionImpl(id = "Scala.NewPackageObject", parents = Array(new ActionParentRef(value = new ActionRef(id = "NewGroup"), anchor = ActionRefAnchor.BEFORE, relatedToAction = new ActionRef(id = "NewFile"))))
 class NewPackageObjectAction extends LazyFileTemplateAction(
   "Package Object",
   ScalaBundle.message("new.packageobject.menu.action.text"),

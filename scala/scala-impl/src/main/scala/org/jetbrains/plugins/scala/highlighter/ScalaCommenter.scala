@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.highlighter
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.SelfManagingCommenter
 import consulo.language.CodeDocumentationAwareCommenter
@@ -11,7 +15,10 @@ import consulo.util.lang.CharArrayUtil
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 
+@ExtensionImpl
 class ScalaCommenter extends SelfManagingCommenter[ScalaCommenterDataHolder] with CodeDocumentationAwareCommenter  {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private val ScalaDirectivePrefix = "//>"
 

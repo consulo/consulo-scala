@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.descriptors
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.surroundWith.{SurroundDescriptor, Surrounder}
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
@@ -11,7 +15,10 @@ import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression._
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
 final class ScalaExpressionSurroundDescriptor extends SurroundDescriptor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaExpressionSurroundDescriptor._
 

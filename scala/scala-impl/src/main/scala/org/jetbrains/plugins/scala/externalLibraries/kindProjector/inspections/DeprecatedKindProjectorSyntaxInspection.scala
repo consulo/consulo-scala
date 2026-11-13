@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
@@ -16,7 +22,16 @@ import org.jetbrains.plugins.scala.api.project._
 import org.jetbrains.plugins.scala.rt.project._
 import org.jetbrains.plugins.scala.shared.project._
 
+@ExtensionImpl(id = "DeprecatedKindProjectorSyntax")
 class DeprecatedKindProjectorSyntaxInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.deprecated.kind.projector.syntax"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case DeprecatedIdentifier(e, qf, message) =>
       //noinspection ReferencePassedToNls

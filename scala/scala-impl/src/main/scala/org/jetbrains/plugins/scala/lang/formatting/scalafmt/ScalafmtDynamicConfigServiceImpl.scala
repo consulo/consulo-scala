@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.project.ui.notification.{Notification, NotificationAction}
 import consulo.ui.ex.action.AnActionEvent
@@ -34,6 +39,8 @@ import scala.collection.{concurrent, mutable}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
+@Singleton
+@ServiceImpl
 final class ScalafmtDynamicConfigServiceImpl(private implicit val project: Project)
   extends ScalafmtDynamicConfigService {
 

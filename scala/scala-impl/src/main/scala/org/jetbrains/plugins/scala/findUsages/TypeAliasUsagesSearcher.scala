@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.util.query.QueryExecutorBase
 import consulo.util.lang.StringUtil
 import consulo.language.psi.{PsiElement, PsiReference}
@@ -31,6 +33,7 @@ import java.util.function.Predicate
  *   new A./*found*/alias()
  * }}}
  */
+@ExtensionImpl
 class TypeAliasUsagesSearcher extends QueryExecutorBase[PsiReference, ReferencesSearch.SearchParameters](true) {
 
   override def processQuery(@NotNull parameters: ReferencesSearch.SearchParameters, @NotNull consumer: Predicate[? >: PsiReference]): Unit = {

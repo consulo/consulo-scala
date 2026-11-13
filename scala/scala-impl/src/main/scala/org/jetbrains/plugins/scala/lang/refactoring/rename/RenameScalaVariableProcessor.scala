@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import java.util.function.Consumer
 
 import consulo.codeEditor.Editor
@@ -22,6 +24,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
 import java.util
 
+@ExtensionImpl(order = "first")
 class RenameScalaVariableProcessor extends RenameJavaMemberProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = element match {
     case c: ScNamedElement => c.nameContext match {

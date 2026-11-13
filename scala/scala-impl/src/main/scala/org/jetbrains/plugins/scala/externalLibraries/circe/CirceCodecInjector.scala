@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.circe
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParam
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.SyntheticMembersInjector
@@ -15,6 +17,7 @@ import scala.util.Random
   * so users may face errors when running actual compilation.
   *
   */
+@ExtensionImpl
 class CirceCodecInjector extends SyntheticMembersInjector {
   private val Jc: String = "JsonCodec"
   private val Cjc: String = "ConfiguredJsonCodec"

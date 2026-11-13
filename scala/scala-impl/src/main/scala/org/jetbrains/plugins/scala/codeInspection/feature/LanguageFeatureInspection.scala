@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.feature
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
@@ -25,7 +31,16 @@ import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.scalaV
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerSettings, ScalaCompilerSettingsProfile}
 import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
+@ExtensionImpl
 class LanguageFeatureInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.advanced.language.features"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   private def isPolyFunctionRefinement(ref: ScRefinement): Boolean = {
     ref.getContext match {
       case ScCompoundTypeElement(Seq(tpe), _) =>

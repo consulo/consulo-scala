@@ -1,4 +1,6 @@
 package org.jetbrains.plugins.scala.lang.rearranger
+
+import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import consulo.document.Document
 import consulo.util.lang.Pair
@@ -24,6 +26,7 @@ import scala.collection.immutable.HashSet
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaRearranger extends Rearranger[ScalaArrangementEntry] with ArrangementStandardSettingsAware {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

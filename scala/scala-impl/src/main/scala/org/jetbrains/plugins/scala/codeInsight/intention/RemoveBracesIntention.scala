@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -19,6 +22,8 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 /**
   * Jason Zaugg
   */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.RemoveBracesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 final class RemoveBracesIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import RemoveBracesIntention._

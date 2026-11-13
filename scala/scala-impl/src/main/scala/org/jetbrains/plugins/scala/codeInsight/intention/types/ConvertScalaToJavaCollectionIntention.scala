@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.inspection.FileModifier.SafeFieldForPreview
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
@@ -12,6 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
  * java equivalent using [[scala.collection.JavaConverters]] before Scala 2.13
  * and [[scala.jdk.CollectionConverters]] since Scala 2.13
  */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertScalaToJavaCollectionIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class ConvertScalaToJavaCollectionIntention extends BaseJavaConvertersIntention("asJava") {
 
   override def targetCollections(project: Project, scope: GlobalSearchScope): Set[PsiClass] = {

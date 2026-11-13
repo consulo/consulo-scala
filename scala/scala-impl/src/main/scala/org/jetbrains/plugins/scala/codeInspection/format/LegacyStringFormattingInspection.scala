@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.format
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
@@ -9,7 +15,18 @@ import org.jetbrains.plugins.scala.format._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 
+@ExtensionImpl
 class LegacyStringFormattingInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.legacy.string.formatting"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case element@ConcatenationOrFormattingTopmostStringParts(parts) if parts.sizeIs > 1 =>

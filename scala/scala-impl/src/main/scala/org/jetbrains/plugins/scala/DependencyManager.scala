@@ -37,7 +37,7 @@ abstract class DependencyManagerBase {
     if (ApplicationManager.getApplication == null) //to be able to use DependencyManagerBase outside IntelliJ App
       false
     else
-      Registry.is("scala.dependency.manager.use.file.system.resolvers.only")
+      Registry.is("scala.dependency.manager.use.file.system.resolvers.only", false)
 
   protected val artifactBlackList: Set[String] = Set.empty
 

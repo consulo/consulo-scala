@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.TopicImpl
+
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.component.util.Iconable
 import consulo.ui.image.Image
 import consulo.annotation.component.ComponentScope
@@ -715,6 +720,7 @@ final class SyntheticClasses(project: Project) {
   }
 }
 
+@ExtensionImpl
 final class SyntheticClassElementFinder(project: Project) extends PsiElementFinder {
   private val instance = SyntheticClasses.get(project)
 
@@ -745,6 +751,7 @@ object SyntheticClasses {
   val TypeParameter = "TypeParameterForSyntheticFunction"
 }
 
+@TopicImpl(ComponentScope.APPLICATION)
 class DeregisterSyntheticClassesListener extends ProjectManagerListener {
   override def projectClosing(project: Project): Unit = {
     SyntheticClasses.get(project).clear()

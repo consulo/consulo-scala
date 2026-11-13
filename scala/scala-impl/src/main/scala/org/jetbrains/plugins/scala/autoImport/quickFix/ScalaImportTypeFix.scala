@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -74,14 +76,10 @@ final class ScalaImportTypeFix private (ref: ScReference)
 
 object ScalaImportTypeFix {
 
-  final class Provider extends UnresolvedReferenceFixProvider {
-    override def fixesFor(reference: ScReference): Seq[IntentionAction] = Seq(ScalaImportTypeFix(reference))
-  }
-
   def apply(reference: ScReference) = new ScalaImportTypeFix(reference)
 
   @annotation.tailrec
-  private def notInner(clazz: PsiClass, ref: PsiElement): Boolean = clazz match {
+  private[quickFix] def notInner(clazz: PsiClass, ref: PsiElement): Boolean = clazz match {
     case enumCase: ScEnumCase => notInner(enumCase.enumParent, ref)
     case o: ScObject if o.isSyntheticObject =>
       val companion = getCompanionModule(o)
@@ -201,18 +199,18 @@ object ScalaImportTypeFix {
     elementsDistinct
   }
 
-  private def hasApplyMethod(`class`: PsiClass): Boolean = `class` match {
+  private[quickFix] def hasApplyMethod(`class`: PsiClass): Boolean = `class` match {
     case `object`: ScObject => `object`.allFunctionsByName(ScFunction.CommonNames.Apply).nonEmpty
     case cls: ScClass => isCaseOrInScala3File(cls) // SCL-19992, SCL-21187
     case _ => false
   }
 
-  private def isAnnotation(cls: PsiClass): Boolean = cls.annotationType
+  private[quickFix] def isAnnotation(cls: PsiClass): Boolean = cls.annotationType
 
-  private def isCaseOrInScala3File(cls: ScClass): Boolean =
+  private[quickFix] def isCaseOrInScala3File(cls: ScClass): Boolean =
     cls.isCase || cls.isInScala3File
 
-  private def importsWithPrefix(prefix: String)
+  private[quickFix] def importsWithPrefix(prefix: String)
                                (implicit project: Project) =
     ScalaCodeStyleSettings.getInstance(project)
       .getImportsWithPrefix
@@ -224,4 +222,11 @@ object ScalaImportTypeFix {
             case parts => parts(parts.length - 2) == prefix
           }
       }
+}
+
+@ExtensionImpl
+final class ScalaImportTypeFixProvider extends UnresolvedReferenceFixProvider {
+  import ScalaImportTypeFix._
+
+  override def fixesFor(reference: ScReference): Seq[IntentionAction] = Seq(ScalaImportTypeFix(reference))
 }

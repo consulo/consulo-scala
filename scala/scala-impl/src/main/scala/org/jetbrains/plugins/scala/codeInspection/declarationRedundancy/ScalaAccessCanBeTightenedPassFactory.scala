@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.Pass
 import consulo.language.editor.highlight.{TextEditorHighlightingPass, TextEditorHighlightingPassFactory}
 import consulo.language.editor.DaemonCodeAnalyzer
@@ -7,6 +9,7 @@ import consulo.codeEditor.Editor
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
+@ExtensionImpl
 final class ScalaAccessCanBeTightenedPassFactory
   extends TextEditorHighlightingPassFactory {
 

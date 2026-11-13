@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.copy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.CopyPastePreProcessor
 import consulo.document.Document
 import consulo.codeEditor.{Editor, RawText}
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil
 /**
  * @see [[StringLiteralCopyPastePreProcessor]]
  */
+@ExtensionImpl(order = "first")
 class MultiLineStringCopyPastePreProcessor extends CopyPastePreProcessor {
 
   override def preprocessOnCopy(file: PsiFile,

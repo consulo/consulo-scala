@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.project.settings
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import consulo.component.persist.{PersistentStateComponent, State, Storage}
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
@@ -22,7 +28,10 @@ import scala.jdk.CollectionConverters._
   storages = Array(new Storage("scala_compiler.xml")),
   //reportStatistic = true // TODO: will not be recorded due to state is Element
 )
-class ScalaCompilerConfiguration(project: Project) extends PersistentStateComponent[Element] with ModificationTracker {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class ScalaCompilerConfiguration @Inject()(project: Project) extends PersistentStateComponent[Element] with ModificationTracker {
 
   var incrementalityType: IncrementalityType = IncrementalityType.SBT
 

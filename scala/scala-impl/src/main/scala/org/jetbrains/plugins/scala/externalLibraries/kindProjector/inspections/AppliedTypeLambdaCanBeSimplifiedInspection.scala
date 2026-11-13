@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.externalLibraries.kindProjector.inspections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.FileModifier.SafeFieldForPreview
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
@@ -35,7 +41,14 @@ import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
  * }
  * }}}
  */
+@ExtensionImpl(id = "AppliedTypeLambdaCanBeSimplified")
 class AppliedTypeLambdaCanBeSimplifiedInspection extends LocalInspectionTool {
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.syntactic.simplification"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import AppliedTypeLambdaCanBeSimplifiedInspection._
 
   override def isEnabledByDefault: Boolean = true

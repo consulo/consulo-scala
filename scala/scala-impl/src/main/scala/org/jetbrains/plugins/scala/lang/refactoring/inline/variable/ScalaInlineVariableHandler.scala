@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.variable
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.util.PsiTreeUtil
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScPatternDefinition, ScValueOrVariableDefinition, ScVariableDefinition}
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineActionHandler
 
+@ExtensionImpl(id = "scalaInlineVariableHandler")
 final class ScalaInlineVariableHandler extends ScalaInlineActionHandler {
   override protected val helpId: String = ScalaInlineVariableHandler.HelpId
   override protected val refactoringName: String = ScalaInlineVariableHandler.RefactoringName

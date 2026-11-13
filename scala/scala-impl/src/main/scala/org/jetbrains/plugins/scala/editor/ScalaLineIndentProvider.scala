@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.document.Document
 import consulo.project.Project
@@ -7,6 +9,7 @@ import consulo.language.codeStyle.lineIndent.{LineIndentProvider, SemanticEditor
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
+@ExtensionImpl
 final class ScalaLineIndentProvider extends LineIndentProvider {
 
   override def isSuitableFor(language: Language): Boolean =

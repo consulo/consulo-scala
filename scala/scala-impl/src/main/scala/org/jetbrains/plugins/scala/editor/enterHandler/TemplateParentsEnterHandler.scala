@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
@@ -26,6 +28,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.{ScTemplateBo
  *
  * (see tests in the commit for various edge cases)
  */
+@ExtensionImpl
 class TemplateParentsEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(

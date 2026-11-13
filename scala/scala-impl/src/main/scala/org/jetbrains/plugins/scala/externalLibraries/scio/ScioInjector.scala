@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.scio
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.externalLibraries.scio.ScioInjector._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.SyntheticMembersInjector
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.SyntheticMembe
   *
   * Handles @AvroType.toSchema/fromSchema/fromSchemaFile macro annotations
   */
+@ExtensionImpl
 class ScioInjector extends SyntheticMembersInjector {
   override def injectSupers(source: ScTypeDefinition): Seq[String] =
     source match {

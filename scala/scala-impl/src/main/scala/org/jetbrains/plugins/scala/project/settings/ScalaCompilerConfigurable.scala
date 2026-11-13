@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scala
 package project
 package settings
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.configurable.Configurable.Composite
 import consulo.configurable.{Configurable, SearchableConfigurable}
@@ -18,6 +20,7 @@ import consulo.ui.ex.awtUnsafe.TargetAWT
 /**
  * @see [[org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState]]
  */
+@ExtensionImpl(id = "scala.compiler")
 class ScalaCompilerConfigurable(project: Project)
   extends SearchableConfigurable
     with Configurable.NoScroll

@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScMember}
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys.StubIndexKeyExt
 
+@ExtensionImpl
 final class ImplicitConversionIndex extends ScStringStubIndexExtension[ScMember] {
 
   //noinspection TypeAnnotation

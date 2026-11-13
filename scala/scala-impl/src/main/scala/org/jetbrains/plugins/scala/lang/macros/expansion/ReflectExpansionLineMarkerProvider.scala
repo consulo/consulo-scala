@@ -1,4 +1,8 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
+
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions
@@ -11,7 +15,10 @@ import org.jetbrains.plugins.scala.util.MacroExpansion
 import java.util.regex.Pattern
 import scala.annotation.tailrec
 
+@ExtensionImpl
 class ReflectExpansionLineMarkerProvider extends MacroExpansionLineMarkerProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override protected def getExpandMarker(element: PsiElement): Option[Marker] = {
     val collector = ReflectExpansionsCollector.getInstance(element.getProject)

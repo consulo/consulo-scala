@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -10,6 +13,8 @@ import org.jetbrains.plugins.scala.extensions.{IteratorExt, ObjectExt, PsiElemen
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScExpression}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.MakeImplicitConversionExplicit", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class MakeImplicitConversionExplicit extends PsiElementBaseIntentionAction {
 
   import MakeImplicitConversionExplicit._

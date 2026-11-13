@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.content.scope.SearchScope
 import consulo.language.psi.{PsiElement, PsiPackage, PsiReference}
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.ScObjectImpl
 
 import java.{util => ju}
 
+@ExtensionImpl(order = "first")
 class RenameScalaPackageProcessor extends RenamePsiPackageProcessor with ScalaRenameProcessor {
   private def substituteEnd(element: PsiElement): PsiElement = element match {
     case Target(end: ScEnd) =>

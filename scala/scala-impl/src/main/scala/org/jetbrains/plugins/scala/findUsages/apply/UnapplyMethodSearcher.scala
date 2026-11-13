@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.findUsages.apply
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.PsiReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScExtractorPattern
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScReference, ScStableCodeReference}
 
+@ExtensionImpl
 class UnapplyMethodSearcher extends ApplyUnapplyMethodSearcherBase {
 
   override protected val names: Set[String] = Set("unapply", "unapplySeq")

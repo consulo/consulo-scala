@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.gotoclass
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.ide.navigation.GotoClassOrTypeContributor
 import consulo.application.util.function.Processor
 import consulo.content.scope.SearchScope
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
+@ExtensionImpl(order = "first")
 class ScalaGoToClassContributor extends GotoClassOrTypeContributor with PossiblyDumbAware {
 
   import ScalaIndexKeys._

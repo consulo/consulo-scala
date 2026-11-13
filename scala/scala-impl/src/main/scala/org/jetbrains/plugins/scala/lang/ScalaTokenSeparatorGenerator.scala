@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.ast.{ASTNode, TokenSeparatorGenerator}
 import consulo.language.ast.TokenType
@@ -14,7 +18,10 @@ import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveElementType
  *
  * Note that cases of same-language adjacent elements are handled by [[com.intellij.lang.LanguageTokenSeparatorGenerators]]
  */
+@ExtensionImpl
 class ScalaTokenSeparatorGenerator extends TokenSeparatorGenerator {
+  override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
+
 
   override def generateWhitespaceBetweenTokens(left: ASTNode, right: ASTNode): ASTNode = {
 

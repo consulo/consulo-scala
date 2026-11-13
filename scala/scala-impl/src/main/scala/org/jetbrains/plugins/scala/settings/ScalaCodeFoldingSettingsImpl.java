@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.settings;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import jakarta.inject.Singleton;
+
 import consulo.language.editor.folding.CodeFoldingSettings;
 import com.intellij.java.language.codeInsight.folding.JavaCodeFoldingSettings;
 import consulo.application.ApplicationManager;
@@ -15,6 +20,8 @@ import consulo.util.xml.serializer.XmlSerializerUtil;
                 @Storage(value = "scala_folding_settings.xml", deprecated = true)
         }
 )
+@Singleton
+@ServiceImpl
 public class ScalaCodeFoldingSettingsImpl extends ScalaCodeFoldingSettings implements PersistentStateComponent<ScalaCodeFoldingSettingsImpl> {
 
   private boolean FOLD_ARGUMENT_BLOCK = false;

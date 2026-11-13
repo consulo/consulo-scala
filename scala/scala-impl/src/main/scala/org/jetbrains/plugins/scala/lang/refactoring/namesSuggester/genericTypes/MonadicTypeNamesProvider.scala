@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.types.{ScParameterizedType, ScType}
 
+@ExtensionImpl
 class MonadicTypeNamesProvider extends GenericTypeNamesProviderBase {
 
   import GenericTypeNamesProviderBase.argumentNames

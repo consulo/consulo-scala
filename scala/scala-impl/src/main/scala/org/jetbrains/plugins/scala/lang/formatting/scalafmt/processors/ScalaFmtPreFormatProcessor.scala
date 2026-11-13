@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt.processors
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.ast.ASTNode
 import consulo.project.ui.notification.Notification
@@ -57,6 +59,7 @@ import scala.util.Try
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
+@ExtensionImpl
 class ScalaFmtPreFormatProcessor extends PreFormatProcessor {
 
   /**

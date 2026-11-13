@@ -1,5 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
+
 import consulo.language.editor.inspection.ProblemsHolder
 import consulo.project.Project
 import consulo.language.psi.PsiElementVisitor
@@ -15,7 +22,16 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt, a
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 final class UnitInMapInspection extends OperationOnCollectionInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.unit.return.type.in.the.argument.of.map"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.maps"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import UnitInMapInspection._
 

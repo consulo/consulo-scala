@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.importOptimizer
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.localize.LocalizeValue
 import consulo.language.codeStyle.CodeStyle
@@ -61,6 +63,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 import scala.util.chaining.scalaUtilChainingOps
 
+@ExtensionImpl
 class ScalaImportOptimizer(isOnTheFly: Boolean) extends ImportOptimizer {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

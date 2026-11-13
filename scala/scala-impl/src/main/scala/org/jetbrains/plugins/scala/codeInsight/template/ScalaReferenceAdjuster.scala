@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.ast.ASTNode
 import consulo.project.Project
@@ -10,7 +13,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaPsiElement, ScalaRecursive
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 class ScalaReferenceAdjuster extends ReferenceAdjuster {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   //todo: expression adjuster
   //todo: process returns element, should return element after replacement
   //todo: support useFqInJavadoc

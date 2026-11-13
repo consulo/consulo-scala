@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
  * @see [[org.jetbrains.plugins.scala.editor.typedHandler.ScalaTypedHandler.charTyped]]
  * @see [[org.jetbrains.plugins.scala.editor.typedHandler.AutoBraceInsertionTools.shouldHandleAutoBracesBeforeTyped]]
  */
+@ExtensionImpl
 final class AutoBraceEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],

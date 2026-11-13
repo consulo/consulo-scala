@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.typedHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.TypedHandlerDelegate
 import consulo.language.editor.action.TypedHandlerDelegate.Result
 import consulo.document.Document
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 
+@ExtensionImpl(order = "first")
 final class ScalaDocTypedHandler extends TypedHandlerDelegate {
   private val SingleQuote = '\''
   private val MarkdownCompletionChars: Set[Char] = Set('*', '_', '`')

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.refactoring.rename.SuggestedNameInfo
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.language.editor.refactoring.rename.NameSuggestionProvider
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "scalaNameSuggestionProvider", order = "last")
 class ScalaNameSuggestionProvider extends AbstractNameSuggestionProvider {
 
   import NameSuggester.suggestNames

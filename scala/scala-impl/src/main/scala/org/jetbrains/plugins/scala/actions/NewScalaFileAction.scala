@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
 import consulo.localize.LocalizeValue
 import consulo.ide.action.{CreateFileFromTemplateDialog, CreateTemplateInPackageAction}
 import consulo.fileTemplate.{FileTemplate, FileTemplateManager}
@@ -36,6 +40,7 @@ import java.{util => ju}
 /**
  * @see [[NewPackageObjectAction]]
  */
+@ActionImpl(id = "Scala.NewClass", parents = Array(new ActionParentRef(value = new ActionRef(id = "NewGroup1"))))
 final class NewScalaFileAction extends CreateTemplateInPackageAction[ScalaPsiElement](
   ScalaBundle.message("newclassorfile.menu.action.text"),
   ScalaBundle.message("newclassorfile.menu.action.description"),

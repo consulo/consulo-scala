@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.finder;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ExtensionAPI;
 import consulo.component.extension.ExtensionPointName;
 import consulo.language.file.LanguageFileType;
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 abstract public class ScalaLanguageDerivative {
 
     private static final ExtensionPointName<ScalaLanguageDerivative> EP_NAME =
-            ExtensionPointName.create("org.intellij.scala.scalaLanguageDerivative");
+            ExtensionPointName.create(ScalaLanguageDerivative.class);
 
     protected abstract LanguageFileType getFileType();
 

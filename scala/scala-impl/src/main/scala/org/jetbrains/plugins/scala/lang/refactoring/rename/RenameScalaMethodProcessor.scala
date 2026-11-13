@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.ui.ex.awtUnsafe.TargetAWT
 import java.util.function.Consumer
 import consulo.application.CommonBundle
@@ -27,6 +29,7 @@ import java.util
 import javax.swing._
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl(order = "first")
 class RenameScalaMethodProcessor extends RenameJavaMethodProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = RenameScalaMethodProcessor.canProcessElement(element)
 
@@ -70,6 +73,7 @@ object RenameScalaMethodProcessor {
   }
 }
 
+@ExtensionImpl(order = "last")
 class PrepareRenameScalaMethodProcessor extends RenamePsiElementProcessor {
   override def canProcessElement(element: PsiElement): Boolean = RenameScalaMethodProcessor.canProcessElement(element)
 

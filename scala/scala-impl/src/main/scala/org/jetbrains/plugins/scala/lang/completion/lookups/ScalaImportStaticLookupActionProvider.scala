@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.lookups
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.completion.lookup.{Lookup, LookupActionProvider, LookupElement, LookupElementAction}
 import com.intellij.java.language.psi.PsiClass
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.handlers.ScalaImportingInsertHandler
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 
+@ExtensionImpl
 final class ScalaImportStaticLookupActionProvider extends LookupActionProvider {
 
   override def fillActions(element: LookupElement,

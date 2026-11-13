@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions.implicitConversions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.language.editor.CodeInsightBundle
 import consulo.application.AllIcons
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, IdeActions}
@@ -32,6 +34,7 @@ import javax.swing._
 import javax.swing.border.Border
 import javax.swing.event.{ListSelectionEvent, ListSelectionListener}
 
+@ActionImpl(id = "Scala.ShowImplicitConversions")
 final class ShowImplicitConversionsAction extends AnAction(
   ScalaBundle.message("implicit.conversions.action.text"),
   ScalaBundle.message("implicit.conversions.action.description"),

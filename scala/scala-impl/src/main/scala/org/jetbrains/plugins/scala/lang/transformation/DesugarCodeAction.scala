@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.transformation
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.project.Project
@@ -9,6 +13,7 @@ import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 
+@ActionImpl(id = "Scala.Desugar", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeMenu")), new ActionParentRef(value = new ActionRef(id = "EditorPopupMenu"))))
 class DesugarCodeAction extends AnAction(
   ScalaBundle.message("desugar.scala.code.action.text"),
   ScalaBundle.message("desugar.scala.code.action.description"),

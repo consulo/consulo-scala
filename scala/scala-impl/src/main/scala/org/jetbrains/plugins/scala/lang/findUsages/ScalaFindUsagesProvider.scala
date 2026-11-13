@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.Language
 import consulo.language.cacheBuilder.WordsScanner
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.PsiClassFake
 
+@ExtensionImpl
 class ScalaFindUsagesProvider extends FindUsagesProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

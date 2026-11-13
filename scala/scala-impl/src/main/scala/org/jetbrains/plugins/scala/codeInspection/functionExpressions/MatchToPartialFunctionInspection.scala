@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.functionExpressions
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFixOnPsiElement, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
@@ -23,7 +29,16 @@ import org.jetbrains.plugins.scala.project.ProjectContext
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class MatchToPartialFunctionInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.match.statement.convertible.to.pattern.matching.anonymous.function"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import MatchToPartialFunctionInspection._
 

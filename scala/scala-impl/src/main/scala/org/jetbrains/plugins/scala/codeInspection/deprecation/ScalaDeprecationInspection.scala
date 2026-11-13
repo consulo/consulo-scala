@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.deprecation
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import com.intellij.java.language.psi.{PsiAnnotationOwner, PsiDocCommentOwner, PsiMember, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiNamedElement}
@@ -19,7 +25,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScMemb
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
+@ExtensionImpl(id = "ScalaDeprecation")
 class ScalaDeprecationInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.scala.deprecation"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getID: String = "ScalaDeprecation"
 

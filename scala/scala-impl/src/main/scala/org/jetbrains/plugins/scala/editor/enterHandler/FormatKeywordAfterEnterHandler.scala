@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.editor.{DocumentExt, indentKeyword}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScCatchBlock, ScFinallyBlock, ScIf}
 
+@ExtensionImpl
 final class FormatKeywordAfterEnterHandler extends EnterHandlerDelegateAdapter {
   type KeywordF = PsiFile => (Document, Project, PsiElement, Int) => Unit
 

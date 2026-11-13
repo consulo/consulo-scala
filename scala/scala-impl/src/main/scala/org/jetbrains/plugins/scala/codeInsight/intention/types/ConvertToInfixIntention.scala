@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.util.LanguageUndoUtil
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
@@ -14,6 +17,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScParameterizedTypeE
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createTypeElementFromText
 
 /** Converts type element `@@[A, B]` to `(A @@ B)` */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertToInfixIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class ConvertToInfixIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaBundle.message("family.name.use.infix.type.syntax")
 

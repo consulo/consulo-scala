@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.annotation.component.ExtensionImpl
+
 
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.Language
@@ -18,6 +20,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.introduceField.ScalaIntroduc
 import org.jetbrains.plugins.scala.lang.refactoring.introduceParameter.ScalaIntroduceParameterHandler
 import org.jetbrains.plugins.scala.lang.refactoring.introduceVariable.ScalaIntroduceVariableHandler
 
+@ExtensionImpl
 class ScalaRefactoringSupportProvider extends RefactoringSupportProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

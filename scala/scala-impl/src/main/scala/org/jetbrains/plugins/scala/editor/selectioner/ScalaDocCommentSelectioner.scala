@@ -1,6 +1,8 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.plugins.scala.editor.selectioner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.{AbstractWordSelectioner, ExtendWordSelectionHandlerBase}
 import consulo.language.ast.ASTNode
 import consulo.codeEditor.Editor
@@ -19,6 +21,7 @@ import java.util
  * @see [[com.intellij.codeInsight.editorActions.wordSelection.LineCommentSelectioner]] (works for Scala automatically)
  */
 // upstream: extended LineCommentSelectioner (impl class in Consulo), its `select` logic is inlined in `lineCommentSelect`
+@ExtensionImpl
 final class ScalaDocCommentSelectioner extends AbstractWordSelectioner {
   override def canSelect(e: PsiElement): Boolean = {
     val node = e.getNode

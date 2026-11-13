@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.util.lang.StringUtil
@@ -95,6 +97,7 @@ final class AutomaticVariableRenamer(
   }
 }
 
+@ExtensionImpl
 final class AutomaticVariableRenamerFactory extends AutomaticRenamerFactory {
   override def isApplicable(element: PsiElement): Boolean = element.is[PsiClass, ScTypeAlias]
 

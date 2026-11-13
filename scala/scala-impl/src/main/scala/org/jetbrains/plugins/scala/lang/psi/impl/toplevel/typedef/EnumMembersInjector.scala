@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, Model, StringsExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScEnumCase, ScEnumSingletonCase}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScEnum, ScObject, ScTypeDefinition}
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.EnumMembersInj
 /**
  * Injects synthetic methods into companion objects of enums: `values`, `valueOf`, `fromOrdinal`.
  */
+@ExtensionImpl
 class EnumMembersInjector extends SyntheticMembersInjector {
   private def companionEnum(obj: ScObject): Option[ScEnum] =
     obj.fakeCompanionClassOrCompanionClass match {

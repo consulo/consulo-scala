@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.ProblemHighlightFilter
 import consulo.language.editor.scratch.ScratchUtil
 import consulo.java.impl.util.JavaProjectRootsUtil
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.sbt.api.language.SbtFile
 
+@ExtensionImpl
 final class ScalaProblemHighlightFilter extends ProblemHighlightFilter {
 
   override def shouldHighlight(file: PsiFile): Boolean = file match {

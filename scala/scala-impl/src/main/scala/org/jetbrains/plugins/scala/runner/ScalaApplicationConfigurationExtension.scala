@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import com.intellij.java.execution.impl.application.ApplicationConfiguration
 import consulo.java.execution.configurations.OwnJavaParameters
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.runner.view.ScalaProvideMainMethodParametersD
 
 import scala.jdk.CollectionConverters.ListHasAsScala
 
+@ExtensionImpl
 final class ScalaApplicationConfigurationExtension extends RunConfigurationExtension {
 
   import ValidateCommand._

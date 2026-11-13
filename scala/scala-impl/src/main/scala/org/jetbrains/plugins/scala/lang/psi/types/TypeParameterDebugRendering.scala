@@ -8,7 +8,7 @@ private[scala] object TypeParameterDebugRendering {
   final val RegistryKey = "scala.type.presentation.debug.type.param.id"
 
   def withTypeParamId(baseText: String, typeParamId: Long): String =
-    if (Registry.is(RegistryKey)) s"$baseText#$typeParamId"
+    if (Registry.is(RegistryKey, false)) s"$baseText#$typeParamId"
     else                          baseText
 
   def renderNamedTypeName(namedType: NamedType): String = namedType match {

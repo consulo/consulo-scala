@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.ExtendWordSelectionHandlerBase
 import consulo.language.ast.ASTNode
 import consulo.codeEditor.Editor
@@ -13,6 +15,7 @@ import java.util
 /**
   * Selects a statement together with its trailing semicolon.
  */
+@ExtensionImpl
 class ScalaSemicolonSelectioner extends ExtendWordSelectionHandlerBase {
   override def canSelect(e: PsiElement): Boolean = e.isInstanceOf[ScBlockStatement]
 

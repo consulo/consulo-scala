@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.comprehension
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -19,6 +22,8 @@ object ConvertToParenthesesIntention {
   val FamilyName: String = ScalaBundle.message("intention.for.comprehension.convert.to.parentheses")
 }
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertToParenthesesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "for comprehension"))
 class ConvertToParenthesesIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = FamilyName
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter.readWriteAccess
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.highlight.ReadWriteAccessDetector
 import consulo.language.editor.highlight.ReadWriteAccessDetector.Access
 import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScAssignment, ScExpression, ScSugarCallExpr}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScPatternDefinition, ScVariableDefinition}
 
+@ExtensionImpl
 class ScalaReadWriteAccessDetector extends ReadWriteAccessDetector {
   override def getExpressionAccess(expression: PsiElement): Access = {
     expression match {

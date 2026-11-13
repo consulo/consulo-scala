@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.codeInspection.dependencies
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.language.editor.inspection.LocalQuickFix
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersio
 import org.jetbrains.plugins.scalaDirective.dependencies.{ScalaDirectiveDependencyDescriptor, ScalaDirectiveDependencyPattern}
 import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 
+@ExtensionImpl
 final class ScalaDirectiveDependencyVersionInspection extends DependencyVersionInspection with DumbAware {
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.directive.dependency.version"))
 

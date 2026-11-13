@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.icon.IconDescriptorUpdaters
 import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
@@ -45,7 +49,10 @@ import scala.jdk.CollectionConverters._
   * or inside class parameters [case] class X(ove<caret>, override val/var na<caret>) extends Y
   */
 // TODO: support kind of sorter
+@ExtensionImpl(id = "scalaOverrideDefContributer", order = "before scalaIdentifierCompletionContributor, after keywordCompletionContributor")
 class ScalaOverrideContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaOverrideContributor._
 

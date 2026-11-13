@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.progress.ProgressManager
 import consulo.util.lang.Comparing
 import consulo.util.lang.StringUtil
@@ -20,6 +22,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * @see [[ScalaLocalInheritorsSearcher]]
  */
+@ExtensionImpl
 class ScalaDirectClassInheritorsSearcher extends QueryExecutor[PsiClass, DirectClassInheritorsSearch.SearchParameters] {
 
   override def execute(queryParameters: DirectClassInheritorsSearch.SearchParameters, consumer: Processor[? >: PsiClass]): Boolean = {

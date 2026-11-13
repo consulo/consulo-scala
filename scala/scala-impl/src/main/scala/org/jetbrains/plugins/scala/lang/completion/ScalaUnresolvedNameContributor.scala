@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.language.editor.completion.lookup.InsertionContext
@@ -38,7 +42,10 @@ import org.jetbrains.plugins.scala.util.HashBuilder._
   * For references with parameters(methods, classes), completion list contains parameters with types.
   * For references with parameters(methods, classes) completion after `object` keyword generates apply method with parameters.
   */
+@ExtensionImpl(id = "scalaUnresolvedNameCompletion", order = "before scalaIdentifierCompletionContributor")
 class ScalaUnresolvedNameContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaUnresolvedNameContributor._
 

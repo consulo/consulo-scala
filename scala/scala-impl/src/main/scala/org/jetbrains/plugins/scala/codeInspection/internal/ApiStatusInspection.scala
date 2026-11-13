@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.internal
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.language.util.ModuleUtilCore
 import com.intellij.java.language.psi.PsiDocCommentOwner
@@ -11,7 +17,16 @@ import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.{Constructor, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
+@ExtensionImpl
 class ApiStatusInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("internal.api.status.of.symbols"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.internal"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private def elementsAreInTheSameModule(e1: PsiElement, e2: PsiElement): Boolean =
     ModuleUtilCore.findModuleForPsiElement(e1) == ModuleUtilCore.findModuleForPsiElement(e2)

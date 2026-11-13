@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.{EnterHandlerDelegate, EnterHandlerDelegateAdapter}
 import consulo.dataContext.DataContext
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.editor.{DocumentExt, EditorExt}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, inWriteAction}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
+@ExtensionImpl
 class ScalaDocMarkdownEnterHandler extends EnterHandlerDelegateAdapter {
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result = {
     if (!file.is[ScalaFile] || !editor.inDocComment(editor.offset)) {

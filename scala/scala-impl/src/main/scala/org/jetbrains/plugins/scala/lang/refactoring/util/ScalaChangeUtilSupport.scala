@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.util
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.ast.ASTNode
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiNamedElement
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 
 import java.util.Map
 
+@ExtensionImpl
 class ScalaChangeUtilSupport extends TreeCopyHandler {
   override def encodeInformation(element: ASTNode, original: ASTNode, encodingState: Map[Object, Object]): Unit = {
     if (!element.isInstanceOf[ScalaPsiElement]) return

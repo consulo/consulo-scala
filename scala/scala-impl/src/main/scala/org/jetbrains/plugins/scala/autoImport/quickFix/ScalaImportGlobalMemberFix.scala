@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.language.editor.inspection.PriorityAction
@@ -151,15 +153,7 @@ private class MemberToImportComputation(ref: ScReferenceExpression) {
 
 object ScalaImportGlobalMemberFix {
 
-  final class Provider extends UnresolvedReferenceFixProvider {
-    override def fixesFor(reference: ScReference): Seq[IntentionAction] =
-      reference match {
-        case refExpr: ScReferenceExpression if !refExpr.isQualified => ScalaImportGlobalMemberFix.create(refExpr)
-        case _ => Nil
-      }
-  }
-
-  private def create(ref: ScReferenceExpression): Seq[IntentionAction] = {
+  private[quickFix] def create(ref: ScReferenceExpression): Seq[IntentionAction] = {
     val computation = new MemberToImportComputation(ref)
     Seq(new ScalaImportGlobalMemberFix(computation, ref), new ScalaImportGlobalMemberWithPrefixFix(computation, ref))
   }
@@ -171,4 +165,15 @@ object ScalaImportGlobalMemberFix {
   @TestOnly
   def fixWithPrefix(ref: ScReferenceExpression): Option[ScalaImportElementFix[? <: ElementToImport]] =
     create(ref).findByType[ScalaImportGlobalMemberWithPrefixFix]
+}
+
+@ExtensionImpl
+final class ScalaImportGlobalMemberFixProvider extends UnresolvedReferenceFixProvider {
+  import ScalaImportGlobalMemberFix._
+
+  override def fixesFor(reference: ScReference): Seq[IntentionAction] =
+    reference match {
+      case refExpr: ScReferenceExpression if !refExpr.isQualified => ScalaImportGlobalMemberFix.create(refExpr)
+      case _ => Nil
+    }
 }

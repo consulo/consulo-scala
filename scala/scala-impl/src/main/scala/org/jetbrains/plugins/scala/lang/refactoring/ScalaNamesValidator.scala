@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.language.editor.refactoring.NamesValidator
 import consulo.project.Project
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{KEYWORDS, SOFT_KEYWORDS, tIDENTIFIER}
 import org.jetbrains.plugins.scala.util.UnloadableThreadLocal
 
+@ExtensionImpl
 class ScalaNamesValidator extends NamesValidator {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

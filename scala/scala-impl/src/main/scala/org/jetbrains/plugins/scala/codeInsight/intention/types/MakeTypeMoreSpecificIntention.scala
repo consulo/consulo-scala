@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -16,6 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.ScTypeText
 import org.jetbrains.plugins.scala.lang.psi.types.{BaseTypes, Context, ScType, ScTypeExt, TypePresentationContext}
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.MakeTypeMoreSpecificIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class MakeTypeMoreSpecificIntention extends AbstractTypeAnnotationIntention {
 
   import MakeTypeMoreSpecificIntention._

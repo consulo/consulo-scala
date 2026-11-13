@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.settings
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import consulo.component.persist.{PersistentStateComponent, State, Storage}
 import consulo.project.Project
 
@@ -9,7 +15,10 @@ import scala.beans.BooleanBeanProperty
   name     = "CompilerIndicesSettings",
   storages = Array(new Storage("compiler_indices_settings.xml"))
 )
-class CompilerIndicesSettings(project: Project) extends PersistentStateComponent[CompilerIndicesSettings.State] {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class CompilerIndicesSettings @Inject()(project: Project) extends PersistentStateComponent[CompilerIndicesSettings.State] {
   private var state: CompilerIndicesSettings.State = new CompilerIndicesSettings.State
 
   /** Corresponds to the actual value set in configurable, consider using

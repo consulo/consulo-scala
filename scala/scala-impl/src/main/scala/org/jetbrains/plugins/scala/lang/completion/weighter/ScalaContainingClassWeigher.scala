@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
 import consulo.language.editor.completion.lookup.LookupElement
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScModifierListOwner
 
+@ExtensionImpl(id = "scalaContainingClassWeigher", order = "after prefix, before scalaKindWeigher")
 final class ScalaContainingClassWeigher extends CompletionWeigher {
   override def weigh(element: LookupElement, location: CompletionLocation): Comparable[?] = {
     import KindWeights._

@@ -15,6 +15,12 @@
 
 package org.jetbrains.plugins.scala.lang.macros.evaluator
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import consulo.project.Project
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiNamedElement
@@ -28,7 +34,10 @@ import org.jetbrains.plugins.scala.lang.psi.types.ScType
 
 import scala.reflect.ClassTag
 
-class ScalaMacroEvaluator(project: Project) {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class ScalaMacroEvaluator @Inject()(project: Project) {
   import ScalaMacroEvaluator._
 
   private val typingRules = cached("typingRules", LibraryExtensionsManager.MOD_TRACKER, () => {

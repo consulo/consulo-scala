@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle.message
@@ -9,6 +12,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScUnderscoreSection
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ToggleTypeAnnotation", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class ToggleTypeAnnotation extends AbstractTypeAnnotationIntention {
 
   import ToggleTypeAnnotation._

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.logging.Logger
 import consulo.module.content.ProjectRootManager
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile}
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 import java.util
 import scala.jdk.CollectionConverters.IterableHasAsScala
 
+@ExtensionImpl(order = "first")
 class MoveScalaFileHandler extends MoveFileHandler {
   override def canProcessElement(element: PsiFile): Boolean = {
     if (!element.is[ScalaFile])

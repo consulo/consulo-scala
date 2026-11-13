@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -19,6 +22,8 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 /**
  * Jason Zaugg
  */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.AddBracesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class AddBracesIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaBundle.message("family.name.add.braces")
 

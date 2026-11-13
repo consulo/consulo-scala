@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scalaDirective.util.ScalaDirectiveValueKind
 
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
+@ExtensionImpl(id = "scalaDirectiveScalaVersionCompletionContributor")
 final class ScalaDirectiveScalaVersionCompletionContributor extends CompletionContributor with DumbAware {
   override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
 

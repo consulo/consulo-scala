@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.backspaceHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.BackspaceHandlerDelegate
@@ -35,6 +37,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil.{MultilineQuotesLeng
 
 import scala.util.matching.Regex
 
+@ExtensionImpl
 class ScalaBackspaceHandler extends BackspaceHandlerDelegate {
   private val MarkdownDeletionChars: Set[Char] = Set('*', '_', '`')
 

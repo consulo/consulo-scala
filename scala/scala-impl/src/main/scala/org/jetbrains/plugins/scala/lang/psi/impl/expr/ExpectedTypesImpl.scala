@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.expr
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiTypeParameterListOwner}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import consulo.language.psi.util.PsiTreeUtil
@@ -39,6 +44,8 @@ import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 
+@Singleton
+@ServiceImpl
 class ExpectedTypesImpl extends ExpectedTypes {
   /**
    * Do not use this method inside of resolve or type inference.

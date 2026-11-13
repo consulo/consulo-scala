@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.actions.internal
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 //noinspection ScalaExtractStringToBundle,ScalaUnusedSymbol,ComponentNotRegistered
+@ActionImpl(id = "Scala.Clean.Caches")
 final class CleanScalaCachesAction extends AnAction("Clean Scala Plugin Caches") {
 
   override def actionPerformed(event: AnActionEvent): Unit = {

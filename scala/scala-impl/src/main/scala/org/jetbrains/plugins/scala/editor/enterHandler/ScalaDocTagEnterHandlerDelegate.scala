@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.dataContext.DataContext
@@ -19,6 +21,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocTag
  *      [[org.jetbrains.plugins.scala.lang.scaladoc.ScalaIsCommentComplete]]
  *      [[org.jetbrains.plugins.scala.highlighter.ScalaCommenter]]
  */
+@ExtensionImpl
 class ScalaDocTagEnterHandlerDelegate extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = {

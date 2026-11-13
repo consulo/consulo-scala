@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move.members
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.localize.LocalizeValue
 import com.intellij.java.language.psi.{PsiClass, PsiMember, PsiModifierList}
 import consulo.language.psi.{PsiElement, PsiReference}
@@ -18,7 +22,10 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaChangeContextUtil
 
 import java.{util => ju}
 
+@ExtensionImpl
 final class ScalaMoveMemberHandler extends MoveJavaMemberHandler {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def checkConflictsOnMember(member: PsiMember,
                                       newVisibility: String,

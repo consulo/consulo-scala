@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight
 
+import com.intellij.java.language.JavaLanguage
+
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.TargetElementUtilExtender
 import consulo.document.Document
 import consulo.codeEditor.Editor
@@ -31,7 +37,10 @@ import java.{util => ju}
  *   - `org.jetbrains.plugins.scala.refactoring.rename.generated.ScalaRenameParameterTest#testSyntheticCopyParameter`
  *   - `org.jetbrains.plugins.scala.hierarchy.ScalaTypeHierarchyProviderTest#test_ref_to_primary_constructor`
  */
+@ExtensionImpl
 class ScalaTargetElementEvaluator extends TargetElementUtilExtender {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getReferenceOrReferencedElement(ref: PsiReference, flags: ju.Set[String]): PsiElement = ref.getElement match {
     case isUnapplyFromVal(binding) => binding

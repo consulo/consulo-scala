@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.stacktrace
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.execution.ui.console.{ConsoleFilterProvider, Filter, HyperlinkInfo, OpenFileHyperlinkInfo}
 import com.intellij.java.execution.filters.{ExceptionFilter, ExceptionFilterFactory}
 import consulo.project.Project
@@ -11,11 +13,13 @@ import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.PackageObjectS
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(order = "first")
 class ScalaPackageObjectFilterFactory extends ExceptionFilterFactory {
   override def create(scope: GlobalSearchScope): Filter =
     new ScalaPackageObjectFilter(scope)
 }
 
+@ExtensionImpl(order = "first")
 class ScalaPackageObjectConsoleFilterProvider extends ConsoleFilterProvider {
   override def getDefaultFilters(project: Project): Array[Filter] =
     Array(new ScalaPackageObjectFilter(GlobalSearchScope.allScope(project)))

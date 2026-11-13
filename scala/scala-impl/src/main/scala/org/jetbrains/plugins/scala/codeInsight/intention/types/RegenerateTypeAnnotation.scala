@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -11,6 +14,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements._
 /**
   * Markus.Hauck, 18.05.2016
   */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.RegenerateTypeAnnotation", fileExtensions = Array("scala"), categories = Array("Scala", "Type"))
 class RegenerateTypeAnnotation extends AbstractTypeAnnotationIntention {
 
   import RegenerateTypeAnnotation._

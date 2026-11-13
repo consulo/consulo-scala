@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.externalLibraries.derevo
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.externalLibraries.derevo.DerevoInjector._
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.designator.{ScDesignatorTy
 import org.jetbrains.plugins.scala.lang.psi.types.{ScCompoundType, ScParameterizedType, ScType, ScTypeExt}
 import org.jetbrains.plugins.scala.project.ProjectContext
 
+@ExtensionImpl
 class DerevoInjector extends SyntheticMembersInjector {
   val derevoDerive = "derevo.derive"
   val derevoComposite = "derevo.composite"

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
 import consulo.language.editor.completion.lookup.LookupElement
 import consulo.language.psi.PsiElement
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.completion.positionFromParameters
 
+@ExtensionImpl(id = "ScopeWeigher", order = "after scalaKindWeigher, before proximity")
 final class ScalaScopeWeigher extends CompletionWeigher {
 
   override def weigh(element: LookupElement, location: CompletionLocation): Comparable[?] = element match {

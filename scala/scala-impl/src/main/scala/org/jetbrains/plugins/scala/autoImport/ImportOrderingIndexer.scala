@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.autoImport
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.index.io.{DataIndexer, ID}
 import consulo.language.psi.stub.{FileBasedIndex, FileBasedIndexExtension, FileContent}
 import consulo.execution.ui.console.InputFilter
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.project.ProjectContext
 import java.io.{DataInput, DataOutput}
 import java.util
 
+@ExtensionImpl
 final class ImportOrderingIndexer extends FileBasedIndexExtension[String, Void] {
   override val getName: ID[String, Void] = ImportOrderingIndexer.Id
 

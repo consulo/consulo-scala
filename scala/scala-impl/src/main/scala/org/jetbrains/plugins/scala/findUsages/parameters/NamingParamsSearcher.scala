@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.findUsages.parameters
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.{PsiElement, PsiReference}
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import scala.collection.mutable
 import java.util.function.Predicate
 
+@ExtensionImpl
 class NamingParamsSearcher extends QueryExecutor[PsiReference, ReferencesSearch.SearchParameters] {
   override def execute(queryParameters: ReferencesSearch.SearchParameters, consumer: Predicate[? >: PsiReference]): Boolean = {
     val project = queryParameters.getProject

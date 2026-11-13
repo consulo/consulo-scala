@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.folding
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.ast.ASTNode
 import consulo.language.editor.folding.{CustomFoldingBuilder, FoldingDescriptor}
 import consulo.document.Document
@@ -37,7 +41,10 @@ import scala.jdk.CollectionConverters._
 // TODO: do not use ASTNode.getText or PsiElement.getText
 // TODO: extract shared string literals, like "{...}"
 //noinspection InstanceOf
+@ExtensionImpl
 class ScalaFoldingBuilder extends CustomFoldingBuilder with PossiblyDumbAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import ScalaElementType._
   import ScalaFoldingUtil._
 

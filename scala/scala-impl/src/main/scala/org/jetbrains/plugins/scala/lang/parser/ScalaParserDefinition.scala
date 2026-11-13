@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.lang.parser
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
 import consulo.project.Project
 import consulo.language.file.FileViewProvider
 import org.jetbrains.plugins.scala.api.ScalaLanguage
@@ -10,7 +13,10 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.elements.ScStubFileElementType
 /**
  * @see [[org.jetbrains.plugins.scala.lang.parser.Scala3ParserDefinition]]
  */
+@ExtensionImpl
 class ScalaParserDefinition extends ScalaParserDefinitionBase {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def createLexer(project: Project): org.jetbrains.plugins.scala.lang.lexer.ScalaLexer = new ScalaLexer(false, project)
 

@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.LookupElement
 import consulo.application.dumb.DumbAware
@@ -13,7 +17,10 @@ import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsing.TagNames
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 
+@ExtensionImpl(id = "scaladocTagsCompletionContributor")
 final class ScalaDocCompletionContributor extends ScalaCompletionContributor with DumbAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   extend(CompletionType.BASIC, PlatformPatterns.psiElement(ScalaDocTokenType.DOC_TAG_NAME), new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
       val position = positionFromParameters(using parameters)

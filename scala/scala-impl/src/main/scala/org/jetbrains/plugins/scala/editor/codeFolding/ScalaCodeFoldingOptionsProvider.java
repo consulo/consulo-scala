@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.codeFolding;
 
+import consulo.annotation.component.ExtensionImpl;
+
 import consulo.configurable.ApplicationConfigurable;
 import consulo.configurable.SimpleConfigurableByProperties;
 import consulo.disposer.Disposable;
@@ -16,6 +18,7 @@ import java.util.function.Supplier;
 
 // upstream: BeanConfigurable implementing com.intellij.application.options.editor.CodeFoldingOptionsProvider,
 // in Consulo code folding options are child configurables of "editor.preferences.folding"
+@ExtensionImpl
 public class ScalaCodeFoldingOptionsProvider extends SimpleConfigurableByProperties implements ApplicationConfigurable {
 
   @Override

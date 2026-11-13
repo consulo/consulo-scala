@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.matcher
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.FileModificationService
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
@@ -24,6 +27,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt}
   * Expands reference or wildcard pattern to a constructor/tuple pattern.
   */
 // TODO avoid name clashes, avoid more FQNs with adjustTypes.
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ExpandPatternIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Pattern matching"))
 class ExpandPatternIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.expand.to.constructor.pattern")
 

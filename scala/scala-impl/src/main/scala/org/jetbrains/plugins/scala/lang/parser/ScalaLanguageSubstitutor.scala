@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.parser
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import consulo.language.util.ModuleUtilCore
 import consulo.project.Project
@@ -16,6 +18,7 @@ import scala.util.matching.Regex
 /**
  * For worksheets see `org.jetbrains.plugins.scala.worksheet.WorksheetLanguageSubstitutor`
  */
+@ExtensionImpl
 final class ScalaLanguageSubstitutor extends LanguageSubstitutor {
 
   /** @note for worksheet language substitutions see<br>

@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.comprehension
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -14,6 +17,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertToCurlyBracesIntention", fileExtensions = Array("scala"), categories = Array("Scala", "for comprehension"))
 class ConvertToCurlyBracesIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaBundle.message("family.name.convert.to.curly.braces")
 

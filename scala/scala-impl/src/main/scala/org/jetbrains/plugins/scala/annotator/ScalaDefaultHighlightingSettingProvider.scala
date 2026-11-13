@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.{DefaultHighlightingSettingProvider, FileHighlightingSetting}
 import consulo.application.ApplicationManager
 import consulo.project.Project
@@ -10,6 +12,7 @@ import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 
+@ExtensionImpl
 class ScalaDefaultHighlightingSettingProvider extends DefaultHighlightingSettingProvider {
 
   /** used e.g. in [[com.intellij.codeInsight.daemon.impl.analysis.HighlightingSettingsPerFile.getDefaultHighlightingSetting]] */
@@ -18,7 +21,7 @@ class ScalaDefaultHighlightingSettingProvider extends DefaultHighlightingSetting
       null
     else if (!ScalaHighlightingMode.showCompilerErrorsScala3(project))
       null
-    else if (!Registry.is("scala.compiler.highlighting.suppress.java.highlighting")) null
+    else if (!Registry.is("scala.compiler.highlighting.suppress.java.highlighting", false)) null
     else if (file.isValid) {
       val psiManager = PsiManager.getInstance(project)
       val psiFile = psiManager.findFile(file)

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.move
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import com.intellij.java.language.psi.JavaPsiFacade
 import consulo.language.psi.{PsiDirectory, PsiElement, PsiFile, PsiPackage}
@@ -21,6 +23,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.ScObjectImpl
 
 import java.{util => ju}
 
+@ExtensionImpl(order = "first")
 class ScalaMoveDirectoryWithClassesHelper extends MoveDirectoryWithClassesHelper {
 
   override def findUsages(filesToMove: ju.Collection[PsiFile],

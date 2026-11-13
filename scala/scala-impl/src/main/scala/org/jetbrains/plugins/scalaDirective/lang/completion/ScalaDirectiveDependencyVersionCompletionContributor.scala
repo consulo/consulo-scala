@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
+
 import consulo.language.editor.completion.{CompletionResultSet, CompletionSorter}
 import consulo.application.AllIcons
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher
@@ -11,7 +15,10 @@ import org.jetbrains.plugins.scalaDirective.lang.completion.lookups.ScalaDirecti
 
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
+@ExtensionImpl(id = "scalaDirectiveDependencyVersionCompletionContributor")
 final class ScalaDirectiveDependencyVersionCompletionContributor extends ScalaDirectiveDependencyCompletionContributorBase {
+  override def getLanguage: Language = ScalaDirectiveLanguage.INSTANCE
+
   protected def provider: ScalaDirectiveDependencyCompletionProviderBase = new ScalaDirectiveDependencyVersionCompletionProvider
 }
 

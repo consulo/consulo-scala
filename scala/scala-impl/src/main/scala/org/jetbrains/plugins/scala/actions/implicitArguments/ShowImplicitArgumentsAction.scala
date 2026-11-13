@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions.implicitArguments
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.project.ui.view.tree.AbstractTreeNode
 import consulo.disposer.Disposable
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, CustomShortcutSet, IdeActions, Shortcut}
@@ -35,6 +37,7 @@ import java.awt.{BorderLayout, Dimension}
 import javax.swing.tree.{DefaultMutableTreeNode, TreePath}
 import javax.swing.{JPanel, JTree}
 
+@ActionImpl(id = "Scala.ShowImplicitArguments")
 class ShowImplicitArgumentsAction extends AnAction(
   ScalaBundle.message("show.implicit.arguments.action.text"),
   ScalaBundle.message("show.implicit.arguments.action.description"),

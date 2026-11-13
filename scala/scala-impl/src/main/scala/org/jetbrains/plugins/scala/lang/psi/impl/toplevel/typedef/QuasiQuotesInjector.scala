@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTypeDefinition}
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 
+@ExtensionImpl
 class QuasiQuotesInjector extends SyntheticMembersInjector {
   override def injectFunctions(source: ScTypeDefinition): Seq[String] = {
     source match {

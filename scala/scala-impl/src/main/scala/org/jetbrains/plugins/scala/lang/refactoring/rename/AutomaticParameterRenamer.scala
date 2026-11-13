@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import com.intellij.java.language.JavaLanguage
@@ -79,6 +81,7 @@ final class AutomaticParameterRenamer(param: PsiParameter, newName: String) exte
   }
 }
 
+@ExtensionImpl(order = "first")
 final class AutomaticParameterRenamerFactory extends AutomaticRenamerFactory {
   override def isApplicable(element: PsiElement): Boolean = element match {
     case param: PsiParameter => param.getNameIdentifier != null

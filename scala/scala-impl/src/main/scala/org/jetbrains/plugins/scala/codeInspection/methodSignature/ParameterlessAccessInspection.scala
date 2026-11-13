@@ -1,5 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.methodSignature
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiFile}
 import com.intellij.java.language.psi.PsiMethod
@@ -50,54 +57,15 @@ sealed abstract class ParameterlessAccessInspection extends LocalInspectionTool 
 
 object ParameterlessAccessInspection {
 
-  final class JavaMutator extends ParameterlessAccessInspection {
-
-    override protected def collect(expression: ScExpression,
-                                   reference: ScReferenceExpression): Option[ScExpression] = reference match {
-      case HasFunctionType(_) => None
-      case _ => Some(expression)
-    }
-
-    override protected def isValid(method: PsiMethod): Boolean = quickfix.isMutator(method)
-  }
-
-  final class EmptyParenMethod extends ParameterlessAccessInspection {
-    override def isAvailableForFile(file: PsiFile): Boolean =
-      !file.isScala3 && super.isAvailableForFile(file)
-
-    // might have been eta-expanded to () => A, so don't warn.
-    // this avoids false positives. To be more accurate, we would need an 'etaExpanded'
-    // flag in ScalaResolveResult.
-    override protected def collect(expression: ScExpression,
-                                   reference: ScReferenceExpression): Option[ScExpression] = expression match {
-      case HasFunctionType(Seq()) => None
-      case _ => Some(reference)
-    }
-
-    override protected def isValid(element: PsiElement): Boolean =
-      super.isValid(element) && IntentionAvailabilityChecker.checkInspection(this, element)
-
-    override protected def isValid(method: PsiMethod): Boolean = method match {
-      case function: ScFunction =>
-        function.isValid && !function.isInCompiledFile && function.isEmptyParen
-      case _ => false
-    }
-
-    override protected def isFixable(parent: PsiElement): Boolean = parent match {
-      case _: ScPrefixExpr => false
-      case _ => super.isFixable(parent)
-    }
-  }
-
   @tailrec
-  private def findCall(element: PsiElement): Boolean = element.getContext match {
+  private[methodSignature] def findCall(element: PsiElement): Boolean = element.getContext match {
     case _: ScMethodCall => true
     case expression: ScParenthesisedExpr => findCall(expression)
     case call: ScGenericCall => findCall(call)
     case _ => false
   }
 
-  private object HasFunctionType {
+  private[methodSignature] object HasFunctionType {
 
     def unapply(expression: ScExpression): Option[Seq[ScType]] = {
       implicit val context: Context = Context(expression)
@@ -107,5 +75,69 @@ object ParameterlessAccessInspection {
         case _ => None
       }
     }
+  }
+}
+
+@ExtensionImpl
+final class ParameterlessAccessInspectionJavaMutator extends ParameterlessAccessInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("method.signature.parameterless.access.java.mutator"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.method.signature"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "JavaMutatorMethodAccessedAsParameterless"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  import ParameterlessAccessInspection._
+
+  override protected def collect(expression: ScExpression,
+                                 reference: ScReferenceExpression): Option[ScExpression] = reference match {
+    case HasFunctionType(_) => None
+    case _ => Some(expression)
+  }
+
+  override protected def isValid(method: PsiMethod): Boolean = quickfix.isMutator(method)
+}
+
+@ExtensionImpl
+final class ParameterlessAccessInspectionEmptyParenMethod extends ParameterlessAccessInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("method.signature.parameterless.access.empty.paren"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.method.signature"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "EmptyParenMethodAccessedAsParameterless"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  import ParameterlessAccessInspection._
+
+  override def isAvailableForFile(file: PsiFile): Boolean =
+    !file.isScala3 && super.isAvailableForFile(file)
+
+  // might have been eta-expanded to () => A, so don't warn.
+  // this avoids false positives. To be more accurate, we would need an 'etaExpanded'
+  // flag in ScalaResolveResult.
+  override protected def collect(expression: ScExpression,
+                                 reference: ScReferenceExpression): Option[ScExpression] = expression match {
+    case HasFunctionType(Seq()) => None
+    case _ => Some(reference)
+  }
+
+  override protected def isValid(element: PsiElement): Boolean =
+    super.isValid(element) && IntentionAvailabilityChecker.checkInspection(this, element)
+
+  override protected def isValid(method: PsiMethod): Boolean = method match {
+    case function: ScFunction =>
+      function.isValid && !function.isInCompiledFile && function.isEmptyParen
+    case _ => false
+  }
+
+  override protected def isFixable(parent: PsiElement): Boolean = parent match {
+    case _: ScPrefixExpr => false
+    case _ => super.isFixable(parent)
   }
 }

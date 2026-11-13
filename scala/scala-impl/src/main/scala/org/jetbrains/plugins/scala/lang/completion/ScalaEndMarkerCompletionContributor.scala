@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.ui.image.Image
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionType}
@@ -28,7 +32,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScBegin, ScalaPsiElement}
 
 import scala.annotation.tailrec
 
+@ExtensionImpl(id = "scalaEndMarkerCompletionContributor", order = "before keywordCompletionContributor")
 final class ScalaEndMarkerCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   extendBasicAndSmart(identifierWithParentPattern(classOf[ScEnd]),
     new EndMarkerCompletionProvider(classOf[ScEnd]))

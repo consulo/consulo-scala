@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -17,6 +20,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertToInfixExpressionIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 final class ConvertToInfixExpressionIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaBundle.message("family.name.convert.to.infix.expression")
 

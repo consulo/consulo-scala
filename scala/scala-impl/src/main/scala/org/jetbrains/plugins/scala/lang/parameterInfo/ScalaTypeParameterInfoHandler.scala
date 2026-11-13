@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.parameterInfo
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 
 import consulo.language.editor.CodeInsightBundle
 import consulo.language.editor.parameterInfo.{CreateParameterInfoContext, ParameterInfoContext, ParameterInfoUIContext, UpdateParameterInfoContext}
@@ -37,7 +41,10 @@ private object ScalaTypeParameterInfoHandler {
   }
 }
 
+@ExtensionImpl
 class ScalaTypeParameterInfoHandler extends ScalaParameterInfoHandler[ScTypeArgs, Any, ScTypeElement] {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   import ScalaTypeParameterInfoHandler.{ResolvedElement, ScTypeParameterClauseInfo}
 
   override def getArgListStopSearchClasses: java.util.Set[? <: Class[?]] = {

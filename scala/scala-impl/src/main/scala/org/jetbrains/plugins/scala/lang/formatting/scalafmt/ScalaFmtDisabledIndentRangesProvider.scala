@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import consulo.language.codeStyle.DisabledIndentRangesProvider
@@ -7,6 +9,7 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettin
 
 import java.util
 
+@ExtensionImpl
 class ScalaFmtDisabledIndentRangesProvider extends DisabledIndentRangesProvider {
 
   override def getDisabledIndentRanges(element: PsiElement): util.Collection[TextRange] = {

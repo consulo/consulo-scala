@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.EnterHandlerDelegate.Result
@@ -51,6 +53,7 @@ import org.jetbrains.plugins.scala.util.IndentUtil
  *
  *  Also see [[org.jetbrains.plugins.scala.editor.backspaceHandler.Scala3IndentationBasedSyntaxBackspaceHandler]]
  */
+@ExtensionImpl
 class Scala3IndentationBasedSyntaxEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(

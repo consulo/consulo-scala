@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.matcher
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -16,6 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScalaType, TypePrese
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertToTypedPatternIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Pattern matching"))
 class ConvertToTypedPatternIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("convert.to.typed.pattern")
 

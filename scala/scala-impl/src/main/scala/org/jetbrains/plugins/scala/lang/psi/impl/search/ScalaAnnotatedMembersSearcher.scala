@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.search
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.ReadAction
 import consulo.util.lang.StringUtil
 import consulo.language.psi.scope.GlobalSearchScope
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
 
 import scala.collection.mutable
 
+@ExtensionImpl
 class ScalaAnnotatedMembersSearcher extends QueryExecutor[PsiMember, AnnotatedElementsSearch.Parameters] {
 
   private def convertToLightField(fieldLike: ScValueOrVariable): Option[PsiField] =

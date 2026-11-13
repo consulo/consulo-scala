@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.descriptors
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.surroundWith.{SurroundDescriptor, Surrounder}
 import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
@@ -8,7 +12,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.surroundWith.descriptors.ScalaIgnoreErrorHighlightingSurroundDescriptor.Surrounders
 import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.errorHighlighting.IgnoreErrorHighlightingSurrounder
 
+@ExtensionImpl
 final class ScalaIgnoreErrorHighlightingSurroundDescriptor extends SurroundDescriptor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getElementsToSurround(file: PsiFile, startOffset: Int, endOffset: Int): Array[PsiElement] = file match {
     case file: ScalaFile =>
       val startElement = file.findElementAt(startOffset)

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.language.psi.PsiElement
@@ -34,6 +36,7 @@ final class AutomaticOverloadsRenamer(function: ScFunction, newName: String) ext
   override def isSelectedByDefault: Boolean = true
 }
 
+@ExtensionImpl
 final class AutomaticOverloadsRenamerFactory extends AutomaticRenamerFactory {
   override def isApplicable(element: PsiElement): Boolean = element match {
     case fn: ScFunction => !fn.isConstructor && !fn.isLocal

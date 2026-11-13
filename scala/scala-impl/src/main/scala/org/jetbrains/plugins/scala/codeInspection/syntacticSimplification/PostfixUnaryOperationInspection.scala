@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.syntacticSimplification
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.project.Project
@@ -10,7 +16,16 @@ import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnTwoPsiElements, 
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScPostfixExpr, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
+@ExtensionImpl
 final class PostfixUnaryOperationInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.postfix.unary.operation"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.syntactic.simplification"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case ref: ScReferenceExpression if isPostfixUnaryOperation(ref) =>
       holder.registerProblem(ref.nameId, getDisplayName.get, createQuickfix(ref, ref.qualifier.get, ref.refName))

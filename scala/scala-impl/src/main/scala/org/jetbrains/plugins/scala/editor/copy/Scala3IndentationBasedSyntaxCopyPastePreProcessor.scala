@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.copy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.action.CopyPastePreProcessor
 import consulo.codeEditor.{Caret, Editor, RawText}
@@ -28,6 +30,7 @@ import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType}
 
 import scala.collection.immutable.SortedMap
 
+@ExtensionImpl
 class Scala3IndentationBasedSyntaxCopyPastePreProcessor extends CopyPastePreProcessor {
   // upstream: requiresAllDocumentsToBeCommitted(editor, project) = false (no such method in Consulo CopyPastePreProcessor)
 

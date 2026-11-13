@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix, PsiUpdateFixOnTwoPsiElements}
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemDescriptor, ProblemHighlightType, ProblemsHolder}
@@ -16,7 +22,16 @@ import org.jetbrains.plugins.scala.lang.psi.controlFlow.Instruction
 import scala.annotation.tailrec
 import scala.collection.mutable
 
+@ExtensionImpl
 final class ScalaUnreachableCodeInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("unreachable.code.name"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaUnreachableCodeInspection._
 

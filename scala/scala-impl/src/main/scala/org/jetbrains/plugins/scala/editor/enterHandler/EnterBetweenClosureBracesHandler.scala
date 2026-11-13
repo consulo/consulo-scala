@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.CodeInsightSettings
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
@@ -23,6 +25,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScFunctionExpr}
 /**
   * Mostly copy-pasted from [[com.intellij.codeInsight.editorActions.enter.EnterBetweenBracesHandler]]
   */
+@ExtensionImpl
 class EnterBetweenClosureBracesHandler extends EnterHandlerDelegateAdapter {
   private val LOG: Logger = Logger.getInstance("#org.jetbrains.plugins.scala.editor.enterHandler.EnterBetweenClosureBracesHandler")
 

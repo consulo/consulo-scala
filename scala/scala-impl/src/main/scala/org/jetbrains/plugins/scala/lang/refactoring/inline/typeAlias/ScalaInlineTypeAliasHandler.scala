@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiReference
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.designator.ScProjectionTyp
 import org.jetbrains.plugins.scala.lang.refactoring.inline.ScalaInlineActionHandler
 import org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias.ScalaInlineTypeAliasHandler.{isParametrizedTypeAlias, isSimpleTypeAlias}
 
+@ExtensionImpl(id = "scalaInlineTypeAliasHandler")
 final class ScalaInlineTypeAliasHandler extends ScalaInlineActionHandler {
   override protected val helpId: String = ScalaInlineTypeAliasHandler.HelpId
   override protected val refactoringName: String = ScalaInlineTypeAliasHandler.RefactoringName

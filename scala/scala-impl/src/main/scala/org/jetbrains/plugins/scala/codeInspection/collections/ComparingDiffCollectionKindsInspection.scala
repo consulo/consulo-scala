@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
@@ -8,7 +14,16 @@ import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 class ComparingDiffCollectionKindsInspection extends OperationOnCollectionInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.equals.oncollections.of.different.kinds"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.comparing"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def possibleSimplificationTypes: ArraySeq[SimplificationType] = ArraySeq(ComparingDiffCollectionKinds)
 }
 

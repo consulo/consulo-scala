@@ -1,11 +1,28 @@
 package org.jetbrains.plugins.scala.codeInspection.collections
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
 class SortedMaxMinInspection extends OperationOnCollectionInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.sorted.and.head.last.to.max.min"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.simplifications.other"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getShortName: String = "SortedHeadLast"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def possibleSimplificationTypes: ArraySeq[SimplificationType] =
     ArraySeq(SortedHeadIsMin, SortedLastIsMax, SortByHeadIsMinBy, SortByLastIsMaxBy)
 }

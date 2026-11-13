@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.application.dumb.DumbAware
 import consulo.language.pattern.PlatformPatterns
@@ -12,7 +16,10 @@ import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.completion.filters.toplevel.IsTopLevelElementInProductionScalaFileFilter
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
+@ExtensionImpl(id = "keywordCompletionContributor", order = "before caseClauseCompletionContributor")
 final class ScalaKeywordCompletionContributor extends ScalaCompletionContributor with DumbAware {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaKeyword._
   import ScalaKeywordCompletionContributor._

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.smartEnter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.language.editor.CodeInsightUtilCore
@@ -38,6 +40,7 @@ object ScalaSmartEnterProcessor {
   private val myEnterProcessors: Seq[EnterProcessor] = Seq() //Can plug in later
 }
 
+@ExtensionImpl
 class ScalaSmartEnterProcessor extends SmartEnterProcessor {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

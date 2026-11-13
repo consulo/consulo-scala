@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import consulo.language.editor.completion.lookup.PrioritizedLookupElement
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
@@ -14,7 +18,10 @@ import org.jetbrains.plugins.scala.lang.psi.types.{ScLiteralType, ScOrType, ScTy
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.IterableHasAsJava
 
+@ExtensionImpl(order = "first, before keywordCompletionContributor")
 final class ScalaLiteralTypeValuesCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   extend(
     CompletionType.BASIC,
     psiElement

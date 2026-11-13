@@ -2,6 +2,10 @@ package org.jetbrains.plugins.scalaDoc
 package lang
 package parser
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scalaDoc.ScalaDocLanguage
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.impl.psi.ASTWrapperPsiElement
 import consulo.language.ast.ASTNode
@@ -21,7 +25,10 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.{ScDocComment, ScDocInl
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.impl._
 import org.jetbrains.plugins.scalaDoc.lang.parser.ScalaDocParserDefinition.isInsideJavaLinkTag
 
+@ExtensionImpl
 class ScalaDocParserDefinition extends ParserDefinition {
+  override def getLanguage: Language = ScalaDocLanguage.INSTANCE
+
 
   import ScalaDocElementTypes._
   import ScalaDocParserDefinition.isInsideThrowsTag

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.execution.RunManager
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.event.{RefactoringElementListener, RefactoringElementListenerComposite, RefactoringElementListenerProvider, RefactoringListenerProvider}
@@ -9,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 
 import scala.util.control.NonFatal
 
+@ExtensionImpl
 class ScalaRunConfigurationRefactoringListenerProvider extends RefactoringElementListenerProvider {
   private def wrap(td: ScTemplateDefinition) = new PsiClassWrapper(td, td.qualifiedName, td.name)
   private def decorate(listener: RefactoringElementListener): RefactoringElementListener = {

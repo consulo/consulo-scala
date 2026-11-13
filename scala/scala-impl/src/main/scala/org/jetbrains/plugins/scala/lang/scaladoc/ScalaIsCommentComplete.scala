@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.scaladoc
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.parser.ParserDefinition
 import consulo.language.editor.action.{CommentCompleteHandler, FileQuoteHandler, JavaLikeQuoteHandler, LanguageQuoteHandler, QuoteHandler}
 import consulo.language.version.LanguageVersionUtil
@@ -11,6 +13,7 @@ import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile}
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.PsiFileExt
 
+@ExtensionImpl
 class ScalaIsCommentComplete extends CommentCompleteHandler {
 
   override def isApplicable(comment: PsiComment, commenter: CodeDocumentationAwareCommenter): Boolean =

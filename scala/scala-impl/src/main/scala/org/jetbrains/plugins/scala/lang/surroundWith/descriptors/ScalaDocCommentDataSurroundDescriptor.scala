@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.surroundWith.descriptors
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.surroundWith.{SurroundDescriptor, Surrounder}
 import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
@@ -10,7 +14,10 @@ import org.jetbrains.plugins.scala.lang.surroundWith.surrounders.scaladoc._
 
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl
 final class ScalaDocCommentDataSurroundDescriptor extends SurroundDescriptor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getElementsToSurround(file: PsiFile, startOffset: Int, endOffset: Int): Array[PsiElement] = {
     if (endOffset == startOffset) return PsiElement.EMPTY_ARRAY
 

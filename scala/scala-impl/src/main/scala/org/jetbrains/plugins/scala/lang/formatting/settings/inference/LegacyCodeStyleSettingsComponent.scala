@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings.inference
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettin
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 
 //todo: Revalidate, add tests and remove
+@ExtensionImpl
 private final class LegacyCodeStyleSettingsComponent extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.

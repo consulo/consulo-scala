@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.lang.psi.stubs.index
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.psi.stub.{IndexSink, StubIndexKey}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScGiven
 
+@ExtensionImpl
 final class ScGivenIndex extends ScStringStubIndexExtension[ScGiven] {
   override def getKey: StubIndexKey[String, ScGiven] = ScGivenIndex.indexKey
 }

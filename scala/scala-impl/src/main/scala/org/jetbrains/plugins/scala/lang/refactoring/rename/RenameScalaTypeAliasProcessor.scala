@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.annotation.component.ExtensionImpl
+
 import java.util.function.Consumer
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiNamedElement}
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaOverridingMemberSea
 
 import java.util
 
+@ExtensionImpl(order = "first")
 class RenameScalaTypeAliasProcessor extends RenameJavaMemberProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = element.isInstanceOf[ScTypeAlias]
 

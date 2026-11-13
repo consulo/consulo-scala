@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.util;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ExtensionAPI;
 import consulo.component.extension.ExtensionPointName;
 import consulo.language.ast.TokenSet;
 
 // upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 abstract public class MemberElementTypesExtension {
-  public static ExtensionPointName<MemberElementTypesExtension> EP_NAME = ExtensionPointName.create("org.intellij.scala.memberElementTypesExtension");
+  public static ExtensionPointName<MemberElementTypesExtension> EP_NAME = ExtensionPointName.create(MemberElementTypesExtension.class);
   
   public TokenSet getMemberElementTypes() {
     return TokenSet.EMPTY;

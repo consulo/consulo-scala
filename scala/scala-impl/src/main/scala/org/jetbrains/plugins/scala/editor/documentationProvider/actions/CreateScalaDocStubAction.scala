@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider.actions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.language.codeStyle.CodeStyle
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
@@ -30,6 +32,7 @@ import org.jetbrains.plugins.scala.util.IndentUtil
 
 import scala.collection.mutable
 
+@ActionImpl(id = "Scala.CreateScalaDocStub")
 class CreateScalaDocStubAction extends AnAction(
   ScalaEditorBundle.message("create.scaladoc.stub.action.text"),
   ScalaEditorBundle.message("create.scaladoc.stub.action.description"),

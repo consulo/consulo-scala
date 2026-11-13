@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.ui.image.Image
 import consulo.localize.LocalizeValue
 import consulo.language.editor.rawHighlight.RainbowHighlighter
@@ -164,6 +166,7 @@ object ScalaColorsAndFontsPage {
     val SCALA_DIRECTIVE_VALUE = ScalaOptionsBundle.message("options.scala.attribute.descriptor.scala.directive.value")
   }
 }
+@ExtensionImpl
 class ScalaColorsAndFontsPage extends RainbowColorSettingsPage {
   override def getDisplayName: LocalizeValue = LocalizeValue.of(NlsString.displayNameAndConfigurableId("Scala").nls)
 

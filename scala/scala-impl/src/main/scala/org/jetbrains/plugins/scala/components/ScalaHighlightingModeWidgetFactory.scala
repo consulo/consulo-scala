@@ -1,11 +1,18 @@
 package org.jetbrains.plugins.scala.components
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.TopicImpl
+import jakarta.inject.Inject
+
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.event.DumbModeListener
 import consulo.project.Project
 import consulo.project.ui.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.project.ProjectExt
 
+@ExtensionImpl(id = "ScalaHighlightingMode", order = "before Position")
 private final class ScalaHighlightingModeWidgetFactory extends StatusBarWidgetFactory {
   override def getId: String = ScalaHighlightingModeWidgetFactory.ID
 
@@ -22,28 +29,32 @@ private final class ScalaHighlightingModeWidgetFactory extends StatusBarWidgetFa
   }
 }
 
-private object ScalaHighlightingModeWidgetFactory {
+object ScalaHighlightingModeWidgetFactory {
   val ID: String = "ScalaHighlightingMode"
 
-  final class Listener(project: Project) extends DumbModeListener {
+}
 
-    /**
-     * [[ScalaHighlightingModeWidgetFactory#isAvailable]] is implemented in terms of `project.hasScala`. This method always returns
-     * false on a brand-new project which hasn't had the Scala SDK registered to it yet. The platform calls
-     * `isAvailable` much earlier than the registration of the Scala SDK, and thus, the Type Aware Highlighting widget
-     * is not created for new Scala projects on their initial load.
-     *
-     * In general, we want to add or remove the Type Aware Highlighting widget whenever a project gains the Scala SDK or
-     * loses it, respectively. We can be sure that we can query this fact after indexing is done (when exiting dumb
-     * mode). The Javadoc of [[StatusBarWidgetFactory#isAvailable]] suggests that
-     * [[StatusBarWidgetsManager#updateWidget]] should be called manually whenever the availability of a widget changes.
-     *
-     * Our listener calls this method for the current project when the IDE exits dumb mode. `updateWidget` calls
-     * `isAvailable`, which decides whether the Type Aware Highlighting widget should be shown or removed for the given
-     * project, based on whether it is a Scala project.
-     */
-    override def exitDumbMode(): Unit = {
-      ScalaHighlightingModeWidgetUpdater.scheduleWidgetUpdate(project)
-    }
+@TopicImpl(ComponentScope.PROJECT)
+final class ScalaHighlightingModeWidgetFactoryListener @Inject()(project: Project) extends DumbModeListener {
+  import ScalaHighlightingModeWidgetFactory._
+
+
+  /**
+   * [[ScalaHighlightingModeWidgetFactory#isAvailable]] is implemented in terms of `project.hasScala`. This method always returns
+   * false on a brand-new project which hasn't had the Scala SDK registered to it yet. The platform calls
+   * `isAvailable` much earlier than the registration of the Scala SDK, and thus, the Type Aware Highlighting widget
+   * is not created for new Scala projects on their initial load.
+   *
+   * In general, we want to add or remove the Type Aware Highlighting widget whenever a project gains the Scala SDK or
+   * loses it, respectively. We can be sure that we can query this fact after indexing is done (when exiting dumb
+   * mode). The Javadoc of [[StatusBarWidgetFactory#isAvailable]] suggests that
+   * [[StatusBarWidgetsManager#updateWidget]] should be called manually whenever the availability of a widget changes.
+   *
+   * Our listener calls this method for the current project when the IDE exits dumb mode. `updateWidget` calls
+   * `isAvailable`, which decides whether the Type Aware Highlighting widget should be shown or removed for the given
+   * project, based on whether it is a Scala project.
+   */
+  override def exitDumbMode(): Unit = {
+    ScalaHighlightingModeWidgetUpdater.scheduleWidgetUpdate(project)
   }
 }

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import com.intellij.java.language.psi.{PsiClass, PsiElementFinder}
 import consulo.language.psi.PsiManager
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.runner.Scala3MainMethodSyntheticClass.MainMet
  * @see [[com.intellij.execution.configurations.JavaRunConfigurationModule#checkClassName(java.lang.String, java.lang.String)]]
  * @see [[org.jetbrains.plugins.scala.runner.Scala3MainMethodProvider]]
  */
+@ExtensionImpl
 private final class Scala3MainMethodSyntheticClassFinder(project: Project)
   extends PsiElementFinder {
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.delete
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.util.lang.function.Condition
 import consulo.language.psi.PsiElement
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.delete.SafeDeleteProcessorUt
 
 import java.util.{List => JList}
 
+@ExtensionImpl(order = "first")
 class ScalaSafeDeleteProcessorDelegate extends JavaSafeDeleteProcessor {
   override def handlesElement(element: PsiElement): Boolean =
     element.containingScalaFile.isDefined && super.handlesElement(element)

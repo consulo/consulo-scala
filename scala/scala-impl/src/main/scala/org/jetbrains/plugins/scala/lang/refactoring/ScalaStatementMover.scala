@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.moveUpDown.StatementUpDownMover.MoveInfo
 import consulo.language.editor.moveUpDown.{LineMover, LineRange}
 import consulo.codeEditor.Editor
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScMember
 
+@ExtensionImpl
 class ScalaStatementMover extends LineMover {
   private type ElementClass = Class[? <: PsiElement]
 

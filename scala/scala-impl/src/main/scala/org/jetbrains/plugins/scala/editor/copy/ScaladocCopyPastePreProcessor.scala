@@ -1,6 +1,8 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.plugins.scala.editor.copy
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.CopyPastePreProcessor
 import consulo.codeEditor.{Editor, RawText}
 import consulo.project.Project
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 /**
  * @note JavaDoc alternative is [[com.intellij.codeInsight.editorActions.JavadocCopyPastePreProcessor]]
  */
+@ExtensionImpl
 final class ScaladocCopyPastePreProcessor extends CopyPastePreProcessor {
   @Nullable
   override def preprocessOnCopy(file: PsiFile, startOffsets: Array[Int], endOffsets: Array[Int], text: String): String = null

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.actions
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.fileTemplate.FileTemplate
 import com.intellij.java.impl.ide.fileTemplates.TemplatePackagePropertyProvider
 import consulo.language.psi.PsiDirectory
@@ -7,6 +9,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
 import java.util.Properties
 
+@ExtensionImpl
 class ScalaDefaultTemplatePropertiesProvider extends TemplatePackagePropertyProvider {
   private val QualifiedPackagePattern = "(.+)\\.(.+?)".r
 

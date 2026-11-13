@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.targetNameAnnotation
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent}
@@ -12,7 +18,18 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, S
 import org.jetbrains.plugins.scala.lang.psi.impl.base.ScEndImpl
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
+@ExtensionImpl(id = "NoTargetNameAnnotationForOperatorLikeDefinition")
 class NoTargetNameAnnotationForOperatorLikeDefinitionInspection extends TargetNameInspectionBase {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.no.targetname.annotation.for.operator.like.definition"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WEAK_WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import NoTargetNameAnnotationForOperatorLikeDefinitionInspection._
 

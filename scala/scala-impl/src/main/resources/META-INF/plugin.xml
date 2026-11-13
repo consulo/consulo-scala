@@ -26,4 +26,35 @@
     <tags>
         <tag>custom.language</tag>
     </tags>
+
+    <actions>
+
+        <reference ref="Scala.ShowImplicitConversions">
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift Q" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ctrl Q" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift Q" remove="true" />
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="ctrl Q" />
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift Q" remove="true" />
+        </reference>
+        <reference ref="Scala.MakeExplicit">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt ENTER" />
+        </reference>
+        <reference ref="Scala.Desugar">
+            <keyboard-shortcut first-keystroke="control alt D" keymap="$default" />
+        </reference>
+        <reference ref="Scala.TypeInfo">
+            <keyboard-shortcut first-keystroke="alt EQUALS" keymap="$default" />
+            <keyboard-shortcut first-keystroke="control shift P" keymap="Mac OS X" />
+            <keyboard-shortcut first-keystroke="alt EQUALS" keymap="Mac OS X" remove="true" />
+            <keyboard-shortcut first-keystroke="control shift P" keymap="Mac OS X 10.5+" />
+            <keyboard-shortcut first-keystroke="alt EQUALS" keymap="Mac OS X 10.5+" remove="true" />
+        </reference>
+        <reference ref="Scala.CreateScalaDocStub">
+            <keyboard-shortcut first-keystroke="ctrl alt L" keymap="Mac OS X" />
+        </reference>
+
+        <reference ref="Scala.ShowImplicitArguments">
+            <keyboard-shortcut first-keystroke="control shift P" keymap="$default" />
+        </reference>
+    </actions>
 </consulo-plugin>

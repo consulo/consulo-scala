@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.lang.findUsages
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.usage.rule.{ImportFilteringRule, PsiElementUsage}
 import consulo.usage.{Usage, UsageTarget}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportExpr
 
+@ExtensionImpl
 final class ScalaImportFilteringRule extends ImportFilteringRule {
 
   override def isVisible(usage: Usage, targets: Array[UsageTarget]): Boolean = usage match {

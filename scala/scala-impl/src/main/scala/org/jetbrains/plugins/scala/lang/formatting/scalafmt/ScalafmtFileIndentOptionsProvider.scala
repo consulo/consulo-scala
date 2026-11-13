@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.scalafmt
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.logging.Logger
 import consulo.language.psi.PsiFile
 import consulo.language.codeStyle.{CodeStyleSettings, CommonCodeStyleSettings, FileIndentOptionsProvider}
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
  *
  * @see [[com.intellij.psi.codeStyle.CodeStyleSettings.getIndentOptionsByFile]]
  */
+@ExtensionImpl
 final class ScalafmtFileIndentOptionsProvider extends FileIndentOptionsProvider {
 
   override def getIndentOptions(settings: CodeStyleSettings, file: PsiFile): CommonCodeStyleSettings.IndentOptions = {

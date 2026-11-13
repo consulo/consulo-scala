@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.codeStyle.{FormattingContext, FormattingModel, FormattingModelBuilder, Indent}
 import consulo.language.ast.ASTNode
 import consulo.logging.Logger
@@ -11,7 +15,10 @@ import consulo.language.codeStyle.{FormattingDocumentModel, PsiBasedFormattingMo
 import consulo.language.impl.ast.TreeUtil
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
+@ExtensionImpl
 final class ScalaFormattingModelBuilder extends FormattingModelBuilder {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaFormattingModelBuilder._
 

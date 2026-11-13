@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -22,6 +25,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createEx
 import scala.annotation.tailrec
 import scala.collection.mutable
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.RemoveApplyIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 class RemoveApplyIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.remove.unnecessary.apply")
 

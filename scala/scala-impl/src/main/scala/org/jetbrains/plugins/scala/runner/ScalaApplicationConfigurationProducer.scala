@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import consulo.execution.action.Location
 import consulo.execution.RunManager
@@ -23,6 +25,7 @@ import java.lang.Boolean.TRUE
 /**
  * @see java analog [[com.intellij.execution.application.ApplicationConfigurationProducer]]
  */
+@ExtensionImpl(order = "first")
 class ScalaApplicationConfigurationProducer
   extends BaseScalaApplicationConfigurationProducer[ApplicationConfiguration](ApplicationConfigurationType.getInstance)
 

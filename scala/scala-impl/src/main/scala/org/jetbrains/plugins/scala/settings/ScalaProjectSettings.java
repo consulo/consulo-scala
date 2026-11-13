@@ -1,5 +1,10 @@
 package org.jetbrains.plugins.scala.settings;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import jakarta.inject.Singleton;
+
 import com.intellij.java.language.JavaLanguage;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
@@ -29,6 +34,9 @@ import java.util.Map;
         @Storage("scala_settings.xml")
     }
 )
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 public class ScalaProjectSettings implements PersistentStateComponent<ScalaProjectSettings> { // TODO ScalaProjectSettings.State
   private transient final Project myProject;
 

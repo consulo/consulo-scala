@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.overrideImplement
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.java.impl.codeInsight.MethodImplementor
 import com.intellij.java.language.impl.codeInsight.generation.GenerationInfo
 import com.intellij.java.impl.codeInsight.generation.PsiGenerationInfo
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.util.TypeAnnotationUtil
 import scala.annotation.nowarn
 import scala.collection.mutable
 
+@ExtensionImpl
 class ScalaMethodImplementor extends MethodImplementor {
   private val prototypeToBaseMethod = mutable.WeakHashMap[PsiMethod, PsiMethod]()
 

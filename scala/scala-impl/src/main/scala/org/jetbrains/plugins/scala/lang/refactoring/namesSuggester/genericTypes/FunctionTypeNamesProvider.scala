@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.types.ScParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 
+@ExtensionImpl
 class FunctionTypeNamesProvider extends GenericTypeNamesProvider {
 
   import FunctionTypeNamesProvider.default

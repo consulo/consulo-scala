@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.compiled
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.parser.ParserDefinition
 import com.intellij.java.language.impl.JavaClassFileType
 import consulo.language.Language
@@ -16,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.parser.{Scala3ParserDefinition, ScalaPar
 import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.tasty.TastyFileType
 
+@ExtensionImpl
 final class ScClassFileDecompiler extends ClassFileDecompiler.Full {
 
   import ScClassFileDecompiler._

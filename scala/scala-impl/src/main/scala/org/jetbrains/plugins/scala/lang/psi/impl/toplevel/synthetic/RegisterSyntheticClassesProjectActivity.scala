@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.synthetic
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.ApplicationManager
 import consulo.application.progress.ProgressIndicator
 import consulo.project.{DumbModeTask, DumbService, Project}
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.startup.ProjectActivity
  * My guess is that `RequiredForSmartMode` instances are run earlier than `ProjectActivity` and not all classes are loaded at that time.
  * So some time is spent on class loading
  */
+@ExtensionImpl
 final class RegisterSyntheticClassesProjectActivity extends ProjectActivity {
 
   override def execute(project: Project): Unit = {

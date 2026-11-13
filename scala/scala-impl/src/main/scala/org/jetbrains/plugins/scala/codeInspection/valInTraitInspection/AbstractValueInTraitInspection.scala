@@ -1,5 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.valInTraitInspection
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElementVisitor
@@ -9,7 +15,18 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScValueDeclaration, 
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTrait
 
+@ExtensionImpl
 final class AbstractValueInTraitInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.abstract.value.in.trait"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def isEnabledByDefault: Boolean = false
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     //todo: we should use dataflow analysis to get if it's safe to use declaration here
     case (v: ScValueOrVariableDeclaration) & Parent(_: ScTemplateBody) =>

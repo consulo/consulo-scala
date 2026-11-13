@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.imports
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
@@ -16,6 +19,8 @@ import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ImportStableMemberIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Import"))
 class ImportStableMemberIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.import.member.with.stable.path")
 

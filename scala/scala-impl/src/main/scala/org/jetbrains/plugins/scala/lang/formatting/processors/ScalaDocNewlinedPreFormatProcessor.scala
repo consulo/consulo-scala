@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.processors
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.ast.ASTNode
 import consulo.document.util.TextRange
 import consulo.language.codeStyle.PreFormatProcessor
@@ -17,6 +19,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsin
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.{ScDocComment, ScDocList, ScDocParagraph, ScDocTag}
 import org.jetbrains.plugins.scala.project.ProjectContext
 
+@ExtensionImpl
 final class ScalaDocNewlinedPreFormatProcessor extends PreFormatProcessor with ScalaIntellijFormatterLike {
 
   private class ScalaDocNewlinedPreFormatVisitor(settings: ScalaCodeStyleSettings) extends ScalaElementVisitor {

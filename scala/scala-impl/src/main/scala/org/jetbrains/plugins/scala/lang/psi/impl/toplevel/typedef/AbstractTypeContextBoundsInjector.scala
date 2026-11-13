@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef
 
+import consulo.annotation.component.ExtensionImpl
+
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAliasDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
  *    }
  *  }}}
  */
+@ExtensionImpl
 class AbstractTypeContextBoundsInjector extends SyntheticMembersInjector {
   override def injectFunctions(source: ScTypeDefinition): Seq[String] = {
     val typesWithContextBounds = source.aliases.collect {

@@ -1,9 +1,16 @@
 package org.jetbrains.plugins.scala.lang.formatting
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.codeEditor.DefaultLineWrapPositionStrategy
 import consulo.document.Document
 
+@ExtensionImpl
 class ScalaLineWrapPositionStrategy extends DefaultLineWrapPositionStrategy {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def canUseOffset(document: Document, offset: Int, virtual: Boolean): Boolean = {
     val chars = document.getCharsSequence
     val charAtOffset = chars.charAt(offset)

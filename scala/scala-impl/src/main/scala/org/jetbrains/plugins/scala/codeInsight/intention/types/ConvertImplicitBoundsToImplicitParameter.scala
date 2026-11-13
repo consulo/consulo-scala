@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.types
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.util.LanguageUndoUtil
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -28,6 +31,8 @@ import org.jetbrains.plugins.scala.api.isUnitTestMode
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertImplicitBoundsToImplicitParameter", fileExtensions = Array("scala"), categories = Array("Scala"))
 class ConvertImplicitBoundsToImplicitParameter extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaBundle.message("family.name.convert.implicit.bounds")
 

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.selectioner
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.ExtendWordSelectionHandlerBase
 import consulo.codeEditor.Editor
 import consulo.document.util.TextRange
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScMethodCall
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScArguments, ScParameterClause}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScExtendsBlock
 
+@ExtensionImpl
 class ScalaWordSelectioner extends ExtendWordSelectionHandlerBase {
 
   override def canSelect(e: PsiElement): Boolean =

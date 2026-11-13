@@ -14,7 +14,7 @@ private object VisibleRange {
 
   private[incremental] val EXACT_VISIBLE_RANGE_KEY = Key.create[TextRange]("editor_exact_visible_range")
 
-  private def lookaround: Int = Registry.intValue("scala.incremental.highlighting.lookaround")
+  private def lookaround: Int = Registry.intValue("scala.incremental.highlighting.lookaround", 15)
 
   private[incremental] def isVisible(psiFile: PsiFile, range: TextRange): Boolean =
     editorsFor(psiFile).exists { editor =>

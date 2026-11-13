@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.lang.completion.clauses
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
 import consulo.language.pattern.PlatformPatterns
@@ -16,7 +20,10 @@ import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "scalaClassParamContributor", order = "before keywordCompletionContributor, before memberNameCompletionContributor")
 class CaseClassParametersCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   extend(CompletionType.BASIC,
     PlatformPatterns.psiElement,

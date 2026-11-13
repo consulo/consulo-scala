@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.highlighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.rawHighlight.HighlightInfoHolder
 import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType, HighlightInfoTypeImpl, HighlightVisitor}
 import consulo.language.editor.annotation.HighlightSeverity
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScPsiDocToken
 
 // HighlightVisitor is faster than Annotator in complex code (see SCL-23603)
+@ExtensionImpl
 class ScalaSyntaxHighlightingVisitor extends HighlightVisitor with DumbAware {
   private var holder: HighlightInfoHolder = scala.compiletime.uninitialized
 

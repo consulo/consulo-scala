@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.expression
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.hint.HintManager
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -22,6 +25,8 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.chaining.scalaUtilChainingOps
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ConvertParameterToUnderscoreIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Expressions"))
 final class ConvertParameterToUnderscoreIntention extends PsiElementBaseIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.convert.parameter.to.underscore.section")
 

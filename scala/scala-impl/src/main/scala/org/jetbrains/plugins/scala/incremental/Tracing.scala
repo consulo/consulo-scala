@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala
 package incremental
 
+import consulo.annotation.component.ExtensionImpl
+
 import extensions.{&, FirstChild, PsiElementExt}
 import lang.psi.api.expr.{ScArgumentExprList, ScBlock, ScParenthesisedExpr}
 import project.ProjectExt
@@ -28,32 +30,25 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.matching.Regex
 
 object Tracing {
-  private val MaxLength = 120
+  private[scala] val MaxLength = 120
 
-  private val MultipleSpaces = new Regex(" {2,}")
+  private[scala] val MultipleSpaces = new Regex(" {2,}")
 
-  class StartupActivity extends ProjectActivity {
-    override def execute(project: Project): Unit = {
-      val connection = project.getMessageBus.connect(project.unloadAwareDisposable)
-      connection.subscribe(classOf[DaemonListener], new HighlightingListener(project))
-    }
-  }
+  private[scala] val TRACING_HIGHLIGHTER_KEY = Key.create[AnyRef]("tracing_highlighter_key")
 
-  private val TRACING_HIGHLIGHTER_KEY = Key.create[AnyRef]("tracing_highlighter_key")
+  private[scala] val RESOLVE_STATE_KEY = Key.create[Either[RangeHighlighter, Unit]]("resolve_state_key")
+  private[scala] val INFERENCE_STATE_KEY = Key.create[Either[RangeHighlighter, Unit]]("inference_state_key")
 
-  private val RESOLVE_STATE_KEY = Key.create[Either[RangeHighlighter, Unit]]("resolve_state_key")
-  private val INFERENCE_STATE_KEY = Key.create[Either[RangeHighlighter, Unit]]("inference_state_key")
+  private[scala] val RESOLVE_COLOR = lighter(JBColor.RED)
+  private[scala] val INFERENCE_COLOR = lighter(JBColor.YELLOW)
 
-  private val RESOLVE_COLOR = lighter(JBColor.RED)
-  private val INFERENCE_COLOR = lighter(JBColor.YELLOW)
+  private[scala] def lighter(color: Color): Color = if (StyleManager.get().getCurrentStyle.isDark) color.darker() else color.brighter()
 
-  private def lighter(color: Color): Color = if (StyleManager.get().getCurrentStyle.isDark) color.darker() else color.brighter()
+  private[scala] def isHighlightingTracingEnabled: Boolean = Registry.is("scala.highlighting.tracing", false)
 
-  private def isHighlightingTracingEnabled: Boolean = Registry.is("scala.highlighting.tracing")
+  private[scala] def isHighlightingTracingInEditorEnabled: Boolean = Registry.is("scala.highlighting.tracing.in.editor", true)
 
-  private def isHighlightingTracingInEditorEnabled: Boolean = Registry.is("scala.highlighting.tracing.in.editor")
-
-  private class HighlightingListener(project: Project) extends DaemonListener {
+  private[scala] class HighlightingListener(project: Project) extends DaemonListener {
     private var startInstants = Map.empty[FileEditor, Long]
     private var durations = Seq.empty[Long]
 
@@ -118,7 +113,7 @@ object Tracing {
     }
   }
 
-  private def editorsFor(psiFile: PsiFile): Iterable[Editor] = if (ScalaProjectSettings.in(psiFile.getProject).isIncrementalHighlighting) {
+  private[scala] def editorsFor(psiFile: PsiFile): Iterable[Editor] = if (ScalaProjectSettings.in(psiFile.getProject).isIncrementalHighlighting) {
     VisibleRange.editorsFor(psiFile) // Use cached editors when possible
   } else {
     val document = psiFile.getViewProvider.getDocument
@@ -126,7 +121,7 @@ object Tracing {
     else EditorFactory.getInstance.getEditors(document).toSeq
   }
 
-  private def highlightElement(editor: Editor, e: PsiElement, start: Boolean, key: Key[Either[RangeHighlighter, Unit]], color: Color): Unit = e.synchronized {
+  private[scala] def highlightElement(editor: Editor, e: PsiElement, start: Boolean, key: Key[Either[RangeHighlighter, Unit]], color: Color): Unit = e.synchronized {
     val state = e.getUserData(key)
 
     state match {
@@ -156,7 +151,7 @@ object Tracing {
     }
   }
 
-  private def mergeTracingHighlighters(): Unit = {
+  private[scala] def mergeTracingHighlighters(): Unit = {
     EditorFactory.getInstance.getAllEditors.foreach { editor =>
       editor.getMarkupModel.getAllHighlighters.filter(_.getUserData(TRACING_HIGHLIGHTER_KEY) != null)
         .groupBy(h => (h.getTextRange, h.getErrorStripeTooltip))
@@ -165,13 +160,13 @@ object Tracing {
     }
   }
 
-  private def cleanElementStates(): Unit = {
+  private[scala] def cleanElementStates(): Unit = {
     val editors = EditorFactory.getInstance.getAllEditors
     val editorsWithVFiles = editors.map(editor => editor -> editor.virtualFile).filter(_._2 != null)
     editorsWithVFiles.foreach { case (editor, vFile) => cleanElementStateInEditor(editor, vFile) }
   }
 
-  private def cleanElementStateInEditor(editor: Editor, vFile: VirtualFile): Unit = {
+  private[scala] def cleanElementStateInEditor(editor: Editor, vFile: VirtualFile): Unit = {
     val psiFile = PsiManager.getInstance(editor.getProject).findFile(vFile)
     if (psiFile == null)
       return
@@ -188,5 +183,15 @@ object Tracing {
         e.putUserData(key, null)
       }
     }
+  }
+}
+
+@ExtensionImpl
+class TracingStartupActivity extends ProjectActivity {
+  import Tracing._
+
+  override def execute(project: Project): Unit = {
+    val connection = project.getMessageBus.connect(project.unloadAwareDisposable)
+    connection.subscribe(classOf[DaemonListener], new HighlightingListener(project))
   }
 }

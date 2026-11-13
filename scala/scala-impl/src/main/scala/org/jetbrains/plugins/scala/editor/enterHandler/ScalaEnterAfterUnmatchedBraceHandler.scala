@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.codeEditor.Editor
 import consulo.codeEditor.action.EditorActionHandler
 import consulo.dataContext.DataContext
@@ -22,6 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
  * upstream: extended `com.intellij.codeInsight.editorActions.enter.EnterAfterUnmatchedBraceHandler`, which is an impl
  * class in Consulo, so its logic is inlined here (from the Consulo version of the class)
  */
+@ExtensionImpl(order = "first")
 class ScalaEnterAfterUnmatchedBraceHandler extends EnterHandlerDelegateAdapter {
   import ScalaEnterAfterUnmatchedBraceHandler._
 

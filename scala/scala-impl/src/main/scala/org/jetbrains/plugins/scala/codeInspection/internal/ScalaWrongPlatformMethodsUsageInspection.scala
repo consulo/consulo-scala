@@ -1,5 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.internal
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
+
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.language.psi.PsiElementVisitor
 import com.intellij.java.language.psi.PsiMethod
@@ -14,7 +21,16 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 /**
  * TODO: move to DevKit module
  */
+@ExtensionImpl
 class ScalaWrongPlatformMethodsUsageInspection extends LocalInspectionTool {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("displayname.wrong.platform.method.usage"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.internal"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaWrongPlatformMethodsUsageInspection._
 

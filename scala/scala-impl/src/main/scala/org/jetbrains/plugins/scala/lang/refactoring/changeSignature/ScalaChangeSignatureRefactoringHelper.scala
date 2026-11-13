@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.RefactoringHelper
@@ -7,6 +9,7 @@ import consulo.usage.UsageInfo
 
 import java.util
 
+@ExtensionImpl
 class ScalaChangeSignatureRefactoringHelper extends RefactoringHelper[Unit] {
   override def prepareOperation(usages: Array[UsageInfo]): Unit = {
     def priority(usageInfo: UsageInfo) = usageInfo match {

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.fileEditor.{EditorFileSwapper, FileEditorWithProviderComposite}
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
+@ExtensionImpl
 final class ScalaEditorFileSwapper extends EditorFileSwapper {
   override def getFileToSwapTo(project: Project, editorComposite: FileEditorWithProviderComposite): Pair[VirtualFile, Integer] = {
     val sourceFile = ScalaEditorFileSwapper.findSourceFile(project, editorComposite.getFile)

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.util.proximity.ProximityLocation
 import consulo.language.util.proximity.ProximityWeigher
 import com.intellij.java.language.psi.PsiClass
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTypeDefinition}
 
+@ExtensionImpl(id = "scalaClassObjectWeigher", order = "before samePsiMember")
 class ScalaClassObjectWeigher extends ProximityWeigher {
   override def weigh(element: PsiElement, location: ProximityLocation): Comparable[?] = {
     val position = location.getPosition

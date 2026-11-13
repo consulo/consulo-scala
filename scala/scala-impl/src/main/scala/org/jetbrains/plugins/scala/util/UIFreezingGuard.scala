@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.util
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -21,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.{ScheduledFuture, TimeUnit}
 import scala.util.control.NoStackTrace
 
+@ExtensionImpl
 private final class UIFreezingGuard extends ProjectActivity {
   /**
    * An entry point for initialising the application-level service. This method is executed once per project, but

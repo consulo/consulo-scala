@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.caches
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.Project
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod}
 import consulo.language.psi.scope.GlobalSearchScope
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplement
 
 import scala.collection.mutable.ArrayBuffer
 
+@ExtensionImpl
 class ScalaShortNamesCache(implicit project: Project) extends PsiShortNamesCache {
   override def getClassesByName(name: String, scope: GlobalSearchScope): Array[PsiClass] = {
     def isOkForJava(elem: ScalaPsiElement): Boolean = {

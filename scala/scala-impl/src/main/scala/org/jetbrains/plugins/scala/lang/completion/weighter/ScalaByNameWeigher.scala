@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.lang.completion.weighter
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.{CompletionLocation, CompletionWeigher}
 import consulo.language.editor.completion.lookup.LookupElement
 import consulo.util.dataholder.Key
@@ -20,6 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
  * or partial alignment
  * on 3/2/16
  */
+@ExtensionImpl(id = "scalaByNameWeigher", order = "before stats")
 final class ScalaByNameWeigher extends CompletionWeigher {
 
   import ScalaByNameWeigher._

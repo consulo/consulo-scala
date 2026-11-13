@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.enterHandler
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.action.EnterHandlerDelegate.Result
 import consulo.language.editor.action.EnterHandlerDelegateAdapter
 import consulo.language.ast.ASTNode
@@ -33,6 +35,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
  *   After  : s"hello $$"\n + s"CARET world"
  * }}}
  */
+@ExtensionImpl(order = "first")
 class InterpolatedStringEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(
