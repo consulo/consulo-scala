@@ -37,7 +37,6 @@ import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import scala.util.Using
 
 class ScalaExtractMethodHandler extends ScalaRefactoringActionHandler {
   private val REFACTORING_NAME: String = ScalaBundle.message("extract.method.title")

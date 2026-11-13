@@ -10,7 +10,6 @@ import org.jetbrains.plugins.scala.extensions.PathExt
 import java.awt.event.ItemEvent
 import java.nio.file.{Files, Path, StandardOpenOption}
 import javax.swing.JTextField
-import scala.util.Using
 import javax.swing.text.{AbstractDocument, AttributeSet, BadLocationException, DocumentFilter}
 
 private[scala]

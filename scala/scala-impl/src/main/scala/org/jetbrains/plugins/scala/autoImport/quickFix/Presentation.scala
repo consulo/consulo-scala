@@ -5,7 +5,6 @@ import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, PsiNamedElementExt}
 
-import scala.util.Using
 
 object Presentation {
   //noinspection ScalaExtractStringToBundle

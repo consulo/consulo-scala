@@ -33,7 +33,6 @@ import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import scala.annotation.tailrec
 import scala.collection.{View, mutable}
-import scala.util.Using
 
 object ImplicitCollector {
   def cache(project: Project): ImplicitCollectorCache =

@@ -62,7 +62,6 @@ import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
-import scala.util.Using
 
 object ScalaRefactoringUtil {
 

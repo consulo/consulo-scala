@@ -11,7 +11,6 @@ import org.jetbrains.plugins.scala.lang.parser.ScalaLanguageSubstitutor.looksLik
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType, ScalaLanguage}
 
-import scala.util.Using
 import scala.util.matching.Regex
 
 /**

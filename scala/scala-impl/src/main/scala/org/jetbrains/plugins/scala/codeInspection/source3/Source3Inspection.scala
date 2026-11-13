@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.source3
 
-import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, ProblemsHolder}
+import consulo.language.editor.inspection.{InspectionToolState, LocalInspectionTool, LocalInspectionToolSession, LocalQuickFix, ProblemsHolder}
 import consulo.configurable.{ConfigurableBuilder, UnnamedConfigurable}
 import consulo.localize.LocalizeValue
 import consulo.util.xml.serializer.XmlSerializerUtil
