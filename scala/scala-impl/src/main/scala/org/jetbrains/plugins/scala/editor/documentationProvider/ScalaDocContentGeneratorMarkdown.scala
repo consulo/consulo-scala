@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
-import org.intellij.markdown.ast.{ASTNode, CompositeASTNode}
-import org.intellij.markdown.html.{GeneratingProvider, HtmlGenerator, HtmlGeneratorKt, TrimmingInlineHolderProvider}
+import consulo.language.ast.{ASTNode, IElementType}
+import org.intellij.markdown.html.{GeneratingProvider, HtmlGenerator, TrimmingInlineHolderProvider}
 import org.intellij.markdown.parser.LinkMap
-import org.intellij.markdown.{IElementType, MarkdownElementTypes}
+import org.intellij.markdown.{MarkdownAstUtil, MarkdownElementTypes}
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.ScaladocMarkdownParsing
-import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.{ScalaDocMarkdownFlavour, ScalaDocTagMarkerBlock}
+import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.{ScalaDocMarkdownFlavour, ScalaDocMarkdownTree, ScalaDocTagMarkerBlock}
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.{ScDocComment, ScDocTag}
 
 import java.net.URI
@@ -15,7 +15,7 @@ class ScalaDocContentGeneratorMarkdown(comment: ScDocComment) extends ScalaDocCo
   private val (markdown, markdownTree) = comment.getFirstChild.getUserData(ScaladocMarkdownParsing.MARKDOWN_DATA)
   private val lookupTag = {
     comment.tags
-      .zip(markdownTree.getChildren.asScala.filter(_.getType == ScalaDocTagMarkerBlock.TAG_BLOCK))
+      .zip(MarkdownAstUtil.children(markdownTree).asScala.filter(_.getElementType == ScalaDocTagMarkerBlock.TAG_BLOCK))
       .toMap
   }
   private val markdownFlavour = new ScalaDocMarkdownFlavour.WithScalaSyntaxHighlighting(comment.getProject)
@@ -38,7 +38,7 @@ class ScalaDocContentGeneratorMarkdown(comment: ScDocComment) extends ScalaDocCo
             if (isFirst) {
               super.processNode(visitor, text, node)
             } else {
-              visitor.consumeTagOpen(node, "p", Array.empty, false)
+              visitor.consumeTagOpen(node, "p", false)
               super.processNode(visitor, text, node)
               visitor.consumeTagClose("p")
             }
@@ -57,7 +57,7 @@ class ScalaDocContentGeneratorMarkdown(comment: ScDocComment) extends ScalaDocCo
           markdownNode,
           markdownFlavourForTags,
           false
-        ).generateHtml(new HtmlGenerator.DefaultTagRenderer(HtmlGeneratorKt.getDUMMY_ATTRIBUTES_CUSTOMIZER, false))
+        ).generateHtml(new HtmlGenerator.DefaultTagRenderer(HtmlGenerator.DUMMY_ATTRIBUTES_CUSTOMIZER, false))
         buffer.append(html)
       case None => ??? // TODO: this "should" be impossible, so it should throw an error, but it's technically possible
     }
@@ -68,20 +68,21 @@ class ScalaDocContentGeneratorMarkdown(comment: ScDocComment) extends ScalaDocCo
     val (markdown, markdownTree) = comment.getFirstChild.getUserData(ScaladocMarkdownParsing.MARKDOWN_DATA)
 
     // Everything up to the first tag
-    val children = markdownTree.getChildren.asScala
-    val descriptionParts = children.takeWhile(_.getType != ScalaDocTagMarkerBlock.TAG_BLOCK).toList
+    val children = MarkdownAstUtil.children(markdownTree).asScala
+    val descriptionParts = children.takeWhile(_.getElementType != ScalaDocTagMarkerBlock.TAG_BLOCK).toList
 
     // No children, no HTML generated
     if (descriptionParts.isEmpty) return false
 
-    val descriptionNode = new CompositeASTNode(MarkdownElementTypes.MARKDOWN_FILE, descriptionParts.asJava)
+    // upstream: new CompositeASTNode(MarkdownElementTypes.MARKDOWN_FILE, descriptionParts.asJava)
+    val descriptionNode = ScalaDocMarkdownTree.composite(MarkdownElementTypes.MARKDOWN_FILE, descriptionParts.asJava)
 
     val html = new HtmlGenerator(
       markdown,
       descriptionNode,
       markdownFlavour,
       false
-    ).generateHtml(new HtmlGenerator.DefaultTagRenderer(HtmlGeneratorKt.getDUMMY_ATTRIBUTES_CUSTOMIZER, false))
+    ).generateHtml(new HtmlGenerator.DefaultTagRenderer(HtmlGenerator.DUMMY_ATTRIBUTES_CUSTOMIZER, false))
     buffer.append(html.subSequence(6, html.length-7))
 
     // Return true

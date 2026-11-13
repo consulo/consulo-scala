@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown
 
-import org.intellij.markdown.ast.ASTNode
-import org.intellij.markdown.parser.sequentialparsers.{RangesListBuilder, SequentialParser, TokensCache}
-import org.intellij.markdown.{MarkdownElementType, MarkdownTokenTypes}
+import consulo.language.ast.ASTNode
+import org.intellij.markdown.parser.sequentialparsers.{IntRange, RangesListBuilder, SequentialParser, TokensCache}
+import org.intellij.markdown.{MarkdownAstUtil, MarkdownElementType, MarkdownTokenTypes}
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.WikiLinkParser.ChildrenInfo.{astNodeLen, calcClosingTokens}
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.WikiLinkParser.WIKI_LINK
 
-import kotlin.ranges.IntRange
 import scala.annotation.tailrec
 import scala.collection.immutable.ArraySeq
 
@@ -39,8 +38,7 @@ class WikiLinkParser extends SequentialParser {
               // `closingBracketIterator` continues parsing, but an earlier sequential parser can make it
               // skip an adjacent inline construct. Use the closing bracket's own end for the Wiki link range
               // so it cannot absorb that already-parsed gap.
-              val range = new IntRange(startIndex, rangeEnd)
-              result.withNode(new SequentialParser.Node(range, WIKI_LINK))
+              result.withNode(new SequentialParser.Node(startIndex, rangeEnd, WIKI_LINK))
               iterator = closingBracketIterator
             case None =>
               iterator = new tokens.RangesListIterator(rangesToGlue)
@@ -102,7 +100,7 @@ object WikiLinkParser {
     lazy val refTokens: Option[(Int, Int)] = {
       val refTokenCount = children.iterator
         .drop(1) // the initial brackets
-        .takeWhile(_.getType == MarkdownTokenTypes.TEXT)
+        .takeWhile(_.getElementType == MarkdownTokenTypes.TEXT)
         .length
       Option.when(refTokenCount > 0)(1 -> refTokenCount)
     }
@@ -121,8 +119,8 @@ object WikiLinkParser {
 
   object ChildrenInfo {
     def apply(node: ASTNode): ChildrenInfo = {
-      assert(node.getType == WIKI_LINK)
-      val children = node.getChildren.toArray(Array.empty[ASTNode])
+      assert(node.getElementType == WIKI_LINK)
+      val children = MarkdownAstUtil.children(node).toArray(Array.empty[ASTNode])
       new ChildrenInfo(ArraySeq.unsafeWrapArray(children))
     }
 
@@ -132,7 +130,7 @@ object WikiLinkParser {
         if (i < 1) children.size
         else {
           val child = children(i)
-          if (child.getType == MarkdownTokenTypes.RBRACKET) {
+          if (child.getElementType == MarkdownTokenTypes.RBRACKET) {
             val len = astNodeLen(child)
             if (len >= restNeeded) i
             else check(i - 1, restNeeded - len)
@@ -144,6 +142,6 @@ object WikiLinkParser {
       children.size - check(children.size - 1, openingBracketCount)
     }
 
-    private def astNodeLen(ast: ASTNode): Int = ast.getEndOffset - ast.getStartOffset
+    private def astNodeLen(ast: ASTNode): Int = ast.getTextLength
   }
 }

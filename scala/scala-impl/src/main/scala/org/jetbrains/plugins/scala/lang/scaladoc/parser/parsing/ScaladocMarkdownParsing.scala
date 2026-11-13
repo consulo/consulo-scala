@@ -5,17 +5,15 @@ import consulo.language.parser.PsiBuilderAdapter
 import consulo.application.progress.ProgressManager
 import consulo.util.dataholder.Key
 import consulo.language.ast.IElementType
-import org.intellij.markdown.{IElementType => MarkdownIElementType}
-import org.intellij.markdown.ast.ASTNode
+import consulo.language.ast.ASTNode
 import org.intellij.markdown.flavours.gfm.{GFMElementTypes, GFMTokenTypes}
-import org.intellij.markdown.parser.MarkdownParser
-import org.intellij.markdown.{MarkdownElementType, MarkdownElementTypes, MarkdownTokenTypes}
+import org.intellij.markdown.{MarkdownAstUtil, MarkdownElementType, MarkdownElementTypes, MarkdownTokenTypes}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.ScalaDocElementTypes
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.ScaladocMarkdownParsing.{MkBuilder, MkTreeIt}
-import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.{ScalaDocMarkdownFlavour, ScalaDocTagMarkerBlock, WikiLinkParser}
+import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown.{ScalaDocMarkdownFlavour, ScalaDocMarkdownTree, ScalaDocTagMarkerBlock, WikiLinkParser}
 
 import java.{util => ju}
 import scala.annotation.tailrec
@@ -58,10 +56,10 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
   )
 
   private def nodeText(node: ASTNode): String =
-    content.substring(node.getStartOffset, node.getEndOffset)
+    content.substring(node.getStartOffset, MarkdownAstUtil.endOffset(node))
 
   private def isBlockquoteWhitespace(node: ASTNode): Boolean =
-    node.getType == MarkdownTokenTypes.WHITE_SPACE &&
+    node.getElementType == MarkdownTokenTypes.WHITE_SPACE &&
       nodeText(node).contains('>')
 
   private def afterLeadingAsteriskOrBlockquote(@Nullable ty: IElementType): Boolean = {
@@ -76,7 +74,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
     if (tpe == MarkdownTokenTypes.EOL) {
       ensureBuilderInPosition(treeIt.currentStartOffset)
       val parentHandlesWs = treeIt.parent.exists(it => elementsHandlingInnerWs(it.currentNodeType))
-      val nextNodeHandlesWs = treeIt.peek().forall(node => elementsHandlingPrevWs(node.getType))
+      val nextNodeHandlesWs = treeIt.peek().forall(node => elementsHandlingPrevWs(node.getElementType))
       builder.advanceToNextLine(emitInitialWs = !parentHandlesWs && !nextNodeHandlesWs)
       return
     }
@@ -117,7 +115,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
       case GFMElementTypes.STRIKETHROUGH =>
         // GFM strikethrough delimiters may be one or two tildes (`~text~` or `~~text~~`),
         // but scaladoc has no single strikethrough, so ignore it
-        val borderNum = treeIt.currentChildren.asScala.iterator.takeWhile(_.getType == GFMTokenTypes.TILDE).size
+        val borderNum = treeIt.currentChildren.asScala.iterator.takeWhile(_.getElementType == GFMTokenTypes.TILDE).size
         if (borderNum > 1) {
           visitBorderSyntaxElement(elementTy, treeIt, ScalaDocTokenType.DOC_STRIKETHROUGH_TAG, ScalaDocTokenType.DOC_STRIKETHROUGH_TAG, borderNum)
         } else {
@@ -155,7 +153,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
     // The Markdown token includes trailing whitespace, but the lexer keeps it separate.
     // Leave it for the following node if that node handles whitespace itself.
     def nextTreeElementIsWsOrEOLOrHandlesWs = treeIt.peek().exists { e =>
-      val ty = e.getType
+      val ty = e.getElementType
       ty == MarkdownTokenTypes.EOL || ty == MarkdownTokenTypes.WHITE_SPACE || elementsHandlingPrevWs.contains(ty)
     }
     if (builder.getTokenType == ScalaDocTokenType.DOC_WHITESPACE && !nextTreeElementIsWsOrEOLOrHandlesWs) {
@@ -167,7 +165,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
     // TAG_BLOCK needs to be dealt with in this complicated way,
     // due to needing whitespace inserted in a few places (which is not necessary for the rest)
     // and some nodes being special
-    val hasArgument = treeIt.currentChildren.asScala.indexWhere(_.getType == ScalaDocTagMarkerBlock.TAG_ARGUMENT) != -1
+    val hasArgument = treeIt.currentChildren.asScala.indexWhere(_.getElementType == ScalaDocTagMarkerBlock.TAG_ARGUMENT) != -1
     builder.ensureBuilderInPositionLeavingLastWs(treeIt.currentStartOffset)
     val marker = builder.mark()
     val childIt = treeIt.startIterateCurrentChildren()
@@ -380,7 +378,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
       // but we don't want to consume those in the preceding paragraph.
       it.peek() match {
         case Some(node) =>
-          val ty = node.getType
+          val ty = node.getElementType
           if ((ty == MarkdownTokenTypes.WHITE_SPACE || ty == MarkdownTokenTypes.EOL) && !isBlockquoteWhitespace(node)) {
             it.advance()
             visitNode(it)
@@ -429,7 +427,7 @@ private class ScaladocMarkdownParsing private (builder: MkBuilder, content: Stri
     marker.done(elementTy)
   }
 
-  private def mapType(treeIt: MkTreeIt, tpe: MarkdownIElementType): Option[IElementType] = Some(
+  private def mapType(treeIt: MkTreeIt, tpe: IElementType): Option[IElementType] = Some(
     tpe match {
       // ScalaDoc stuff
       case ScalaDocTagMarkerBlock.TAG_BLOCK => ScalaDocElementTypes.DOC_TAG
@@ -522,8 +520,8 @@ object ScaladocMarkdownParsing {
     val original = psiBuilder.getOriginalText
     val (content, lineOffsetMapping) = splitContext(original)
     val builder = new MkBuilder(psiBuilder, content, lineOffsetMapping)
-    val mkRootNode = new MarkdownParser(new ScalaDocMarkdownFlavour, true, () => ProgressManager.checkCanceled())
-      .parse(MarkdownElementTypes.MARKDOWN_FILE, content: CharSequence, true)
+    // upstream: MarkdownParser(...).parse(MarkdownElementTypes.MARKDOWN_FILE, content, true)
+    val mkRootNode = ScalaDocMarkdownTree.parse(new ScalaDocMarkdownFlavour, content, () => ProgressManager.checkCanceled())
 
     // Place data needed for HTML in the builder for fetch after parsing
     builder.putUserData(MARKDOWN_DATA, (content, mkRootNode))
@@ -722,10 +720,10 @@ object ScaladocMarkdownParsing {
 
     def index: Int = idx
     def current: ASTNode = list.get(idx)
-    def currentNodeType: org.intellij.markdown.IElementType = current.getType
+    def currentNodeType: IElementType = current.getElementType
     def currentStartOffset: Int = current.getStartOffset
-    def currentEndOffset: Int = current.getEndOffset
-    def currentChildren: ju.List[ASTNode] = current.getChildren
+    def currentEndOffset: Int = MarkdownAstUtil.endOffset(current)
+    def currentChildren: ju.List[ASTNode] = MarkdownAstUtil.children(current)
     def currentHasChildren: Boolean = !currentChildren.isEmpty
     // returns the available nodes including the current one
     def availableNodesOnLevel: Int = list.size() - idx
@@ -764,7 +762,7 @@ object ScaladocMarkdownParsing {
 
     def startChildIt(idx: Int): MkTreeIt = {
       assert(!processesChildren)
-      val children = list.get(idx).getChildren
+      val children = MarkdownAstUtil.children(list.get(idx))
       if (!children.isEmpty) {
         processesChildren = true
       }

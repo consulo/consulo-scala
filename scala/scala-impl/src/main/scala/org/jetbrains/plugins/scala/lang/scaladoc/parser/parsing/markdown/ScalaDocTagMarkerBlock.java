@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown;
 
-import org.intellij.markdown.IElementType;
+import consulo.language.ast.IElementType;
 import org.intellij.markdown.MarkdownElementType;
 import org.intellij.markdown.parser.LookaheadText;
 import org.intellij.markdown.parser.ProductionHolder;
 import org.intellij.markdown.parser.constraints.MarkdownConstraints;
 import org.intellij.markdown.parser.markerblocks.MarkerBlockImpl;
-import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MarkdownCompanionProxy;
 
 public class ScalaDocTagMarkerBlock extends MarkerBlockImpl {
     public static final MarkdownElementType TAG_BLOCK = new MarkdownElementType("TAG_BLOCK", false);
@@ -32,7 +31,7 @@ public class ScalaDocTagMarkerBlock extends MarkerBlockImpl {
     protected ProcessingResult doProcessToken(LookaheadText.Position position, MarkdownConstraints markdownConstraints) {
         // Tags are the first thing on the line
         if (position.getOffsetInCurrentLine() != -1) {
-            return MarkdownCompanionProxy.MarkerBlockProcessingResultCompanion.getPASS();
+            return ProcessingResult.PASS;
         }
 
         CharSequence currentLine = position.getCurrentLine();
@@ -45,9 +44,9 @@ public class ScalaDocTagMarkerBlock extends MarkerBlockImpl {
 
         if (start < currentLine.length() && currentLine.charAt(start) == '@') {
             // There's another tag here; close
-            return MarkdownCompanionProxy.MarkerBlockProcessingResultCompanion.getDEFAULT();
+            return ProcessingResult.DEFAULT;
         } else {
-            return MarkdownCompanionProxy.MarkerBlockProcessingResultCompanion.getPASS();
+            return ProcessingResult.PASS;
         }
     }
 

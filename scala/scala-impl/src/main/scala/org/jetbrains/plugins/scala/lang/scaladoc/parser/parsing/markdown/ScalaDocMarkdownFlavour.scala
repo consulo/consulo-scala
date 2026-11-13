@@ -2,22 +2,20 @@ package org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.markdown
 
 import consulo.language.editor.documentation.DocumentationManagerUtil
 import consulo.language.Language
-import com.intellij.markdown.utils.CodeFenceSyntaxHighlighterGeneratingProvider
-import com.intellij.markdown.utils.lang.HtmlSyntaxHighlighter
+import consulo.language.ast.{ASTNode, IElementType}
 import consulo.project.Project
-import consulo.application.util.HtmlChunk
-import org.intellij.markdown.ast.{ASTNode, ASTUtilKt}
+import consulo.application.util.{HtmlBuilder, HtmlChunk}
 import org.intellij.markdown.flavours.gfm.{GFMElementTypes, GFMFlavourDescriptor, GFMTokenTypes, StrikeThroughDelimiterParser}
 import org.intellij.markdown.html.*
 import org.intellij.markdown.lexer.MarkdownLexer
 import org.intellij.markdown.parser.sequentialparsers.impl.*
 import org.intellij.markdown.parser.sequentialparsers.{EmphasisLikeParser, SequentialParser, SequentialParserManager}
 import org.intellij.markdown.parser.{LinkMap, LookaheadText, MarkerProcessorFactory, ProductionHolder}
-import org.intellij.markdown.{IElementType, MarkdownElementTypes, MarkdownTokenTypes}
+import org.intellij.markdown.{MarkdownAstUtil, MarkdownElementTypes, MarkdownTokenTypes}
 import org.jetbrains.plugins.scala.api.Scala3Language
 import org.jetbrains.plugins.scala.editor.documentationProvider.HtmlPsiUtils
 import org.jetbrains.plugins.scala.extensions.CharSeqExt
-import org.jetbrains.plugins.scala.lang.scaladoc.lexer.markdown._CustomGFMLexer
+import org.jetbrains.plugins.scala.lang.scaladoc.lexer.markdown.{CustomMarkdownLexer, _CustomGFMLexer}
 import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MyScaladocParsing
 
 import java.net.URI
@@ -56,10 +54,10 @@ class ScalaDocMarkdownFlavour extends GFMFlavourDescriptor {
 
         WikiLinkParser.WIKI_LINK -> new OpenCloseGeneratingProvider {
           override def openTag(visitor: HtmlGenerator#HtmlGeneratingVisitor, s: String, astNode: ASTNode): Unit = {
-            val children = astNode.getChildren
+            val children = MarkdownAstUtil.children(astNode)
             val info = WikiLinkParser.ChildrenInfo(astNode)
             def text(i: (Int, Int)): String = {
-              s.substring(children.get(i._1).getStartOffset, children.get(i._2).getEndOffset)
+              s.substring(children.get(i._1).getStartOffset, MarkdownAstUtil.endOffset(children.get(i._2)))
             }
 
             val refText = info.refTokens.fold("")(text)
@@ -85,7 +83,7 @@ class ScalaDocMarkdownFlavour extends GFMFlavourDescriptor {
         // than assuming two (otherwise `childrenToRender` computes an invalid sublist range, SCL-25712).
         GFMElementTypes.STRIKETHROUGH -> new SimpleInlineTagProvider("strike", 0, 0) {
           private def borderLen(node: ASTNode): Int =
-            node.getChildren.asScala.iterator.takeWhile(_.getType == GFMTokenTypes.TILDE).size
+            MarkdownAstUtil.children(node).asScala.iterator.takeWhile(_.getElementType == GFMTokenTypes.TILDE).size
 
           override def openTag(visitor: HtmlGenerator#HtmlGeneratingVisitor, text: String, node: ASTNode): Unit =
             if (borderLen(node) > 1) super.openTag(visitor, text, node)
@@ -94,7 +92,7 @@ class ScalaDocMarkdownFlavour extends GFMFlavourDescriptor {
             if (borderLen(node) > 1) super.closeTag(visitor, text, node)
 
           override def childrenToRender(node: ASTNode): java.util.List[ASTNode] = {
-            val children = node.getChildren
+            val children = MarkdownAstUtil.children(node)
             val border = borderLen(node)
             // For a single tilde, render everything (including the tildes) as plain text.
             if (border > 1) children.subList(border, children.size - border) else children
@@ -107,7 +105,7 @@ class ScalaDocMarkdownFlavour extends GFMFlavourDescriptor {
     parent.put(
       GFMTokenTypes.GFM_AUTOLINK,
       (visitor: HtmlGenerator#HtmlGeneratingVisitor, text: String, node: ASTNode) => {
-        if (ASTUtilKt.getParentOfType(node, WikiLinkParser.WIKI_LINK) == null) {
+        if (MarkdownAstUtil.getParentOfType(node, WikiLinkParser.WIKI_LINK) == null) {
           oldGFMAutolinkProvider.processNode(visitor, text, node)
         }
       }
@@ -116,10 +114,48 @@ class ScalaDocMarkdownFlavour extends GFMFlavourDescriptor {
     parent
   }
 
-  override def createInlinesLexer(): MarkdownLexer = new MarkdownLexer(new _CustomGFMLexer)
+  override def createInlinesLexer(): MarkdownLexer = new MarkdownLexer(new CustomMarkdownLexer.Adapter(new _CustomGFMLexer))
 }
 
 object ScalaDocMarkdownFlavour {
+  // upstream: com.intellij.markdown.utils.lang.HtmlSyntaxHighlighter (platform markdown-utils, not in Consulo)
+  trait HtmlSyntaxHighlighter {
+    def color(language: String, rawContent: String): HtmlChunk
+  }
+
+  // upstream: com.intellij.markdown.utils.CodeFenceSyntaxHighlighterGeneratingProvider (platform markdown-utils, not in Consulo)
+  private final class CodeFenceSyntaxHighlighterGeneratingProvider(htmlSyntaxHighlighter: HtmlSyntaxHighlighter) extends GeneratingProvider {
+    override def processNode(visitor: HtmlGenerator#HtmlGeneratingVisitor, text: String, node: ASTNode): Unit = {
+      var languageCodeBlock: String = null
+      val codeFenceRawContent = new java.lang.StringBuilder
+
+      val iterator = MarkdownAstUtil.children(node).iterator()
+      var fenceEnded = false
+      while (!fenceEnded && iterator.hasNext) {
+        val child = iterator.next()
+        child.getElementType match {
+          case MarkdownTokenTypes.FENCE_LANG =>
+            languageCodeBlock = HtmlGenerator.leafText(text, child).toString.trim
+            iterator.next() // skip first EOL after language
+          case MarkdownTokenTypes.CODE_FENCE_CONTENT | MarkdownTokenTypes.EOL =>
+            codeFenceRawContent.append(HtmlGenerator.trimIndents(MarkdownAstUtil.getTextInNode(child, text), 0))
+          case MarkdownTokenTypes.CODE_FENCE_END =>
+            fenceEnded = true
+          case _ =>
+        }
+      }
+
+      val coloredContent = htmlSyntaxHighlighter.color(languageCodeBlock, codeFenceRawContent.toString)
+
+      val codeHtmlChunk =
+        if (languageCodeBlock == null) HtmlChunk.tag("code")
+        else HtmlChunk.tag("code").setClass("language-" + languageCodeBlock.split(" ", -1).mkString("-"))
+
+      val html = new HtmlBuilder().append(coloredContent).wrapWith(codeHtmlChunk).wrapWith(HtmlChunk.tag("pre"))
+      visitor.consumeHtml(html.toString)
+    }
+  }
+
   class ScalaHtmlSyntaxHighlighter(project: Project) extends HtmlSyntaxHighlighter {
     override def color(language: String, rawContent: String): HtmlChunk =
       HtmlSyntaxHighlighterCompanionProxy.colorHtmlChunk(project, selectLanguage(language), rawContent.stripLineEnd)
@@ -150,9 +186,9 @@ object ScalaDocMarkdownFlavour {
     })
 
     override def processNode(visitor: HtmlGenerator#HtmlGeneratingVisitor, text: String, node: ASTNode): Unit = {
-      val isWikiDocFence = node.getChildren.asScala.exists { child =>
-        child.getType == MarkdownTokenTypes.CODE_FENCE_START &&
-          ASTUtilKt.getTextInNode(child, text).toString.trim == "{{{"
+      val isWikiDocFence = MarkdownAstUtil.children(node).asScala.exists { child =>
+        child.getElementType == MarkdownTokenTypes.CODE_FENCE_START &&
+          MarkdownAstUtil.getTextInNode(child, text).toString.trim == "{{{"
       }
       val provider = if (isWikiDocFence) wikiDocProvider else markdownProvider
       provider.processNode(visitor, text, node)

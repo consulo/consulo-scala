@@ -8,7 +8,7 @@ package org.jetbrains.plugins.scala.lang.scaladoc.lexer.markdown;
 
 import org.intellij.markdown.MarkdownTokenTypes;
 import org.intellij.markdown.flavours.gfm.GFMTokenTypes;
-import org.intellij.markdown.IElementType;
+import consulo.language.ast.IElementType;
 
 import java.util.ArrayList;
 import java.util.HashSet;

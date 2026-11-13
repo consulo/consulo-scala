@@ -7,20 +7,19 @@ import org.intellij.markdown.parser.markerblocks.{MarkerBlock, MarkerBlockProvid
 import org.intellij.markdown.parser.sequentialparsers.SequentialParser
 
 import java.util
-import kotlin.ranges.IntRange
 
 class ScalaDocTagMarkerBlockProvider extends MarkerBlockProvider[MarkerProcessor.StateInfo] {
   override def createMarkerBlocks(position: LookaheadText#Position, productionHolder: ProductionHolder, t: MarkerProcessor.StateInfo): util.List[MarkerBlock] = {
     // Check if the current position is at the start of a line (after whitespace) and contains a tag (@)
     ScalaDocMarkdownFlavour.getTagOnLine(position) match {
       case Some(ScalaDocMarkdownFlavour.TagInfo(tagStart, tagEnd, argument)) =>
-        productionHolder.addProduction(util.List.of(new SequentialParser.Node(new IntRange(position.getOffset + tagStart, position.getOffset + tagEnd), ScalaDocTagMarkerBlock.TAG_NAME)))
+        productionHolder.addProduction(util.List.of(new SequentialParser.Node(position.getOffset + tagStart, position.getOffset + tagEnd, ScalaDocTagMarkerBlock.TAG_NAME)))
 
         argument.foreach {
           case (argStart, argEnd) =>
             productionHolder.addProduction(util.List.of(
-              new SequentialParser.Node(new IntRange(position.getOffset + tagEnd, position.getOffset + argStart), MarkdownTokenTypes.WHITE_SPACE),
-              new SequentialParser.Node(new IntRange(position.getOffset + argStart, position.getOffset + argEnd), ScalaDocTagMarkerBlock.TAG_ARGUMENT)
+              new SequentialParser.Node(position.getOffset + tagEnd, position.getOffset + argStart, MarkdownTokenTypes.WHITE_SPACE),
+              new SequentialParser.Node(position.getOffset + argStart, position.getOffset + argEnd, ScalaDocTagMarkerBlock.TAG_ARGUMENT)
             ))
         }
 

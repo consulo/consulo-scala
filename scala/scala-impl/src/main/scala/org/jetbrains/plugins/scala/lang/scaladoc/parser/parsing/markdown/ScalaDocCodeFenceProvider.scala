@@ -5,13 +5,10 @@ import org.intellij.markdown.parser.ProductionHolder
 import org.intellij.markdown.parser.MarkerProcessor
 import org.intellij.markdown.parser.constraints.MarkdownConstraints
 import org.intellij.markdown.parser.markerblocks.{MarkerBlock, MarkerBlockProvider}
-import org.intellij.markdown.parser.markerblocks.impl.CodeFenceMarkerBlock
 import org.intellij.markdown.parser.sequentialparsers.SequentialParser
 import org.intellij.markdown.MarkdownTokenTypes
-import org.jetbrains.plugins.scala.lang.scaladoc.parser.parsing.MarkdownCompanionProxy
 
 import java.util
-import kotlin.ranges.IntRange
 
 class ScalaDocCodeFenceProvider extends MarkerBlockProvider[MarkerProcessor.StateInfo] {
   override def createMarkerBlocks(position: LookaheadText#Position, productionHolder: ProductionHolder, t: MarkerProcessor.StateInfo): util.List[MarkerBlock] = {
@@ -19,14 +16,15 @@ class ScalaDocCodeFenceProvider extends MarkerBlockProvider[MarkerProcessor.Stat
     fenceEnd(position, t.getCurrentConstraints, "{{{") match {
       case Some(end) =>
         productionHolder.addProduction(util.List.of(new SequentialParser.Node(
-          new IntRange(position.getOffset, position.getOffset + end),
+          position.getOffset, position.getOffset + end,
           MarkdownTokenTypes.CODE_FENCE_START
         )))
 
         // HACK: This is kind of a trick: the last argument is officially the "fence" but it's really only used in a regex
         //       That's why we have to escape it, and that's why it's the *closing* fence
         //       Unlike Markdown fences, a ScalaDoc closing fence can have arbitrary indentation (e.g. under @note).
-        util.List.of(new CodeFenceMarkerBlock(t.getCurrentConstraints, productionHolder, "[ \\t]*\\}\\}\\}"))
+        // upstream: CodeFenceMarkerBlock, which quotes the fence in the Consulo engine (see ScalaDocCodeFenceMarkerBlock)
+        util.List.of(new ScalaDocCodeFenceMarkerBlock(t.getCurrentConstraints, productionHolder, "[ \\t]*\\}\\}\\}"))
       case None => util.List.of()
     }
   }
@@ -36,12 +34,12 @@ class ScalaDocCodeFenceProvider extends MarkerBlockProvider[MarkerProcessor.Stat
 
   private def fenceEnd(position: LookaheadText#Position, constraints: MarkdownConstraints, fence: String): Option[Int] = {
     if (
-      !MarkdownCompanionProxy.MarkerBlockProviderCompanion.isStartOfLineWithConstraints(position, constraints)
+      !MarkerBlockProvider.isStartOfLineWithConstraints(position, constraints)
     )
       None
     else {
       val sequence = position.getCurrentLineFromPosition
-      val start = MarkdownCompanionProxy.MarkerBlockProviderCompanion.passSmallIndent(sequence, 0)
+      val start = MarkerBlockProvider.passSmallIndent(sequence, 0)
       val trimmed = sequence.subSequence(start, sequence.length())
 
       if (trimmed.length() >= fence.length &&

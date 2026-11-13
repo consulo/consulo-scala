@@ -35,7 +35,7 @@ class _ScalaDocMarkdownLexer extends LexerBase {
   override def getState: Int =
     (delegate.getState << STATE_WIDTH) | myState
 
-  private def platformType(@Nullable tokenType: org.intellij.markdown.IElementType): IElementType = {
+  private def platformType(@Nullable tokenType: IElementType): IElementType = {
     if (tokenType == null) return null
     _ScalaDocMarkdownLexer.DELEGATE_MAP.getOrElse(tokenType, ScalaDocTokenType.DOC_COMMENT_DATA)
   }
