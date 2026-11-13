@@ -1,10 +1,7 @@
-package org.jetbrains.plugins.scala.lang.psi.stubs;
+package org.jetbrains.plugins.scala.api.lang.psi.stubs;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.StubElement;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.stub.StubElement;
 
 /**
  * Redeclares the Java default method as abstract so Scala stub traits use the final
@@ -16,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
  * to retain the abstract declaration when resolving inherited members.
  */
 public interface ScStubElement<T extends PsiElement> extends StubElement<T> {
-    @Override
-    @Nullable
-    StubElement<? extends PsiElement> findChildStubByElementType(@NotNull IElementType elementType);
+    // upstream overrides StubElement#findChildStubByElementType(IElementType) to mark result @Nullable.
+    // Consulo has no such method - StubElement#findChildStubByType(IStubElementType) is already @Nullable
 }

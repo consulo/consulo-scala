@@ -13,12 +13,10 @@
  * limitations under the License.
  */
 
-package org.jetbrains.plugins.scala;
+package org.jetbrains.plugins.scala.api;
 
-import org.jetbrains.annotations.NotNull;
+import consulo.ui.image.Image;
 import org.jetbrains.plugins.scala.icons.Icons;
-
-import javax.swing.*;
 
 final public class ScalaFileType extends LanguageFileTypeBase {
 
@@ -33,8 +31,7 @@ final public class ScalaFileType extends LanguageFileTypeBase {
     }
 
     @Override
-    @NotNull
-    public Icon getIcon() {
+    public Image getIcon() {
         return Icons.SCALA_FILE;
     }
 }

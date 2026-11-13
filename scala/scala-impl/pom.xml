@@ -99,6 +99,11 @@
             <artifactId>org.intellij.scala-decompiler</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scala.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>consulo</groupId>
@@ -133,12 +138,6 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-ui-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>consulo</groupId>
-            <artifactId>consulo-base-icon-library</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

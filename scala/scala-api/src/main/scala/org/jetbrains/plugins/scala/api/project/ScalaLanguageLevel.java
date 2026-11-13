@@ -1,9 +1,8 @@
-package org.jetbrains.plugins.scala.project;
+package org.jetbrains.plugins.scala.api.project;
 
-import com.intellij.lang.Language;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.Scala3Language;
-import org.jetbrains.plugins.scala.ScalaLanguage;
+import consulo.language.Language;
+import org.jetbrains.plugins.scala.api.Scala3Language;
+import org.jetbrains.plugins.scala.api.ScalaLanguage;
 import scala.Option;
 import scala.math.Ordered;
 
@@ -66,37 +65,32 @@ public enum ScalaLanguageLevel implements Ordered<ScalaLanguageLevel> {
         publishedVersions = Arrays.stream(values()).takeWhile(x -> x.ordinal() <= latestPublishedVersion.ordinal()).toArray(ScalaLanguageLevel[]::new);
     }
 
-    @NotNull
     private final String myVersion;
-    @NotNull
     private final String myPattern;
 
-    ScalaLanguageLevel(@NotNull String version) {
+    ScalaLanguageLevel(String version) {
         this(version, Pattern.quote(version) + "(?:[.-].*)?");
     }
 
-    ScalaLanguageLevel(@NotNull String version, @NotNull String pattern) {
+    ScalaLanguageLevel(String version, String pattern) {
         myVersion = version;
         myPattern = pattern;
     }
 
-    @NotNull
     public String getVersion() {
         return myVersion;
     }
 
     @Override
-    public int compare(@NotNull ScalaLanguageLevel that) {
+    public int compare(ScalaLanguageLevel that) {
         return super.compareTo(that);
     }
 
-    @NotNull
     public static ScalaLanguageLevel getDefault() {
         return Scala_2_13;
     }
 
-    @NotNull
-    public static Option<ScalaLanguageLevel> findByVersion(@NotNull String version) {
+    public static Option<ScalaLanguageLevel> findByVersion(String version) {
         for (ScalaLanguageLevel languageLevel : values()) {
             if (version.matches(languageLevel.myPattern)) {
                 return Option.apply(languageLevel);

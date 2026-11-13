@@ -1,9 +1,10 @@
-package org.jetbrains.plugins.scala.util
+package org.jetbrains.plugins.scala.api.util
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.application.Application
+import consulo.disposer.Disposable
+import consulo.project.Project
+import jakarta.inject.Singleton
 
 object UnloadAwareDisposable {
 
@@ -25,14 +26,26 @@ object UnloadAwareDisposable {
    * you consider using [[ScalaShutDownTracker.registerShutdownTask]]
    */
   lazy val scalaPluginDisposable: Disposable =
-    ApplicationManager.getApplication.getService(classOf[UnloadAwareDisposableService])
+    Application.get.getInstance(classOf[UnloadAwareDisposableService])
 
   def forProject(project: Project): Disposable = {
-    project.getService(classOf[UnloadAwareDisposableService])
+    project.getInstance(classOf[UnloadAwareProjectDisposableService])
   }
+}
 
-  @Service
-  private final class UnloadAwareDisposableService extends Disposable {
-    override def dispose(): Unit = ()
-  }
+// upstream: single light @Service (private class nested in UnloadAwareDisposable), used on application and project level.
+// Consulo service has one scope, and bindings are generated only for top level classes
+
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+private[util] final class UnloadAwareDisposableService extends Disposable {
+  override def dispose(): Unit = ()
+}
+
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+private[util] final class UnloadAwareProjectDisposableService extends Disposable {
+  override def dispose(): Unit = ()
 }

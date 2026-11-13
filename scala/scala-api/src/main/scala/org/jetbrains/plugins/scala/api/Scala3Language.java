@@ -1,11 +1,11 @@
-package org.jetbrains.plugins.scala;
+package org.jetbrains.plugins.scala.api;
 
-import com.intellij.lang.DependentLanguage;
-import com.intellij.lang.InjectableLanguage;
-import com.intellij.lang.Language;
-import com.intellij.lang.jvm.JvmLanguage;
+import consulo.language.DependentLanguage;
+import consulo.language.InjectableLanguage;
+import consulo.language.Language;
 
-public class Scala3Language extends Language implements JvmLanguage, DependentLanguage, InjectableLanguage {
+// TODO upstream implements com.intellij.lang.jvm.JvmLanguage (marker interface), which does not exist in Consulo
+public class Scala3Language extends Language implements DependentLanguage, InjectableLanguage {
 
     public static final Scala3Language INSTANCE = new Scala3Language();
 

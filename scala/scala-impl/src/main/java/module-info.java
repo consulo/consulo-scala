@@ -12,7 +12,6 @@ module org.intellij.scala {
     requires consulo.virtual.file.system.api;
     requires consulo.localize.api;
     requires consulo.ui.api;
-    requires consulo.base.icon.library;
 
     requires scala.library;
 
@@ -20,6 +19,7 @@ module org.intellij.scala {
     requires org.intellij.scala.utils.language;
     requires org.intellij.scala.tasty.reader;
     requires org.intellij.scala.decompiler;
+    requires org.intellij.scala.api;
 
     exports org.jetbrains.plugins.scala;
 }

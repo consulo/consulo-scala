@@ -1,13 +1,15 @@
-package org.jetbrains.plugins.scala
+package org.jetbrains.plugins.scala.api
 package lang.psi
 
-import com.intellij.ide.highlighter.JavaClassFileType
-import com.intellij.lang.Language
-import com.intellij.openapi.fileTypes.{FileType, PlainTextLanguage}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiFile, PsiManager, SingleRootFileViewProvider}
-import com.intellij.testFramework.LightVirtualFile
+import com.intellij.java.language.impl.JavaClassFileType
+import consulo.language.Language
+import consulo.language.file.light.LightVirtualFile
+import consulo.language.impl.file.SingleRootFileViewProvider
+import consulo.language.plain.PlainTextLanguage
+import consulo.language.psi.{PsiFile, PsiManager}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.fileType.FileType
 
 /**
  * For the decompiled-files see [[org.jetbrains.plugins.scala.lang.psi.compiled.ScClsFileViewProvider]]
@@ -38,7 +40,7 @@ final class ScFileViewProvider(
 object ScFileViewProvider {
 
   /**
-   * This is a partial copy of the method [[com.intellij.psi.SingleRootFileViewProvider#calcBaseLanguage]]
+   * This is a partial copy of the method [[consulo.language.impl.file.SingleRootFileViewProvider#calcBaseLanguage]]
    *
    * I haven't copied the full logic, only the part required for SCL-24093
    *

@@ -1,8 +1,7 @@
-package org.jetbrains.plugins.scala
+package org.jetbrains.plugins.scala.api
 package util
 
-import com.intellij.openapi.progress.ProgressManager
-import org.jetbrains.annotations.ApiStatus
+import consulo.application.progress.ProgressManager
 
 import scala.concurrent.duration.{Duration, DurationInt}
 
@@ -10,8 +9,7 @@ import scala.concurrent.duration.{Duration, DurationInt}
  * @note Extra methods like `_Seconds` added for convenience to avoid importing scala.concurrent.duration.DurationInt at the usage site
  */
 //noinspection ScalaUnusedSymbol
-@ApiStatus.Internal
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Internal @ApiStatus.Experimental
 object InternalDevUtils {
 
   def runDummyComputationWithProgressCancellationCheck_Seconds(totalDurationSeconds: Int): Unit = {

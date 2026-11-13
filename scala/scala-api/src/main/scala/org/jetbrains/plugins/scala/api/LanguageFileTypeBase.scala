@@ -1,18 +1,20 @@
-package org.jetbrains.plugins.scala
+package org.jetbrains.plugins.scala.api
 
-import com.intellij.lang.Language
-import com.intellij.openapi.fileTypes.{FileTypeManager, LanguageFileType}
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.language.Language
+import consulo.language.file.{FileTypeManager, LanguageFileType}
+import consulo.localize.LocalizeValue
+import consulo.virtualFileSystem.VirtualFile
 
 abstract class LanguageFileTypeBase(language: Language) extends LanguageFileType(language) {
 
+  // upstream: FileType.getName, in Consulo - FileType.getId
   //noinspection ReferencePassedToNls
-  override def getName: String = getLanguage.getID
+  override def getId: String = getLanguage.getID
 
-  override def getDefaultExtension: String = getName.toLowerCase
+  override def getDefaultExtension: String = getId.toLowerCase
 
   //noinspection ScalaExtractStringToBundle,ReferencePassedToNls
-  override def getDescription: String = getName + " files"
+  override def getDescription: LocalizeValue = LocalizeValue.localizeTODO(getId + " files")
 
   // TODO Temporary fix for Upsource
   // (FileTypeManagerImpl.isFileOfType is called from ScalaSourceFilterScope,

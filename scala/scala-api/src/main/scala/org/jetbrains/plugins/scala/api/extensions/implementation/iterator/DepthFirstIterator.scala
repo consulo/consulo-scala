@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.scala.extensions.implementation.iterator
+package org.jetbrains.plugins.scala.api.extensions.implementation.iterator
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 
 final class DepthFirstIterator(element: PsiElement, shouldProcessChildren: PsiElement => Boolean) extends Iterator[PsiElement] {
   private var stack: List[PsiElement] =

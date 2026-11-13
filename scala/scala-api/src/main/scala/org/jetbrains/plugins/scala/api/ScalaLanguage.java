@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-package org.jetbrains.plugins.scala;
+package org.jetbrains.plugins.scala.api;
 
-import com.intellij.lang.Language;
-import com.intellij.lang.jvm.JvmLanguage;
+import consulo.language.Language;
 
-public class ScalaLanguage extends Language implements JvmLanguage {
+// TODO upstream implements com.intellij.lang.jvm.JvmLanguage (marker interface), which does not exist in Consulo
+public class ScalaLanguage extends Language {
 
     public static final ScalaLanguage INSTANCE = new ScalaLanguage();
 

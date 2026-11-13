@@ -1,8 +1,8 @@
-package org.jetbrains.plugins
+package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.application.ApplicationManager.{getApplication => application}
+import consulo.application.Application.{get => application}
 
-package object scala {
+package object api {
 
   val ScalaLowerCase = "scala"
   val NotImplementedError = "???"

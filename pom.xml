@@ -52,10 +52,42 @@
         <module>scala/scala-utils-language</module>
         <module>scala/tasty-reader</module>
         <module>scala/decompiler</module>
+        <module>scala/scala-api</module>
         <module>scala/scala-impl</module>
     </modules>
 
     <build>
+        <plugins>
+            <!--
+              zinc (scala-maven-plugin) compiles java sources by javac, and javac switches to module mode if output directory
+              contains module-info.class from previous build (and fails on module resolution). module-info.java is compiled by
+              maven-compiler-plugin after scala compilation anyway
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>remove-module-info-before-scalac</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.outputDirectory}</directory>
+                                    <includes>
+                                        <include>module-info.class</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <!-- scala (and mixed java) sources from src/main/scala are compiled before javac (module-info.java) -->

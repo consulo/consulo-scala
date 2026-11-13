@@ -1,10 +1,10 @@
-package org.jetbrains.plugins.scala
+package org.jetbrains.plugins.scala.api
 package lang.psi.api
 
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiClassOwnerEx
-import com.intellij.psi.impl.source.PsiFileWithStubSupport
-import com.intellij.testFramework.LightVirtualFile
+import com.intellij.java.language.psi.PsiClassOwnerEx
+import consulo.language.file.light.LightVirtualFile
+import consulo.language.psi.stub.PsiFileWithStubSupport
+import consulo.virtualFileSystem.VirtualFile
 
 trait ScFile extends PsiFileWithStubSupport
   with PsiClassOwnerEx {

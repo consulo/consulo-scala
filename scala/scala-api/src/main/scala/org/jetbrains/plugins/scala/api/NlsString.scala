@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala
+package org.jetbrains.plugins.scala.api
 
 import org.jetbrains.annotations.Nls
 
