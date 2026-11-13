@@ -251,92 +251,9 @@
 
         <codeInsight.wordCompletionFilter language="Scala"
                                           implementationClass="org.jetbrains.plugins.scala.lang.completion.ScalaWordCompletionFilter"/>
-
-        <codeInsight.completion.command.factory
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaCommandCompletionFactory"/>
         <!--region Common Platform Command Completion Providers -->
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="com.intellij.codeInsight.completion.command.commands.PsiElementCommentByBlockCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="com.intellij.codeInsight.completion.command.commands.PsiElementCommentByLineCompletionCommandProvider"/>
-
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="com.intellij.codeInsight.completion.command.commands.InsertLiveTemplateCompletionCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.intellij.lang.regexp.intention.ExplainRegExpCommandCompletionProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="com.intellij.codeInsight.completion.command.commands.DirectIntentionCommandProvider"
-                order="last"/>
         <!--endregion-->
         <!--region Scala Command Completion Providers -->
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaRenameActionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaOptimizeImportCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaGoToImplementationCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaGoToDeclarationCommandCompletionProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaGoToSuperMethodCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaFormatCodeCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaCopyFQNCompletionCommandProvider"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaShowUsagesActionCompletionCommandProvider"/>
-
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaParameterInfoCompletionCommand"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaTypeHierarchyCompletionCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaQuickDocumentationCompletionCommand"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaInlineCompletionCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.CreateCompanionObjectCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaOverrideMethodsCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaImplementMethodsCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.CreateScalaDocStubCommandProvider"
-                order="last"/>
-        <codeInsight.completion.command.provider
-                language="Scala"
-                implementationClass="org.jetbrains.plugins.scala.lang.completion.command.ScalaIntroduceVariableCompletionCommandProvider"
-                order="last"/>
 <!-- TODO(SCL-24924): introduce field and introduce parameter don't work reliable enough yet to enable command completion -->
 <!--        <codeInsight.completion.command.provider-->
 <!--                language="Scala"-->
@@ -435,10 +352,6 @@
                  id="ScopeWeigher" order="after scalaKindWeigher, before proximity"/>
         <weigher key="proximity" implementationClass="org.jetbrains.plugins.scala.lang.completion.weighter.ScalaExplicitlyImportedWeigher"
                  id="scalaExplicitlyImportedWeigher" order="before explicitlyImported"/>
-        <completion.ml.contextFeatures language="Scala"
-                                       implementationClass="org.jetbrains.plugins.scala.lang.completion.ml.ScalaContextFeatureProvider"/>
-        <completion.ml.elementFeatures language="Scala"
-                                       implementationClass="org.jetbrains.plugins.scala.lang.completion.ml.ScalaElementFeatureProvider"/>
         <psi.referenceContributor language="Scala" implementation="org.jetbrains.plugins.scala.lang.references.ScalaReferenceContributor"/>
         <codeInsight.overrideMethod language="Scala" implementationClass="org.jetbrains.plugins.scala.overrideImplement.ScalaOverrideMethodsHandler"/>
         <codeInsight.implementMethod language="Scala" implementationClass="org.jetbrains.plugins.scala.overrideImplement.ScalaImplementMethodsHandler"/>

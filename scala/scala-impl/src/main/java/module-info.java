@@ -249,7 +249,6 @@ module org.intellij.scala {
     exports org.jetbrains.plugins.scala.lang.completion;
     exports org.jetbrains.plugins.scala.lang.completion.aot;
     exports org.jetbrains.plugins.scala.lang.completion.clauses;
-    exports org.jetbrains.plugins.scala.lang.completion.command;
     exports org.jetbrains.plugins.scala.lang.completion.filters;
     exports org.jetbrains.plugins.scala.lang.completion.filters.definitions;
     exports org.jetbrains.plugins.scala.lang.completion.filters.expression;
@@ -259,7 +258,6 @@ module org.intellij.scala {
     exports org.jetbrains.plugins.scala.lang.completion.global;
     exports org.jetbrains.plugins.scala.lang.completion.handlers;
     exports org.jetbrains.plugins.scala.lang.completion.lookups;
-    exports org.jetbrains.plugins.scala.lang.completion.ml;
     exports org.jetbrains.plugins.scala.lang.completion.postfix;
     exports org.jetbrains.plugins.scala.lang.completion.postfix.templates;
     exports org.jetbrains.plugins.scala.lang.completion.postfix.templates.selector;
