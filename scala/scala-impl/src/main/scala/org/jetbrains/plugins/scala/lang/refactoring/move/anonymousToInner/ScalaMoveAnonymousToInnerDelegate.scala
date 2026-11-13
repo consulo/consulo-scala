@@ -14,9 +14,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
  */
 class ScalaMoveAnonymousToInnerDelegate extends MoveHandlerDelegate {
 
-  override def getActionName(elements: Array[PsiElement]): String = ScalaBundle.message("move.anonymousToInner.name")
+  // upstream: getActionName override "move.anonymousToInner.name" (no such method in Consulo MoveHandlerDelegate)
 
-  override def canMove(elements: Array[PsiElement], targetContainer: PsiElement, reference: PsiReference): Boolean =
+  override def canMove(elements: Array[PsiElement], targetContainer: PsiElement): Boolean =
+    canMove(elements, reference = null)
+
+  private def canMove(elements: Array[PsiElement], reference: PsiReference): Boolean =
     elements.nonEmpty && // in some strange edge cases the array might be empty
       findNewTemplateDefinition(elements(0), reference).exists(_.isAnonymous)
 
@@ -26,7 +29,7 @@ class ScalaMoveAnonymousToInnerDelegate extends MoveHandlerDelegate {
   }
 
   override def tryToMove(element: PsiElement, project: Project, dataContext: DataContext, reference: PsiReference, editor: Editor): Boolean = {
-      val canRefactor = canMove(Array(element), null, reference)
+      val canRefactor = canMove(Array(element), reference = reference)
       if (canRefactor) {
         val maybeNewTemplateDefinition = findNewTemplateDefinition(element, reference)
         maybeNewTemplateDefinition.foreach(element => ScalaAnonymousToInnerHandler.invoke(project, editor, element))

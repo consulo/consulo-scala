@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.rename.{AutomaticRenamer, AutomaticRenamerFactory}
@@ -46,7 +47,7 @@ final class AutomaticOverloadsRenamerFactory extends AutomaticRenamerFactory {
 
   override def setEnabled(enabled: Boolean): Unit = ScalaApplicationSettings.getInstance().RENAME_OVERLOADS = enabled
 
-  override def getOptionName: String = JavaRefactoringBundle.message("rename.overloads")
+  override def getOptionName: LocalizeValue = LocalizeValue.of(JavaRefactoringBundle.message("rename.overloads"))
 }
 
 private object AutomaticOverloadsRenamer {

@@ -46,7 +46,8 @@ abstract class ScalaInlineActionHandler extends InlineActionHandler {
     case _ => false
   }
 
-  final override def getActionName(element: PsiElement): String = refactoringName
+  // upstream: getActionName override (no such method in Consulo InlineActionHandler)
+  final def getActionName(element: PsiElement): String = refactoringName
 
   final override def inlineElement(project0: Project, editor0: Editor, element: PsiElement): Unit = {
     implicit val project: Project = project0

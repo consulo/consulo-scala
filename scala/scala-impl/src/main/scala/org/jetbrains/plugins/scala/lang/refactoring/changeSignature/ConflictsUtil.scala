@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
+import consulo.localize.LocalizeValue
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.changeSignature.ChangeInfo
 import com.intellij.java.impl.refactoring.changeSignature.{JavaChangeInfo, OverriderUsageInfo}
@@ -16,13 +17,13 @@ import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo.S
 
 private[changeSignature] object ConflictsUtil {
 
-  type ConflictsMap = MultiMap[PsiElement, String]
+  type ConflictsMap = MultiMap[PsiElement, LocalizeValue]
 
   def addJavaOverriderConflicts(info: OverriderUsageInfo, change: ChangeInfo, map: ConflictsMap): Unit = {
     change match {
       case sc: ScalaChangeInfo if sc.newParameters.exists(p => p.isByName && p.scType.isInstanceOf[ValType]) =>
         val message = ScalaBundle.message("by.name.parameters.cannot.be.used")
-        map.putValue(info.getOverridingMethod, message)
+        map.putValue(info.getOverridingMethod, LocalizeValue.of(message))
       case _ =>
     }
   }
@@ -40,7 +41,7 @@ private[changeSignature] object ConflictsUtil {
 
       if (!isSimple) {
         val className = member.containingClass.qualifiedName
-        result.putValue(bp, msg(className))
+        result.putValue(bp, LocalizeValue.of(msg(className)))
       }
     }
   }
@@ -49,7 +50,7 @@ private[changeSignature] object ConflictsUtil {
     if (change.getNewParameters.nonEmpty) {
       val className = cp.containingClass.qualifiedName
       val message = ScalaBundle.message("method.is.overridden.by.class.parameter.of.class", className)
-      result.putValue(cp, message)
+      result.putValue(cp, LocalizeValue.of(message))
     }
   }
 
@@ -59,7 +60,7 @@ private[changeSignature] object ConflictsUtil {
         jc.getMethod match {
           case ScPrimaryConstructor.ofClass(clazz) if clazz.isCase =>
             val message = ScalaBundle.message("updating.of.usages.of.generated.unapply")
-            result.putValue(p.pattern, message)
+            result.putValue(p.pattern, LocalizeValue.of(message))
           case _ =>
         }
       case _ =>

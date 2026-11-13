@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.changeSignature
 
 import consulo.project.Project
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
+import consulo.localize.LocalizeValue
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiMethod, PsiMethodCallExpression, PsiParameter, PsiReferenceExpression}
 import consulo.language.psi.{PsiElement, PsiNamedElement, PsiReference}
 import consulo.content.scope.SearchScope
@@ -183,9 +184,9 @@ class ScalaChangeSignatureUsageProcessor extends ChangeSignatureUsageProcessor w
   }
 
   override def findConflicts(info: ChangeInfo,
-                             refUsages: Ref[Array[UsageInfo]]): MultiMap[PsiElement, String] = {
+                             refUsages: SimpleReference[Array[UsageInfo]]): MultiMap[PsiElement, LocalizeValue] = {
     val usages = refUsages.get()
-    val result = new MultiMap[PsiElement, String]()
+    val result = new MultiMap[PsiElement, LocalizeValue]()
 
     usages.foreach {
       case ScalaNamedElementUsageInfo(u: OverriderClassParamUsageInfo) => ConflictsUtil.addClassParameterConflicts(u.namedElement, info, result)
@@ -197,15 +198,12 @@ class ScalaChangeSignatureUsageProcessor extends ChangeSignatureUsageProcessor w
     result
   }
 
-  override def registerConflictResolvers(snapshots: util.List[? >: ResolveSnapshot],
+  override def registerConflictResolvers(snapshots: util.List[ResolveSnapshot],
                                          resolveSnapshotProvider: ResolveSnapshotProvider,
                                          usages: Array[UsageInfo],
                                          changeInfo: ChangeInfo): Unit = {}
 
-  //in this method one can ask or fill undefined default values
-  override def setupDefaultValues(changeInfo: ChangeInfo,
-                                  refUsages: Ref[Array[UsageInfo]],
-                                  project: Project): Boolean = true
+  // upstream: setupDefaultValues override (no such method in Consulo ChangeSignatureUsageProcessor)
 
   private def processSimpleUsage(change: ChangeInfo, usage: UsageInfo): Unit = {
     handleChangedName(change, usage)

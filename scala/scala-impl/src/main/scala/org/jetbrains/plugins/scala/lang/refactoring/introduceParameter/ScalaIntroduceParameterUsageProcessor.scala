@@ -2,7 +2,8 @@ package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
 import consulo.document.RangeMarker
 import consulo.project.Project
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
+import consulo.localize.LocalizeValue
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import consulo.language.editor.refactoring.changeSignature.{ChangeInfo, ChangeSignatureUsageProcessor}
@@ -59,14 +60,14 @@ class ScalaIntroduceParameterUsageProcessor extends ChangeSignatureUsageProcesso
 
   override def shouldPreviewUsages(changeInfo: ChangeInfo, usages: Array[UsageInfo]): Boolean = false
 
-  override def findConflicts(info: ChangeInfo, refUsages: Ref[Array[UsageInfo]]): MultiMap[PsiElement, String] = new MultiMap[PsiElement, String]()
+  override def findConflicts(info: ChangeInfo, refUsages: SimpleReference[Array[UsageInfo]]): MultiMap[PsiElement, LocalizeValue] = new MultiMap[PsiElement, LocalizeValue]()
 
-  override def registerConflictResolvers(snapshots: util.List[? >: ResolveSnapshot],
+  override def registerConflictResolvers(snapshots: util.List[ResolveSnapshot],
                                          resolveSnapshotProvider: ResolveSnapshotProvider,
                                          usages: Array[UsageInfo],
                                          changeInfo: ChangeInfo): Unit = {}
 
-  override def setupDefaultValues(changeInfo: ChangeInfo, refUsages: Ref[Array[UsageInfo]], project: Project): Boolean = true
+  // upstream: setupDefaultValues override (no such method in Consulo ChangeSignatureUsageProcessor)
 
 }
 

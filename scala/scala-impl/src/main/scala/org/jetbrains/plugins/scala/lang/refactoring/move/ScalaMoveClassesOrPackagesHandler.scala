@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.lang.refactoring.move
 import consulo.project.Project
 import consulo.ui.ex.awt.{DialogWrapper, Messages}
 import com.intellij.java.language.psi.PsiClass
-import consulo.language.psi.{PsiDirectory, PsiElement}
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiPackage}
 import consulo.language.editor.refactoring.move.MoveCallback
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.{JavaMoveClassesOrPackagesHandler, MoveClassesOrPackagesDialog, MoveClassesOrPackagesImpl, MoveClassesOrPackagesProcessor, MoveClassesOrPackagesToNewDirectoryDialog}
 import consulo.language.editor.refactoring.util.{CommonRefactoringUtil, TextOccurrencesUtil}
@@ -38,7 +38,28 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
       case _ =>
     }
     ScalaFileImpl.performMoveRefactoring {
+      doMoveImpl(project, elements, targetContainer, callback)
+    }
+  }
+
+  // upstream: JavaMoveClassesOrPackagesHandler.doMove called the doMoveWithMoveClassesDialog and
+  // createMoveClassesOrPackagesToNewDirectoryDialog hooks, which Consulo's handler doesn't have.
+  // Directory/package moves are delegated to the Java handler, class moves use the Scala dialogs.
+  private def doMoveImpl(project: Project, elements: Array[PsiElement], targetContainer: PsiElement, callback: MoveCallback): Unit = {
+    if (elements.exists(e => e.isInstanceOf[PsiDirectory] || e.isInstanceOf[PsiPackage])) {
       super.doMove(project, elements, targetContainer, callback)
+      return
+    }
+    val adjustedElements = MoveClassesOrPackagesImpl.adjustForMove(project, elements, targetContainer)
+    if (adjustedElements == null) return
+
+    targetContainer match {
+      case targetDirectory: PsiDirectory
+        if CommonRefactoringUtil.checkReadOnlyStatusRecursively(project, ju.Arrays.asList(adjustedElements*), true) &&
+          !JavaMoveClassesOrPackagesHandler.packageHasMultipleDirectoriesInModule(project, targetDirectory) =>
+        createMoveClassesOrPackagesToNewDirectoryDialog(targetDirectory, adjustedElements, callback).show()
+      case _ =>
+        doMoveWithMoveClassesDialog(project, adjustedElements, targetContainer, callback)
     }
   }
 
@@ -52,7 +73,7 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
     elements.length == scalaElements.length && (super.canMove(elements, targetContainer): @nowarn("cat=deprecation"))
   }
 
-  protected override def doMoveWithMoveClassesDialog(project: Project,
+  private def doMoveWithMoveClassesDialog(project: Project,
                                                      adjustedElements: Array[PsiElement],
                                                      initialTargetElement: PsiElement,
                                                      moveCallback: MoveCallback): Unit = {
@@ -101,22 +122,12 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
   }
 
   @NotNull
-  protected override def createMoveClassesOrPackagesToNewDirectoryDialog(@NotNull directory: PsiDirectory,
+  private def createMoveClassesOrPackagesToNewDirectoryDialog(@NotNull directory: PsiDirectory,
                                                                          elementsToMove: Array[PsiElement],
                                                                          moveCallback: MoveCallback): DialogWrapper = {
     new MoveClassesOrPackagesToNewDirectoryDialog(directory, elementsToMove, moveCallback) {
       protected override def createCenterPanel(): JComponent = {
         addMoveCompanionChb(super.createCenterPanel(), elementsToMove)
-      }
-
-      protected override def createMoveClassesOrPackagesProcessor(project: Project,
-                                                                  elements: Array[PsiElement],
-                                                                  moveDestination: MoveDestination,
-                                                                  searchInComments: Boolean,
-                                                                  searchInNonJavaFiles: Boolean,
-                                                                  moveCallback: MoveCallback): MoveClassesOrPackagesProcessor = {
-
-        new MoveClassesOrPackagesProcessor(project, elements, moveDestination, searchInComments, searchInNonJavaFiles, moveCallback)
       }
     }
   }

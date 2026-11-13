@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import consulo.util.lang.StringUtil
 import consulo.language.psi.util.PsiTreeUtil
@@ -104,5 +105,5 @@ final class AutomaticVariableRenamerFactory extends AutomaticRenamerFactory {
 
   override def setEnabled(enabled: Boolean): Unit = ScalaApplicationSettings.getInstance().RENAME_VARIABLES = enabled
 
-  override def getOptionName: String = JavaRefactoringBundle.message("rename.variables")
+  override def getOptionName: LocalizeValue = LocalizeValue.of(JavaRefactoringBundle.message("rename.variables"))
 }

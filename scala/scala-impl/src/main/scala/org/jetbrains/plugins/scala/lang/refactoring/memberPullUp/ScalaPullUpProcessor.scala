@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.memberPullUp
 
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
@@ -30,7 +31,7 @@ final class ScalaPullUpProcessor(project: Project,
   override def createUsageViewDescriptor(usages: Array[UsageInfo]): UsageViewDescriptor =
     new PullUpUsageViewDescriptor
 
-  override def getCommandName: String = RefactoringBundle.message("pullUp.command", sourceClass.name)
+  override def getCommandName: LocalizeValue = LocalizeValue.of(RefactoringBundle.message("pullUp.command", sourceClass.name))
 
   override def performRefactoring(usages: Array[UsageInfo]): Unit = {
   }

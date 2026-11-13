@@ -36,7 +36,7 @@ import scala.collection.mutable
  */
 final class ScalaProcessImportsRefactoringHelper extends RefactoringHelper[MyData] {
 
-  override def prepareOperation(usages: Array[UsageInfo], elements: ju.List[? <: PsiElement]): MyData = {
+  override def prepareOperation(usages: Array[UsageInfo]): MyData = {
     val fileToImportHolders: mutable.Map[ScalaFile, mutable.Set[ScImportsHolder]] =
       mutable.HashMap.empty
 

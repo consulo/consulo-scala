@@ -21,7 +21,7 @@ class ScalaSafeDeleteProcessorDelegate extends JavaSafeDeleteProcessor {
     element.containingScalaFile.isDefined && super.handlesElement(element)
 
   @Nullable
-  override def findUsages(element: PsiElement, allElementsToDelete: Array[PsiElement], usages: JList[? >: UsageInfo]): NonCodeUsageSearchInfo = {
+  override def findUsages(element: PsiElement, allElementsToDelete: Array[PsiElement], usages: JList[UsageInfo]): NonCodeUsageSearchInfo = {
     var insideDeletedCondition: Condition[PsiElement] = getUsageInsideDeletedFilter(allElementsToDelete)
 
     insideDeletedCondition = element match {

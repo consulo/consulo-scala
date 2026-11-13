@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.rename
 
+import consulo.localize.LocalizeValue
 import consulo.java.impl.refactoring.JavaRefactoringBundle
 import com.intellij.java.language.JavaLanguage
 import consulo.util.lang.Comparing
@@ -92,5 +93,5 @@ final class AutomaticParameterRenamerFactory extends AutomaticRenamerFactory {
   override def setEnabled(enabled: Boolean): Unit =
     ScalaApplicationSettings.getInstance().RENAME_PARAMETER_IN_HIERARCHY = enabled
 
-  override def getOptionName: String = RefactoringBundle.message("rename.parameters.hierarchy")
+  override def getOptionName: LocalizeValue = LocalizeValue.of(RefactoringBundle.message("rename.parameters.hierarchy"))
 }

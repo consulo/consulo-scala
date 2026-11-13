@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.method
 
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import consulo.language.psi.PsiReference
 import consulo.language.impl.psi.CodeEditUtil
@@ -15,7 +16,7 @@ final class ScalaInlineMethodProcessor(
 )(
   implicit project: Project
 ) extends ScalaInlineProcessor(method, reference, inlineThisOnly = inlineThisOnly, shouldRemoveDefinition = removeDefinitionAfterInlining) {
-  override def getCommandName: String = ScalaInlineMethodHandler.RefactoringName
+  override def getCommandName: LocalizeValue = LocalizeValue.of(ScalaInlineMethodHandler.RefactoringName)
 
   override protected def removeDefinition(): Unit =
     CodeEditUtil.removeChild(method.getParent.getNode, method.getNode)

@@ -5,7 +5,7 @@ import consulo.document.util.TextRange
 import com.intellij.java.language.psi.{JavaPsiFacade, PsiMethod, PsiType}
 import consulo.language.psi.PsiElement
 import com.intellij.java.impl.refactoring.introduceParameter.{IntroduceParameterData, JavaExpressionWrapper}
-import it.unimi.dsi.fastutil.ints.{IntList, IntLists}
+import consulo.util.collection.primitive.ints.{IntList, IntLists}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScMethodLike
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt}
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo.ScalaChangeInfo
@@ -25,7 +25,7 @@ case class ScalaIntroduceParameterData(methodLike: ScMethodLike,
                                        functionalArgParams: Option[String] = None)
   extends IntroduceParameterData {
 
-  override def getParameterListToRemove: IntList = IntLists.emptyList()
+  override def getParametersToRemove: IntList = IntLists.newArrayList()
 
   override def getForcedType: PsiType = tp.toPsiType
 

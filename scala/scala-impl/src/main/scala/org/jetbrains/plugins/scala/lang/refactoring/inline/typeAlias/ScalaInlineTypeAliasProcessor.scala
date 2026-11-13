@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring.inline.typeAlias
 
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import consulo.language.psi.PsiReference
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -14,7 +15,7 @@ final class ScalaInlineTypeAliasProcessor(
 )(
   implicit project: Project
 ) extends ScalaInlineProcessor(typeAlias, reference, inlineThisOnly = inlineThisOnly, shouldRemoveDefinition = removeDefinitionAfterInlining) {
-  override def getCommandName: String = ScalaInlineTypeAliasHandler.RefactoringName
+  override def getCommandName: LocalizeValue = LocalizeValue.of(ScalaInlineTypeAliasHandler.RefactoringName)
 
   override protected def removeDefinition(): Unit =
     removeElementWithNonSignificantSiblings(typeAlias)
