@@ -59,6 +59,28 @@
                 <extensions>true</extensions>
                 <configuration>
                     <dependencies>
+                        <dependency>consulo.java</dependency>
+                    </dependencies>
+                    <packaging>
+                        <skip>${dev.mode}</skip>
+                        <version>${build.number}</version>
+                    </packaging>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>workspace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
         <!-- coursier api: automatic module name "interface" is invalid, bundled into the module (see bundle-libraries) -->
         <dependency>
             <groupId>io.get-coursier</groupId>
@@ -118,28 +140,6 @@
             <artifactId>config</artifactId>
             <version>1.4.9</version>
         </dependency>
-                        <dependency>consulo.java</dependency>
-                    </dependencies>
-                    <packaging>
-                        <skip>${dev.mode}</skip>
-                        <version>${build.number}</version>
-                    </packaging>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>workspace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-
-    <dependencies>
         <!-- packaging takes only direct dependencies - all runtime libraries must be listed here -->
         <dependency>
             <groupId>org.scala-lang</groupId>
