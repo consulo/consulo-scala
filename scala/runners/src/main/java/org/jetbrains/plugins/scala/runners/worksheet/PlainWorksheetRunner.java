@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.scala.worksheet;
+package org.jetbrains.plugins.scala.runners.worksheet;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

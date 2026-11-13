@@ -1,26 +1,32 @@
-package org.jetbrains.plugins.scala.settings;
+package org.jetbrains.plugins.scala.compilersettings.settings;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.*;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.NotNull;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.application.Application;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.util.xml.serializer.XmlSerializerUtil;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.TestOnly;
-import org.jetbrains.jps.api.GlobalOptions;
-import org.jetbrains.jps.incremental.IncProjectBuilder;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
+// upstream: reportStatistic = true, category = SettingsCategory.TOOLS - not supported by Consulo
 @State(
         name = "ScalaSettings",
-        storages = {@Storage("scala.xml")},
-        reportStatistic = true,
-        category = SettingsCategory.TOOLS
+        storages = {@Storage("scala.xml")}
 )
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 public class ScalaCompileServerSettings implements PersistentStateComponent<ScalaCompileServerSettings> {
   //ATTENTION: these field names should be the same as in
   //org.jetbrains.jps.incremental.scala.model.impl.GlobalSettingsImpl.State (see it's JavaDoc)
   public boolean COMPILE_SERVER_ENABLED = true;
-  public String COMPILE_SERVER_SDK;
+  public @Nullable String COMPILE_SERVER_SDK;
 
   //is not accessible from UI, but is serialized and used in jps-plugin
   public String COMPILE_SERVER_ID = UUID.randomUUID().toString();
@@ -60,14 +66,14 @@ public class ScalaCompileServerSettings implements PersistentStateComponent<Scal
   public boolean COMPILE_SERVER_PARALLEL_COMPILATION = true;
 
   //in minutes
-  @ReportValue
+  // upstream: @ReportValue (statistics)
   public int COMPILE_SERVER_SHUTDOWN_DELAY = 120;
   public boolean COMPILE_SERVER_SHUTDOWN_IDLE = true;
 
   public boolean USE_PROJECT_HOME_AS_WORKING_DIR = false;
 
   @TestOnly
-  transient public String CUSTOM_WORKING_DIR_FOR_TESTS = null;
+  transient public @Nullable String CUSTOM_WORKING_DIR_FOR_TESTS = null;
 
   @Override
   public ScalaCompileServerSettings getState() {
@@ -75,22 +81,27 @@ public class ScalaCompileServerSettings implements PersistentStateComponent<Scal
   }
 
   @Override
-  public void loadState(@NotNull ScalaCompileServerSettings state) {
+  public void loadState(ScalaCompileServerSettings state) {
     XmlSerializerUtil.copyBean(state, this);
   }
 
   public static ScalaCompileServerSettings getInstance() {
-    return ApplicationManager.getApplication().getService(ScalaCompileServerSettings.class);
+    return Application.get().getInstance(ScalaCompileServerSettings.class);
   }
 
   /**
-   * Same as {@link IncProjectBuilder#MAX_BUILDER_THREADS}.
+   * Same as {@code org.jetbrains.jps.incremental.IncProjectBuilder#MAX_BUILDER_THREADS}.
    */
+  /**
+   * Value of {@code org.jetbrains.jps.api.GlobalOptions#COMPILE_PARALLEL_MAX_THREADS_OPTION} (no JPS in Consulo)
+   */
+  private static final String COMPILE_PARALLEL_MAX_THREADS_OPTION = "compile.parallel.max.threads";
+
   @SuppressWarnings("UnstableApiUsage")
   private static int defaultMaxThreads() {
     int maxThreads = Math.min(10, (75 * Runtime.getRuntime().availableProcessors()) / 100); // 75% of available logical cores, but not more than 10 threads
     try {
-      maxThreads = Math.max(1, Integer.parseInt(System.getProperty(GlobalOptions.COMPILE_PARALLEL_MAX_THREADS_OPTION, Integer.toString(maxThreads))));
+      maxThreads = Math.max(1, Integer.parseInt(System.getProperty(COMPILE_PARALLEL_MAX_THREADS_OPTION, Integer.toString(maxThreads))));
     }
     catch (NumberFormatException ignored) {
       maxThreads = Math.max(1, maxThreads);
