@@ -90,15 +90,12 @@ object PullUpQuickFix {
       val commandName = CommandProcessor.getInstance().getCurrentCommandName
       val title = ScalaBundle.message("pulling.member.to.supertype.progress.title")
 
-      val performUnderProgress: java.util.function.Consumer[ProgressIndicator] = { indicator =>
-        indicator.setIndeterminate(false)
-        indicator.setFraction(0)
-        withAlternativeResolve.run()
-      }
-
       val writeActionRunnable: Runnable = { () =>
-        //noinspection ApiStatus
-        WriteActionWithProgress.run(performUnderProgress)
+        WriteActionWithProgress.run(project, title) { indicator =>
+          indicator.setIndeterminate(false)
+          indicator.setFraction(0)
+          withAlternativeResolve.run()
+        }
       }
       if (commandName eq null) {
         CommandProcessor.getInstance().executeCommand(project, writeActionRunnable, title, null)

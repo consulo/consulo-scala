@@ -182,15 +182,12 @@ object ScalaOIUtil {
     val commandName = CommandProcessor.getInstance().getCurrentCommandName
     val title = if (isImplement) ScalaBundle.message("action.implement.method") else ScalaBundle.message("action.override.method")
 
-    val performUnderProgress: java.util.function.Consumer[ProgressIndicator] = { indicator =>
-      indicator.setIndeterminate(false)
-      indicator.setFraction(0)
-      performImplementOverrideRunnable.run()
-    }
-
     val runnable: Runnable = { () =>
-      //noinspection ApiStatus
-      WriteActionWithProgress.run(performUnderProgress)
+      WriteActionWithProgress.run(project, title) { indicator =>
+        indicator.setIndeterminate(false)
+        indicator.setFraction(0)
+        performImplementOverrideRunnable.run()
+      }
     }
     if (commandName eq null) {
       CommandProcessor.getInstance().executeCommand(project, runnable, title, null)

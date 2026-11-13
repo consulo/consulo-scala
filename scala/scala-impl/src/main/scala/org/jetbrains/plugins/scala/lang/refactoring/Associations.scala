@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.lang.refactoring
 
+import consulo.ui.UIAccess
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.logging.attachment.Attachment
 import consulo.logging.Logger
@@ -72,36 +73,30 @@ final class Associations private(override val associations: Array[Association])
                                       (filter: Seq[Binding] => Seq[Binding])
                                       (implicit project: Project, file: PsiFile): Unit = {
     implicit val adjuster0: AfterIndentOffsetAdjuster = adjuster
-    val bindings = {
-      var result: Seq[Binding] = Seq.empty
-      val title = ScalaBundle.message("processing.imports.title")
-      val performUnderProgress: java.util.function.Consumer[consulo.application.progress.ProgressIndicator] = { indicator =>
-        indicator.setIndeterminate(false)
-        indicator.setFraction(0)
-        result = getBindingsForOffsetUnderProgress(indicator)(segment.getStartOffset)
-      }
+    val title = ScalaBundle.message("processing.imports.title")
+    val uiAccess = UIAccess.current()
 
-      //noinspection ApiStatus
-      WriteActionWithProgress.run(performUnderProgress)
+    WriteActionWithProgress.run(project, title) { indicator =>
+      indicator.setIndeterminate(false)
+      indicator.setFraction(0)
+      getBindingsForOffsetUnderProgress(indicator)(segment.getStartOffset)
+    }.thenAcceptAsync({ (bindings: Seq[Binding]) =>
+      val bindingsDistinct = bindings.distinct
+      val bindingsToRestore = filter(bindingsDistinct)
 
-      result
-    }
+      if (bindingsToRestore.nonEmpty) {
+        val references = bindingsToRestore.map(_.reference)
+        val importPaths = bindingsToRestore.map(b => ImportPath(b.path, b.aliasName))
 
-    val bindingsDistinct = bindings.distinct
-    val bindingsToRestore = filter(bindingsDistinct)
-
-    if (bindingsToRestore.nonEmpty) {
-      val references = bindingsToRestore.map(_.reference)
-      val importPaths = bindingsToRestore.map(b => ImportPath(b.path, b.aliasName))
-
-      val commonParent = PsiTreeUtil.findCommonParent(references.asJava)
-      if (commonParent != null) {
-        val importsHolder = ScImportsHolder(commonParent)(using project)
-        inWriteAction {
-          importsHolder.addImportsForPaths(importPaths, commonParent)
+        val commonParent = PsiTreeUtil.findCommonParent(references.asJava)
+        if (commonParent != null) {
+          val importsHolder = ScImportsHolder(commonParent)(using project)
+          inWriteAction {
+            importsHolder.addImportsForPaths(importPaths, commonParent)
+          }
         }
       }
-    }
+    }, uiAccess)
   }
 
   private def getBindingsForOffsetUnderProgress(indicator: consulo.application.progress.ProgressIndicator)

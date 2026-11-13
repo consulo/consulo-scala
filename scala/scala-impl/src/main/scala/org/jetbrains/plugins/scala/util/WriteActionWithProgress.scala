@@ -1,17 +1,29 @@
 package org.jetbrains.plugins.scala.util
 
-import consulo.application.WriteAction
-import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator}
+import consulo.application.Application
+import consulo.application.concurrent.coroutine.WriteLock
+import consulo.application.progress.{ProgressBuilderFactory, ProgressIndicator}
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import consulo.ui.UIAccess
+import consulo.util.concurrent.coroutine.Coroutine
+import consulo.util.concurrent.coroutine.Continuation
 
-import java.util.function.Consumer
+import java.util.concurrent.CompletableFuture
 
 /**
  * Replacement of IntelliJ internal `ApplicationEx.runWriteActionWithCancellableProgressInDispatchThread`:
- * Consulo public API has no modal progress for write actions, so the action is executed in a plain write action.
+ * runs `action` in a [[WriteLock]] coroutine step under a modal cancelable progress ([[ProgressBuilderFactory]]).
+ *
+ * Unlike upstream it is asynchronous: code depending on the result has to continue on the returned future.
  */
 object WriteActionWithProgress {
-  def run(action: Consumer[ProgressIndicator]): Boolean = {
-    WriteAction.run[RuntimeException](() => action.accept(new EmptyProgressIndicator))
-    true
-  }
+  def run[T](project: Project, title: String)(action: ProgressIndicator => T): CompletableFuture[T] =
+    Application.get().getInstance(classOf[ProgressBuilderFactory])
+      .newProgressBuilder(project, LocalizeValue.of(title))
+      .cancelable()
+      .modal()
+      .execute(UIAccess.current(), () => Coroutine.first(WriteLock.apply[Object, T] { (_: Object, continuation: Continuation[?]) =>
+        action(ProgressIndicator.from(continuation))
+      }))
 }
