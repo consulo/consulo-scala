@@ -577,7 +577,7 @@ class ScalaPsiManager(implicit val project: Project) extends Disposable {
     syntheticPackages.clear()
   }
 
-  private def clearOnRootsChange(): Unit = {
+  private[impl] def clearOnRootsChange(): Unit = {
     clearOnTopLevelChange()
     clearCacheOnRootsChange.fireCleanup()
   }

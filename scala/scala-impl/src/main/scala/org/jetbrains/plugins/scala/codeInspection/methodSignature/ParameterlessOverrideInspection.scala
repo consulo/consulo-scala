@@ -11,6 +11,7 @@ import consulo.language.editor.inspection.LocalQuickFix
 import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScUnderScoreSectionUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDefinition}
+import org.jetbrains.plugins.scala.codeInspection.methodSignature.quickfix._
 
 sealed abstract class ParameterlessOverrideInspection extends AbstractMethodSignatureInspection {
 

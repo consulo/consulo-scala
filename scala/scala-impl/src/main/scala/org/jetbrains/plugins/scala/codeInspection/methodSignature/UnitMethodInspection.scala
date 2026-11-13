@@ -16,6 +16,7 @@ import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDeclaration, ScFunctionDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
+import org.jetbrains.plugins.scala.codeInspection.methodSignature.quickfix._
 
 sealed abstract class UnitMethodInspection extends AbstractMethodSignatureInspection with DumbAware {
 
@@ -67,7 +68,7 @@ final class UnitMethodInspectionParameterless extends UnitMethodInspection {
 }
 
 @ExtensionImpl
-final class UnitMethodInspectionProcedureDefinition extends ProcedureSyntax {
+final class UnitMethodInspectionProcedureDefinition extends UnitMethodInspection.ProcedureSyntax {
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("method.signature.procedure.definition"))
 
   override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.method.signature"))
@@ -103,7 +104,7 @@ final class UnitMethodInspectionProcedureDefinition extends ProcedureSyntax {
 }
 
 @ExtensionImpl
-final class UnitMethodInspectionProcedureDeclaration extends ProcedureSyntax {
+final class UnitMethodInspectionProcedureDeclaration extends UnitMethodInspection.ProcedureSyntax {
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("method.signature.procedure.declaration"))
 
   override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.method.signature"))

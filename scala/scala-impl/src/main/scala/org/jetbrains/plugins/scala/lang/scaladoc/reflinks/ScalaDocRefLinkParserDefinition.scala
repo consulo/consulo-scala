@@ -19,7 +19,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.reflinks.psi.impl.{ScDocRefQuer
 
 @ExtensionImpl
 class ScalaDocRefLinkParserDefinition extends ParserDefinition {
-  override def getLanguage: Language = ScalaDocRefLinkLanguage
+  override def getLanguage: Language = ScalaDocRefLinkLanguage.INSTANCE
 
   override def createLexer(project: Project): Lexer = new ScalaDocRefLinkLexer
 
