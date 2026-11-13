@@ -574,9 +574,9 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
     }
 
     protected def nameText(item: ScalaParameterTableModelItem): String = {
-      val maxLength = parameterItems.map(_.parameter.getName.length)
+      val maxLength = parameterItems.map(_.parameter.name.length)
         .maxOption.getOrElse(0)
-      val name = item.parameter.getName
+      val name = item.parameter.name
       name + StringUtil.repeat(" ", maxLength - name.length)
     }
 
