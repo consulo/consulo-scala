@@ -3,7 +3,8 @@
  * @since 2026-10-24
  */
 // Consulo port: not @NullMarked - the Java sources are ported upstream code without nullness annotations (NullAway)
-module org.intellij.scala {
+// open: persisted state classes are read and written reflectively by the Consulo XML serializer
+open module org.intellij.scala {
     requires transitive scala.library;
     requires scala.reflect;
     requires org.apache.commons.text;
