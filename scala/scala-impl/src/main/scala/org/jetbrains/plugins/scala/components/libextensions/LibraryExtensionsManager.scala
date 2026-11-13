@@ -4,9 +4,8 @@ import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
-import com.intellij.ide.plugins.PluginManagerCore
-import consulo.component.PropertiesComponent
-import consulo.project.ui.notification.{NotificationDisplayType, Notifications}
+import consulo.container.plugin.PluginManager
+import consulo.project.ProjectPropertiesComponent
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.container.plugin.PluginId
@@ -16,7 +15,7 @@ import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
 import consulo.project.{DumbService, Project}
 import consulo.content.library.{Library, LibraryTable, LibraryTablesRegistrar}
 import consulo.component.util.ModificationTracker
-import com.intellij.openapi.vfs.JarFileSystem
+import consulo.virtualFileSystem.StandardFileSystems
 import consulo.util.nodep.classloader.UrlClassLoader
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.DependencyManagerBase._
@@ -31,10 +30,8 @@ import org.jetbrains.sbt.resolvers.SbtResolver
 
 import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicBoolean
-import java.{util => ju}
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Using}
@@ -51,7 +48,7 @@ final class LibraryExtensionsManager(project: Project) {
   private val EXT_JARS_KEY = "extensionJars"
 
   private val LOG         = Logger.getInstance(classOf[LibraryExtensionsManager])
-  private val properties  = PropertiesComponent.getInstance(project)
+  private val properties  = ProjectPropertiesComponent.getInstance(project)
   private val popup       = new PopupHelper
   private val publisher   = project.getMessageBus.syncPublisher(EXTENSIONS_TOPIC)
 
@@ -107,7 +104,7 @@ final class LibraryExtensionsManager(project: Project) {
     ProgressManager.getInstance().run(
       new Task.Backgroundable(project, ScalaBundle.message("title.searching.for.library.extensions"), true) {
         override def run(indicator: ProgressIndicator): Unit = {
-          implicit val project: Project = myProject
+          implicit val proj: Project = project
           val resolved              = new ExtensionDownloader(indicator, sbtResolvers).getExtensionJars
           val alreadyLoadedSet      = myLoadedLibraries.map(_.file).toSet
           val newExtensionsSet      = resolved.toSet
@@ -143,7 +140,7 @@ final class LibraryExtensionsManager(project: Project) {
     val resolvedAbsolutePath = resolved.toAbsolutePath
     if (myLoadedLibraries.exists(_.file.toAbsolutePath == resolvedAbsolutePath))
       throw new ExtensionAlreadyLoadedException(resolved)
-    val vFile = JarFileSystem.getInstance().findFileByPath(resolvedAbsolutePath.toString.withJarSeparator)
+    val vFile = StandardFileSystems.jar().findFileByPath(resolvedAbsolutePath.toString.withJarSeparator)
     val manifest = Option(vFile).flatMap(_.findFileByRelativePath(MANIFEST_PATH).toOption)
       .map(vFile => Using(vFile.getInputStream)(XMLNoDTD.load))
 
@@ -174,7 +171,7 @@ final class LibraryExtensionsManager(project: Project) {
     descriptor.getCurrentPluginDescriptor.foreach { currentVersion =>
       val IdeaVersionDescriptor(_, _, _, defaultPackage, extensions) = currentVersion
       val classLoader = UrlClassLoader.build()
-        .files(ju.Collections.singletonList(jarFile))
+        .urls(jarFile.toUri.toURL)
         .parent(getClass.getClassLoader)
         .useCache()
         .get()
@@ -195,14 +192,14 @@ final class LibraryExtensionsManager(project: Project) {
   }
 
   private def saveCachedExtensions(): Unit = {
-    properties.setList(EXT_JARS_KEY, myLoadedLibraries.map(_.file.toAbsolutePath.toString).asJava)
+    properties.setValues(EXT_JARS_KEY, myLoadedLibraries.map(_.file.toAbsolutePath.toString).toArray)
   }
 
   private def loadCachedExtensions(): Unit = {
-    val jarPaths = properties.getList(EXT_JARS_KEY)
+    val jarPaths = properties.getValues(EXT_JARS_KEY)
     if (jarPaths != null) {
-      val existingFiles = jarPaths.asScala.map(Path.of(_)).filter(Files.exists(_))
-      properties.setList(EXT_JARS_KEY, existingFiles.map(_.toAbsolutePath.toString).asJava)
+      val existingFiles = jarPaths.toSeq.map(Path.of(_)).filter(Files.exists(_))
+      properties.setValues(EXT_JARS_KEY, existingFiles.map(_.toAbsolutePath.toString).toArray)
       existingFiles.foreach(processResolvedExtensionWithLogging)
     }
   }
@@ -265,7 +262,7 @@ object LibraryExtensionsManager {
   }
 
   implicit class ExtensionDescriptorEx(private val ed: ExtensionDescriptor) extends AnyVal {
-    def isAvailable: Boolean = ed.pluginId.isEmpty || PluginManagerCore.isPluginInstalled(PluginId.getId(ed.pluginId))
+    def isAvailable: Boolean = ed.pluginId.isEmpty || PluginManager.findPlugin(PluginId.getId(ed.pluginId)) != null
   }
 
   implicit class StringEx(private val str: String) extends AnyVal {

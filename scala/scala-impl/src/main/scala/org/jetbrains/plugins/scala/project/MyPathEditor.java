@@ -32,7 +32,7 @@ public class MyPathEditor extends PathEditor {
 
   static VirtualFile pathToVirtualFile(String url) {
     String path = VirtualFileUtil.urlToPath(url);
-    VirtualFile file = VirtualFileUtil.findFile(Path.of(path), true);
+    VirtualFile file = VirtualFileUtil.findFileByIoFile(Path.of(path).toFile(), true);
     return file == null ? new AbsentLocalFile(url, path) : file;
   }
 

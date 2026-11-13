@@ -8,20 +8,17 @@ import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.process.ExecutionException
 import consulo.disposer.Disposable
 import consulo.document.Document
-import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
-import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemConstants}
 import consulo.document.FileDocumentManager
 import consulo.fileEditor.FileEditorManager
 import consulo.module.{ModifiableModuleModel, Module, ModuleManager}
-import com.intellij.openapi.module.ModuleType
 import consulo.language.util.ModuleUtilCore
 import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
-import consulo.project.util.ProjectUtil
 import consulo.module.content.layer.{ModifiableRootModel, OrderEnumerator}
 import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex, ProjectRootManager}
-import consulo.content.OrderRootType
+import consulo.content.base.BinariesOrderRootType
 import consulo.content.library.{Library, LibraryTablesRegistrar}
 import consulo.util.dataholder.{Key, UserDataHolder, UserDataHolderEx}
 import consulo.virtualFileSystem.VirtualFile
@@ -49,8 +46,6 @@ import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.api.util.UnloadAwareDisposable
 import org.jetbrains.sbt.api.language.SbtFile
-import org.jetbrains.sbt.project.module.SbtModuleType
-import org.jetbrains.sbt.{Sbt, WorkspaceModelUtil}
 
 import java.net.{URI, URL}
 import java.nio.file.Path
@@ -60,6 +55,9 @@ import scala.ref.Reference
 import scala.util.Try
 
 package object project {
+
+  // upstream: org.jetbrains.sbt.Sbt.BuildModuleSuffix
+  private val BuildModuleSuffix = "-build"
 
   object UserDataKeys {
 
@@ -90,7 +88,7 @@ package object project {
 
     def jarUrls: Set[URL] =
       library
-        .getFiles(OrderRootType.CLASSES)
+        .getFiles(BinariesOrderRootType.ID)
         .map(_.getPath)
         .map(path => new URI(s"jar:file://$path").toURL)
         .toSet
@@ -143,7 +141,7 @@ package object project {
      * @return true if module "looks like" a build module (if module name has `-build` suffux)
      */
     def isBuildModule: Boolean =
-      module.getName.endsWith(Sbt.BuildModuleSuffix)
+      module.getName.endsWith(BuildModuleSuffix)
 
     /**
      * @return true if module hast SbtModuleType (work with SBT projects and with BSP projects which use SBT as server)
@@ -161,10 +159,8 @@ package object project {
      *       (the method was previously `org.jetbrains.sbt.project.module.SbtModuleType.unapply`)
      *
      */
-    def hasBuildModuleType: Boolean = {
-      val moduleType = ModuleType.get(module)
-      moduleType.isInstanceOf[SbtModuleType]
-    }
+    // upstream: ModuleType.get(module).isInstanceOf[SbtModuleType], Consulo has no module types
+    def hasBuildModuleType: Boolean = false
 
     def isSourceModule: Boolean = !hasBuildModuleType
 
@@ -190,7 +186,8 @@ package object project {
     def scalaSdk: Option[Library] =
       scalaModuleSettings.flatMap(_.scalaSdk)
 
-    def isSharedSourceModule: Boolean = ModuleType.get(module).getId == "SHARED_SOURCES_MODULE"
+    // upstream: ModuleType.get(module).getId == "SHARED_SOURCES_MODULE" (sbt shared sources module), Consulo has no module types
+    def isSharedSourceModule: Boolean = false
 
     def isScalaJs: Boolean =
       scalaModuleSettings.exists(_.isScalaJs)
@@ -228,21 +225,9 @@ package object project {
       else None
     }
 
-    private def getSharedSourcesModulesOwners(module: Module): Seq[Module] = {
-      val moduleManager = ModuleManager.getInstance(module.getProject)
-      val sharedSourcesOwnersEntity = WorkspaceModelUtil.getSharedSourcesOwnersEntity(module)
-
-      sharedSourcesOwnersEntity match {
-        case Some(entity) =>
-          val ownerModuleIds = entity.getOwnerModuleIds.asScala
-          val modules = moduleManager.getModifiableModel.getModules.toSeq
-          modules.filter { module =>
-            val projectId = ExternalSystemApiUtil.getExternalProjectId(module)
-            ownerModuleIds.contains(projectId)
-          }
-        case _ => Seq.empty
-      }
-    }
+    // upstream: owners from the SharedSourcesOwnersEntity of the workspace model, Consulo has no workspace model
+    @unused
+    private def getSharedSourcesModulesOwners(module: Module): Seq[Module] = Seq.empty
 
     def findRepresentativeModuleForSharedSourceModuleOrSelf: Module =
       findRepresentativeModuleForSharedSourceModule.getOrElse(module)
@@ -291,7 +276,7 @@ package object project {
       project: Project,
       compileOrder: CompileOrder = CompileOrder.Mixed
     ): Unit = {
-      val baseDirectory = Option(ExternalSystemModulePropertyManager.getInstance(module).getRootProjectPath)
+      val baseDirectory = Option(ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalSystemConstants.ROOT_PROJECT_PATH_KEY))
         .getOrElse(module.getProject.getBasePath)
       val compilerSettings = ScalaCompilerSettings.fromOptions(withPathsRelativeTo(baseDirectory, options.toSeq, project), compileOrder)
       compilerConfiguration.configureSettingsForModule(module, source, compilerSettings)
@@ -497,7 +482,7 @@ package object project {
     def libraries: Seq[Library] =
       LibraryTablesRegistrar.getInstance.getLibraryTable(project).getLibraries.toSeq
 
-    def baseDir: VirtualFile = ProjectUtil.guessProjectDir(project)
+    def baseDir: VirtualFile = project.getBaseDir
 
     // TODO: SCL-18097: it should be per-module, like for all other compiler flags (e.g. for isSAMEnabled)
     def isPartialUnificationEnabled: Boolean = modulesWithScala.exists(_.isPartialUnificationEnabled)
@@ -538,7 +523,7 @@ package object project {
   implicit class VirtualFileExt(private val file: VirtualFile) extends AnyVal {
 
     def isScala3(implicit project: Project): Boolean =
-      LanguageSubstitutors.getInstance.substituteLanguage(
+      LanguageSubstitutors.substituteLanguage(
         ScalaLanguage.INSTANCE,
         file,
         project
@@ -806,14 +791,14 @@ package object project {
     // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.2")
     def addScalaCompilerClassPath(module: Module): Unit =
       try {
-        val files = module.scalaCompilerClasspath.asJava
-        list.addAllPaths(files)
+        val files = module.scalaCompilerClasspath.map(_.toString).asJava
+        list.addAll(files)
       } catch {
         case e: IllegalArgumentException => //noinspection ReferencePassedToNls
           throw new ExecutionException(e.getMessage.replace("SDK", "facet"))
       }
 
-    def addRunners(): Unit = list.add(ScalaPluginJars.runnersJar)
+    def addRunners(): Unit = list.add(ScalaPluginJars.runnersJar.toString)
   }
 
   private def withPathsRelativeTo(baseDirectory: String, options: Seq[String], project: Project): Seq[String] = {

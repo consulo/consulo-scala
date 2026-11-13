@@ -2,12 +2,16 @@ package org.jetbrains.plugins.scala.project
 
 
 import org.jetbrains.plugins.scala.rt.project.Version
+import consulo.application.Application
 import consulo.application.progress.ProgressManager
 import consulo.project.Project
 import consulo.content.library.{LibraryType, NewLibraryConfiguration, PersistentLibraryKind}
-import com.intellij.openapi.roots.ui.configuration._
-import com.intellij.openapi.roots.JavadocOrderRootType
-import consulo.content.OrderRootType
+import consulo.content.library.ui.{LibraryEditor, LibraryEditorComponent, LibraryPropertiesEditor}
+import consulo.content.base.{BinariesOrderRootType, DocumentationOrderRootType, SourcesOrderRootType}
+import consulo.disposer.Disposable
+import consulo.ui.Component
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.image.Image
 import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -15,27 +19,29 @@ import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
 
 import java.nio.file.Path
-import java.{util => ju}
-import javax.swing.{Icon, JComponent}
+import java.util.concurrent.{CancellationException, CompletableFuture}
 import scala.annotation.nowarn
 
 final class ScalaLibraryType extends LibraryType[ScalaLibraryProperties](ScalaLibraryType.Kind) {
 
-  override def getIcon(properties: ScalaLibraryProperties): Icon = Icons.SCALA_SDK
+  override def getIcon: Image = Icons.SCALA_SDK
 
   override def getCreateActionName: String = ScalaBundle.message("library.type.scala.sdk")
 
-  override def createNewLibrary(parent: JComponent,
+  override def createNewLibrary(parent: java.awt.Component,
                                 contextDirectory: VirtualFile,
-                                project: Project): NewLibraryConfiguration =
-    ScalaLibraryType.Description.createNewLibrary(parent, contextDirectory)
+                                project: Project): CompletableFuture[NewLibraryConfiguration] =
+    ScalaLibraryType.Description.createNewLibrary(contextDirectory) match {
+      case null          => CompletableFuture.failedFuture(new CancellationException())
+      case configuration => CompletableFuture.completedFuture(configuration)
+    }
 
   //noinspection TypeAnnotation
-  override def createPropertiesEditor(editorComponent: ui.LibraryEditorComponent[ScalaLibraryProperties]) =
-    new ui.LibraryPropertiesEditor {
+  override def createPropertiesEditor(editorComponent: LibraryEditorComponent[ScalaLibraryProperties]) =
+    new LibraryPropertiesEditor {
       private val form = new ScalaLibraryEditorForm(editorComponent)
 
-      override def createComponent: JComponent = form.contentPanel
+      override def createUIComponent(parentDisposable: Disposable): Component = TargetAWT.wrap(form.contentPanel)
 
       override def isModified: Boolean = formState != propertiesState
 
@@ -72,27 +78,24 @@ object ScalaLibraryType {
 
   import template._
 
-  def apply() =
-    LibraryType.findByKind(Kind).asInstanceOf[ScalaLibraryType]
+  // upstream: LibraryType.findByKind(Kind)
+  def apply(): ScalaLibraryType =
+    Application.get().getExtensionPoint(classOf[LibraryType[?]]).findExtensionOrFail(classOf[ScalaLibraryType])
 
   object Kind extends PersistentLibraryKind[ScalaLibraryProperties]("Scala") {
 
     override def createDefaultProperties() = ScalaLibraryProperties()
   }
 
-  object Description extends libraries.CustomLibraryDescription {
+  // upstream: extends CustomLibraryDescription (framework support / library options panel), Consulo has no library descriptions
+  object Description {
 
-    override def getSuitableLibraryKinds: java.util.Set[org.jetbrains.plugins.scala.project.ScalaLibraryType.Kind.type] = ju.Collections.singleton(Kind)
-
-    override def createNewLibrary(parent: JComponent,
-                                  contextDirectory: VirtualFile): NewLibraryConfiguration = {
+    def createNewLibrary(contextDirectory: VirtualFile): NewLibraryConfiguration = {
       val dialogWrapper = new SdkSelectionDialogWrapper(contextDirectory)
       val selectedSdkDescriptor = dialogWrapper.open()
       val scalaLibrary = selectedSdkDescriptor.map(createNewScalaLibrary)
       scalaLibrary.orNull
     }
-
-    override def getDefaultLevel = projectRoot.LibrariesContainer.LibraryLevel.GLOBAL
 
     // upstream: @VisibleForTesting
     private[scala] def createNewScalaLibrary(descriptor: ScalaSdkDescriptor) = {
@@ -121,22 +124,23 @@ object ScalaLibraryType {
         ScalaLibraryType(),
         ScalaLibraryProperties(version, compilerClasspath, scaladocExtraClasspath, compilerBridge, replClasspath)
       ) {
-        override def addRoots(editor: libraryEditor.LibraryEditor): Unit = {
-          addRootsInner(libraryFiles, OrderRootType.CLASSES)(using editor)
-          addRootsInner(sourceFiles, OrderRootType.SOURCES)(using editor)
-          addRootsInner(docFiles, JavadocOrderRootType.getInstance)(using editor)
+        override def addRoots(editor: LibraryEditor): Unit = {
+          addRootsInner(libraryFiles, BinariesOrderRootType.ID)(using editor)
+          addRootsInner(sourceFiles, SourcesOrderRootType.ID)(using editor)
+          // upstream: JavadocOrderRootType
+          addRootsInner(docFiles, DocumentationOrderRootType.ID)(using editor)
 
           if (sourceFiles.isEmpty && docFiles.isEmpty) editor.addRoot(
             s"https://www.scala-lang.org/api/${version.getOrElse("current")}/",
-            JavadocOrderRootType.getInstance
+            DocumentationOrderRootType.ID
           )
         }
 
-        private def addRootsInner(files: Iterable[Path], rootType: OrderRootType)
-                                 (implicit editor: libraryEditor.LibraryEditor): Unit =
+        private def addRootsInner(files: Iterable[Path], rootType: String)
+                                 (implicit editor: LibraryEditor): Unit =
           for {
             file <- files
-            url = VfsUtil.getUrlForLibraryRoot(file)
+            url = VirtualFileUtil.getUrlForLibraryRoot(file.toFile)
           } editor.addRoot(url, rootType)
       }
     }

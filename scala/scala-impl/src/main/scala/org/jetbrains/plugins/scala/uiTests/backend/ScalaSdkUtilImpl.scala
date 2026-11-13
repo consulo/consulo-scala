@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.uiTests.backend
 
-import com.intellij.configurationStore.StoreUtil
-import consulo.application.WriteAction
+import consulo.application.{ApplicationManager, WriteAction}
+import consulo.content.library.ui.LibraryEditor
+import consulo.disposer.Disposer
 import consulo.module.ModuleManager
 import consulo.application.progress.ProgressIndicator
 import consulo.project.ProjectManager
-import consulo.content.library.{Library, LibraryProperties, LibraryTable, LibraryTablesRegistrar, LibraryType, NewLibraryConfiguration}
-import com.intellij.openapi.roots.ui.configuration.libraries.LibraryEditingUtil
-import com.intellij.openapi.roots.ui.configuration.libraryEditor.NewLibraryEditor
+import consulo.content.library.{Library, LibraryProperties, LibraryTable, LibraryTablesRegistrar, LibraryType, NewLibraryConfiguration, OrderRoot}
 import consulo.module.content.layer.ModifiableRootModel
 import consulo.module.content.util.ModuleRootModificationUtil
 import org.apache.ivy.util.MessageLogger
@@ -20,6 +19,10 @@ import org.jetbrains.plugins.scala.project.template.ScalaVersionDownloadingDialo
 import org.jetbrains.plugins.scala.project.template.{Artifact, ScalaSdkDescriptor}
 import org.jetbrains.plugins.scala.{DependencyManagerBase, ScalaBundle, ScalaVersion}
 
+import consulo.virtualFileSystem.VirtualFile
+
+import java.util
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Try
 
 private[backend] object ScalaSdkUtilImpl {
@@ -32,7 +35,8 @@ private[backend] object ScalaSdkUtilImpl {
       addProjectLibrary(model, newLibraryConfiguration)
     })
 
-    StoreUtil.saveSettings(project, true)
+    // upstream: StoreUtil.saveSettings(project, true)
+    ApplicationManager.getApplication.saveAllWithProgress(project.getUIAccess).join()
   }
 
   private def createNewScalaLibraryConfiguration(scalaVersionString: String): NewLibraryConfiguration = {
@@ -56,23 +60,24 @@ private[backend] object ScalaSdkUtilImpl {
 
       val projectLibraryTable: LibraryTable = LibraryTablesRegistrar.getInstance.getLibraryTable(model.getProject)
 
-      val libraryName = LibraryEditingUtil.suggestNewLibraryName(libraryTableModel, libraryConfiguration.getDefaultLibraryName)
+      val libraryName = suggestNewLibraryName(libraryTableModel, libraryConfiguration.getDefaultLibraryName)
       val library: Library = projectLibraryTable.createLibrary(libraryName)
       val libraryModel = library.getModifiableModel.asInstanceOf[Library.ModifiableModel]
 
       try {
         //NOTE: the red code comes from SCL-23078
-        val libraryType: LibraryType[? <: LibraryProperties[?]] = libraryConfiguration.getLibraryType
+        val libraryType: LibraryType[?] = libraryConfiguration.getLibraryType
         val libraryKind = if (libraryType != null) libraryType.getKind else null
         libraryModel.setKind(libraryKind)
+        if (libraryConfiguration.getProperties != null)
+          libraryModel.setProperties(libraryConfiguration.getProperties)
 
-        val editor = new NewLibraryEditor(libraryType, libraryConfiguration.getProperties)
-        libraryConfiguration.addRoots(editor)
-        editor.applyTo(libraryModel)
+        // upstream: NewLibraryEditor + applyTo(libraryModel)
+        libraryConfiguration.addRoots(new ModifiableModelLibraryEditor(libraryModel, libraryType))
       } catch {
         case t: Throwable =>
-          //noinspection SSBasedInspection
-          libraryTableModel.dispose()
+          // upstream: libraryTableModel.dispose()
+          Disposer.dispose(libraryModel)
           throw t
       }
 
@@ -83,6 +88,43 @@ private[backend] object ScalaSdkUtilImpl {
 
       library
     })
+  }
+
+  // upstream: LibraryEditingUtil.suggestNewLibraryName
+  private def suggestNewLibraryName(table: LibraryTable.ModifiableModel, baseName: String): String = {
+    var candidateName = baseName
+    var idx = 1
+    while (table.getLibraryByName(candidateName) != null) {
+      candidateName = s"$baseName ($idx)"
+      idx += 1
+    }
+    candidateName
+  }
+
+  private final class ModifiableModelLibraryEditor(model: Library.ModifiableModel, libraryType: LibraryType[?]) extends LibraryEditor {
+    override def getName: String = model.getName
+    override def getUrls(rootType: String): Array[String] = model.getUrls(rootType)
+    override def getFiles(rootType: String): Array[VirtualFile] = model.getFiles(rootType)
+    override def getExcludedRootUrls: Array[String] = model.getExcludedRootUrls
+    override def setName(name: String): Unit = model.setName(name)
+    override def addRoot(file: VirtualFile, rootType: String): Unit = model.addRoot(file, rootType)
+    override def addRoot(url: String, rootType: String): Unit = model.addRoot(url, rootType)
+    override def addJarDirectory(file: VirtualFile, recursive: Boolean, rootType: String): Unit = model.addJarDirectory(file, recursive, rootType)
+    override def addJarDirectory(url: String, recursive: Boolean, rootType: String): Unit = model.addJarDirectory(url, recursive, rootType)
+    override def addExcludedRoot(url: String): Unit = model.addExcludedRoot(url)
+    override def removeRoot(url: String, rootType: String): Unit = model.removeRoot(url, rootType)
+    override def removeExcludedRoot(url: String): Unit = model.removeExcludedRoot(url)
+    override def removeAllRoots(): Unit = ()
+    override def hasChanges: Boolean = model.isChanged
+    override def isJarDirectory(url: String, rootType: String): Boolean = model.isJarDirectory(url, rootType)
+    override def isValid(url: String, orderRootType: String): Boolean = model.isValid(url, orderRootType)
+    override def getProperties: LibraryProperties[?] = model.getProperties
+    override def getType: LibraryType[?] = libraryType
+    override def addRoots(roots: util.Collection[? <: OrderRoot]): Unit =
+      roots.asScala.foreach { root =>
+        if (root.isJarDirectory) model.addJarDirectory(root.getFile, false, root.getType)
+        else model.addRoot(root.getFile, root.getType)
+      }
   }
 
   private def tryDownloadScalaWithProgress(scalaVersion: ScalaVersion): Try[ScalaVersionResolveResult] = {

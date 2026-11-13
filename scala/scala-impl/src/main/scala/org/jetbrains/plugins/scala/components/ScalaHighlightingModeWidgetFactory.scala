@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components
 
-import consulo.project.DumbService.DumbModeListener
+import consulo.project.event.DumbModeListener
 import consulo.project.Project
 import consulo.project.ui.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
 import org.jetbrains.plugins.scala.ScalaBundle

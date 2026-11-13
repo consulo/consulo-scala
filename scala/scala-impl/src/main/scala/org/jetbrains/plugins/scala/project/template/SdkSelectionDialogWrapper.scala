@@ -116,9 +116,10 @@ class SdkSelectionDialogWrapper(contextDirectory: VirtualFile) extends DialogWra
   }
 
   private def onBrowse(): Unit = {
-    val resultOpt = ExplicitSdkSelection.chooseScalaSdkFiles(myTable)
-    resultOpt.foreach { sdk =>
-      closeDialogGracefully(Some(sdk))
+    ExplicitSdkSelection.chooseScalaSdkFiles(myTable).thenAccept { resultOpt =>
+      resultOpt.foreach { sdk =>
+        closeDialogGracefully(Some(sdk))
+      }
     }
   }
 

@@ -1,35 +1,24 @@
 package org.jetbrains.plugins.scala.runner
 
 import com.intellij.java.execution.configurations.JavaCommandLineState
-import com.intellij.execution.process.{KillableColoredProcessHandler, OSProcessHandler}
 import consulo.execution.process.ProcessTerminatedListener
 import consulo.execution.runner.ExecutionEnvironment
-import com.intellij.execution.target.TargetProgressIndicator
-import consulo.application.progress.EmptyProgressIndicator
+import consulo.process.{ProcessHandler, ProcessHandlerBuilder}
 
 // upstream: @ApiStatus.Internal
 abstract class ScalaTargetAwareCommandLineState(env: ExecutionEnvironment) extends JavaCommandLineState(env) {
 
   /**
    * @note This is a simplified version of `JavaTestFrameworkRunnableState#createHandler`.
-   *       Calling `getEnvironment.getPreparedTargetEnvironment` and `getTargetedCommandLine`
-   *       sets up the run configuration for a remote execution target, such as eel/WSL.
-   *       It handles automatic translation of the run configuration parameters to match
-   *       the expectations of the target machine.
+   *       upstream: prepares the target environment (eel/WSL) and runs the targeted command line there;
+   *       in Consulo the command line is created for the platform of the project.
    */
-  protected def createHandler(): OSProcessHandler = {
-    val remoteEnvironment = getEnvironment.getPreparedTargetEnvironment(this, TargetProgressIndicator.EMPTY)
-    val targetedCommandLineBuilder = getTargetedCommandLine
-    val targetedCommandLine = targetedCommandLineBuilder.build()
-
-    val process = remoteEnvironment.createProcess(targetedCommandLine, new EmptyProgressIndicator())
-
-    val processHandler = new KillableColoredProcessHandler.Silent(
-      process,
-      targetedCommandLine.getCommandPresentation(remoteEnvironment),
-      targetedCommandLine.getCharset,
-      targetedCommandLineBuilder.getFilesToDeleteOnTermination
-    )
+  protected def createHandler(): ProcessHandler = {
+    val processHandler = ProcessHandlerBuilder.create(createCommandLine())
+      .killable()
+      .colored()
+      .silentReader()
+      .build()
 
     ProcessTerminatedListener.attach(processHandler)
     processHandler

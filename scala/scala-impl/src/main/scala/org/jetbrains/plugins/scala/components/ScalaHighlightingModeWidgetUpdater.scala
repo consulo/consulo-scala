@@ -17,7 +17,7 @@ object ScalaHighlightingModeWidgetUpdater {
   private def updateWidgetImpl(project: Project): Unit = {
     if (project.isDisposed)
       return
-    project.getInstance(classOf[StatusBarWidgetsManager]).updateWidget(classOf[ScalaHighlightingModeWidgetFactory])
+    StatusBarWidgetsManager.getInstance(project).updateWidget(classOf[ScalaHighlightingModeWidgetFactory], project.getUIAccess)
     val statusBar = WindowManager.getInstance().getStatusBar(project)
     if (statusBar eq null)
       return

@@ -2,12 +2,12 @@ package org.jetbrains.plugins.scala.settings
 
 import consulo.java.impl.JavaBundle
 import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
-import consulo.ui.InputValidator
+import consulo.ui.ex.InputValidator
 import consulo.ui.ex.awt.Messages
 import consulo.application.ui.wm.IdeFocusManager
 import consulo.ui.ex.awt.{AnActionButton, AnActionButtonRunnable, ScrollingUtil, ToolbarDecorator}
 import consulo.ui.ex.awt.JBList
-import com.intellij.util.IconUtil
+import consulo.platform.base.icon.PlatformIconGroup
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator.isIdentifier
@@ -98,7 +98,7 @@ object ScalaProjectSettingsUtil {
       val validator: InputValidator = ScalaProjectSettingsUtil.getPackageValidator
       val pattern: String = Messages.showInputDialog(parent, inputMessage, inputTitle, Messages.getWarningIcon, "", validator)
       addPattern(pattern, patternJBList)
-    }).addExtraAction(new AnActionButton(JavaBundle.message("button.add.blank"), IconUtil.getAddBlankLineIcon) {
+    }).addExtraAction(new AnActionButton(JavaBundle.message("button.add.blank"), PlatformIconGroup.actionsSearchnewline()) {
       override def actionPerformed(e: AnActionEvent): Unit = {
         addPattern(ScalaCodeStyleSettings.BLANK_LINE, patternJBList)
       }

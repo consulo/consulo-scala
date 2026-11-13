@@ -7,6 +7,7 @@ import consulo.execution.runner.ExecutionEnvironment
 import consulo.compiler.CompilerPaths
 import org.jetbrains.plugins.scala.runner.ScalaApplicationConfigurationProducer.isScala3ApplicationConfiguration
 
+import java.nio.file.Path
 import java.util
 
 class SyncOutputExecutionListener extends ExecutionListener {
@@ -14,7 +15,8 @@ class SyncOutputExecutionListener extends ExecutionListener {
     env.getRunProfile match {
       case app: ApplicationConfiguration if isScala3ApplicationConfiguration(app) =>
         val outputPaths = CompilerPaths.getOutputPaths(app.getModules)
-        CompilerUtil.refreshOutputRoots(util.Arrays.asList(outputPaths*))
+        // upstream: CompilerUtil.refreshOutputRoots
+        CompilerUtil.refreshDirectories(util.Arrays.asList(outputPaths.map(Path.of(_))*))
       case _ =>
     }
   }

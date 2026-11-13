@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.runner
 
 import consulo.localize.LocalizeValue
 import com.intellij.java.execution.impl.application.ApplicationConfiguration
-import com.intellij.execution.configurations.JavaParameters
+import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.process.cmd.ParametersList
 import consulo.execution.configuration.{RunConfigurationBase, RunnerSettings}
 import consulo.execution.CantRunException
@@ -22,7 +22,7 @@ final class ScalaApplicationConfigurationExtension extends RunConfigurationExten
   import ValidateCommand._
 
   override def isApplicableFor(
-    configuration: RunConfigurationBase[?]
+    configuration: RunConfigurationBase
   ): Boolean =
     configuration.isInstanceOf[ApplicationConfiguration]
 
@@ -35,14 +35,14 @@ final class ScalaApplicationConfigurationExtension extends RunConfigurationExten
    * @see [[com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl.checkSettings]]
    */
   override def validateConfiguration(
-    configurationBase: RunConfigurationBase[?],
+    configurationBase: RunConfigurationBase,
     isExecution: Boolean
   ): Unit = ()
 
   @throws[ExecutionException]
-  override def updateJavaParameters[T <: RunConfigurationBase[?]](
+  override def updateJavaParameters[T <: RunConfigurationBase](
     configurationBase: T,
-    javaParams: JavaParameters,
+    javaParams: OwnJavaParameters,
     runnerSettings: RunnerSettings
   ): Unit = {
     val configuration = configurationBase.asOptionOfUnsafe[ApplicationConfiguration].getOrElse(return)
@@ -62,7 +62,7 @@ final class ScalaApplicationConfigurationExtension extends RunConfigurationExten
   /** modifies original configuration parameters if they were provided via dialog */
   private def ensureAllCustomParameterValuesProvided(
     configuration: ApplicationConfiguration,
-    javaParameters: JavaParameters,
+    javaParameters: OwnJavaParameters,
     expectedParams: Seq[MainMethodParameters.CustomParameter]
   ): Unit = {
     assert(expectedParams.nonEmpty)

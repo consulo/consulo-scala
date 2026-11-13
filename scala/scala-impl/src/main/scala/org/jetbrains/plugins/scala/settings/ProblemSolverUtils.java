@@ -22,7 +22,8 @@ public class ProblemSolverUtils {
     WolfTheProblemSolver wolf = WolfTheProblemSolver.getInstance(project);
 
     for (VirtualFile file : getFilesWithProblems(project)) {
-      wolf.clearProblemsFromExternalSource(file, source);
+      // upstream: wolf.clearProblemsFromExternalSource(file, source), Consulo has no problem sources
+      wolf.clearProblems(file);
     }
   }
 

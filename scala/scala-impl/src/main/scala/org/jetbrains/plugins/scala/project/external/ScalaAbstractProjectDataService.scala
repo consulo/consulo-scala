@@ -1,44 +1,51 @@
 package org.jetbrains.plugins.scala.project.external
 
-import consulo.project.ui.notification.NotificationGroup
+import consulo.project.ui.notification.{NotificationGroup, NotificationService}
 import consulo.application.ApplicationManager
 import consulo.externalSystem.model.project.ModuleData
 import consulo.externalSystem.model.{DataNode, Key, ProjectKeys, ProjectSystemId}
-import consulo.externalSystem.service.notification.{ExternalSystemNotificationManager, NotificationCategory, NotificationData, NotificationSource}
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.externalSystem.service.project.manage.AbstractProjectDataService
-import consulo.externalSystem.util.ExternalSystemApiUtil
-import consulo.module.Module
+import consulo.externalSystem.service.notification.{NotificationCategory, NotificationData, NotificationSource}
+import consulo.externalSystem.service.project.manage.ProjectDataService
+import consulo.externalSystem.util.{DisposeAwareProjectChange, ExternalSystemApiUtil}
+import consulo.localize.LocalizeValue
+import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.ScalaBundle
 
-abstract class ScalaAbstractProjectDataService[E, I](key: Key[E]) extends AbstractProjectDataService[E, I] {
+// upstream: extends AbstractProjectDataService (with IdeModifiableModelsProvider)
+abstract class ScalaAbstractProjectDataService[E, I](key: Key[E]) extends ProjectDataService[E, I] {
 
   override def getTargetDataKey: Key[E] = key
 
-  protected implicit class IdeModifiableModelsProviderOps(private val modelsProvider: IdeModifiableModelsProvider) {
+  // upstream: implicit class over IdeModifiableModelsProvider, Consulo data services find modules in the ModuleManager
+  protected implicit class IdeModifiableModelsProviderOps(private val project: Project) {
 
     def findIdeModuleOpt(name: String): Option[Module] =
-      Option(modelsProvider.findIdeModule(name))
+      Option(ModuleManager.getInstance(project).findModuleByName(name))
 
     def findIdeModuleOpt(data: ModuleData): Option[Module] =
-      Option(modelsProvider.findIdeModule(data))
+      findIdeModuleOpt(data.getInternalName)
 
     def getIdeModuleByNode(node: DataNode[?]): Option[Module] = {
-      val key = Option(node.getParent(classOf[ModuleData]))
-        .map(_.getKey)
+      val moduleNode = Iterator.iterate[DataNode[?]](node.getParent)(_.getParent)
+        .takeWhile(_ != null)
+        .find(_.getData.isInstanceOf[ModuleData])
+      val key = moduleNode
+        .map(_.getKey.asInstanceOf[Key[? <: ModuleData]])
         .getOrElse(ProjectKeys.MODULE)
       for {
-        moduleData <- Option(node.getData(key))
+        moduleData <- Option[ModuleData](node.getData(key))
         module <- findIdeModuleOpt(moduleData)
       } yield module
     }
   }
 
   protected final def executeProjectChangeAction(project: Project)(action: => Unit): Unit =
-    ExternalSystemApiUtil.executeProjectChangeAction(project, () => action)
+    ExternalSystemApiUtil.executeProjectChangeAction(new DisposeAwareProjectChange(project) {
+      override def execute(): Unit = action
+    })
 
   protected final def executeProjectChangeAction(action: => Unit)(implicit project: ProjectContext): Unit =
     executeProjectChangeAction(project.project)(action)
@@ -70,10 +77,12 @@ abstract class ScalaAbstractProjectDataService[E, I](key: Key[E]) extends Abstra
       NotificationCategory.WARNING,
       NotificationSource.PROJECT_SYNC
     )
-    notificationData.setBalloonGroup(balloonGroup)
-
-    // TODO: maybe show notification in Build (where all the other importing progress is shown) and not in the "Messages" tool window
-    ExternalSystemNotificationManager.getInstance(project).showNotification(systemId, notificationData)
+    // upstream: notificationData.setBalloonGroup(balloonGroup) + ExternalSystemNotificationManager.showNotification(systemId, notificationData)
+    NotificationService.getInstance
+      .newWarn(balloonGroup)
+      .title(LocalizeValue.of(title.nls))
+      .content(LocalizeValue.of(message.nls))
+      .notify(project)
 
     if (ApplicationManager.getApplication.isUnitTestMode) {
       val notificationBefore = Option(project.getUserData(ShownNotificationsKey)).getOrElse(Nil)

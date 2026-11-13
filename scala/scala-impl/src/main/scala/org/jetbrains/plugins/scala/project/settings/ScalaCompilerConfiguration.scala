@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import consulo.component.persist.{PersistentStateComponent, Storage}
+import consulo.component.persist.{PersistentStateComponent, State, Storage}
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import consulo.module.content.ProjectRootManager
@@ -10,6 +10,7 @@ import org.jdom.Element
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerConfigurationAttributes.{IncrementalityTypeAttr, ModulesAttr, NameAttr, OptionAttr, ProfileAttr, SeparateProdTestSourcesAttr, ValueAttr}
 import org.jetbrains.plugins.scala.compiler.data.{IncrementalityType, ScalaCompilerSettingsState}
+import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration.DefaultProfileName
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin
 
@@ -73,11 +74,10 @@ class ScalaCompilerConfiguration(project: Project) extends PersistentStateCompon
 
   //currently we cannot rely on compiler options for shared source modules
   def settingsForHighlighting(module: Module): Seq[ScalaCompilerSettings] = {
-    val modules = module.getModuleTypeName match{
-      case "SHARED_SOURCES_MODULE" =>
-        ModuleManager.getInstance(module.getProject).getModuleDependentModules(module).asScala
-      case _ => Seq(module)
-    }
+    // upstream: matches module.getModuleTypeName with "SHARED_SOURCES_MODULE"
+    val modules =
+      if (module.isSharedSourceModule) ModuleManager.getInstance(module.getProject).getModuleDependentModules(module).asScala
+      else Seq(module)
 
     modules.iterator.map(getSettingsForModule).toSeq
   }

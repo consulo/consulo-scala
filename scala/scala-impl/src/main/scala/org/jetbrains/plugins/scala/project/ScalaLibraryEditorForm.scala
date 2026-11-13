@@ -3,10 +3,10 @@ package org.jetbrains.plugins.scala.project
 
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import consulo.disposer.Disposable
-import consulo.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.roots.libraries.ui
-import com.intellij.openapi.roots.ui.distribution.DistributionComboBox
-import consulo.ui.ex.awt.{ComboBox, ComponentValidator}
+import consulo.content.library.ui.LibraryEditorComponent
+import consulo.fileChooser.{FileChooserDescriptor, FileChooserDescriptorFactory}
+import consulo.ui.ex.awt.{ComboBox, ComponentValidator, JBTextField, TextFieldWithBrowseButton}
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore}
 import consulo.ui.ex.awt.IdeBorderFactory
 import consulo.ui.ex.awt.JBLabel
@@ -14,13 +14,13 @@ import com.intellij.uiDesigner.core.{GridLayoutManager, Spacer}
 import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.project.ScalaLibraryEditorForm._
-import org.jetbrains.plugins.scala.util.ui.distribution.{DistributionComboBoxUtils, GenericBundledDistributionInfo, LocalDistributionInfoWithShorterDisplayedPath, SimpleFileChooserInfo}
+import org.jetbrains.plugins.scala.util.ui.distribution.DistributionComboBoxUtils
 
 import java.awt._
 import javax.swing._
 
 class ScalaLibraryEditorForm(
-  editorComponent: ui.LibraryEditorComponent[ScalaLibraryProperties]
+  editorComponent: LibraryEditorComponent[ScalaLibraryProperties]
 ) {
   final private val myClasspathEditor = new MyPathEditor(new FileChooserDescriptor(true, false, true, true, false, true))
 
@@ -28,7 +28,7 @@ class ScalaLibraryEditorForm(
     val panel = new JPanel
     panel.setLayout(new BorderLayout(0, 0))
     panel.setBorder(IdeBorderFactory.createBorder)
-    panel.add(myClasspathEditor.createComponent, BorderLayout.CENTER)
+    panel.add(TargetAWT.to(myClasspathEditor.createUIComponent()), BorderLayout.CENTER)
     panel
   }
 
@@ -39,17 +39,16 @@ class ScalaLibraryEditorForm(
     combo
   }
 
-  private val BundledCompilerBridgeDistributionInfo = new GenericBundledDistributionInfo
+  // upstream: DistributionComboBox with "bundled" and local jar distributions, empty path means "bundled"
+  private val myCompilerBridgeBinaryJarDistributionComboBox: TextFieldWithBrowseButton = {
+    val textField = new JBTextField
+    textField.getEmptyText.setText(ScalaBundle.message("bundled.distribution.info.name"))
+    val field = new TextFieldWithBrowseButton(textField)
+    field.addBrowseFolderListener(null, null, editorComponent.getProject, FileChooserDescriptorFactory.createSingleLocalFileDescriptor())
 
-  private val myCompilerBridgeBinaryJarDistributionComboBox: DistributionComboBox = {
-    val comboBox = new DistributionComboBox(editorComponent.getProject, new SimpleFileChooserInfo)
-    comboBox.setSpecifyLocationActionName("Specify custom jar")
-    comboBox.addDistributionIfNotExists(BundledCompilerBridgeDistributionInfo)
+    DistributionComboBoxUtils.setCaretToStartOnContentChange(field)
 
-    DistributionComboBoxUtils.setCaretToStartOnContentChange(comboBox)
-    DistributionComboBoxUtils.installLocalDistributionInfoPathTooltip(comboBox)
-
-    comboBox
+    field
   }
 
   private val compilerBridgeValidator: Option[ComponentValidator] = editorComponent match {
@@ -107,25 +106,14 @@ class ScalaLibraryEditorForm(
   def classpath_=(classpath: Array[String]): Unit = myClasspathEditor.setPaths(classpath)
 
   def compilerBridgeBinaryJar: Option[String] = {
-    val info = myCompilerBridgeBinaryJarDistributionComboBox.getSelectedDistribution
-    info match {
-      case localDistributionInfo: LocalDistributionInfoWithShorterDisplayedPath =>
-        val path = localDistributionInfo.canonicalPath
-        val url = VfsUtilCore.pathToUrl(path)
-        Some(url)
-      case _ =>
-        None //means "use bundled"
-    }
+    val path = myCompilerBridgeBinaryJarDistributionComboBox.getText.trim
+    if (path.isEmpty) None //means "use bundled"
+    else Some(VfsUtilCore.pathToUrl(path))
   }
 
   def compilerBridgeBinaryJar_=(url: String): Unit = {
-    val info = if (url == null)
-      BundledCompilerBridgeDistributionInfo
-    else {
-      val path = MyPathEditor.pathToVirtualFile(url).getPath
-      new LocalDistributionInfoWithShorterDisplayedPath(path)
-    }
-    myCompilerBridgeBinaryJarDistributionComboBox.setSelectedDistribution(info)
+    val path = if (url == null) "" else MyPathEditor.pathToVirtualFile(url).getPath
+    myCompilerBridgeBinaryJarDistributionComboBox.setText(path)
   }
 }
 

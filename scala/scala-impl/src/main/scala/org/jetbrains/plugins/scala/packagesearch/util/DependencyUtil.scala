@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.packagesearch.util
 
 import consulo.util.lang.ControlFlowException
 import consulo.logging.Logger
-import com.intellij.openapi.progress.util.ProgressIndicatorUtils
+import consulo.application.progress.ProgressManager
 import consulo.language.psi.PsiElement
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.apache.maven.artifact.versioning.ComparableVersion
@@ -14,7 +14,7 @@ import org.jetbrains.plugins.scala.project.{ProjectExt, ProjectPsiElementExt}
 import org.jetbrains.plugins.scala.LatestScalaVersions
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.{CompletableFuture, ExecutionException, TimeUnit, TimeoutException}
 import java.util.concurrent.atomic.AtomicReference
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.util.control.NonFatal
@@ -41,6 +41,20 @@ object DependencyUtil {
         cache.get().getOrElse(groupId -> artifactId, Seq.empty)
 
       val cache: AtomicReference[Map[(String, String), Seq[String]]] = new AtomicReference(Map.empty)
+    }
+
+    // upstream: ProgressIndicatorUtils.awaitWithCheckCanceled (internal in Consulo)
+    private def awaitWithCheckCanceled[T](future: CompletableFuture[T]): T = {
+      var result: Option[T] = None
+      while (result.isEmpty) {
+        ProgressManager.checkCanceled()
+        try result = Some(future.get(10, TimeUnit.MILLISECONDS))
+        catch {
+          case _: TimeoutException =>
+          case e: ExecutionException => throw e.getCause
+        }
+      }
+      result.get
     }
 
     private object CoursierVersionCompletion extends VersionCompletion {
@@ -71,7 +85,7 @@ object DependencyUtil {
           },
           AppExecutorUtil.getAppExecutorService
         )
-        val result = ProgressIndicatorUtils.awaitWithCheckCanceled(resultFuture)
+        val result = awaitWithCheckCanceled(resultFuture)
         result.getCompletions.asScala.toSeq
       } catch {
         case e: ControlFlowException => throw e

@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.settings;
 import consulo.language.editor.CodeInsightSettings;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
-import com.intellij.openapi.components.SettingsCategory;
+import consulo.component.persist.State;
 import consulo.component.persist.Storage;
 import consulo.util.xml.serializer.XmlSerializerUtil;
 import org.jetbrains.annotations.TestOnly;
@@ -11,9 +11,7 @@ import org.jetbrains.plugins.scala.codeInspection.collections.OperationOnCollect
 
 @State(
         name = "ScalaApplicationSettings",
-        storages = {@Storage(ScalaApplicationSettings.STORAGE_FILE_NAME)},
-        reportStatistic = true,
-        category = SettingsCategory.CODE
+        storages = {@Storage(ScalaApplicationSettings.STORAGE_FILE_NAME)}
 )
 public class ScalaApplicationSettings implements PersistentStateComponent<ScalaApplicationSettings> {
   public static final String STORAGE_FILE_NAME = "scala_config.xml";

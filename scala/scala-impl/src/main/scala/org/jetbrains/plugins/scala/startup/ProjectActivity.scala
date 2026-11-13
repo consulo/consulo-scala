@@ -1,21 +1,16 @@
 package org.jetbrains.plugins.scala.startup
 
 import consulo.project.Project
-import com.intellij.util.JavaCoroutines
-import kotlin.coroutines.Continuation
+import consulo.project.startup.BackgroundStartupActivity
+import consulo.ui.UIAccess
 
 /**
- * Scala shim around [[com.intellij.openapi.startup.ProjectActivity]] to avoid exposing coroutine internals
- * when implementing project startup activities.
+ * Scala shim around [[consulo.project.startup.BackgroundStartupActivity]]
+ * (upstream: around com.intellij.openapi.startup.ProjectActivity to avoid exposing coroutine internals).
  */
-trait ProjectActivity extends com.intellij.openapi.startup.ProjectActivity {
+trait ProjectActivity extends BackgroundStartupActivity {
   def execute(project: Project): Unit
 
-  final override def execute(project: Project, continuation: Continuation[? >: kotlin.Unit]): AnyRef = {
-    //noinspection ApiStatus,UnstableApiUsage
-    JavaCoroutines.suspendJava[kotlin.Unit](cont => {
-      execute(project)
-      cont.resume(kotlin.Unit.INSTANCE)
-    }, continuation)
-  }
+  final override def runActivity(project: Project, uiAccess: UIAccess): Unit =
+    execute(project)
 }

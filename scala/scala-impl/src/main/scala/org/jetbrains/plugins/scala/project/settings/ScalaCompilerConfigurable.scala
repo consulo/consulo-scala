@@ -3,7 +3,6 @@ package project
 package settings
 
 import consulo.language.editor.DaemonCodeAnalyzer
-import com.intellij.compiler.server.BuildManager
 import consulo.configurable.Configurable.Composite
 import consulo.configurable.{Configurable, SearchableConfigurable}
 import consulo.project.Project
@@ -11,7 +10,10 @@ import org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
 import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 
-import javax.swing.JPanel
+import consulo.disposer.Disposable
+import consulo.localize.LocalizeValue
+import consulo.ui.Component
+import consulo.ui.ex.awtUnsafe.TargetAWT
 
 /**
  * @see [[org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState]]
@@ -24,7 +26,7 @@ class ScalaCompilerConfigurable(project: Project)
   override def getId: String = ScalaCompilerConfigurable.Id
 
   //NOTE: duplicated in XML file
-  override def getDisplayName: String = ScalaBundle.message("displayname.scala.compiler")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("displayname.scala.compiler"))
 
   private val form = new ScalaCompilerConfigurationPanel(project)
 
@@ -32,7 +34,7 @@ class ScalaCompilerConfigurable(project: Project)
 
   private val profilesPanel: ScalaCompilerProfilesPanel = form.getProfilesPanel
 
-  override def createComponent(): JPanel = form.getContentPanel
+  override def createUIComponent(parentDisposable: Disposable): Component = TargetAWT.wrap(form.getContentPanel)
 
   override def isModified: Boolean = {
     if (form.getIncrementalityType != configuration.incrementalityType)
@@ -67,7 +69,7 @@ class ScalaCompilerConfigurable(project: Project)
     configuration.customProfiles = profilesPanel.getModuleProfiles.map(_.copy)
     if (!project.isDefault) {
       DaemonCodeAnalyzer.getInstance(project).restart("Restart after ScalaCompilerConfigurable was applied")
-      BuildManager.getInstance().clearState(project)
+      // upstream: BuildManager.getInstance().clearState(project), Consulo has no external build process state
     }
   }
 

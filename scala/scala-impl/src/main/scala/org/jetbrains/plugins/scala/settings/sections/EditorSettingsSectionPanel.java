@@ -15,7 +15,6 @@ import consulo.util.lang.Pair;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 import consulo.ui.ex.awt.TitledSeparator;
-import com.intellij.ui.components.ActionLink;
 import consulo.ui.ex.awt.IntegerField;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -59,14 +58,16 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
     private JPanel aliasSemanticsHelp;
     private JPanel typeAwareHighlightingPanel;
     private JCheckBox typeAwareHighlighting;
-    private ActionLink improvesPerformance1;
+    // upstream: com.intellij.ui.components.ActionLink
+    private JButton improvesPerformance1;
     private JPanel typeAwareHighlightingHelp;
     private JPanel incrementalHighlightingPanel;
     private JCheckBox incrementalHighlighting;
     private JPanel incrementalHighlightingHelp;
     private JPanel disableInspectionsPanel;
     private JCheckBox disableInspections;
-    private ActionLink improvesPerformance2;
+    // upstream: com.intellij.ui.components.ActionLink
+    private JButton improvesPerformance2;
     private JPanel disableInspectionsHelp;
     private JPanel useCompilerTypesPanel;
     private JPanel useCompilerTypesHelp;
@@ -126,7 +127,7 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DataManager.getInstance().getDataContextFromFocusAsync().onSuccess(context -> {
-                    Settings settings = Settings.KEY.getData(context);
+                    Settings settings = context.getData(Settings.KEY);
                     if (settings != null) {
                         settings.select(settings.find(PerformanceSettingsSectionConfigurable.class));
                     }
@@ -448,7 +449,7 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
         disableInspectionsHelp = new JPanel();
         disableInspectionsHelp.setLayout(new BorderLayout(0, 0));
         disableInspectionsPanel.add(disableInspectionsHelp, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        improvesPerformance2 = new ActionLink();
+        improvesPerformance2 = new JButton();
         this.$$$loadButtonText$$$(improvesPerformance2, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.improves.performance"));
         disableInspectionsPanel.add(improvesPerformance2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
@@ -481,7 +482,7 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
         incrementalHighlightingHelp = new JPanel();
         incrementalHighlightingHelp.setLayout(new BorderLayout(0, 0));
         incrementalHighlightingPanel.add(incrementalHighlightingHelp, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        improvesPerformance1 = new ActionLink();
+        improvesPerformance1 = new JButton();
         this.$$$loadButtonText$$$(improvesPerformance1, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.improves.performance"));
         incrementalHighlightingPanel.add(improvesPerformance1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         typeAwareHighlightingPanel = new JPanel();

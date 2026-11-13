@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.components
 
 import consulo.container.classloader.PluginClassLoader
-import com.intellij.ide.plugins.{IdeaPluginDescriptorImpl, PluginManagerCore}
 import consulo.logging.Logger
-import consulo.container.plugin.PluginId
+import consulo.container.plugin.{PluginDescriptor, PluginId, PluginManager}
 
 object ScalaPluginVersionVerifier {
 
@@ -34,15 +33,15 @@ object ScalaPluginVersionVerifier {
   lazy val getPluginVersion: Option[Version] = {
     getClass.getClassLoader match {
       case pluginLoader: PluginClassLoader =>
-        Version.parse(PluginManagerCore.getPlugin(pluginLoader.getPluginId).getVersion)
+        Version.parse(PluginManager.findPlugin(pluginLoader.getPluginId).getVersion)
       case _ => Some(Version.Snapshot)
     }
   }
 
-  def getPluginDescriptor: IdeaPluginDescriptorImpl = {
+  def getPluginDescriptor: PluginDescriptor = {
     getClass.getClassLoader match {
       case pluginLoader: PluginClassLoader =>
-        PluginManagerCore.getPlugin(pluginLoader.getPluginId).asInstanceOf[IdeaPluginDescriptorImpl]
+        PluginManager.findPlugin(pluginLoader.getPluginId)
       case other =>
         throw new RuntimeException(s"Wrong plugin classLoader: $other")
     }

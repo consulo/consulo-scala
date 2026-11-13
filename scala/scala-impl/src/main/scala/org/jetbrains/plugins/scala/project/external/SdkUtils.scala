@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.project.external
 
 import consulo.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable}
-import consulo.content.bundle.Sdk
+import com.intellij.java.language.projectRoots.JavaSdkType
+import consulo.content.bundle.{Sdk, SdkTable}
+import consulo.util.io.DigestUtil
 import consulo.util.io.FileUtil
-import consulo.platform.Platform
+import consulo.platform.{JavaVersion, Platform}
 import com.intellij.java.language.LanguageLevel
-import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.plugins.scala.extensions.{inReadAction, inWriteAction}
 
+import java.nio.charset.StandardCharsets
 import java.nio.file.Path
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Try
 
 object SdkUtils {
@@ -53,17 +53,15 @@ object SdkUtils {
     findMostRecentJdkConfiguredInIde(condition, Platform.current())
 
   def findMostRecentJdkConfiguredInIde(condition: Sdk => Boolean, platform: Platform): Option[Sdk] = {
-    import scala.math.Ordering.comparatorToOrdering
-    val sdkType = JavaSdk.getInstance()
-
     inReadAction {
-      val jdks = ProjectJdkTable.getInstance()
-        .getSdksOfType(JavaSdk.getInstance())
-        .asScala
-        .filter(sdk => sdk.getPlatform.getId == platform.getId && condition(sdk))
+      // upstream: ProjectJdkTable.getSdksOfType(JavaSdk.getInstance()), max by JavaSdk.versionComparator
+      val jdks = SdkTable.getInstance()
+        .getAllSdks
+        .toSeq
+        .filter(sdk => sdk.getSdkType.isInstanceOf[JavaSdkType] && sdk.getPlatform.getId == platform.getId && condition(sdk))
 
       if (jdks.isEmpty) None
-      else Option(jdks.max(using comparatorToOrdering(using sdkType.versionComparator())))
+      else Option(jdks.maxBy(sdk => Option(sdk.getVersionString).flatMap(v => Option(JavaVersion.tryParse(v))))(using JavaVersionOrdering))
     }
   }
 
@@ -79,6 +77,15 @@ object SdkUtils {
   def mostRecentRegisteredJdk(project: Project): Option[Sdk] =
     findMostRecentJdkConfiguredInIde(_ => true, project.getPlatform)
 
+  private object JavaVersionOrdering extends Ordering[Option[JavaVersion]] {
+    override def compare(x: Option[JavaVersion], y: Option[JavaVersion]): Int = (x, y) match {
+      case (Some(a), Some(b)) => a.compareTo(b)
+      case (Some(_), None)    => 1
+      case (None, Some(_))    => -1
+      case (None, None)       => 0
+    }
+  }
+
   def defaultJavaLanguageLevelIn(jdk: Sdk): Option[LanguageLevel] =
     Option(LanguageLevel.parse(jdk.getVersionString))
 
@@ -86,13 +93,21 @@ object SdkUtils {
     val fileName = home.getFileName
     val suffix = if (fileName.toString == "jre") home.getParent.getFileName else fileName
     val baseName = s"BSP_$suffix"
-    val names = ProjectJdkTable.getInstance.getAllJdks.map(_.getName)
+    val names = SdkTable.getInstance.getAllSdks.map(_.getName)
     if (names.contains(baseName)) {
-      baseName + DigestUtils.md5Hex(home.toString).take(10)
+      baseName + md5Hex(home.toString).take(10)
     } else {
       baseName
     }
   }
+
+  // upstream: org.apache.commons.codec.digest.DigestUtils.md5Hex
+  private def md5Hex(text: String): String =
+    DigestUtil.md5().digest(text.getBytes(StandardCharsets.UTF_8)).map(b => f"${b & 0xff}%02x").mkString
+
+  // upstream: JavaSdk.createJdk(name, home, isJre)
+  private def createJdk(name: String, home: Path): Sdk =
+    JavaSdkType.getDefaultJavaSdkType.createJdk(name, home.toString)
 
   @deprecated(message = "Use findOrCreateSdk(SdkReference, Project)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
@@ -102,8 +117,8 @@ object SdkUtils {
       Option(sdkReference).collect {
         case JdkByHome(home) =>
           val name = resolveName(home)
-          val newJdk = JavaSdk.getInstance.createJdk(name, home.toString, home.getFileName.toString == "jre")
-          ProjectJdkTable.getInstance.addJdk(newJdk)
+          val newJdk = createJdk(name, home)
+          SdkTable.getInstance.addSdk(newJdk)
           newJdk
       }
     }
@@ -116,8 +131,8 @@ object SdkUtils {
       Option(sdkReference).collect {
         case JdkByHome(home) =>
           val name = resolveName(home)
-          val newJdk = JavaSdk.getInstance.createJdk(name, home.toString, home.getFileName.toString == "jre")
-          ProjectJdkTable.getInstance(project).addJdk(newJdk)
+          val newJdk = createJdk(name, home)
+          SdkTable.getInstance.addSdk(newJdk)
           newJdk
       }
 
@@ -125,10 +140,10 @@ object SdkUtils {
   }
 
   def addJdkIfNotExists(sdk: Sdk): Unit = {
-    val projectJdkTable = ProjectJdkTable.getInstance()
-    if (projectJdkTable.findJdk(sdk.getName) == null)
+    val sdkTable = SdkTable.getInstance()
+    if (sdkTable.findSdk(sdk.getName) == null)
       inWriteAction {
-        projectJdkTable.addJdk(sdk)
+        sdkTable.addSdk(sdk)
       }
   }
 }

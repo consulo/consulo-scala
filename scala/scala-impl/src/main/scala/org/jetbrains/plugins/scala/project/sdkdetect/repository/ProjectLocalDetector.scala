@@ -20,7 +20,7 @@ private[repository] class ProjectLocalDetector(contextDirectory: VirtualFile) ex
     if (contextDirectory == null)
       return JStream.empty()
 
-    VfsUtilCore.virtualToIoFile(contextDirectory).toOption
+    VirtualFileUtil.virtualToIoFile(contextDirectory).toOption
       .map(_.toPath / "lib")
       .filter(_.exists)
       .map(collectJarFiles)

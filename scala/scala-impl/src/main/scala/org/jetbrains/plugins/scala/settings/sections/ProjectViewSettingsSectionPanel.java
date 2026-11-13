@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
 import consulo.project.ui.view.ProjectView;
-import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
+import consulo.project.ui.view.ProjectViewPane;
 import consulo.configurable.ConfigurationException;
 import consulo.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -52,7 +52,7 @@ public class ProjectViewSettingsSectionPanel extends SettingsSectionPanel {
         }
         scalaProjectSettings.setProjectViewHighlighting(myProjectViewHighlighting.isSelected());
         if (scalaProjectSettings.isGroupPackageObjectWithPackage() != myGroupPackageObjectWithPackage.isSelected()) {
-            AbstractProjectViewPane pane = ProjectView.getInstance(myProject).getCurrentProjectViewPane();
+            ProjectViewPane pane = ProjectView.getInstance(myProject).getCurrentProjectViewPane();
             if (pane != null) {
                 pane.updateFromRoot(true);
             }

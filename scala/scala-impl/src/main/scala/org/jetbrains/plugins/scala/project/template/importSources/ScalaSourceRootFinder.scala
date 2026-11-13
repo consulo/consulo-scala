@@ -1,24 +1,12 @@
 package org.jetbrains.plugins.scala.project.template.importSources
 
-import consulo.java.impl.library.JavaSourceRootDetector
 import consulo.util.lang.StringUtil
-import com.intellij.util.NullableFunction
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaLexer, ScalaTokenType, ScalaTokenTypes}
 
 import scala.annotation.tailrec
 
-final class ScalaSourceRootFinder extends JavaSourceRootDetector {
-
-  import org.jetbrains.plugins.scala.api.ScalaFileType.{INSTANCE => scalaFileType}
-
-  override def getLanguageName: String = scalaFileType.getName
-
-  override def getFileExtension: String = scalaFileType.getDefaultExtension
-
-  override def getPackageNameFetcher: NullableFunction[CharSequence, String] =
-    ScalaSourceRootFinder.packageStatement(_: CharSequence)
-}
-
+// upstream: final class ScalaSourceRootFinder extends JavaSourceRootDetector (projectStructureDetector for
+// "import project from existing sources"), Consulo has no project structure detectors
 object ScalaSourceRootFinder {
 
   import ScalaTokenTypes._

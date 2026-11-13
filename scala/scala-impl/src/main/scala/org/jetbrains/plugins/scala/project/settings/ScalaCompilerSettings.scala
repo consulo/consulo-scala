@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.project.settings
 import consulo.logging.Logger
 import consulo.module.Module
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.intellij.util.system.OS
 import org.jetbrains.plugins.scala.compiler.data.{CompileOrder, DebuggingInfoLevel, ScalaCompilerSettingsState, ScalaCompilerSettingsStateBuilder}
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings.ScalacPlugin
 import org.jetbrains.plugins.scala.{LatestScalaVersions, ScalaVersion}
@@ -123,7 +122,7 @@ object ScalaCompilerSettings {
       ScalacPlugin(Some(scalacPluginJar), scalacPluginJar)
 
     def fromClasspath(classpath: String): ScalacPlugin = {
-      val jars = classpath.split(OS.CURRENT.getPlatform.pathSeparator)
+      val jars = classpath.split(java.io.File.pathSeparator)
       val scalacPluginJar = jars.find(containScalacPluginXml)
       ScalacPlugin(scalacPluginJar, classpath)
     }

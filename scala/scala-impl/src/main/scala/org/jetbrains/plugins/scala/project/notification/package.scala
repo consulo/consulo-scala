@@ -4,9 +4,11 @@ import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.api.ScalaLanguage
-import org.jetbrains.sbt.Sbt
 
 package object notification {
+
+  // upstream: org.jetbrains.sbt.Sbt.Extension
+  private val SbtExtension = ".sbt"
 
   private[jetbrains]
   def isScalaSourceFile(file: VirtualFile, project: Project): Boolean =
@@ -14,7 +16,7 @@ package object notification {
       val psiFile = PsiManager.getInstance(project).findFile(file)
       if (psiFile != null) {
         psiFile.getLanguage.isKindOf(ScalaLanguage.INSTANCE) &&
-          !psiFile.getName.endsWith(Sbt.Extension) // root sbt files belong to main (not *-build) modules
+          !psiFile.getName.endsWith(SbtExtension) // root sbt files belong to main (not *-build) modules
       }
       else false
     }

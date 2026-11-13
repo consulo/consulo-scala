@@ -1,39 +1,25 @@
 package org.jetbrains.plugins.scala.settings
 
-import com.intellij.ide.actions.ShowSettingsUtilImpl
-import com.intellij.openapi.options.ex.{ConfigurableExtensionPointUtil, ConfigurableVisitor, ConfigurableWrapper}
-import consulo.configurable.{Configurable, SearchableConfigurable}
+import consulo.configurable.Configurable
+import consulo.ide.setting.ShowSettingsUtil
 import consulo.project.{Project, ProjectManager}
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaLanguageCodeStyleSettingsProvider
 
 
 /**
- * see [[com.intellij.ide.actions.ShowSettingsUtilImpl]]
+ * see [[consulo.ide.setting.ShowSettingsUtil]]
  */
 object ShowSettingsUtilImplExt {
 
-  /**
-   * see [[com.intellij.ide.actions.ShowSettingsUtilImpl.showSettingsDialog(project: Project, idToSelect: String, filter: String)]]
-   */
-  def showSettingsDialog(@Nullable project: Project, configurableClass: Class[? <: Configurable], filter: String): Unit = {
-    val visitor: ConfigurableVisitor = (c: Configurable) => ConfigurableWrapper.cast(configurableClass, c) != null
-    showSettingsDialogImpl(project, visitor, filter)
-  }
+  // upstream: selects the configurable via ConfigurableVisitor and applies `filter` to the settings dialog
+  def showSettingsDialog(@Nullable project: Project, configurableClass: Class[? <: Configurable], filter: String): Unit =
+    ShowSettingsUtil.getInstance.showAndSelect(getProject(project), configurableClass)
 
-  def showScalaCodeStyleSettingsDialog(@Nullable project: Project, filter: String): Unit = {
-    val visitor: ConfigurableVisitor = {
-      case sc: SearchableConfigurable => sc.getOriginalClass == classOf[ScalaLanguageCodeStyleSettingsProvider]
-      case _                          => false
-    }
-    showSettingsDialogImpl(project, visitor, filter)
-  }
+  // upstream: selects the configurable of ScalaLanguageCodeStyleSettingsProvider
+  def showScalaCodeStyleSettingsDialog(@Nullable project: Project, filter: String): Unit =
+    ShowSettingsUtil.getInstance.showSettingsDialog(getProject(project), CodeStyleConfigurableId, filter)
 
-  private def showSettingsDialogImpl(@Nullable project: Project, visitor: ConfigurableVisitor, filter: String): Unit = {
-    val group = ConfigurableExtensionPointUtil.getConfigurableGroup(project, true)
-    val config = ConfigurableVisitor.find(visitor, java.util.List.of(group))
-    ShowSettingsUtilImpl.showSettingsDialog(getProject(project), ConfigurableVisitor.getId(config), filter)
-  }
+  private val CodeStyleConfigurableId = "preferences.sourceCode"
 
   private def getProject(project: Project): Project =
     if (project != null) project

@@ -265,9 +265,11 @@ class ScalaCompilerProfilesPanel(val myProject: Project) extends JPanel(new Bord
     }
 
     private def relativePoint(e: AnActionEvent): RelativePoint = {
-      val point =
-        if (e.getInputEvent.is[MouseEvent]) getPreferredPopupPoint
-        else TreeUtil.getPointForSelection(myTree)
+      // upstream: getPreferredPopupPoint (toolbar button location) for mouse events
+      val point = e.getInputEvent match {
+        case mouseEvent: MouseEvent => new RelativePoint(mouseEvent)
+        case _                      => TreeUtil.getPointForSelection(myTree)
+      }
       if (point != null) point
       else TreeUtil.getPointForSelection(myTree)
     }

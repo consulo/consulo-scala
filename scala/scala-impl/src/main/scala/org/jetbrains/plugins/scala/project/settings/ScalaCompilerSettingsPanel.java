@@ -6,6 +6,7 @@ import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.ui.ex.awt.IdeBorderFactory;
 import consulo.execution.ui.awt.RawCommandLineEditor;
 import consulo.ui.ex.awt.TitledSeparator;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import java.util.function.Function;
@@ -74,7 +75,7 @@ public class ScalaCompilerSettingsPanel {
         myDebuggingInfoLevel.setModel(new DefaultComboBoxModel<>(DebuggingInfoLevel.values()));
 
         myPluginsPanel.setBorder(IdeBorderFactory.createBorder());
-        myPluginsPanel.add(myPluginsEditor.createComponent(), BorderLayout.CENTER);
+        myPluginsPanel.add(TargetAWT.to(myPluginsEditor.createUIComponent()), BorderLayout.CENTER);
     }
 
     public ScalaCompilerSettingsState getState() {

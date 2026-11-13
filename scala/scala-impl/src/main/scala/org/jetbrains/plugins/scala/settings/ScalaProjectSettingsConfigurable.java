@@ -2,11 +2,11 @@ package org.jetbrains.plugins.scala.settings;
 
 import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
+import consulo.disposer.Disposable;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import org.jetbrains.annotations.Nls;
+import consulo.ui.Component;
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider$;
-
-import javax.swing.*;
 
 public class ScalaProjectSettingsConfigurable implements Configurable {
 
@@ -14,9 +14,8 @@ public class ScalaProjectSettingsConfigurable implements Configurable {
   }
 
   @Override
-  @Nls
-  public String getDisplayName() {
-    return "Scala";
+  public LocalizeValue getDisplayName() {
+    return LocalizeValue.of("Scala");
   }
 
   @Override
@@ -25,7 +24,7 @@ public class ScalaProjectSettingsConfigurable implements Configurable {
   }
 
   @Override
-  public JComponent createComponent() {
+  public Component createUIComponent(Disposable parentDisposable) {
     return null;
   }
 

@@ -2,24 +2,15 @@ package org.jetbrains.plugins.scala.settings
 
 import consulo.component.persist.{PersistentStateComponent, State, Storage}
 import consulo.project.Project
-import com.intellij.task.impl.{JpsProjectTaskRunner, ProjectTaskList}
-import com.intellij.task.{ProjectTaskManager, ProjectTaskRunner}
-import org.jetbrains.sbt.shell.SbtProjectTaskRunner
 
 import scala.beans.BooleanBeanProperty
-import scala.jdk.CollectionConverters._
-import scala.util.control.NonFatal
 
 @State(
   name     = "CompilerIndicesSettings",
-  storages = Array(new Storage("compiler_indices_settings.xml")),
-  reportStatistic = true
+  storages = Array(new Storage("compiler_indices_settings.xml"))
 )
 class CompilerIndicesSettings(project: Project) extends PersistentStateComponent[CompilerIndicesSettings.State] {
   private var state: CompilerIndicesSettings.State = new CompilerIndicesSettings.State
-
-  private val taskManager = ProjectTaskManager.getInstance(project)
-  private val runners     = ProjectTaskRunner.EP_NAME.getExtensionList.asScala
 
   /** Corresponds to the actual value set in configurable, consider using
     * [[isBytecodeIndexingActive]] to check if the indexing is explicitly enabled AND
@@ -41,22 +32,9 @@ class CompilerIndicesSettings(project: Project) extends PersistentStateComponent
     state.indexingEnabled = v
   }
 
-  //noinspection ApiStatus
-  private def hasCompatibleRunner: Boolean =
-    runners.find { runner =>
-      val task = taskManager.createAllModulesBuildTask(true, project)
-      val moduleBuildTasks = task match {
-        case taskList: ProjectTaskList => taskList.asScala
-        case t                         => List(t)
-      }
-
-      try moduleBuildTasks.forall(runner.canRun(project, _, null))
-      catch { case NonFatal(_) => false }
-    }.exists {
-      case _: JpsProjectTaskRunner => true
-      case _: SbtProjectTaskRunner => true
-      case _ => false
-    }
+  // upstream: checks that the build is run by JPS or sbt shell project task runner (ProjectTaskManager),
+  // Consulo has no project task runners, the build is always run by the Consulo compiler
+  private def hasCompatibleRunner: Boolean = true
 
   def isBytecodeIndexingActive: Boolean = isIndexingEnabled && hasCompatibleRunner
 

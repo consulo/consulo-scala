@@ -4,16 +4,13 @@ import consulo.language.editor.util.EditorHelper
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.ui.ModalityState
 import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
 import consulo.externalSystem.importing.ImportSpecBuilder
-import consulo.externalSystem.model.project.ModuleData
-import consulo.externalSystem.service.project.ProjectData
 import consulo.externalSystem.model.{ExternalSystemDataKeys, ProjectSystemId}
 import consulo.externalSystem.model.task.ProgressExecutionMode
-import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
+import consulo.externalSystem.service.project.ExternalSystemProjectRefresher
+import consulo.externalSystem.service.project.manage.ExternalProjectsManager
 import consulo.externalSystem.setting.{AbstractExternalSystemSettings, ExternalProjectSettings}
 import consulo.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import consulo.document.FileDocumentManager
 import consulo.module.Module
 import consulo.project.Project
@@ -63,15 +60,9 @@ object ModuleBuilderUtil {
     contentRootDir: Path,
     projectSystemId: ProjectSystemId
   ): Unit = {
-    val rootPath = contentRootDir.toRealPath().toString
-
-    // hack some dummy data so that external system realizes it can remove this module after sbt import
-    // see com.intellij.openapi.externalSystem.service.project.manage.ModuleDataService.computeOrphanData
-    val dummyModuleData = new ModuleData("N/A", projectSystemId, "N/A", module.getName, rootPath, rootPath)
-    val dummyProjectData = new ProjectData(projectSystemId, module.getProject.getName, rootPath, rootPath)
-    val esProperty = ExternalSystemModulePropertyManager.getInstance(module)
-    esProperty.setExternalId(projectSystemId)
-    esProperty.setExternalOptions(projectSystemId, dummyModuleData, dummyProjectData)
+    // upstream: hacks dummy ModuleData/ProjectData into ExternalSystemModulePropertyManager so that external system
+    // realizes it can remove this module after sbt import (ModuleDataService.computeOrphanData),
+    // Consulo keeps external system module options in the module extension
 
     val project = module.getProject
     val settings =
@@ -88,28 +79,17 @@ object ModuleBuilderUtil {
       /** similar code is also called inside [[com.intellij.openapi.externalSystem.service.ExternalSystemStartupActivity.runActivity]]
        * In case the refresh below is not finished yet another refresh is cancelled in
        * `com.intellij.openapi.externalSystem.util.ExternalSystemUtil`*/
-      val manager = ExternalProjectsManagerImpl.getInstance(project)
-      // 1. Set this setting explicitly, even though it is `false` by default (see com.intellij.openapi.project.ExternalStorageConfiguration)
-      // In some rare cases default project settings `<idea_config>/options/default.project.xml`
-      // contains `true` for `ExternalStorageConfiguration.enabled`
-      // This can happen when IDEA settings were imported from previous old versions (in which the setting could be changed)
-      // 2. Even though it's false by default, it's enabled explicitly in ExternalProjectsManagerImpl.setupCreatedProject so it's crucial to disable it again
-
-      // IMPORTANT! #setStoreExternally should be called after the project is opened, because only then does WSM contain the entities that need to be migrated
-      // from external to internal storage. See com.intellij.openapi.project.ExternalStorageConfigurationManagerImpl.updateEntitySource
-      manager.setStoreExternally(false)
-      manager.init()
-
-      ExternalProjectsManagerImpl.getInstance(project).runWhenInitialized { () =>
+      // upstream: ExternalProjectsManagerImpl.setStoreExternally(false) + init(), Consulo has no external storage configuration
+      ExternalProjectsManager.getInstance(project).runWhenInitialized { () =>
         if (runExternalSystemProjectRefreshOnProjectOpen) {
-          ExternalSystemUtil.refreshProjects(
+          ExternalSystemProjectRefresher.getInstance.refreshProjects(
             new ImportSpecBuilder(project, projectSystemId)
               .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
           )
         } else {
           // Project import is skiped in those NPW tests that only test the generated files, without imporintgthe full project
           Log.assertTrue(ApplicationManager.getApplication.isUnitTestMode, "Project import cant be skipped in tests only")
-          project.putUserData(ExternalSystemDataKeys.NEWLY_CREATED_PROJECT, null)
+          // upstream: also resets ExternalSystemDataKeys.NEWLY_CREATED_PROJECT
           project.putUserData(ExternalSystemDataKeys.NEWLY_IMPORTED_PROJECT, null)
         }
       }
@@ -180,7 +160,7 @@ object ModuleBuilderUtil {
         files.flatMap(vf => Option(manager.findFile(vf))).toArray
       })
       .expireWhen(() => project.isDisposed)
-      .finishOnUiThread(ModalityState.nonModal(), EditorHelper.openFilesInEditor(_))
+      .finishOnUiThread(_ => ModalityState.nonModal(), EditorHelper.openFilesInEditor(_))
       .submit(AppExecutorUtil.getAppExecutorService)
   }
 
@@ -190,7 +170,7 @@ object ModuleBuilderUtil {
     contentEntryFolders: Option[DefaultModuleContentEntryFolders]
   ): Unit = {
     val entry: ContentEntry = model.addContentEntry(vContentRootDir)
-    model.inheritSdk()
+    // upstream: model.inheritSdk(), in Consulo the SDK belongs to the module extension
 
     contentEntryFolders.foreach(markDefaultModelContentEntryFolders(entry, vContentRootDir, _))
   }

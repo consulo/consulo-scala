@@ -4,7 +4,6 @@ import consulo.language.editor.folding.CodeFoldingSettings;
 import com.intellij.java.language.codeInsight.folding.JavaCodeFoldingSettings;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
-import com.intellij.openapi.components.SettingsCategory;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
 import consulo.util.xml.serializer.XmlSerializerUtil;
@@ -14,9 +13,7 @@ import consulo.util.xml.serializer.XmlSerializerUtil;
         storages = {
                 @Storage("editor.xml"),
                 @Storage(value = "scala_folding_settings.xml", deprecated = true)
-        },
-        reportStatistic = true,
-        category = SettingsCategory.CODE
+        }
 )
 public class ScalaCodeFoldingSettingsImpl extends ScalaCodeFoldingSettings implements PersistentStateComponent<ScalaCodeFoldingSettingsImpl> {
 

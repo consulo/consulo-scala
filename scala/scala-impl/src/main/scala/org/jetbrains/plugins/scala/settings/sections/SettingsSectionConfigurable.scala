@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.settings.sections
 
 import consulo.configurable.{Configurable, ConfigurationException}
-
-import javax.swing.JComponent
+import consulo.disposer.Disposable
+import consulo.ui.Component
+import consulo.ui.ex.awtUnsafe.TargetAWT
 
 abstract class SettingsSectionConfigurable extends Configurable {
 
@@ -10,13 +11,13 @@ abstract class SettingsSectionConfigurable extends Configurable {
 
   private var currentPanel = Option.empty[SettingsSectionPanel]
 
-  override def createComponent: JComponent = {
+  override def createUIComponent(parentDisposable: Disposable): Component = {
     val panel = currentPanel.getOrElse {
       val panel = createPanel()
       currentPanel = Some(panel)
       panel
     }
-    panel.getRootPanel
+    TargetAWT.wrap(panel.getRootPanel)
   }
 
   override def isModified: Boolean = currentPanel.get.isModified

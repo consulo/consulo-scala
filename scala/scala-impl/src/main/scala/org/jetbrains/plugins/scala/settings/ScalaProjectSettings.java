@@ -3,12 +3,12 @@ package org.jetbrains.plugins.scala.settings;
 import com.intellij.java.language.JavaLanguage;
 import consulo.application.ApplicationManager;
 import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
 import consulo.component.persist.Storage;
 import consulo.component.persist.StoragePathMacros;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.module.content.ModuleRootManager;
-import com.intellij.openapi.roots.SourceFolder;
 import consulo.util.xml.serializer.Converter;
 import consulo.util.xml.serializer.XmlSerializerUtil;
 import consulo.util.xml.serializer.annotation.MapAnnotation;
@@ -27,8 +27,7 @@ import java.util.Map;
     storages = {
         @Storage(StoragePathMacros.WORKSPACE_FILE),
         @Storage("scala_settings.xml")
-    },
-    reportStatistic = true
+    }
 )
 public class ScalaProjectSettings implements PersistentStateComponent<ScalaProjectSettings> { // TODO ScalaProjectSettings.State
   private transient final Project myProject;

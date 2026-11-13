@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.settings.sections
 
-import consulo.webBrowser.BrowserUtil
 import consulo.fileChooser.{FileChooser, FileChooserDescriptor}
 import consulo.project.Project
 import consulo.ui.ex.awt.Messages
 import consulo.ui.ex.awt.{IdeBorderFactory, JBSplitter, ScrollPaneFactory, ToolbarDecorator}
-import consulo.ui.ex.awt.{JBLabel, JBList}
+import consulo.ui.ex.awt.{HyperlinkLabel, JBLabel, JBList}
 import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
 import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.annotations.NonNls
@@ -14,7 +13,7 @@ import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsMan
 import org.jetbrains.plugins.scala.components.libextensions._
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
-import java.awt.{BorderLayout, Insets}
+import java.awt.{BorderLayout, FlowLayout, Insets}
 import java.nio.file.Paths
 import javax.swing._
 import scala.annotation.nowarn
@@ -61,20 +60,19 @@ class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPan
   }
 
   locally {
-    import com.intellij.util.ui.UI
-
     //noinspection UseDPIAwareInsets
     rootPanel.setLayout(new GridLayoutManager(2, 1, new Insets(9, 9, 9, 9), -1, -1))
 
     val checkBoxes  = new JPanel()
     checkBoxes.setLayout(new BoxLayout(checkBoxes, BoxLayout.Y_AXIS))
-    checkBoxes.add(UI.PanelFactory.panel(enabledCB)
-      .withTooltip(ScalaBundle.message("idea.will.try.to.search.for.extra.support.for.particular.libraries"))
-      .withTooltipLink(
-        ScalaBundle.message("how.to.add.custom.macro.support.help.link.title"),
-        () => BrowserUtil.browse(CustomMacrosSupportHelpLink)
-      )
-      .createPanel(): @nowarn("cat=deprecation"))
+    // upstream: UI.PanelFactory.panel(enabledCB).withTooltip(...).withTooltipLink(...)
+    enabledCB.setToolTipText(ScalaBundle.message("idea.will.try.to.search.for.extra.support.for.particular.libraries"))
+    val helpLink = new HyperlinkLabel(ScalaBundle.message("how.to.add.custom.macro.support.help.link.title"))
+    helpLink.setHyperlinkTarget(CustomMacrosSupportHelpLink)
+    val enabledPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0))
+    enabledPanel.add(enabledCB)
+    enabledPanel.add(helpLink)
+    checkBoxes.add(enabledPanel)
 
     rootPanel.add(checkBoxes, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false))
 
@@ -109,9 +107,10 @@ class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPan
     }
 
     toolbarDecorator.setAddAction { _ =>
-      val jar = FileChooser.chooseFile(
+      // upstream: synchronous FileChooser.chooseFile
+      FileChooser.chooseFile(
         new FileChooserDescriptor(false, false, true, true, false, false),
-        project, null)
+        project, null).thenAccept { jar =>
       if (jar != null)
         try {
           libraryExtensionsManager.addExtension(Paths.get(jar.getCanonicalPath))
@@ -124,6 +123,7 @@ class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPan
             //noinspection ReferencePassedToNls
             Messages.showErrorDialog(ex.toString, ScalaBundle.message("title.failed.to.load.extension.jar"))
         }
+      }
     }
 
     librariesList.setEmptyText(ScalaBundle.message("no.known.extension.libraries"))

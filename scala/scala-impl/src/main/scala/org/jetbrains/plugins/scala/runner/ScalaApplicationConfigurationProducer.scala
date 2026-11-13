@@ -2,11 +2,10 @@ package org.jetbrains.plugins.scala.runner
 
 import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import consulo.execution.action.Location
-import com.intellij.execution.RunManagerEx
+import consulo.execution.RunManager
 import consulo.execution.action.{ConfigurationContext, ConfigurationFromContext, RunConfigurationProducer}
 import com.intellij.java.execution.impl.application.{ApplicationConfiguration, ApplicationConfigurationProducer, ApplicationConfigurationType}
 import consulo.execution.configuration.ConfigurationFactory
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.java.execution.impl.junit.JavaRunConfigurationProducerBase
 import consulo.module.Module
 import consulo.util.dataholder.Key
@@ -31,14 +30,14 @@ object ScalaApplicationConfigurationProducer {
   val key: Key[java.lang.Boolean] = Key.create("is.scala3.application.run.configuration")
 
   def apply(): ScalaApplicationConfigurationProducer =
-    RunConfigurationProducer.EP_NAME.findExtensionOrFail(classOf[ScalaApplicationConfigurationProducer])
+    RunConfigurationProducer.getInstance(classOf[ScalaApplicationConfigurationProducer])
 
   private[runner] def isScala3ApplicationConfiguration(configuration: ApplicationConfiguration): Boolean =
     configuration.getCopyableUserData(key) == TRUE
 }
 
 abstract class BaseScalaApplicationConfigurationProducer[T <: ApplicationConfiguration](configurationType: ApplicationConfigurationType)
-  extends JavaRunConfigurationProducerBase[T]()
+  extends JavaRunConfigurationProducerBase[T](configurationType)
     with Cloneable {
 
   override def getConfigurationFactory: ConfigurationFactory = configurationType.getConfigurationFactories.head
@@ -74,7 +73,7 @@ abstract class BaseScalaApplicationConfigurationProducer[T <: ApplicationConfigu
   }
 
   private def getPredefinedModule(location: Location[? <: PsiElement]): Module = {
-    val manager = RunManagerEx.getInstanceEx(location.getProject).asInstanceOf[RunManagerImpl]
+    val manager = RunManager.getInstance(location.getProject)
     val template = manager.getConfigurationTemplate(getConfigurationFactory)
     template.getConfiguration.asInstanceOf[T].getConfigurationModule.getModule
   }

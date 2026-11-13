@@ -1,23 +1,23 @@
 package org.jetbrains.plugins.scala.components.libextensions
 
-import com.intellij.openapi.application.PathManager
+import consulo.container.boot.ContainerPathManager
+import consulo.http.HttpRequests
 import consulo.logging.Logger
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
 import consulo.content.library.LibraryTablesRegistrar
-import com.intellij.openapi.vfs.JarFileSystem
+import consulo.virtualFileSystem.StandardFileSystems
+import consulo.virtualFileSystem.archive.ArchiveVfsUtil
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.psi.search.FilenameIndex
 import consulo.language.psi.scope.GlobalSearchScope
-import com.intellij.util.download.DownloadableFileService
 import org.jetbrains.plugins.scala.DependencyManagerBase.{DependencyDescription, IvyResolver, MavenResolver}
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager._
 import org.jetbrains.plugins.scala.{ScalaBundle, extensions}
 import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
 
-import java.io.InputStreamReader
+import java.io.{IOException, InputStreamReader}
 import java.nio.file.{Files, Path}
-import java.util.Collections
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Using
 
@@ -54,37 +54,27 @@ class ExtensionDownloader(private val progress: ProgressIndicator, private val s
     downloadViaIvy(normal) ++ withOverrides.flatMap(downloadDirect)
   }
 
-  // DownloadableFileService's downloader only accepts/returns java.io.File; there is no nio.Path-based alternative.
-  //noinspection SSBasedInspection
   private def downloadDirect(props: ExtensionProps): Option[Path] = {
-    import scala.jdk.CollectionConverters._
-
-    val downloadRoot = Path.of(PathManager.getSystemPath, "scala/extensionsCache")
+    val downloadRoot = ContainerPathManager.get().getSystemDir.resolve("scala/extensionsCache")
     val fileName     = s"${Math.abs(props.hashCode())}.jar"
     val targetFile   = downloadRoot.resolve(fileName)
     if (Files.exists(targetFile) && Files.size(targetFile) > 0)
       return Some(targetFile)
 
-    val fileService = DownloadableFileService.getInstance()
-    val description = fileService.createFileDescription(props.urlOverride, s"$fileName.part")
-    val downloader  = fileService.createDownloader(Collections.singletonList(description), props.urlOverride)
-
+    // upstream: DownloadableFileService
     progress.setText(ScalaBundle.message("downloading.url", props.urlOverride))
-    val files = downloader.download(downloadRoot.toFile)
-    if (files == null || files.isEmpty) {
-      LOG.error(s"Failed to download extension from ${props.urlOverride}")
-      Files.deleteIfExists(targetFile)
-      None
-    } else {
-      files
-        .asScala
-        .headOption
-        .map { result =>
-          val partFile = result.first.toPath
-          if (Files.exists(partFile))
-            Files.move(partFile, targetFile)
-          partFile
-        }
+    val partFile = downloadRoot.resolve(s"$fileName.part")
+    try {
+      Files.createDirectories(downloadRoot)
+      HttpRequests.request(props.urlOverride).saveToFile(partFile, progress)
+      Files.move(partFile, targetFile)
+      Some(targetFile)
+    } catch {
+      case e: IOException =>
+        LOG.error(s"Failed to download extension from ${props.urlOverride}", e)
+        Files.deleteIfExists(partFile)
+        Files.deleteIfExists(targetFile)
+        None
     }
   }
 
@@ -99,14 +89,14 @@ class ExtensionDownloader(private val progress: ProgressIndicator, private val s
   }
 
   private def findJarsWithProps(): Seq[(VirtualFile, ExtensionProps)] = {
-    val jarFS = JarFileSystem.getInstance
+    val jarFS = StandardFileSystems.jar()
 
     val vFiles: Iterable[VirtualFile] = extensions.inReadAction {
-      FilenameIndex.getVirtualFilesByName(PROPS_NAME, GlobalSearchScope.allScope(project)).asScala
+      FilenameIndex.getVirtualFilesByName(project, PROPS_NAME, GlobalSearchScope.allScope(project)).asScala
     }
     val containingJars = vFiles.collect {
       case f if f.getFileSystem == jarFS =>
-        jarFS.getJarRootForLocalFile(jarFS.getVirtualFileForJar(f))
+        ArchiveVfsUtil.getArchiveRootForLocalFile(ArchiveVfsUtil.getVirtualFileForArchive(f))
     }
     val props = containingJars.map(extractPropsFromJar)
     containingJars.zip(props).collect { case (file, Some(p)) => file -> p }.toSeq

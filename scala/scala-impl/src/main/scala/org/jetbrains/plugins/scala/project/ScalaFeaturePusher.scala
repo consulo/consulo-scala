@@ -4,10 +4,10 @@ import consulo.virtualFileSystem.fileType.FileType
 import consulo.language.file.LanguageFileType
 import consulo.module.Module
 import consulo.project.Project
-import consulo.module.content.ProjectFileIndex
-import consulo.module.content.PushedFilePropertiesUpdater
-import consulo.virtualFileSystem.VirtualFile
-import com.intellij.psi.{FilePropertyKey, FilePropertyKeyImpl}
+import consulo.index.io.data.DataInputOutputUtil
+import consulo.module.content.{FilePropertyPusher, ProjectFileIndex, PushedFilePropertiesUpdater}
+import consulo.util.dataholder.Key
+import consulo.virtualFileSystem.{FileAttribute, VirtualFile}
 import consulo.language.psi.PsiFile
 import consulo.language.psi.stub.IndexingDataKeys
 import org.jetbrains.annotations.TestOnly
@@ -17,7 +17,8 @@ import org.jetbrains.plugins.scala.lang.parser.ScalaLanguageSubstitutor
 import org.jetbrains.plugins.scala.project.ScalaFeaturePusher.{SerializedScalaFeatures, isScalaLike}
 import org.jetbrains.plugins.scala.project.ScalaFeatures.SerializableScalaFeatures
 
-import scala.annotation.nowarn
+import java.io.IOException
+import scala.util.Using
 
 /**
  * Persists the effective [[ScalaFeatures]] for source directories
@@ -40,19 +41,24 @@ import scala.annotation.nowarn
  * @see [[com.intellij.openapi.roots.impl.JavaLanguageLevelPusher]]
  */
 //noinspection UnstableApiUsage,ApiStatus
-class ScalaFeaturePusher extends com.intellij.FilePropertyPusherBase[SerializedScalaFeatures] {
+// upstream: extends FilePropertyPusherBase with a persistent FilePropertyKey
+class ScalaFeaturePusher extends FilePropertyPusher[SerializedScalaFeatures] {
 
-  override def propertyChanged(project: Project, fileOrDir: VirtualFile, actualProperty: SerializedScalaFeatures): Unit = {
-    PushedFilePropertiesUpdater.getInstance(project).filePropertiesChanged(fileOrDir, isScalaLike)
+  override def persistAttribute(project: Project, fileOrDir: VirtualFile, value: SerializedScalaFeatures): Unit = {
+    if (value == null || ScalaFeaturePusher.readPersistentValue(fileOrDir).contains(value.intValue))
+      return
+
+    ScalaFeaturePusher.writePersistentValue(fileOrDir, value)
+
+    val updater = PushedFilePropertiesUpdater.getInstance(project)
+    updater.filePropertiesChanged(fileOrDir, isScalaLike(_))
     fileOrDir.getChildren
       .iterator
       .filter(c => !c.isDirectory && isScalaLike(c))
-      .foreach { child =>
-        PushedFilePropertiesUpdater.getInstance(project).filePropertiesChanged(child): @nowarn("cat=deprecation")
-      }
+      .foreach(updater.filePropertiesChanged(_))
   }
 
-  override def getFilePropertyKey: FilePropertyKey[SerializedScalaFeatures] = ScalaFeaturePusher.key
+  override def getFileDataKey: Key[SerializedScalaFeatures] = ScalaFeaturePusher.key
 
   override def pushDirectoriesOnly(): Boolean = true
 
@@ -64,6 +70,8 @@ class ScalaFeaturePusher extends com.intellij.FilePropertyPusherBase[SerializedS
 
   override def acceptsDirectory(file: VirtualFile, project: Project): Boolean =
     ProjectFileIndex.getInstance(project).isInSourceContent(file)
+
+  override def acceptsFile(file: VirtualFile, project: Project): Boolean = false
 }
 
 object ScalaFeaturePusher {
@@ -111,7 +119,7 @@ object ScalaFeaturePusher {
   }
 
   private def getPersistedFeatures(dir: VirtualFile): Option[ScalaFeatures] = {
-    val persisted = Option(key.getPersistentValue(dir))
+    val persisted = Option(dir.getUserData(key)).map(_.intValue).orElse(readPersistentValue(dir))
     persisted.map(ScalaFeatures.deserializeFromInt(_))
   }
 
@@ -119,7 +127,7 @@ object ScalaFeaturePusher {
   // It's closer to the production code
   @TestOnly
   def setFeatures(dir: VirtualFile, features: SerializableScalaFeatures): Unit =
-    key.setPersistentValue(dir, features.serializeToInt)
+    writePersistentValue(dir, features.serializeToInt)
 
   @inline
   private def isScalaLike(file: VirtualFile): Boolean =
@@ -131,10 +139,19 @@ object ScalaFeaturePusher {
       case _                     => false
     }
 
-  private val key: FilePropertyKey[SerializedScalaFeatures] =
-    FilePropertyKeyImpl.createPersistentIntKey(
-      "Pushed Scala Features",
-      "scala_pushed_feature_persistence",
-      ScalaFeatures.version
-    )
+  private val key: Key[SerializedScalaFeatures] = Key.create("Pushed Scala Features")
+
+  private val persistence = new FileAttribute("scala_pushed_feature_persistence", ScalaFeatures.version, true)
+
+  private def readPersistentValue(fileOrDir: VirtualFile): Option[Int] =
+    try {
+      Option(persistence.readAttribute(fileOrDir)).flatMap { stream =>
+        Using.resource(stream)(s => Some(DataInputOutputUtil.readINT(s)))
+      }
+    } catch {
+      case _: IOException => None
+    }
+
+  private def writePersistentValue(fileOrDir: VirtualFile, value: Int): Unit =
+    Using.resource(persistence.writeAttribute(fileOrDir))(DataInputOutputUtil.writeINT(_, value))
 }

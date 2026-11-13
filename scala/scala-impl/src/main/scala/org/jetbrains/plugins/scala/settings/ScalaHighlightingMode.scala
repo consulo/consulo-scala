@@ -1,10 +1,7 @@
 package org.jetbrains.plugins.scala.settings
 
-import consulo.language.editor.FileHighlightingSetting
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightingSettingsPerFile
+import consulo.language.editor.highlight.HighlightingLevelManager
 import consulo.application.ApplicationManager
-//noinspection ApiStatus
-import com.intellij.ide.trustedProjects.TrustedProjects
 import consulo.project.Project
 import consulo.application.util.registry.Registry
 import consulo.language.psi.PsiFile
@@ -41,9 +38,9 @@ object ScalaHighlightingMode {
    */
   //noinspection ApiStatus,UnstableApiUsage
   def isShowErrorsFromCompilerEnabled(project: Project): Boolean =
-    TrustedProjects.isProjectTrusted(project) &&
-      (showCompilerErrorsScala3(project) && project.hasScala3 ||
-        showCompilerErrorsScala2(project) && project.hasScala)
+    // upstream: TrustedProjects.isProjectTrusted(project) && ..., Consulo has no trusted projects
+    showCompilerErrorsScala3(project) && project.hasScala3 ||
+      showCompilerErrorsScala2(project) && project.hasScala
 
   def isShowErrorsFromCompilerEnabled(file: PsiFile): Boolean =
     file match {
@@ -52,14 +49,9 @@ object ScalaHighlightingMode {
       case _ => false
     }
 
-  private[scala] def shouldHighlightBasedOnFileLevel(psiFile: PsiFile, project: Project): Boolean = {
-    val level = HighlightingSettingsPerFile.getInstance(project).getHighlightingSettingForRoot(psiFile)
-    import FileHighlightingSetting.{ESSENTIAL, FORCE_HIGHLIGHTING}
-    level match {
-      case ESSENTIAL | FORCE_HIGHLIGHTING => true
-      case _ => false
-    }
-  }
+  // upstream: HighlightingSettingsPerFile level is ESSENTIAL or FORCE_HIGHLIGHTING
+  private[scala] def shouldHighlightBasedOnFileLevel(psiFile: PsiFile, project: Project): Boolean =
+    HighlightingLevelManager.getInstance(project).shouldInspect(psiFile)
 
   private def isShowErrorsFromCompilerEnabled(file: ScalaFile): Boolean = {
     val virtualFile = file match {

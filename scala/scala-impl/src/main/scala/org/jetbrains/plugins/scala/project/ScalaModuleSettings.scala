@@ -4,12 +4,11 @@ package org.jetbrains.plugins.scala.project
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.ExternalSystemModulePropertyManager
+import consulo.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemConstants}
 import consulo.module.Module
 import consulo.content.library.Library
 import consulo.module.content.layer.OrderEnumerator
-import consulo.content.OrderRootType
-import com.intellij.openapi.roots.libraries
+import consulo.content.base.BinariesOrderRootType
 import consulo.util.dataholder.Key
 import consulo.component.util.ModificationTracker
 import consulo.virtualFileSystem.VirtualFile
@@ -211,7 +210,7 @@ private class ScalaModuleSettings private(
     )
 
   lazy val externalSystemId: Option[String] =
-    Option(ExternalSystemModulePropertyManager.getInstance(module).getExternalSystemId)
+    Option(ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY))
 }
 
 // upstream: @Internal
@@ -244,7 +243,7 @@ object ScalaModuleSettings {
       forSbtBuildModule(module)
     }
     else {
-      val processor: FindProcessor[libraries.Library] = _.isScalaSdk
+      val processor: FindProcessor[Library] = _.isScalaSdk
       OrderEnumerator.orderEntries(module)
         .librariesOnly
         .forEachLibrary(processor)
@@ -281,12 +280,13 @@ object ScalaModuleSettings {
    *    So we first handle BSP case and search "BSP: scala-library-2.12.17" and only then search for library which contains "sbt-1.8.2"
    */
   private def findLibraryWithScalaRuntime(module: Module): Option[Library] = {
-    val processor1: FindProcessor[libraries.Library] = { lib =>
+    val processor1: FindProcessor[Library] = { lib =>
       LibraryExt.isRuntimeLibrary(lib.getName)
     }
-    val processor2: FindProcessor[libraries.Library] = { lib =>
+    val processor2: FindProcessor[Library] = { lib =>
       //example: "sbt: sbt-1.8.2"
-      lib.getName.contains(": " + org.jetbrains.sbt.Sbt.BuildLibraryPrefix)
+      // upstream: org.jetbrains.sbt.Sbt.BuildLibraryPrefix
+      lib.getName.contains(": " + "sbt-")
     }
 
     val librariesEnumerator = OrderEnumerator.orderEntries(module).librariesOnly
@@ -303,7 +303,7 @@ object ScalaModuleSettings {
   // Example of scala lib path in sbt 1.3.13 classpath:
   // ~/.sbt/boot/scala-2.12.10/lib/scala-library.jar
   private def detectScalaVersionFromJars(library: Library): Option[String] = {
-    val classpath = library.getFiles(OrderRootType.CLASSES): Array[VirtualFile]
+    val classpath = library.getFiles(BinariesOrderRootType.ID): Array[VirtualFile]
     val scalaLibraryJar = classpath.find(f => LibraryExt.isRuntimeLibrary(f.getName))
     scalaLibraryJar.map(_.getPath).flatMap(LibraryVersionReg.findFirstIn)
   }

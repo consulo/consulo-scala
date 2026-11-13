@@ -155,8 +155,10 @@ object ScalaSdkUtils {
     rootModels: Seq[ModifiableRootModel],
     externalSystemName: String
   ): Unit = {
+    // upstream: library.getExternalSource.getDisplayName == externalSystemName, Consulo libraries have no external source,
+    // external system libraries are prefixed with the system name (see ExternalSystemApiUtil.isExternalSystemLibrary)
     def isFromExternalSource(library: Library): Boolean =
-      Option(library.getExternalSource).map(_.getDisplayName).contains(externalSystemName)
+      Option(library.getName).exists(_.startsWith(externalSystemName + ": "))
 
     val projectLibraries = projectLibrariesModel.getLibraries.toSeq
     val moduleLibraries = rootModels.flatMap(_.getModuleLibraryTable.getLibraries.toSeq)

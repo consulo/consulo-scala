@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.project.template
 
-import consulo.ui.ex.awt.JBLabel
-import consulo.desktop.awt.ui.impl.image.AnimatedIcon
+import consulo.ui.ex.awt.AsyncProcessIcon
 import consulo.ui.ex.awt.CellRendererPanel
 
 import java.awt.{BorderLayout, Component}
@@ -35,7 +34,8 @@ class SearchingListCellRenderer[T](isSearching: AtomicBoolean, textCustomizer: O
     }
     component.setBackground(null)
     panel.add(component, BorderLayout.WEST)
-    val progressIcon = new JBLabel(AnimatedIcon.Default.INSTANCE)
+    // upstream: new JBLabel(AnimatedIcon.Default.INSTANCE)
+    val progressIcon = new AsyncProcessIcon("scala.sdk.searching")
     panel.add(progressIcon, BorderLayout.EAST)
     panel
   }

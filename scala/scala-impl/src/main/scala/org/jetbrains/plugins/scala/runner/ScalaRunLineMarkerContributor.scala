@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.runner
 import consulo.ui.image.Image
 import consulo.execution.lineMarker.RunLineMarkerContributor.Info
 import consulo.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
-import consulo.application.AllIcons
+import consulo.execution.icon.ExecutionIconGroup
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -28,13 +28,14 @@ class ScalaRunLineMarkerContributor extends RunLineMarkerContributor {
       case _ =>
     }
 
-    if (ScalaMainMethodUtil.hasMain(element))
-      new Info(RunIcon, ExecutorAction.getActions(0), null)
-    else
+    if (ScalaMainMethodUtil.hasMain(element)) {
+      val actions = ExecutorAction.getActions(0)
+      new Info(RunIcon, (e: PsiElement) => actions.flatMap(a => Option(RunLineMarkerContributor.getText(a, e))).mkString("\n"), actions*)
+    } else
       null
   }
 }
 
 object ScalaRunLineMarkerContributor {
-  val RunIcon: Image = AllIcons.RunConfigurations.TestState.Run
+  val RunIcon: Image = ExecutionIconGroup.gutterRun()
 }

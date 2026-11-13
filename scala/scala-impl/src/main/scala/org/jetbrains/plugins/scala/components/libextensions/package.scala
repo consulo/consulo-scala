@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.components
 
-import com.intellij.openapi.vfs.JarFileSystem
+import consulo.virtualFileSystem.archive.ArchiveFileSystem
 
 import java.nio.file.Path
 import scala.collection.mutable.ArrayBuffer
@@ -17,7 +17,7 @@ package object libextensions {
 
   final implicit class JarPathStringExt(private val path: String) extends AnyVal {
     def withJarSeparator: String =
-      if (path.contains(JarFileSystem.JAR_SEPARATOR)) path
-      else path + JarFileSystem.JAR_SEPARATOR
+      if (path.contains(ArchiveFileSystem.ARCHIVE_SEPARATOR)) path
+      else path + ArchiveFileSystem.ARCHIVE_SEPARATOR
   }
 }
