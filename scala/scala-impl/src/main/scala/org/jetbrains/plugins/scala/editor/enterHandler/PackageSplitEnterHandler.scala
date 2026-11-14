@@ -15,7 +15,7 @@ import org.jetbrains.plugins.scala.editor.enterHandler.PackageSplitEnterHandler.
 
 import scala.util.matching.Regex
 
-@ExtensionImpl
+@ExtensionImpl(order = "before FormatEmptyTemplateBodyAfterEnterHandler")
 class PackageSplitEnterHandler extends EnterHandlerDelegateAdapter {
   override def preprocessEnter(file: PsiFile,
                                editor: Editor,

@@ -52,6 +52,9 @@ object OperationOnCollectionInspectionBase {
 abstract class OperationOnCollectionInspectionBase extends LocalInspectionTool {
   private val settings = ScalaApplicationSettings.getInstance()
 
+  // upstream: editorAttributes of the inspection registration
+  protected def problemHighlightType: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+
   override def createStateProvider(): InspectionToolState[?] =
     new OperationOnCollectionInspectionState(possibleSimplificationTypes.map(_.description))
 
@@ -65,7 +68,7 @@ abstract class OperationOnCollectionInspectionBase extends LocalInspectionTool {
     case SimplifiableExpression(expr) => simplifications(expr, isEnabled).foreach {
       case s@Simplification(toReplace, _, hint, rangeInParent) =>
         val quickFix = (OperationOnCollectionQuickFix(s))
-        holder.registerProblem(toReplace.getElement, hint, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, rangeInParent, quickFix)
+        holder.registerProblem(toReplace.getElement, hint, problemHighlightType, rangeInParent, quickFix)
     }
     case _ =>
   }

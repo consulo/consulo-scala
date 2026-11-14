@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
  * @see [[org.jetbrains.plugins.scala.editor.typedHandler.ScalaTypedHandler.charTyped]]
  * @see [[org.jetbrains.plugins.scala.editor.typedHandler.AutoBraceInsertionTools.shouldHandleAutoBracesBeforeTyped]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before Scala3IndentationBasedSyntaxEnterHandler")
 final class AutoBraceEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(file: PsiFile, editor: Editor, caretOffsetRef: SimpleReference[Integer], caretAdvance: SimpleReference[Integer],

@@ -11,6 +11,7 @@ import org.jetbrains.sbt.project.{SbtProjectSystem, SharedSourcesOwnersData, Sou
 
 import java.net.URI
 import java.nio.file.Path
+import scala.jdk.CollectionConverters.*
 
 class ProjectNode(override val data: ProjectData)
   extends Node[ProjectData] {
@@ -98,25 +99,58 @@ class ContentRootNode(override val data: ContentRootData)
     paths.foreach(p => data.storePath(sourceType, p.toCanonicalPath.toString))
   }
 
+  def storeGeneratedResourcePaths(paths: Seq[Path]): Unit =
+    if (paths.nonEmpty) {
+      add(new GeneratedResourcesNode(SbtGeneratedResourcesData(new java.util.ArrayList(paths.map(_.toCanonicalPath.toString).asJava))))
+    }
+
   override protected def key: Key[ContentRootData] = ProjectKeys.CONTENT_ROOT
 }
 
+// upstream: AbstractDependencyData.setOrder / ModuleDependencyData.setProductionOnTestDependency - not in Consulo's
+// dependency data; kept on the nodes and passed to SbtDependencyOrderDataService as SbtDependencyOrderData
+sealed trait OrderedDependencyNode {
+  private var order: Int = 0
+
+  def setOrder(order: Int): Unit =
+    this.order = order
+
+  def getOrder: Int = order
+
+  def orderKey: String
+}
+
 class ModuleDependencyNode(override val data: ModuleDependencyData)
-  extends Node[ModuleDependencyData] {
+  extends Node[ModuleDependencyData] with OrderedDependencyNode {
   def this(ownerModule: ModuleData, module: ModuleData) = {
     this(new ModuleDependencyData(ownerModule, module))
   }
+
+  private var productionOnTest: Boolean = false
+
+  def setProductionOnTestDependency(value: Boolean): Unit =
+    productionOnTest = value
+
+  def isProductionOnTestDependency: Boolean = productionOnTest
+
+  override def orderKey: String = SbtDependencyOrderData.moduleKey(data.getTarget.getInternalName, data.getScope)
 
   override protected def key: Key[ModuleDependencyData] = ProjectKeys.MODULE_DEPENDENCY
 }
 
 class LibraryDependencyNode(override val data: LibraryDependencyData)
-  extends Node[LibraryDependencyData] {
+  extends Node[LibraryDependencyData] with OrderedDependencyNode {
   def this(ownerModule: ModuleData, library: LibraryData, level: LibraryLevel) = {
     this(new LibraryDependencyData(ownerModule, library, level))
   }
 
+  override def orderKey: String = SbtDependencyOrderData.libraryKey(data.getTarget.getInternalName, data.getScope)
+
   override protected def key: Key[LibraryDependencyData] = ProjectKeys.LIBRARY_DEPENDENCY
+}
+
+class DependencyOrderNode(override val data: SbtDependencyOrderData) extends Node[SbtDependencyOrderData] {
+  override protected def key: Key[SbtDependencyOrderData] = SbtDependencyOrderData.Key
 }
 
 class SbtProjectNode(override val data: SbtProjectData) extends Node[SbtProjectData] {
@@ -147,6 +181,10 @@ class SbtCommandNode(override val data: SbtCommandData) extends Node[SbtCommandD
 
 class ScalaSdkNode(override val data: SbtScalaSdkData) extends Node[SbtScalaSdkData] {
   override protected def key: Key[SbtScalaSdkData] = SbtScalaSdkData.Key
+}
+
+class GeneratedResourcesNode(override val data: SbtGeneratedResourcesData) extends Node[SbtGeneratedResourcesData] {
+  override protected def key: Key[SbtGeneratedResourcesData] = SbtGeneratedResourcesData.Key
 }
 
 class ModuleExtNode(override val data: SbtModuleExtData) extends Node[SbtModuleExtData] {
@@ -186,8 +224,26 @@ abstract class Node[T] {
       case _ =>
     }
     val node = new DataNode[T](key, data, parent.orNull)
-    children.map(_.toDataNode(Some(node))).foreach(node.addChild)
+    (children ++ dependencyOrderNode).map(_.toDataNode(Some(node))).foreach(node.addChild)
     node
+  }
+
+  // names of the dependency targets are final only when the data nodes are created
+  private def dependencyOrderNode: Option[Node[?]] = {
+    val dependencies = children.collect { case dependency: OrderedDependencyNode => dependency }
+    Option.when(dependencies.nonEmpty) {
+      val orders = new java.util.HashMap[String, Integer]()
+      val productionOnTest = new java.util.HashSet[String]()
+      dependencies.foreach { dependency =>
+        orders.put(dependency.orderKey, dependency.getOrder)
+        dependency match {
+          case moduleDependency: ModuleDependencyNode if moduleDependency.isProductionOnTestDependency =>
+            productionOnTest.add(moduleDependency.orderKey)
+          case _ =>
+        }
+      }
+      new DependencyOrderNode(SbtDependencyOrderData(orders, productionOnTest))
+    }
   }
 }
 

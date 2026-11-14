@@ -10,8 +10,12 @@ import org.jetbrains.jps.incremental.scala.shared.remote.CompileServerMetrics
 import org.jetbrains.jps.incremental.scala.shared.{Client, MessageKind}
 import org.jetbrains.jps.incremental.scala.utils.ScalaJDKIncompatibilityDetector
 
-import java.nio.file.Path
+import consulo.internal.org.objectweb.asm.ClassReader
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.PackageObjectSingletonClassName
+
+import java.nio.file.{Files, Path}
 import scala.collection.mutable
+import scala.util.control.NonFatal
 
 /**
  * upstream: org.jetbrains.jps.incremental.scala.local.IdeClient + IdeClientSbt / IdeClientIdea, reports to the Consulo
@@ -23,6 +27,7 @@ private final class ConsuloClient(context: CompileContext, target: BuildTarget) 
 
   private var hasErrors = false
   private val generatedFiles = mutable.ArrayBuffer.empty[(Path, Path)]
+  private val generatedClassSources = mutable.HashMap.empty[String, Path]
   private val startedSources = mutable.LinkedHashSet.empty[Path]
 
   override def message(msg: Client.ClientMsg): Unit = {
@@ -68,8 +73,13 @@ private final class ConsuloClient(context: CompileContext, target: BuildTarget) 
 
   override def internalTrace(text: String): Unit = Log.trace(text)
 
-  override def generated(source: Path, outputFile: Path, name: String): Unit =
-    generatedFiles += source.toAbsolutePath.normalize() -> outputFile.toAbsolutePath.normalize()
+  override def generated(source: Path, outputFile: Path, name: String): Unit = {
+    val normalizedSource = source.toAbsolutePath.normalize()
+    generatedFiles += normalizedSource -> outputFile.toAbsolutePath.normalize()
+    if (name != null) {
+      generatedClassSources.update(name, normalizedSource)
+    }
+  }
 
   // the class files deleted by zinc are not registered as outputs anymore once their sources are recompiled
   override def deleted(module: Path): Unit = ()
@@ -96,6 +106,30 @@ private final class ConsuloClient(context: CompileContext, target: BuildTarget) 
   override def metrics(value: CompileServerMetrics): Unit = ()
 
   def hasReportedErrors: Boolean = hasErrors
+
+  /**
+   * (base class source, package object source) of the package objects compiled in this run whose base classes were
+   * compiled in this run too. upstream: IdeClientIdea.handlePackageObject / persistPackageObjectData
+   */
+  def packageObjectBaseSources: Seq[(Path, Path)] =
+    for {
+      (packageObjectSource, classFile) <- generatedFiles.toSeq
+      if classFile.getFileName.toString == s"$PackageObjectSingletonClassName.class"
+      reader <- readClass(classFile).toSeq
+      packageName = reader.getClassName.stripSuffix(PackageObjectSingletonClassName).replace('/', '.')
+      baseType <- reader.getInterfaces.toSeq ++ Option(reader.getSuperName).filterNot(_ == "java/lang/Object")
+      baseClassName = baseType.replace('/', '.')
+      if baseClassName.startsWith(packageName)
+      baseSource <- generatedClassSources.get(baseClassName).toSeq
+    } yield baseSource -> packageObjectSource
+
+  private def readClass(classFile: Path): Option[ClassReader] =
+    try Some(new ClassReader(Files.readAllBytes(classFile)))
+    catch {
+      case NonFatal(e) =>
+        Log.warn("Error parsing generated class " + classFile, e)
+        None
+    }
 
   /**
    * Registers the compilation results: the generated class files, the compiled sources without class files

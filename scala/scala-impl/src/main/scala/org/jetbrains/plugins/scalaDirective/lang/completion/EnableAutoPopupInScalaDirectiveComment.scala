@@ -19,7 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyPattern
 import org.jetbrains.plugins.scalaDirective.lang.completion.ScalaDirectiveAutoPopupCompletionHandler._
 
-@ExtensionImpl
+@ExtensionImpl(order = "before scalaCompletionConfidence")
 final class EnableAutoPopupInScalaDirectiveComment extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

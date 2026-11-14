@@ -23,7 +23,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.ScObjectImpl
 
 import java.{util => ju}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before JavaMoveDirectoryWithClassesHelper")
 class ScalaMoveDirectoryWithClassesHelper extends MoveDirectoryWithClassesHelper {
 
   override def findUsages(filesToMove: ju.Collection[PsiFile],

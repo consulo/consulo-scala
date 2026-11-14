@@ -67,7 +67,7 @@ class ScalaRedundantConversionInspection extends LocalInspectionTool {
       val message = ScalaInspectionBundle.message("casting.a.to.b.is.redundant", left.getText, conversionType)
 
       new ProblemDescriptorImpl(element, element, LocalizeValue.of(message), Array(new RemoveConversionQuickFix(element, left)),
-        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, false, range, null, false)
+        ProblemHighlightType.LIKE_UNUSED_SYMBOL, false, range, null, false)
     }
 
     holder.registerProblem(descriptor)

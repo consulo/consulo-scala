@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 
 import scala.collection.mutable
 
-@ExtensionImpl
+@ExtensionImpl(order = "before inLineComment, before EnterInJavadocParamDescriptionHandler, before ScalaDocMarkdownEnterHandler")
 class AddUnitFunctionSignatureEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = {

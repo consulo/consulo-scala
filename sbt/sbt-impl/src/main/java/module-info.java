@@ -117,6 +117,7 @@ open module org.intellij.scala.sbt.impl {
     requires consulo.execution.debug.api;
     requires consulo.ide.impl;
     requires consulo.build.ui.api;
+    requires pty4j;
 
 
 
@@ -129,6 +130,7 @@ open module org.intellij.scala.sbt.impl {
     exports org.jetbrains.sbt.codeInsight.template;
     exports org.jetbrains.sbt.codeInspection;
     exports org.jetbrains.sbt.editor.documentationProvider;
+    exports org.jetbrains.sbt.execution;
     exports org.jetbrains.sbt.language;
     exports org.jetbrains.sbt.language.completion;
     exports org.jetbrains.sbt.language.psi;
@@ -144,6 +146,7 @@ open module org.intellij.scala.sbt.impl {
     exports org.jetbrains.sbt.process.options.parsing.model;
     exports org.jetbrains.sbt.process.options.reporting;
     exports org.jetbrains.sbt.project;
+    exports org.jetbrains.sbt.project.autolink;
     exports org.jetbrains.sbt.project.data;
     exports org.jetbrains.sbt.project.data.service;
     exports org.jetbrains.sbt.project.modifier;

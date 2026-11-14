@@ -2,17 +2,12 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package hints
 
-import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.codeEditor.Editor
-import consulo.project.Project
 import consulo.colorScheme.EditorColorsScheme
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
-import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._
-import org.jetbrains.plugins.scala.annotator.TypeMismatchHints
 import org.jetbrains.plugins.scala.annotator.hints.Hint.{HintPosition, MenuProvider}
 import org.jetbrains.plugins.scala.annotator.hints.{Corners, Hint, Text}
-import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaTypeHintsPass._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -88,28 +83,9 @@ private[codeInsight] trait ScalaTypeHintsPass {
 }
 
 private object ScalaTypeHintsPass {
-  private val localVariableTypeContextMenu = disableTypeHintsContextMenu(ScalaCodeInsightBundle.message("disable.type.hints.for.local.variables"), _.showLocalVariableType = false)
-  private val memberVariableTypeContextMenu = disableTypeHintsContextMenu(ScalaCodeInsightBundle.message("disable.type.hints.for.member.variables"), _.showPropertyType = false)
-  private val methodResultTypeContextMenu = disableTypeHintsContextMenu(ScalaCodeInsightBundle.message("disable.type.hints.for.method.results"), _.showFunctionReturnType = false)
-
-  private def disableTypeHintsContextMenu(@Nls disableText: String, setSettings: ScalaCodeInsightSettings => Unit): MenuProvider = {
-    val actionGroup = new ActionGroup() {
-      override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
-        new AnAction(disableText) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            setSettings(ScalaCodeInsightSettings.getInstance())
-            ScalaTypeHintsConfigurable.forceHintsUpdateOnNextPass()
-            TypeMismatchHints.refreshIn(e.getData(Project.KEY))
-          }
-        },
-        // upstream: "Configure type hints" action (inlay settings models are not ported)
-        AnSeparator.getInstance,
-        ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
-      )
-    }
-
-    MenuProvider(actionGroup)
-  }
+  private val localVariableTypeContextMenu = MenuProvider(InlayHintsMenus.LocalVariableType)
+  private val memberVariableTypeContextMenu = MenuProvider(InlayHintsMenus.MemberVariableType)
+  private val methodResultTypeContextMenu = MenuProvider(InlayHintsMenus.MethodResultType)
 
   private def typeAndBodyOf(definition: Definition)(implicit settings: ScalaHintsSettings): Option[(ScType, ScExpression, MenuProvider)] = for {
     body <- definition.bodyCandidate

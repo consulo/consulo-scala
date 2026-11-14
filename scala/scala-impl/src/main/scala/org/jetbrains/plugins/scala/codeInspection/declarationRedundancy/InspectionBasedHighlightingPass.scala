@@ -119,8 +119,7 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
         val range = info.element.getTextRange
         val severity: HighlightSeverity = getSeverity
         val infoType: HighlightInfoType = HighlightTypeUtil.convertSeverity(severity)
-        // upstream: profile.getEditorAttributes(highlightKey.toString, file) (no per-tool editor attributes in Consulo)
-        val textAttributes: TextAttributesKey = null
+        val textAttributes: TextAttributesKey = inspection.editorAttributes
 
         val highlightingInfoBuilder = HighlightInfo
           .newHighlightInfo(infoType)

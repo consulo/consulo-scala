@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.build
 
 import consulo.application.Application
-import consulo.build.ui.event.{BuildEvent, BuildEventFactory, Failure, MessageEvent, Warning}
+import consulo.build.ui.event.{BuildEvent, BuildEventFactory, Failure, FileMessageEvent, FileMessageEventResult, MessageEvent, MessageEventResult, ProgressBuildEvent, Warning}
 import consulo.build.ui.{BuildNotificationsGroups, FilePosition}
 import consulo.localize.LocalizeValue
 import consulo.navigation.Navigatable
 import consulo.process.ProcessOutputTypes
+import consulo.project.Project
+import consulo.project.ui.notification.NotificationGroup
 import consulo.process.util.AnsiEscapeDecoder
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.build.BuildMessages.{BuildStatus, Canceled, Error}
@@ -90,18 +92,91 @@ case object BuildMessages {
     @Nls @Nullable details: String = null,
     navigatable: Option[Navigatable] = None,
   ): BuildEvent = {
-    // upstream: event time and message group (kind name) are not supported by Consulo's BuildEventFactory
+    // upstream: the message group is the kind name - Consulo's message groups are notification groups which the build view
+    // does not group by, all messages use the build issues group
     val factory = Application.get().getInstance(classOf[BuildEventFactory])
     val text = LocalizeValue.of(stripAnsiCodes(message))
     val description = LocalizeValue.ofNullable(details)
 
     position match {
       case None =>
-        factory.createMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, navigatable.orNull)
+        new TimedMessageEvent(factory.createMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, navigatable.orNull), eventTime)
       case Some(filePosition) =>
-        factory.createFileMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, filePosition)
+        new TimedFileMessageEvent(factory.createFileMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, filePosition), eventTime)
     }
   }
+
+  def progress(eventId: Any, parentId: Any, eventTime: Long, @Nls message: String, total: Long, progress: Long, unit: String): BuildEvent =
+    new SimpleProgressBuildEvent(eventId, parentId, eventTime, LocalizeValue.of(message), total, progress, unit)
+}
+
+// upstream: BuildEvents builders take the event time (withTime), Consulo's BuildEventFactory always uses the current time
+private class TimedMessageEvent(delegate: MessageEvent, eventTime: Long) extends MessageEvent {
+  override def getId: AnyRef = delegate.getId
+
+  override def getParentId: AnyRef = delegate.getParentId
+
+  override def getEventTime: Long = eventTime
+
+  override def getMessage: LocalizeValue = delegate.getMessage
+
+  override def getDescription: LocalizeValue = delegate.getDescription
+
+  override def getHint: LocalizeValue = delegate.getHint
+
+  override def getKind: MessageEvent.Kind = delegate.getKind
+
+  override def getGroup: NotificationGroup = delegate.getGroup
+
+  override def getNavigatable(project: Project): Navigatable = delegate.getNavigatable(project)
+
+  override def getResult: MessageEventResult = delegate.getResult
+
+  override def equals(obj: Any): Boolean = obj match {
+    case other: TimedMessageEvent => delegate == other.delegateEvent
+    case _ => false
+  }
+
+  override def hashCode(): Int = delegate.hashCode()
+
+  protected def delegateEvent: MessageEvent = delegate
+}
+
+private final class TimedFileMessageEvent(delegate: FileMessageEvent, eventTime: Long)
+  extends TimedMessageEvent(delegate, eventTime) with FileMessageEvent {
+
+  override def getFilePosition: FilePosition = delegate.getFilePosition
+
+  override def getResult: FileMessageEventResult = delegate.getResult
+}
+
+// upstream: BuildEvents.progress
+private final class SimpleProgressBuildEvent(
+  eventId: Any,
+  parentId: Any,
+  eventTime: Long,
+  message: LocalizeValue,
+  total: Long,
+  progress: Long,
+  unit: String
+) extends ProgressBuildEvent {
+  override def getId: AnyRef = eventId.asInstanceOf[AnyRef]
+
+  override def getParentId: AnyRef = parentId.asInstanceOf[AnyRef]
+
+  override def getEventTime: Long = eventTime
+
+  override def getMessage: LocalizeValue = message
+
+  override def getDescription: LocalizeValue = LocalizeValue.empty()
+
+  override def getHint: LocalizeValue = LocalizeValue.empty()
+
+  override def getTotal: Long = total
+
+  override def getProgress: Long = progress
+
+  override def getUnit: String = unit
 }
 
 case class TaskRunnerResult(

@@ -32,6 +32,7 @@ import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.testingSupport.ScalaTestCreator._
+import org.jetbrains.plugins.scala.testingSupport.test.TestFrameworkSetupSupport
 
 import java.util as ju
 import scala.jdk.CollectionConverters.SeqHasAsJava
@@ -101,6 +102,8 @@ object ScalaTestCreator {
       )
       if (!dialog.showAndGet()) return
 
+      setupFrameworkIfNeeded(project, dialog.getSelectedTestFrameworkDescriptor, srcModule)
+
       CommandProcessor.getInstance.executeCommand(
         project,
         () => {
@@ -112,6 +115,19 @@ object ScalaTestCreator {
         this
       )
     }
+
+    // upstream: the "Fix" button of the dialog calls TestFrameworkSetupSupport.setupFramework,
+    // Consulo's "Fix" button adds the jar of getLibraryPath to the module, so the setup is offered after OK
+    @RequiredUIAccess
+    private def setupFrameworkIfNeeded(project: Project, framework: TestFramework, module: Module): Unit =
+      framework match {
+        case setupSupport: TestFrameworkSetupSupport
+          if module != null && !ApplicationManager.getApplication.isUnitTestMode && !framework.isLibraryAttached(module) =>
+          val message = LocalizeValue.localizeTODO(s"${framework.getName} library not found in the module. Add it to the build file?")
+          if (Messages.showYesNoDialog(project, message.get, getText.get, UIUtil.getQuestionIcon) == Messages.YES)
+            setupSupport.setupFramework(module)
+        case _ =>
+      }
 
     private def getContainingClass(element: PsiElement): PsiClass =
       PsiTreeUtil.getParentOfType(element, classOf[PsiClass], false) match {

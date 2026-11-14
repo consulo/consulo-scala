@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.TextAttributesKey
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel
@@ -48,6 +50,8 @@ final class ScalaUnusedDeclarationInspection extends HighlightingPassInspection 
   override def getShortName: String = "ScalaUnusedSymbol"
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override def editorAttributes: TextAttributesKey = CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
 
 
   import ScalaUnusedDeclarationInspection._

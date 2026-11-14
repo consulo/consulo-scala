@@ -57,7 +57,7 @@ final class ScalaUnreachableCodeInspection extends LocalInspectionTool {
           head,
           last,
           descriptionTemplate,
-          ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+          ProblemHighlightType.LIKE_UNUSED_SYMBOL,
           isOnTheFly,
           (fix)
         )

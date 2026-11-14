@@ -18,7 +18,7 @@ import consulo.execution.ui.RunContentDescriptor
  * @see [[org.jetbrains.sbt.runner.SbtDebugProgramRunner]]
  */
 // upstream: order = "first"
-@ExtensionImpl
+@ExtensionImpl(order = "before defaultJavaRunRunner")
 class SbtProgramRunner extends GenericProgramRunner[RunnerSettings] with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtProgramRunner"

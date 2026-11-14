@@ -44,7 +44,7 @@ import scala.util.control.NonFatal
  * @see [[org.jetbrains.sbt.runner.SbtProgramRunner]]
  */
 // upstream: order = "first"
-@ExtensionImpl
+@ExtensionImpl(order = "before defaultJavaDebugRunner")
 class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtDebugProgramRunner"

@@ -7,7 +7,7 @@ import com.intellij.java.language.testIntegration.TestFramework
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before JUnit3Framework, before JUnit4Framework, before JUnit5Framework, before TestNGFramework")
 final class Specs2TestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "Specs2"

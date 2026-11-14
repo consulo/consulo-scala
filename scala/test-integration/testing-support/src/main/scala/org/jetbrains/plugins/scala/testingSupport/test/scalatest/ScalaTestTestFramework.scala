@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, T
 
 import scala.annotation.nowarn
 
-@ExtensionImpl
+@ExtensionImpl(order = "before JUnit3Framework, before JUnit4Framework, before JUnit5Framework, before TestNGFramework")
 final class ScalaTestTestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "ScalaTest"

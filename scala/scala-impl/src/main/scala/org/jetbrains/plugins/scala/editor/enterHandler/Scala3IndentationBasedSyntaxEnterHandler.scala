@@ -53,7 +53,7 @@ import org.jetbrains.plugins.scala.util.IndentUtil
  *
  *  Also see [[org.jetbrains.plugins.scala.editor.backspaceHandler.Scala3IndentationBasedSyntaxBackspaceHandler]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before TemplateParentsEnterHandler")
 class Scala3IndentationBasedSyntaxEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def preprocessEnter(

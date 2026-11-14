@@ -16,6 +16,7 @@ import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.image.Image
 import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
@@ -108,16 +109,30 @@ object ScalaLibraryType {
   // upstream: extends CustomLibraryDescription (framework support / library options panel), Consulo has no library descriptions
   object Description {
 
-    def createNewLibrary(contextDirectory: VirtualFile): NewLibraryConfiguration = {
-      val dialogWrapper = new SdkSelectionDialogWrapper(contextDirectory)
-      val selectedSdkDescriptor = dialogWrapper.open()
-      val scalaLibrary = selectedSdkDescriptor.map(createNewScalaLibrary)
-      scalaLibrary.orNull
-    }
+    def createNewLibrary(contextDirectory: VirtualFile): NewLibraryConfiguration =
+      selectScalaSdk(contextDirectory).map(createNewScalaLibrary).orNull
+
+    /** Shows the Scala SDK selection dialog (detected SDKs, download, browse). */
+    def selectScalaSdk(@Nullable contextDirectory: VirtualFile): Option[ScalaSdkDescriptor] =
+      new SdkSelectionDialogWrapper(contextDirectory).open()
 
     // upstream: @VisibleForTesting
     private[scala] def createNewScalaLibrary(descriptor: ScalaSdkDescriptor) = {
-      val ScalaSdkDescriptor(version, _, compilerClasspath, scaladocExtraClasspath, libraryFiles, sourceFiles, docFiles, compilerBridgeJar, optReplClasspath, _) = descriptor
+      val properties = resolveProperties(descriptor)
+      val libraryRoots = roots(descriptor)
+
+      new NewLibraryConfiguration(libraryName(descriptor), ScalaLibraryType(), properties) {
+        override def addRoots(editor: LibraryEditor): Unit =
+          libraryRoots.foreach { case (url, rootType) => editor.addRoot(url, rootType) }
+      }
+    }
+
+    private[scala] def libraryName(descriptor: ScalaSdkDescriptor): String =
+      "scala-sdk-" + descriptor.version.getOrElse(Version.Default)
+
+    /** Resolves the compiler bridge and the REPL classpath under a modal progress when the descriptor has none. */
+    private[scala] def resolveProperties(descriptor: ScalaSdkDescriptor): ScalaLibraryProperties = {
+      val ScalaSdkDescriptor(version, _, compilerClasspath, scaladocExtraClasspath, _, _, _, compilerBridgeJar, optReplClasspath, _) = descriptor
 
       val compilerBridge = compilerBridgeJar.orElse {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
@@ -137,30 +152,25 @@ object ScalaLibraryType {
         )
       }.getOrElse(ReplClasspath.Bundled)
 
-      new NewLibraryConfiguration(
-        "scala-sdk-" + version.getOrElse(Version.Default),
-        ScalaLibraryType(),
-        ScalaLibraryProperties(version, compilerClasspath, scaladocExtraClasspath, compilerBridge, replClasspath)
-      ) {
-        override def addRoots(editor: LibraryEditor): Unit = {
-          addRootsInner(libraryFiles, BinariesOrderRootType.ID)(using editor)
-          addRootsInner(sourceFiles, SourcesOrderRootType.ID)(using editor)
-          // upstream: JavadocOrderRootType
-          addRootsInner(docFiles, DocumentationOrderRootType.ID)(using editor)
+      ScalaLibraryProperties(version, compilerClasspath, scaladocExtraClasspath, compilerBridge, replClasspath)
+    }
 
-          if (sourceFiles.isEmpty && docFiles.isEmpty) editor.addRoot(
-            s"https://www.scala-lang.org/api/${version.getOrElse("current")}/",
-            DocumentationOrderRootType.ID
-          )
-        }
+    /** @return library root urls with their root type ids */
+    private[scala] def roots(descriptor: ScalaSdkDescriptor): Seq[(String, String)] = {
+      def urls(files: Iterable[Path], rootType: String): Seq[(String, String)] =
+        files.toSeq.map(file => VirtualFileUtil.getUrlForLibraryRoot(file.toFile) -> rootType)
 
-        private def addRootsInner(files: Iterable[Path], rootType: String)
-                                 (implicit editor: LibraryEditor): Unit =
-          for {
-            file <- files
-            url = VirtualFileUtil.getUrlForLibraryRoot(file.toFile)
-          } editor.addRoot(url, rootType)
-      }
+      val docRoots =
+        if (descriptor.sourceFiles.isEmpty && descriptor.docFiles.isEmpty)
+          Seq(s"https://www.scala-lang.org/api/${descriptor.version.getOrElse("current")}/" -> DocumentationOrderRootType.ID)
+        else
+          Nil
+
+      urls(descriptor.libraryFiles, BinariesOrderRootType.ID) ++
+        urls(descriptor.sourceFiles, SourcesOrderRootType.ID) ++
+        // upstream: JavadocOrderRootType
+        urls(descriptor.docFiles, DocumentationOrderRootType.ID) ++
+        docRoots
     }
   }
 

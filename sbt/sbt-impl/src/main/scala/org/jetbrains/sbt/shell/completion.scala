@@ -11,7 +11,7 @@ import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.NonNls
 
 // upstream: order = "first"
-@ExtensionImpl
+@ExtensionImpl(order = "before filePath, before httpHeaderReferenceContributor, before urlPathReferenceContributor, before javaClassReference, before methodMerger")
 final class SbtShellCompletionContributor extends CompletionContributor with DumbAware {
   override def getLanguage: Language = SbtShellLanguage
 

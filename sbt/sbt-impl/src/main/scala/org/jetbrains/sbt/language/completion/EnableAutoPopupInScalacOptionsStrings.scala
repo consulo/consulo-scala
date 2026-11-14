@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.sbt.language.SbtFileImpl
 import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.withScalacOption
 
-@ExtensionImpl
+@ExtensionImpl(order = "before scalaCompletionConfidence, before EnableAutoPopupInScalaDirectiveComment, before enableAutopopupInHttpHeaderReferences, before enableAutopopupInUrlReferences")
 class EnableAutoPopupInScalacOptionsStrings extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
@@ -26,7 +26,7 @@ class EnableAutoPopupInScalacOptionsStrings extends CompletionConfidence {
     withScalacOption(contextElement)(onMismatch = ThreeState.UNSURE, onMatch = _ => ThreeState.NO)
 }
 
-@ExtensionImpl
+@ExtensionImpl(order = "before selectionQuoting, before space, before QuotesTypedHandlerAutoPopup, before SlashTypedHandlerAutoPopup, before java, before javadoc, before ScalaAutoPopupCompletionHandler")
 final class ScalacOptionsAutoPopupCompletionHandler extends TypedHandlerDelegate {
 
   import ScalacOptionsAutoPopupCompletionHandler._

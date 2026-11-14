@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.gotoclass
 
+import consulo.annotation.component.ExtensionImpl
 import consulo.searchEverywhere.SEResultsEqualityProvider.SEEqualElementsActionType
 import consulo.searchEverywhere.{SEResultsEqualityProvider, SearchEverywhereFoundElementInfo}
 import consulo.language.psi.{PsiElement, PsiElementNavigationItem}
@@ -13,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 // upstream: @ApiStatus.Internal
 // The legacy Search Everywhere still invokes this extension; its replacement uses a different API.
 @scala.annotation.nowarn("msg=(?s).*(SEResultsEqualityProvider|SearchEverywhereFoundElementInfo).*deprecated.*")
+@ExtensionImpl
 final class ScalaSearchEverywhereEqualityProvider extends SEResultsEqualityProvider {
 
   override def compareItems(

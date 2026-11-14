@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.TextAttributesKey
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel
@@ -31,6 +33,8 @@ class VarCouldBeValInspection extends HighlightingPassInspection {
   override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override def editorAttributes: TextAttributesKey = CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
 
 
   import VarCouldBeValInspection._

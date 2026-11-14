@@ -17,6 +17,11 @@ import consulo.module.ui.BundleBoxBuilder;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.process.cmd.ParametersListUtil;
 import consulo.project.Project;
+import consulo.configurable.ConfigurationException;
+import consulo.dataContext.DataManager;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.ide.setting.bundle.SettingsSdksModel;
+import consulo.ui.Button;
 import consulo.ui.CheckBox;
 import consulo.ui.Component;
 import consulo.ui.HtmlLabel;
@@ -25,10 +30,16 @@ import consulo.ui.Label;
 import consulo.ui.TextBox;
 import consulo.ui.TextBoxWithExpandAction;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.event.ClickEvent;
+import consulo.ui.ex.action.DefaultActionGroup;
+import consulo.ui.ex.popup.JBPopupFactory;
+import consulo.ui.ex.popup.ListPopup;
+import consulo.ui.layout.DockLayout;
 import consulo.ui.layout.HorizontalLayout;
 import consulo.ui.layout.LabeledLayout;
 import consulo.ui.layout.VerticalLayout;
 import consulo.ui.style.ComponentColors;
+import consulo.ui.Space;
 import consulo.ui.util.LabeledBuilder;
 import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
@@ -104,7 +115,7 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
         myAdvancedSettingsPanel.add(HorizontalLayout.create().add(myShutdownServerCheckBox).add(shutdownSettings));
         myAdvancedSettingsPanel.add(myProjectHomeChb);
 
-        // upstream: JdkComboBox with an "add JDK" action (SdkUtils.addJdkIfNotExists)
+        // upstream: JdkComboBox with an "add JDK" item, here an "Add JDK..." button next to the box
         myCompilationServerSdk = BundleBoxBuilder.create(parentDisposable)
                 .withSdkTypeFilter(sdkTypeId -> sdkTypeId instanceof JavaSdkType)
                 .build();
@@ -134,7 +145,11 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
         );
 
         myJvmSettingsPanel = VerticalLayout.create();
-        myJvmSettingsPanel.add(LabeledBuilder.filled(message("jdk"), myCompilationServerSdk));
+        Button addJdkButton = Button.create(LocalizeValue.localizeTODO("Add JDK..."), this::showAddJdkPopup);
+        DockLayout sdkPanel = DockLayout.create(Space.SMALL)
+                .center(myCompilationServerSdk)
+                .right(addJdkButton);
+        myJvmSettingsPanel.add(LabeledBuilder.filled(message("jdk"), sdkPanel));
         myJvmSettingsPanel.add(myJdkWarningLabel);
         myJvmSettingsPanel.add(LabeledBuilder.simple(message("jvm.maximum.heap.size.mb"), myCompilationServerMaximumHeapSize));
         myJvmSettingsPanel.add(LabeledBuilder.filled(message("jvm.options"), myCompilationServerJvmParameters));
@@ -149,6 +164,30 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
         myShutdownServerCheckBox.addValueListener(e -> updateShutdownSettingsPanel());
         parallelismSettingsPanel = parallelismSettings;
         shutdownSettingsPanel = shutdownSettings;
+    }
+
+    @RequiredUIAccess
+    private void showAddJdkPopup(ClickEvent event) {
+        DefaultActionGroup group = new DefaultActionGroup();
+        sdksModel().createAddActions(
+                group,
+                event.getComponent(),
+                sdk -> myCompilationServerSdk.setSelectedBundle(sdk.getName()),
+                sdkTypeId -> sdkTypeId instanceof JavaSdkType
+        );
+        ListPopup popup = JBPopupFactory.getInstance().createActionGroupPopup(
+                null,
+                group,
+                DataManager.getInstance().getDataContext(event.getComponent()),
+                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                false
+        );
+        popup.showBy(event);
+    }
+
+    // the bundle box shows the SDKs of the settings model, a JDK added here is in the SDK table after the model is applied
+    private static SettingsSdksModel sdksModel() {
+        return ShowSettingsUtil.getInstance().getSdksModel();
     }
 
     private HorizontalLayout parallelismSettingsPanel;
@@ -202,7 +241,11 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
             return CompileServerLauncher.defaultSdk(myProject);
         }
         String name = myCompilationServerSdk.getSelectedBundleName();
-        return name == null ? null : SdkTable.getInstance().findSdk(name);
+        if (name == null) {
+            return null;
+        }
+        Sdk sdk = SdkTable.getInstance().findSdk(name);
+        return sdk != null ? sdk : sdksModel().findSdk(name);
     }
 
     private static int parseHeapSize(String text) {
@@ -295,7 +338,7 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
 
     @Override
     @RequiredUIAccess
-    public void apply() {
+    public void apply() throws ConfigurationException {
         if (myContentPanel == null) {
             return;
         }
@@ -305,6 +348,13 @@ public class ScalaCompileServerForm implements ProjectConfigurable, SearchableCo
             ApplicationManager.getApplication().executeOnPooledThread(() ->
                     CompileServerLauncher.stopServerAndWaitFor(Duration.Zero(), Some.apply("compile server disabled from settings"))
             );
+        }
+
+        SettingsSdksModel sdksModel = sdksModel();
+        String selectedSdkName = myCompilationServerSdk.getSelectedBundleName();
+        if (!isDefaultSdkSelected() && selectedSdkName != null && SdkTable.getInstance().findSdk(selectedSdkName) == null && sdksModel.isModified()) {
+            // the JDK was added with "Add JDK..." and the settings model is not applied yet
+            sdksModel.apply(null);
         }
 
         Sdk sdk = getSelectedSdk();

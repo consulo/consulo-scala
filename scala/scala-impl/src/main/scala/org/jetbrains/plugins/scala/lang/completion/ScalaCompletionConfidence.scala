@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScInterpolatedExpressionPrefix
 import org.jetbrains.plugins.scala.lang.psi.types.{ScOrType, ScTypeExt}
 
-@ExtensionImpl
+@ExtensionImpl(id = "scalaCompletionConfidence")
 final class ScalaCompletionConfidence extends CompletionConfidence {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE

@@ -19,7 +19,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaRefactoringUsagesCollector
 import java.{util => ju}
 import scala.jdk.CollectionConverters._
 
-@ExtensionImpl
+@ExtensionImpl(order = "before java")
 final class MoveScalaClassHandler extends MoveClassHandler {
 
   import MoveScalaClassHandler._

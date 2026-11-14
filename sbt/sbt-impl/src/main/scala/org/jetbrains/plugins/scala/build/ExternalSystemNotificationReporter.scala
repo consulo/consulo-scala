@@ -170,8 +170,9 @@ class ExternalSystemNotificationReporter(
   }
 
   override def progressTask(eventId: EventId, total: Long, progress: Long, unit: String, message: String, time: Long = System.currentTimeMillis()): Unit = {
-    descriptors.get(eventId).foreach { _ =>
+    descriptors.get(eventId).foreach { taskDescriptor =>
       notifications.onStatusChange(new ExternalSystemTaskNotificationEvent(taskId, message))
+      onBuildEvent(BuildMessages.progress(eventId.id, taskDescriptor.parent.map(_.id).getOrElse(taskId), time, message, total, progress, unit))
     }
   }
 

@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nls
  *  1. In `Settings | Build, Execution, Deployment | Build Tools | sbt` in `sbt Projects` subsection
  *  1. During new project creation via `Import project from existing sources` (`File | New | Project from Existing Sources...`)
  */
-// upstream: AbstractExternalProjectSettingsControl with the Swing panel SbtExtraControls; the project is not reloaded
-// after changing "use separate compiler output paths" (the Consulo configurable has no project)
+// upstream: AbstractExternalProjectSettingsControl with the Swing panel SbtExtraControls; the project reload after changing
+// "use separate compiler output paths" is done by SbtExternalSystemConfigurable (the Consulo settings control has no project)
 class SbtProjectSettingsControl(context: Context, settings: SbtProjectSettings)
   extends AbstractExternalProjectSettingsConfigurable[SbtProjectSettings](settings, SbtProjectSettingsControl.placeOf(context)) {
 

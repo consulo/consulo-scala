@@ -1,19 +1,15 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.rangeHints
 
-import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.codeEditor.{Editor, EditorCustomElementRenderer, InlayModel}
 import consulo.disposer.Disposer
 import consulo.util.dataholder.Key
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
-import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.Text
 import org.jetbrains.plugins.scala.codeInsight.hints.rangeHints.RangeInlayHintsPass._
-import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, ScalaTypeHintsConfigurable}
-import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHints, TextPartsHintRenderer}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
-import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.hints.{InlayHintsMenus, ScalaHintsSettings}
+import org.jetbrains.plugins.scala.codeInsight.implicits.TextPartsHintRenderer
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
@@ -149,26 +145,6 @@ object RangeInlayHintsPass {
     }
   }
 
-  private val rangeHintsForToAndUntilContextMenu =
-    createContextMenu(ScalaCodeInsightBundle.message("disable.range.hints.for.to.and.until"), _.showRangeHintsForToAndUntil = false)
-  private val rangeForExclusiveRange =
-    createContextMenu(ScalaCodeInsightBundle.message("disable.hints.for.exclusive.ranges"), _.showExclusiveRangeHint = false)
-
-  private def createContextMenu(@Nls disableText: String, setSettings: ScalaCodeInsightSettings => Unit): MenuProvider = {
-    val actionGroup = new ActionGroup() {
-      override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
-        new AnAction(disableText) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            setSettings(ScalaCodeInsightSettings.getInstance())
-            ImplicitHints.updateInAllEditors()
-          }
-        },
-        // upstream: "Configure range hints" action (inlay settings models are not ported)
-        AnSeparator.getInstance,
-        ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
-      )
-    }
-
-    MenuProvider(actionGroup)
-  }
+  private val rangeHintsForToAndUntilContextMenu = MenuProvider(InlayHintsMenus.RangeForToAndUntil)
+  private val rangeForExclusiveRange = MenuProvider(InlayHintsMenus.ExclusiveRange)
 }

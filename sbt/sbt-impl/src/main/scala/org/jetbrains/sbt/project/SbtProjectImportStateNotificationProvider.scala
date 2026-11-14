@@ -30,7 +30,8 @@ private final class SbtProjectImportStateNotificationProvider @Inject()(project:
     }
     // The sbt file is not a part of the current project, do not show any notifications.
     if (!SbtProblemHighlightFilter.shouldHighlightSbtFile(sbtFile)) return null
-    // upstream: no notification while the project reload is in progress (IncompleteModelUtil.isIncompleteModel) - not in Consulo
+    // Project reload is already in progress, do not show any notifications.
+    if (SbtProjectImportStateService.instance(project).isResolveInProgress) return null
     // The project is fully imported, do not show any notifications.
     if (SbtProjectImportStateService.instance(project).isImported(sbtFile)) return null
 

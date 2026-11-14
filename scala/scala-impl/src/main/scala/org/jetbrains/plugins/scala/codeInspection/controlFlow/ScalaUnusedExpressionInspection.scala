@@ -7,7 +7,7 @@ import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiComment, PsiElementVisitor, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInspection.controlFlow.ScalaUnusedExpressionInspection.{HasSideEffects, NoSideEffects, OnlyThrows, RangeCollector, SideEffectKind, createQuickFixes}
@@ -48,7 +48,7 @@ final class ScalaUnusedExpressionInspection extends LocalInspectionTool {
         val quickfixes =
           if (range == expression.getTextRange) createQuickFixes(expression)
           else Nil
-        holder.registerProblem(expression, range.shiftLeft(expression.startOffset), descriptionTemplate, quickfixes*)
+        holder.registerProblem(expression, descriptionTemplate, ProblemHighlightType.LIKE_UNUSED_SYMBOL, range.shiftLeft(expression.startOffset), quickfixes*)
       }
     case _ =>
   }

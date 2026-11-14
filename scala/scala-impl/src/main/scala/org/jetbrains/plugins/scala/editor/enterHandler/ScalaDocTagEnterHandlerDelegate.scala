@@ -21,7 +21,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocTag
  *      [[org.jetbrains.plugins.scala.lang.scaladoc.ScalaIsCommentComplete]]
  *      [[org.jetbrains.plugins.scala.highlighter.ScalaCommenter]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before EnterBetweenClosureBracesHandler")
 class ScalaDocTagEnterHandlerDelegate extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = {

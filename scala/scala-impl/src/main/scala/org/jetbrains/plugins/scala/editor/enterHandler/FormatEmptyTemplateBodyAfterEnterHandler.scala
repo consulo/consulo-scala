@@ -27,7 +27,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBod
  *
  * Works in combination with [[ScalaEnterAfterUnmatchedBraceHandler]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before FormatKeywordAfterEnterHandler")
 final class FormatEmptyTemplateBodyAfterEnterHandler extends EnterHandlerDelegateAdapter {
 
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result = measure("FormatEmptyTemplateBodyAfterEnterHandler.postProcessEnter") {

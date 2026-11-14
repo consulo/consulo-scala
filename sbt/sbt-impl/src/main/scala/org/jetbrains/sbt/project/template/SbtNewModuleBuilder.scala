@@ -24,7 +24,8 @@ import scala.util.Using
  * Creates a new sbt project: generates `build.sbt`, `project/build.properties` and the source directories,
  * then links the directory as an sbt project, which is imported by the sbt external system.
  */
-// upstream: SbtModuleBuilder + IntelliJ new project wizard steps (SbtScalaNewProjectWizard)
+// upstream: SbtModuleBuilder + IntelliJ new project wizard steps (SbtScalaNewProjectWizard); archived templates
+// (AbstractArchivedSbtProjectBuilder) are only a base class for other plugins and are not ported
 @ExtensionImpl(id = "sbt", order = "after jvm")
 final class SbtNewModuleBuilder extends NewModuleBuilder {
 
@@ -72,7 +73,10 @@ object SbtNewModuleBuilder {
     StartupManager.getInstance(project).runWhenProjectIsInitialized { () =>
       ApplicationManager.getApplication.invokeLater { () =>
         if (!project.isDisposed) {
-          new SbtOpenProjectProvider().linkToExistingProject(externalProjectPath, project)
+          new SbtOpenProjectProvider().linkToExistingProject(externalProjectPath, project, { settings =>
+            settings.resolveClassifiers = context.downloadScalaSdkSources
+            settings.resolveSbtClassifiers = context.downloadSbtSources
+          })
         }
       }
     }

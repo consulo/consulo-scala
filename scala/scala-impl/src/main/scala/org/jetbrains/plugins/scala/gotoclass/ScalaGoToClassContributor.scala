@@ -17,7 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.stubs.index.ScalaIndexKeys
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
-@ExtensionImpl
+@ExtensionImpl(order = "before DefaultClassNavigationContributor")
 class ScalaGoToClassContributor extends GotoClassOrTypeContributor with PossiblyDumbAware {
 
   import ScalaIndexKeys._

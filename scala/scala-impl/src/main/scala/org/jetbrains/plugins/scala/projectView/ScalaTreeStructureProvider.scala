@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters._
  * (ProjectViewModuleGroupNode, ProjectViewModuleNode, ProjectViewProjectNode, ModuleGrouper - impl classes in Consulo,
  * sbt module data from org.jetbrains.sbt.project)
  */
-@ExtensionImpl
+@ExtensionImpl(order = "after ClassesTreeStructureProvider, after JavaModuleRootTreeNodeProvider, after BackgroundTaskByVfsProjectViewProvider")
 final class ScalaTreeStructureProvider extends TreeStructureProvider with DumbAware {
 
   import ScalaTreeStructureProvider._

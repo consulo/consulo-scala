@@ -73,7 +73,7 @@ import org.jetbrains.plugins.scala.util.ScEquivalenceUtil
  * used by gutter markers. Unlike this executor, which returns overriding methods for one queried method, it emits
  * supermethod-overrider pairs for every relevant method in a class.
  */
-@ExtensionImpl
+@ExtensionImpl(order = "after JavaOverridingMethodsSearcher")
 class ScalaAwareJavaOverridingSearcher extends OverridingMethodsSearchExecutor {
   override def execute(searchParams: OverridingMethodsSearch.SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = searchParams.getMethod
@@ -116,7 +116,7 @@ class ScalaAwareJavaOverridingSearcher extends OverridingMethodsSearchExecutor {
  * Unlike [[ScalaAwareJavaOverridingSearcher]], which processes one method for implementation navigation and returns
  * only its overriding methods, this executor emits supermethod-overrider pairs for the complete class.
  */
-@ExtensionImpl
+@ExtensionImpl(order = "after JavaAllOverridingMethodsSearcher")
 class ScalaAwareJavaAllOverridingSearcher extends AllOverridingMethodsSearchExecutor {
   import ScalaAwareJavaAllOverridingSearcher._
 

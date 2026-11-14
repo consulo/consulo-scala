@@ -1,80 +1,82 @@
-package org.jetbrains.jps.incremental.scala
-package local
+package org.jetbrains.plugins.scala.compiler.consulo
 
-import org.jetbrains.jps.incremental.CompileContext
-import org.jetbrains.jps.incremental.messages.{BuildMessage, CompilerMessage}
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
+import consulo.compiler.CompilerPaths
+import consulo.logging.Logger
+import consulo.project.Project
 
-import java.io.{BufferedInputStream, BufferedOutputStream, ObjectInputStream, ObjectOutputStream}
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path}
 import scala.collection.mutable
-import scala.util.Using
+import scala.jdk.CollectionConverters.*
+import scala.util.control.NonFatal
 
-class PackageObjectsData extends Serializable {
+/**
+ * The sources of the base classes of package objects (IDEA incrementality): a change of a base class source must
+ * recompile the package object.
+ * upstream: org.jetbrains.jps.incremental.scala.local.PackageObjectsData (java serialization in the JPS data storage)
+ */
+private final class PackageObjectsData private(file: Path) {
 
-  private val baseSourceToPackageObjects = mutable.HashMap.empty[SerializablePath, Set[SerializablePath]]
-  private val packageObjectToBaseSources = mutable.HashMap.empty[SerializablePath, Set[SerializablePath]]
+  private val baseSourceToPackageObjects = mutable.HashMap.empty[Path, Set[Path]]
 
   def add(baseSource: Path, packageObject: Path): Unit = synchronized {
-    val baseSourceSerializable = SerializablePath(baseSource)
-    val packageObjectSerializable = SerializablePath(packageObject)
-    baseSourceToPackageObjects.update(baseSourceSerializable, baseSourceToPackageObjects.getOrElse(baseSourceSerializable, Set.empty) + packageObjectSerializable)
-    packageObjectToBaseSources.update(packageObjectSerializable, packageObjectToBaseSources.getOrElse(packageObjectSerializable, Set.empty) + baseSourceSerializable)
+    baseSourceToPackageObjects.update(baseSource, baseSourceToPackageObjects.getOrElse(baseSource, Set.empty) + packageObject)
   }
 
   def invalidatedPackageObjects(sources: Set[Path]): Set[Path] = synchronized {
-    sources.flatMap(f => baseSourceToPackageObjects.getOrElse(SerializablePath(f), Set.empty)).map(_.toPath) -- sources
+    sources.flatMap(baseSourceToPackageObjects.getOrElse(_, Set.empty)) -- sources
   }
 
   def clear(): Unit = synchronized {
     baseSourceToPackageObjects.clear()
-    packageObjectToBaseSources.clear()
   }
 
-  def save(context: CompileContext): Unit = {
-    val file = PackageObjectsData.storageFile(context)
-    PackageObjectsData.synchronized {
-      Using.resource(new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(file)))) { stream =>
-        stream.writeObject(this)
-        stream.flush()
+  def save(): Unit = synchronized {
+    try {
+      Files.createDirectories(file.getParent)
+      val lines = for {
+        (baseSource, packageObjects) <- baseSourceToPackageObjects.toSeq
+        packageObject <- packageObjects
+      } yield s"$baseSource\t$packageObject"
+      Files.write(file, lines.asJava, StandardCharsets.UTF_8)
+    } catch {
+      case NonFatal(e) => PackageObjectsData.Log.warn("Could not save data about package objects dependencies", e)
+    }
+  }
+
+  private def load(): Unit = synchronized {
+    if (Files.exists(file)) {
+      try {
+        Files.readAllLines(file, StandardCharsets.UTF_8).asScala.foreach { line =>
+          line.split('\t') match {
+            case Array(baseSource, packageObject) => add(Path.of(baseSource), Path.of(packageObject))
+            case _ =>
+          }
+        }
+      } catch {
+        case NonFatal(e) =>
+          PackageObjectsData.Log.warn("Could not read data about package objects dependencies", e)
+          clear()
+          Files.deleteIfExists(file)
       }
     }
   }
 }
 
-object PackageObjectsData {
+private object PackageObjectsData {
 
-  private val fileName = "packageObjects.dat"
+  private val Log = Logger.getInstance(classOf[PackageObjectsData])
 
   private val instances = mutable.HashMap.empty[Path, PackageObjectsData]
 
-  private def storageFile(context: CompileContext): Path = {
-    val storageRoot = context.getProjectDescriptor.dataManager.getDataPaths.getDataStorageDir
-    storageRoot.resolve(fileName)
-  }
-
-  def getFor(context: CompileContext): PackageObjectsData = {
-    def warning(message: String): Unit = {
-      context.processMessage(new CompilerMessage("scala", BuildMessage.Kind.WARNING, message))
+  def getFor(project: Project): PackageObjectsData = {
+    val file = CompilerPaths.getCompilerSystemDirectory(project).toPath.resolve("scala").resolve("packageObjects.dat")
+    synchronized {
+      instances.getOrElseUpdate(file, {
+        val data = new PackageObjectsData(file)
+        data.load()
+        data
+      })
     }
-
-    def tryToReadData(file: Path): PackageObjectsData =
-      synchronized {
-        Using(new ObjectInputStream(new BufferedInputStream(Files.newInputStream(file)))) { stream =>
-          stream.readObject().asInstanceOf[PackageObjectsData]
-        }.recover {
-          case e: Exception =>
-            warning(s"Could not read data about package objects dependencies: \n${e.getMessage}")
-            Files.deleteIfExists(file)
-            new PackageObjectsData()
-        }.get
-      }
-
-    def getOrLoadInstance(file: Path): PackageObjectsData =
-      instances.getOrElseUpdate(file, tryToReadData(file))
-
-    Option(storageFile(context))
-      .filter(Files.exists(_))
-      .fold(new PackageObjectsData())(getOrLoadInstance)
   }
 }

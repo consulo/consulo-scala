@@ -43,7 +43,7 @@ abstract class SbtDependencyCompletionContributorBase extends CompletionContribu
   extend(CompletionType.BASIC, PATTERN, provider)
 }
 
-@ExtensionImpl(id = "sbtDependencyVersionCompletionContributor")
+@ExtensionImpl(id = "sbtDependencyVersionCompletionContributor", order = "before filePath, before httpHeaderReferenceContributor, before urlPathReferenceContributor, before javaClassReference, before methodMerger")
 final class SbtDependencyVersionCompletionContributor extends SbtDependencyCompletionContributorBase {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

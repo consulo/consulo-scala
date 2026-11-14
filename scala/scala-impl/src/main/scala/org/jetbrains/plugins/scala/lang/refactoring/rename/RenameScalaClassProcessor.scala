@@ -24,7 +24,7 @@ import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplement
 import java.util
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-@ExtensionImpl
+@ExtensionImpl(order = "before javaClass, before aliasingPom")
 class RenameScalaClassProcessor extends RenameJavaClassProcessor with ScalaRenameProcessor {
   override def canProcessElement(element: PsiElement): Boolean = {
     element.is[ScTypeDefinition, PsiClassWrapper, ScTypeParam]

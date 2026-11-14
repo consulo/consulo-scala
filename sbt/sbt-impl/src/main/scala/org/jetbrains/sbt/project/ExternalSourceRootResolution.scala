@@ -309,8 +309,13 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
   ): Unit = {
     val node = new ModuleDependencyNode(ownerModule, module)
     node.setScope(dependencyScope)
-    // upstream: setProductionOnTestDependency for test source set dependencies, setOrder - not in Consulo
+    module match {
+      case sourceSetNode: SbtSourceSetModuleNode if sourceSetNode.sourceSetType == SourceSetType.Test =>
+        node.setProductionOnTestDependency(true)
+      case _ =>
+    }
     node.setExported(exported)
+    order.foreach(node.setOrder)
     ownerModule.add(node)
   }
 

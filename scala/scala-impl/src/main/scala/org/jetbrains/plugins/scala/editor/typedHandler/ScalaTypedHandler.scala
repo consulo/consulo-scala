@@ -44,7 +44,7 @@ import scala.annotation.tailrec
 import scala.language.implicitConversions
 
 //noinspection HardCodedStringLiteral
-@ExtensionImpl
+@ExtensionImpl(order = "before selectionQuoting, before space, before QuotesTypedHandlerAutoPopup, before SlashTypedHandlerAutoPopup, before java, before javadoc, before ScalacOptionsAutoPopupCompletionHandler, before ScalaAutoPopupCompletionHandler")
 final class ScalaTypedHandler extends TypedHandlerDelegate
   with IndentAdjustor
 {

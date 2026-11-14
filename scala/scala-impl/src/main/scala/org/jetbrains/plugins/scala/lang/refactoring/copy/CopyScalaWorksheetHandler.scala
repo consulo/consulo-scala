@@ -8,7 +8,7 @@ import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.refactoring.copy.CopyScalaWorksheetHandler.{isScalaWorksheetFile, isSingleScalaWorksheetFile}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before CopyClassesHandler, before copyFilesOrDirectories")
 class CopyScalaWorksheetHandler extends CopyHandlerDelegateBase {
 
   //CopyFilesOrDirectoriesHandler is in the platform and can't be missing

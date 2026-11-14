@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.lexer.ScalaDocTokenType
 import org.jetbrains.plugins.scala.lang.scaladoc.lexer.docsyntax.ScalaDocSyntaxElementType
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 
-@ExtensionImpl
+@ExtensionImpl(order = "before selectionQuoting, before space, before QuotesTypedHandlerAutoPopup, before SlashTypedHandlerAutoPopup, before java, before javadoc, before ScalaTypedHandler")
 final class ScalaDocTypedHandler extends TypedHandlerDelegate {
   private val SingleQuote = '\''
   private val MarkdownCompletionChars: Set[Char] = Set('*', '_', '`')

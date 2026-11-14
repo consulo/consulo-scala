@@ -11,7 +11,7 @@ import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.worksheet.{GotoOriginalHandlerUtil, WorksheetFile}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before ScalaGoToDeclarationHandler, before ScalaI18nMessageGotoDeclarationHandler")
 final class WorksheetResNGotoHandler extends GotoDeclarationHandler {
 
   override def getGotoDeclarationTargets(sourceElement: PsiElement, offset: Int, editor: Editor): Array[PsiElement] = {

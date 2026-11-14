@@ -1,11 +1,17 @@
 package org.jetbrains.plugins.scala.compiler.consulo
 
+import com.intellij.java.compiler.impl.javaCompiler.JavaCompilerConfiguration
 import com.intellij.java.compiler.impl.javaCompiler.javac.{JavacCompilerConfiguration, JavacSettingsBuilder}
+import com.intellij.java.language.impl.projectRoots.JavaSdkVersionUtil
+import com.intellij.java.language.projectRoots.JavaSdkVersion
+import consulo.java.compiler.impl.javaCompiler.JavaAdditionalOutputDirectoriesProvider
+import consulo.util.io.FileUtil
 import consulo.compiler.{CompileContext, CompileContextEx, CompilerEncodingService, CompilerPaths}
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import consulo.util.collection.Chunk
 import org.jetbrains.plugins.scala.compiler.data.{CompilationData, IncrementalityType, ZincData}
+import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 
@@ -50,7 +56,8 @@ private object CompilationDataFactory {
           case None => preferredEncoding.toSeq.flatMap(Seq("-encoding", _)) ++ compilerOptions
         }
 
-      val scalaOptions = compilerSettings.getOptionsAsStrings(module.hasScala3)
+      val configuredScalaOptions = compilerSettings.getOptionsAsStrings(module.hasScala3)
+      val scalaOptions = semanticDbOptionsFor(configuredScalaOptions, project) ++ configuredScalaOptions
       val javaOptions = javaOptionsFor(project, target)
 
       val classpathSet = classpath.toSet
@@ -109,9 +116,41 @@ private object CompilationDataFactory {
     withoutBooleans.toSeq
   }
 
+  private val SourceRootOptionScala2 = "-P:semanticdb:sourceroot"
+  private val SourceRootOptionScala3 = "-sourceroot"
+  private val SemanticDbOptionScala3 = "-Xsemanticdb"
+
+  /**
+   * When semantic db is enabled (via compiler plugin in Scala 2 or via compiler option in Scala3)
+   * the source root is set to the project base directory, unless it is configured explicitly
+   */
+  private def semanticDbOptionsFor(configuredOptions: Seq[String], project: Project): Seq[String] = {
+    val isSemanticDbEnabledScala2 = configuredOptions.exists(isSemanticDbPluginOption)
+    val hasSemanticDbPluginSourceRootOptionScala2 = configuredOptions.exists(_.startsWith(SourceRootOptionScala2))
+
+    val isSemanticDbEnabledScala3 = configuredOptions.contains(SemanticDbOptionScala3)
+    val hasSemanticDbPluginSourceRootOptionScala3 = configuredOptions.contains(SourceRootOptionScala3)
+
+    val baseDirectory = Option(project.getBasePath).map(Path.of(_).toAbsolutePath.toString)
+
+    if (isSemanticDbEnabledScala2 && !hasSemanticDbPluginSourceRootOptionScala2)
+      baseDirectory.map(dir => s"$SourceRootOptionScala2:$dir").toSeq
+    else if (isSemanticDbEnabledScala3 && !hasSemanticDbPluginSourceRootOptionScala3)
+      baseDirectory.map(dir => s"$SourceRootOptionScala3:$dir").toSeq
+    else
+      Seq.empty
+  }
+
+  private def isSemanticDbPluginOption(compilerOption: String): Boolean = {
+    val xPluginPrefix = "-Xplugin:"
+    compilerOption.startsWith(xPluginPrefix) &&
+      compilerOption.contains("semanticdb-scalac") &&
+      Files.exists(Path.of(compilerOption.substring(xPluginPrefix.length)))
+  }
+
   /**
    * upstream: CompilerDataFactory.javaOptionsFor (JavacOptionsProvider + JavaBuilder.addCompilationOptions),
-   * here the options of the consulo-java javac settings and of the module java extension
+   * here the options of the consulo-java javac settings, of the module java extension and of the annotation processing profile
    */
   private def javaOptionsFor(project: Project, target: BuildTarget): Seq[String] = {
     val chunk = new Chunk[Module](target.modules.toSet.asJava)
@@ -119,7 +158,37 @@ private object CompilationDataFactory {
     val extensionOptions = CompilerDataFactory.javaExtension(target.representativeModule).toSeq.flatMap { extension =>
       Option(extension.getBytecodeVersion).toSeq.flatMap(Seq("--release", _)) ++ extension.getCompilerArguments.asScala
     }
-    settings ++ extensionOptions
+    val processingOptions = annotationProcessingOptions(project, target.representativeModule)
+    settings.filterNot(_.startsWith("-proc:")) ++ extensionOptions ++ processingOptions
+  }
+
+  /**
+   * upstream: JavaBuilder.addCompilationOptions with the annotation processing profile of the module.
+   * Generated sources go to the directory of consulo-java's annotation processing compiler (production directory only).
+   */
+  private def annotationProcessingOptions(project: Project, module: Module): Seq[String] = inReadAction {
+    val profile = JavaCompilerConfiguration.getInstance(project).getAnnotationProcessingConfiguration(module)
+    if (profile == null || !profile.isEnabled) Seq("-proc:none")
+    else {
+      val generatedSources = Option(JavaAdditionalOutputDirectoriesProvider.getAnnotationProcessorsGenerationPath(module)).toSeq.flatMap { dir =>
+        Files.createDirectories(Path.of(dir))
+        Seq("-s", Path.of(dir).toString)
+      }
+      val processorPath =
+        if (profile.isObtainProcessorsFromClasspath) Seq.empty
+        else Seq("-processorpath", FileUtil.toSystemDependentName(profile.getProcessorPath))
+      val processors = profile.getProcessors.asScala.toSeq match {
+        case Seq() => Seq.empty
+        case names => Seq("-processor", names.mkString(","))
+      }
+      val processorOptions = profile.getProcessorOptions.asScala.toSeq.map { case (key, value) => s"-A$key=$value" }
+      // for javac from version 23 annotation processing must be enabled explicitly
+      val procFull = CompilerDataFactory.javaExtension(module)
+        .flatMap(extension => Option(JavaSdkVersionUtil.getJavaSdkVersion(extension.getSdk)))
+        .filter(_.isAtLeast(JavaSdkVersion.JDK_23))
+        .map(_ => "-proc:full")
+      processorPath ++ processors ++ processorOptions ++ procFull ++ generatedSources
+    }
   }
 
   private def checkOrCreate(output: Path): Unit = {

@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScExportStmt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 //noinspection ApiStatus,UnstableApiUsage
-@ExtensionImpl
+@ExtensionImpl(order = "before JavaGotoTargetPresentationProvider")
 final class ScalaGotoTargetPresentationProvider extends GotoTargetPresentationProvider {
 
   override def getPresentation(element: PsiElement, options: GotoTargetPresentationProvider.Options): TargetPresentation = element match {

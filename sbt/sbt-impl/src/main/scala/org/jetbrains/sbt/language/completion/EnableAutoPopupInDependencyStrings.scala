@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScInfixExpr}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 
-@ExtensionImpl
+@ExtensionImpl(order = "before scalaCompletionConfidence, before EnableAutoPopupInScalaDirectiveComment, before enableAutopopupInHttpHeaderReferences, before enableAutopopupInUrlReferences")
 class EnableAutoPopupInDependencyStrings extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

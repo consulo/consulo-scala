@@ -113,6 +113,7 @@ open module org.intellij.scala.maven {
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
     requires org.intellij.scala.sbt.impl;
+    requires org.intellij.scala.testing.support;
     requires org.jetbrains.idea.maven;
     requires org.jetbrains.idea.maven.server.common;
 

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
+import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.documentation.PsiCommentInlineDocumentation
 import consulo.document.util.TextRange
 import consulo.language.editor.documentation.{InlineDocumentation, InlineDocumentationProvider}
@@ -11,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 import java.util
 
 //noinspection UnstableApiUsage
+@ExtensionImpl(order = "before CompatibilityInlineDocumentationProvider")
 final class ScalaInlineDocumentationProvider extends InlineDocumentationProvider {
   // The platform's compatibility provider collects comments through ScalaDocumentationProvider.collectDocComments.
   override def inlineDocumentationItems(file: PsiFile): util.Collection[InlineDocumentation] =

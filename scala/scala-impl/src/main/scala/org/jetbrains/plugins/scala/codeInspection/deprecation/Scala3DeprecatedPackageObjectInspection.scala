@@ -7,7 +7,7 @@ import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import org.jetbrains.plugins.scala.codeInspection.{PsiUpdateContext, PsiUpdateFix}
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.codeInsight.unwrap.{ScalaUnwrapContext, ScalaUnwrapper}
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -34,7 +34,7 @@ class Scala3DeprecatedPackageObjectInspection extends LocalInspectionTool {
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case obj: ScObject if obj.isPackageObject && obj.isInScala3Module =>
       val fix = unwrapPackageObjectQuickFix(obj).toSeq
-      holder.registerProblem(obj.nameId, message, fix*)
+      holder.registerProblem(obj.nameId, message, ProblemHighlightType.LIKE_DEPRECATED, fix*)
     case _ =>
   }
 }

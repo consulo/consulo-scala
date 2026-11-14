@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
-import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.application.ApplicationManager
 import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, EditorFontType}
 import consulo.document.Document
@@ -13,10 +12,8 @@ import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.{AnnotatorHints, Text}
 import org.jetbrains.plugins.scala.codeInsight.hints.methodChains.ScalaMethodChainInlayHintsPass.{hasObviousReturnType, isFollowedByLineEnd, isUnqualifiedReference, methodChainContextMenu, removeLastIfHasTypeMismatch}
-import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, ScalaTypeHintsConfigurable, isTypeObvious, textPartsOf}
-import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHints, TextPartsHintRenderer}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
-import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.hints.{InlayHintsMenus, ScalaHintsSettings, isTypeObvious, textPartsOf}
+import org.jetbrains.plugins.scala.codeInsight.implicits.TextPartsHintRenderer
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt, PsiFileExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{MethodInvocation, ScArgumentExprList, ScBlockExpr, ScExpression, ScFunctionExpr, ScInfixExpr, ScMethodCall, ScParenthesisedExpr, ScReferenceExpression}
@@ -332,21 +329,5 @@ private object ScalaMethodChainInlayHintsPass {
     case _ => false
   }
 
-  private[methodChains] val methodChainContextMenu: MenuProvider = {
-    val actionGroup = new ActionGroup() {
-      override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
-        new AnAction(ScalaCodeInsightBundle.message("disable.hints.for.method.chains")) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            ScalaCodeInsightSettings.getInstance().showMethodChainInlayHints = false
-            ImplicitHints.updateInAllEditors()
-          }
-        },
-        // upstream: "Configure method chain hints" action (inlay settings models are not ported)
-        AnSeparator.getInstance,
-        ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
-      )
-    }
-
-    MenuProvider(actionGroup)
-  }
+  private[methodChains] val methodChainContextMenu: MenuProvider = MenuProvider(InlayHintsMenus.MethodChain)
 }

@@ -6,7 +6,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.quickfix.RemoveReturnKeywordQuickFix
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -37,6 +37,7 @@ class RemoveRedundantReturnInspection extends LocalInspectionTool {
               holder.registerProblem(
                 r.keyword,
                 ScalaInspectionBundle.message("return.keyword.is.redundant"),
+                ProblemHighlightType.LIKE_UNUSED_SYMBOL,
                 new RemoveReturnKeywordQuickFix(r)
               )
             }

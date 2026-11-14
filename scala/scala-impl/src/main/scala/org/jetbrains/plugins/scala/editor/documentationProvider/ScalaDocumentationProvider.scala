@@ -6,7 +6,9 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.ui.awt.HintUtil
 import com.intellij.java.language.impl.codeInsight.javadoc.JavaDocUtil
-import consulo.language.editor.documentation.{CodeDocumentationProvider, LanguageDocumentationProvider}
+import consulo.codeEditor.Editor
+import consulo.language.editor.TargetElementUtil
+import consulo.language.editor.documentation.{CodeDocumentationProvider, DocumentationProviderEx, LanguageDocumentationProvider}
 import consulo.logging.Logger
 import consulo.util.lang.Pair
 import consulo.language.psi.{PsiComment, PsiDocCommentBase, PsiElement, PsiFile, PsiManager}
@@ -30,8 +32,32 @@ import java.util.function.Consumer
 import scala.annotation.tailrec
 
 @ExtensionImpl(id = "ScalaDocumentationProvider")
-class ScalaDocumentationProvider extends CodeDocumentationProvider with LanguageDocumentationProvider {
+class ScalaDocumentationProvider extends DocumentationProviderEx with CodeDocumentationProvider with LanguageDocumentationProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  /**
+   * upstream: ScalaPsiDocumentationTargetProvider.documentationTarget. By taking the navigation element we also handle
+   * synthetic elements and show the documentation from library sources instead of decompiled classes.
+   * The multi-resolve target list (documentationTargets) has no Consulo counterpart.
+   */
+  @Nullable
+  override def getCustomDocumentationElement(editor: Editor, file: PsiFile, @Nullable contextElement: PsiElement, targetOffset: Int): PsiElement = {
+    if (file == null || !file.getLanguage.isKindOf(ScalaLanguage.INSTANCE)) return null
+
+    val flags = TargetElementUtil.getAllAccepted
+    val target = TargetElementUtil.findTargetElement(editor, flags, targetOffset) match {
+      case null => null
+      case element => Option(TargetElementUtil.adjustElement(editor, flags, element, contextElement)).getOrElse(element)
+    }
+    if (target == null || !target.isValid) return null
+
+    target.getNavigationElement match {
+      case null => null
+      case navigationElement if (navigationElement ne target) && navigationElement.getLanguage.isKindOf(ScalaLanguage.INSTANCE) =>
+        navigationElement
+      case _ => null
+    }
+  }
 
 
   override def getDocumentationElementForLookupItem(

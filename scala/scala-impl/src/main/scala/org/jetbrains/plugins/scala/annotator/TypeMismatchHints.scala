@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.annotator
 
-import consulo.ui.ex.action.{ActionGroup, ActionUpdateThread, AnAction, AnActionEvent}
 import consulo.codeEditor.CodeInsightColors
 import consulo.colorScheme.EditorColorsScheme
 import consulo.project.Project
@@ -19,8 +18,7 @@ import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt, TypePresentationContext}
-import org.jetbrains.plugins.scala.settings.sections.EditorSettingsSectionConfigurable
-import org.jetbrains.plugins.scala.settings.{ScalaProjectSettings, ShowSettingsUtilImplExt}
+import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import scala.util.chaining._
 
@@ -109,23 +107,7 @@ object TypeMismatchHints {
   }
 
 
-  private val typeMismatchHintContextMenu: MenuProvider = MenuProvider(
-    new ActionGroup() {
-      override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
-        new AnAction(ScalaBundle.message("type.mismatch.hint.context.menu.configure")) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            ShowSettingsUtilImplExt.showSettingsDialog(
-              e.getData(Project.KEY),
-              classOf[EditorSettingsSectionConfigurable],
-              ScalaBundle.message("scala.project.settings.form.show.type.mismatch.hints")
-            )
-          }
-
-          def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
-        }
-      )
-    }
-  )
+  private val typeMismatchHintContextMenu: MenuProvider = MenuProvider("Scala.TypeMismatchHintMenu")
 
   @Nls
   private[annotator] def tooltipFor(expectedType: ScType, actualType: ScType)(implicit tpc: TypePresentationContext, context: Context): String = {

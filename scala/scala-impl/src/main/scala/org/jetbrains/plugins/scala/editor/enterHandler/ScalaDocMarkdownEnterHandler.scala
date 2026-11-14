@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.editor.{DocumentExt, EditorExt}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, inWriteAction}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
-@ExtensionImpl
+@ExtensionImpl(order = "before ScalaDocTagEnterHandlerDelegate")
 class ScalaDocMarkdownEnterHandler extends EnterHandlerDelegateAdapter {
   override def postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result = {
     if (!file.is[ScalaFile] || !editor.inDocComment(editor.offset)) {

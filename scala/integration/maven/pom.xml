@@ -550,6 +550,12 @@
         </dependency>
         <dependency>
             <groupId>consulo.plugin</groupId>
+            <artifactId>org.intellij.scala-testing.support</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>consulo.plugin</groupId>
             <artifactId>org.jetbrains.idea.maven</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

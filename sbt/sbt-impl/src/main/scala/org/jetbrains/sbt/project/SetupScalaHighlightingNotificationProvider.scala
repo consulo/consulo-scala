@@ -27,7 +27,6 @@ import java.util.function.Supplier
  *  - `com.intellij.codeInsight.daemon.ProjectSdkSetupValidator`
  *  - `com.intellij.codeInsight.daemon.impl.JavaProjectSdkSetupValidator`
  */
-// upstream: no notifications while the project sync is in progress (IncompleteModelUtil.isIncompleteModel) - not in Consulo
 @ExtensionImpl
 private final class SetupScalaHighlightingNotificationProvider @Inject()(project: Project) extends EditorNotificationProvider {
 
@@ -42,6 +41,8 @@ private final class SetupScalaHighlightingNotificationProvider @Inject()(project
     if (SbtProjectUtil.isInSbtProject(psiFile)) {
       // We do not track the file type of this source file, do not show any notifications.
       if (!SbtProjectImportStateProblemHighlightFilter.isTrackedFileType(file.getFileType)) return null
+      // Project reload is already in progress, do not show any notifications.
+      if (isSyncInProgress) return null
 
       // The currently open file is not a writable project source, do not show any notifications.
       // This check filters out files created from reconstructed VCS history,
@@ -59,10 +60,15 @@ private final class SetupScalaHighlightingNotificationProvider @Inject()(project
       SbtProjectImportStateNotificationPanel.fillNotification(project, supplier.get())
     } else {
       val isScalaSource = isScalaSourceFile(file, project)
-      if (isScalaSource && !hasDeveloperKit(file)) createPanel(file, supplier.get())
+      // No notification while project sync is in progress
+      if (isScalaSource && !hasDeveloperKit(file) && !isSyncInProgress) createPanel(file, supplier.get())
       else null
     }
   }
+
+  // upstream: IncompleteModelUtil.isIncompleteModel
+  private def isSyncInProgress: Boolean =
+    SbtProjectImportStateService.instance(project).isResolveInProgress
 
   private def createPanel(file: VirtualFile, builder: EditorNotificationBuilder): EditorNotificationBuilder = {
     builder.asWarning()

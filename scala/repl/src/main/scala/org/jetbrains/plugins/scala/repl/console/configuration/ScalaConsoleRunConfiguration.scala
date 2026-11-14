@@ -11,7 +11,7 @@ import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.java.execution.configurations.fragment.VmParametersFragmentState
 import consulo.java.execution.projectRoots.OwnJdkUtil
 import consulo.module.Module
-import consulo.project.Project
+import consulo.project.{Project, ProjectPropertiesComponent}
 import consulo.content.bundle.Sdk
 import consulo.virtualFileSystem.util.PathsList
 import org.jdom.Element
@@ -231,16 +231,20 @@ class ScalaConsoleRunConfiguration(
   /** ShortenCommandLine.ARGS_FILE is intentionally not used even if JdkUtil.useClasspathJar is true
    * Scala REPL does not work in JDK 8 with manifest classpath
    *
-   * upstream: uses ShortenCommandLine.NONE when dynamic classpath is disabled for the project
-   *
    * @see [[com.intellij.execution.ShortenCommandLine.getDefaultMethod]]
    */
   private def getShortenCommandLineMethod(jdk: Option[Sdk]): ShortenCommandLine =
-    if (safeMap(jdk)(_.getHomePath).exists(OwnJdkUtil.isModularRuntime(_: String))) {
+    if (!useDynamicClasspath(getProject)) {
+      ShortenCommandLine.NONE
+    } else if (safeMap(jdk)(_.getHomePath).exists(OwnJdkUtil.isModularRuntime(_: String))) {
       ShortenCommandLine.ARGS_FILE
     } else {
       ShortenCommandLine.CLASSPATH_FILE
     }
+
+  // upstream: JdkUtil.useDynamicClasspath
+  private def useDynamicClasspath(project: Project): Boolean =
+    ProjectPropertiesComponent.getInstance(project).getBoolean("dynamic.classpath", java.lang.Boolean.getBoolean("idea.dynamic.classpath"))
 
   @inline
   private def safeMap[A, B](oa: Option[A])(f: A => B): Option[B] =

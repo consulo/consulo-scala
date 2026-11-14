@@ -79,6 +79,7 @@ open module org.intellij.scala {
     requires typesafe.config;
     requires maven.artifact;
     requires consulo.module.api;
+    requires consulo.module.creation.api;
     requires consulo.module.content.api;
     requires consulo.module.ui.api;
     requires consulo.navigation.api;
@@ -143,6 +144,7 @@ open module org.intellij.scala {
     exports org.jetbrains.plugins.scala.codeInsight.intention.comprehension;
     exports org.jetbrains.plugins.scala.codeInsight.intention.expression;
     exports org.jetbrains.plugins.scala.codeInsight.intention.imports;
+    exports org.jetbrains.plugins.scala.codeInsight.intention.lists;
     exports org.jetbrains.plugins.scala.codeInsight.intention.matcher;
     exports org.jetbrains.plugins.scala.codeInsight.intention.preview;
     exports org.jetbrains.plugins.scala.codeInsight.intention.types;
@@ -213,6 +215,7 @@ open module org.intellij.scala {
     exports org.jetbrains.plugins.scala.editor;
     exports org.jetbrains.plugins.scala.editor.autoimport;
     exports org.jetbrains.plugins.scala.editor.backspaceHandler;
+    exports org.jetbrains.plugins.scala.editor.floatingToolbar;
     exports org.jetbrains.plugins.scala.editor.codeFolding;
     exports org.jetbrains.plugins.scala.editor.copy;
     exports org.jetbrains.plugins.scala.editor.documentationProvider;

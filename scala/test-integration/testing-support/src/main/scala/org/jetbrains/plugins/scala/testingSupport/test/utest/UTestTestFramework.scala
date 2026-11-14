@@ -13,7 +13,7 @@ import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.Tes
 import org.jetbrains.plugins.scala.testingSupport.test.utest.UTestTestFramework._
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before JUnit3Framework, before JUnit4Framework, before JUnit5Framework, before TestNGFramework")
 final class UTestTestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "uTest"

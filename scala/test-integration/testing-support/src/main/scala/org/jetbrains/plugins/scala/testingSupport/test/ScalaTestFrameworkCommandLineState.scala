@@ -9,7 +9,13 @@ import consulo.execution.test.sm.SMTestRunnerConnectionUtil
 import consulo.execution.test.ui.BaseTestsOutputConsoleView
 import consulo.execution.ExecutionResult
 import consulo.execution.executor.Executor
-import consulo.application.ApplicationManager
+import consulo.application.{ApplicationManager, ReadAction}
+import consulo.dataContext.DataContext
+import consulo.language.editor.LangDataKeys
+import consulo.module.Module
+import consulo.pathMacro.{Macro, MacroManager}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import consulo.content.bundle.Sdk
 import consulo.disposer.Disposer
 import consulo.util.lang.StringUtil
@@ -199,12 +205,11 @@ class ScalaTestFrameworkCommandLineState(
       ProgramParametersUtil.getWorkingDir(configuration.testConfigurationData, project, module)
 
     def expandProgramArgument(arg: String): String =
-      // upstream: expandPathAndMacros (also IDE macros)
-      ProgramParametersUtil.expandPath(arg, module, project)
+      expandPathAndMacros(arg)
 
     /** expands path, macro and env variables */
     def expandVmOptions(vmOptions: String, envs: Map[String, String]): String = {
-      val expandedPaths = ProgramParametersUtil.expandPath(vmOptions, module, project)
+      val expandedPaths = expandPathAndMacros(vmOptions)
       //injection of environment variables to VM options was added within SCL-4812
       // I am not sure why, because no one asked for that, and it doesn't work for any other Run Configuration ATM
       val expandedEnvs = expandEnvs(expandedPaths, envs)
@@ -223,6 +228,29 @@ class ScalaTestFrameworkCommandLineState(
         EnvironmentUtil.inlineParentOccurrences(envs)
       }
       envs.asScala.view.mapValues(ProgramParametersUtil.expandPath(_, module, project)).toMap
+    }
+
+    // upstream: ProgramParametersUtil.expandPathAndMacros (the platform one expands only path macros)
+    private def expandPathAndMacros(text: String): String = {
+      val path = ProgramParametersUtil.expandPath(text, module, project)
+      if (path == null || !path.contains("$")) path
+      else {
+        val dataContext = DataContext.builder()
+          .add(VirtualFile.KEY, project.getBaseDir)
+          .add(Project.KEY, project)
+          .add(Project.PROJECT_FILE_DIRECTORY, project.getBaseDir)
+          .add(Module.KEY, module)
+          .add(LangDataKeys.MODULE_CONTEXT, module)
+          .build()
+        try {
+          val expanded = ReadAction.compute[String, Macro.ExecutionCancelledException] { () =>
+            MacroManager.getInstance().expandMacrosInString(path, false, dataContext)
+          }
+          if (expanded == null) path else expanded
+        } catch {
+          case _: Macro.ExecutionCancelledException => path
+        }
+      }
     }
   }
 }

@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.codeInsight.hints
 import consulo.language.editor.inlay.HintInfo.MethodInfo
 import consulo.language.editor.inlay.{HintInfo, InlayParameterHintsProvider}
 import consulo.language.Language
-import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.java.language.psi.PsiMethod
@@ -13,9 +12,6 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage.{INSTANCE => ScalaLanguage}
 import org.jetbrains.plugins.scala.annotator.hints.Hint.{HintPosition, MenuProvider}
 import org.jetbrains.plugins.scala.annotator.hints.{Hint, Text}
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaInlayParameterHintsPass._
-import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
-import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocQuickInfoGenerator
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -125,19 +121,7 @@ object ScalaInlayParameterHintsPass {
     }
   }
 
-  private val menu: MenuProvider = MenuProvider(new ActionGroup() {
-    override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
-      new AnAction(ScalaCodeInsightBundle.message("disable.hints.for.parameter.names")) {
-        override def actionPerformed(e: AnActionEvent): Unit = {
-          ScalaCodeInsightSettings.getInstance.showParameterNames = false
-          ImplicitHints.updateInAllEditors()
-        }
-      },
-      // upstream: "Configure parameter name hints" action (inlay settings models are not ported)
-      AnSeparator.getInstance,
-      ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
-    )
-  })
+  private val menu: MenuProvider = MenuProvider(InlayHintsMenus.ParameterNames)
 
   private def argumentHints(matchedParameters: Seq[(ScExpression, Parameter)]) = matchedParameters.collect {
     case (argument, parameter) if parameter.isByName =>

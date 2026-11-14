@@ -30,7 +30,7 @@ import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaFileType}
 
 import scala.collection.immutable.SortedMap
 
-@ExtensionImpl
+@ExtensionImpl(order = "before ScaladocCopyPastePreProcessor")
 class Scala3IndentationBasedSyntaxCopyPastePreProcessor extends CopyPastePreProcessor {
   // upstream: requiresAllDocumentsToBeCommitted(editor, project) = false (no such method in Consulo CopyPastePreProcessor)
 

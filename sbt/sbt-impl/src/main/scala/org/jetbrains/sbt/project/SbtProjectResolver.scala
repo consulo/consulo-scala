@@ -22,7 +22,11 @@ import consulo.application.platform.PlatformTransfer
 import consulo.platform.Platform
 import consulo.navigation.Navigatable
 import consulo.util.lang.SystemProperties
-import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
+import consulo.content.bundle.SdkTable
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.platform.JavaVersion
+import org.jetbrains.sbt.project.template.wizard.JdkSbtCompatibilityChecker
+import org.jetbrains.annotations.{Nls, NonNls, Nullable, TestOnly}
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.api.*
 import org.jetbrains.plugins.scala.build.*
@@ -111,12 +115,14 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     @Nullable ideaProject: Project
   )(implicit context: ImportContext): DataNode[ESProjectData] = {
 
-    // upstream: build progress events (ExternalSystemTaskExecutionEvent, TaskOperationDescriptor) - Consulo reports a status text
+    // upstream: build progress events are ExternalSystemTaskExecutionEvents - ExternalSystemNotificationReporter posts them to the sync view
     val esReporter = new ExternalSystemNotificationReporter(projectRoot.toCanonicalPath.toString, taskId, notifications)
     implicit val reporter: BuildReporter = if (isUnitTestMode) {
       val logReporter = new LogReporter
       new CompositeReporter(esReporter, logReporter)
     } else esReporter
+
+    validateJdkWithSbt(settings, context.sbtVersion, reporter)
 
     val structureDump = dumpStructure(projectRoot, sbtLauncher, context.sbtVersion, settings, ideaProject, indicator)
 
@@ -318,6 +324,52 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
       Using.resource(Files.newBufferedReader(remotePath, UTF_8)): reader =>
         Using.resource(PrintWriter(Files.newBufferedWriter(localPath, UTF_8, CREATE, TRUNCATE_EXISTING, WRITE))): writer =>
           reader.lines().forEach(writer.println(_))
+
+  // upstream: SbtExecutionAware.validateJDKWithSbt (ExternalSystemExecutionAware, checked the project JDK) - Consulo has no
+  // execution aware and no project JDK, the JDK chosen for the sbt process is checked when it is not a custom JVM
+  private def validateJdkWithSbt(settings: SbtExecutionSettings, sbtVersion: SbtVersion, buildReporter: BuildReporter): Unit = {
+    val vmExecutable = Option(settings.vmExecutable).map(_.toPath)
+    val jdkVersion = for {
+      jdkName <- settings.jdk
+      sdk <- Option(SdkTable.getInstance().findSdk(jdkName))
+      home <- Option(sdk.getHomePath)
+      if vmExecutable.exists(_.startsWith(Path.of(home)))
+      version <- Option(JavaVersion.tryParse(sdk.getVersionString))
+    } yield version
+
+    jdkVersion.foreach { version =>
+      val description = JdkSbtCompatibilityChecker.getMinimumJdkToSbtCompatibleVersion(version, sbtVersion) match {
+        case Some(minJdk) =>
+          Some(SbtBundle.message("sbt.jdk.compatibility.issue.jdk.too.low.description", sbtVersion.value.presentation, minJdk.feature))
+        case None =>
+          JdkSbtCompatibilityChecker.getHighestCompatibleJdkForSbt(version, sbtVersion).map { javaVersion =>
+            SbtBundle.message("sbt.jdk.compatibility.issue.description", javaVersion.feature, sbtVersion.value.presentation)
+          }
+      }
+      description.foreach(displayJdkSbtCompatibilityWarning(_, buildReporter))
+    }
+  }
+
+  private def displayJdkSbtCompatibilityWarning(@Nls description: String, buildReporter: BuildReporter): Unit = {
+    val quickFixId = "open_project_JDK"
+    val quickFix: BuildIssueQuickFix = new BuildIssueQuickFix {
+      override def getId: String = quickFixId
+
+      override def runQuickFix(project: Project, dataProvider: DataProvider): CompletableFuture[?] = {
+        ApplicationManager.getApplication.invokeLater(() => ShowSettingsUtil.getInstance().showProjectStructureDialog(project))
+        CompletableFuture.completedFuture(null)
+      }
+    }
+
+    val buildIssue: BuildIssue = new BuildIssue {
+      override def getTitle: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.jdk.compatibility.issue.title"))
+      override def getDescription: LocalizeValue =
+        LocalizeValue.of(description + SbtBundle.message("sbt.jdk.compatibility.issue.open.settings", quickFixId))
+      override def getQuickFixes: JList[BuildIssueQuickFix] = JList.of(quickFix)
+      override def getNavigatable(project: Project): Navigatable = null
+    }
+    buildReporter.warning(buildIssue)
+  }
 
   private def informAboutImportTimingEnabled(buildReporter: BuildReporter): Unit = {
     val quickFixId = "disable_import_timing"
@@ -1159,7 +1211,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     unmanagedSourcesAndDocsLibrary.foreach { lib =>
       val dependency = new LibraryDependencyNode(moduleNode, lib, esProjectData.LibraryLevel.MODULE)
       // Place the unmanagedSourcesAndDocsLibrary below project dependencies and unmanaged dependencies (but before library dependencies)
-      // upstream: dependency.setOrder(projectDependencies.size + unmanagedDependencies.size + 1) - not in Consulo
+      dependency.setOrder(projectDependencies.size + unmanagedDependencies.size + 1)
       dependency.setScope(DependencyScope.COMPILE)
       moduleNode.add(dependency)
     }
@@ -1370,7 +1422,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
         throw new ExternalSystemException("Library not found: " + name))
       val data = new LibraryDependencyNode(moduleData, library, esProjectData.LibraryLevel.PROJECT)
       val order = index + offset
-      // upstream: data.setOrder(order) - not in Consulo
+      data.setOrder(order)
       data.setScope(scopeFor(dependency.configurations))
       data
     }
@@ -1414,7 +1466,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     libraryNode.addPaths(esProjectData.LibraryPathType.SOURCE, sources)
 
     val result = new LibraryDependencyNode(moduleData, libraryNode, esProjectData.LibraryLevel.MODULE)
-    // upstream: result.setOrder(order) - not in Consulo
+    result.setOrder(order)
     result.setScope(scope)
     result
   }

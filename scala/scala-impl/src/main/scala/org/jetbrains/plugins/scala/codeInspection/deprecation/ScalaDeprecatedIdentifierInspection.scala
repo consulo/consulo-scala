@@ -6,7 +6,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.application.dumb.DumbAware
 import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{PsiElementVisitorSimple, ScalaInspectionBundle}
@@ -30,11 +30,13 @@ final class ScalaDeprecatedIdentifierInspection extends LocalInspectionTool with
       holder.registerProblem(
         ref.nameId,
         ScalaInspectionBundle.message("usage.of.deprecatedname.as.identifier.is.deprecated", ref.refName),
+        ProblemHighlightType.LIKE_DEPRECATED,
       )
     case named: ScNamedElement if deprecatedNames.contains(named.name) =>
       holder.registerProblem(
         named.nameId,
         ScalaInspectionBundle.message("usage.of.deprecatedname.as.identifier.is.deprecated", named.name),
+        ProblemHighlightType.LIKE_DEPRECATED,
       )
     case _ =>
   }

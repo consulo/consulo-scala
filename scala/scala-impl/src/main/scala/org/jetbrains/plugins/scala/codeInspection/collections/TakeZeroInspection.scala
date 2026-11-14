@@ -26,7 +26,7 @@ class TakeZeroInspection extends OperationOnCollectionInspection {
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case expr@_ `.take` arg if arg.textMatches("0") =>
-      holder.registerProblem(expr, ScalaInspectionBundle.message("take.0.is.always.empty"), ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+      holder.registerProblem(expr, ScalaInspectionBundle.message("take.0.is.always.empty"), ProblemHighlightType.LIKE_UNUSED_SYMBOL)
     case _ =>
   }
 

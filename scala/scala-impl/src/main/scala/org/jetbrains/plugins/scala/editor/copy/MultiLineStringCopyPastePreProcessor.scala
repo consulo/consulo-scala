@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.util.MultilineStringUtil
 /**
  * @see [[StringLiteralCopyPastePreProcessor]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before DebuggerCopyPastePreprocessor, before StringLiteralCopyPasteProcessor, before UsingDirectiveDependencyCopyPastePreProcessor")
 class MultiLineStringCopyPastePreProcessor extends CopyPastePreProcessor {
 
   override def preprocessOnCopy(file: PsiFile,

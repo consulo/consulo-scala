@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
  * @see [[MultiLineStringCopyPastePreProcessor]]
  * @see java version [[com.intellij.codeInsight.editorActions.StringLiteralCopyPasteProcessor]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before Scala3IndentationBasedSyntaxCopyPastePreProcessor")
 class StringLiteralCopyPastePreProcessor extends CopyPastePreProcessor {
 
   override def preprocessOnCopy(file: PsiFile, startOffsets: Array[Int], endOffsets: Array[Int], text: String): String = {

@@ -54,7 +54,7 @@ class MethodImplementationsSearch extends DefinitionsScopedSearchExecutor {
  *
  * Java analogue: [[com.intellij.psi.impl.search.JavaOverridingMethodsSearcher]]
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before JavaOverridingMethodsSearcher")
 class ScalaOverridingMemberSearcher extends OverridingMethodsSearchExecutor {
   override def execute(queryParameters: SearchParameters, consumer: Predicate[? >: PsiMethod]): Boolean = {
     val method = queryParameters.getMethod

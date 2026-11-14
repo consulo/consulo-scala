@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.editor.{DocumentExt, indentKeyword}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScCatchBlock, ScFinallyBlock, ScIf}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before AutoBraceEnterHandler")
 final class FormatKeywordAfterEnterHandler extends EnterHandlerDelegateAdapter {
   type KeywordF = PsiFile => (Document, Project, PsiElement, Int) => Unit
 

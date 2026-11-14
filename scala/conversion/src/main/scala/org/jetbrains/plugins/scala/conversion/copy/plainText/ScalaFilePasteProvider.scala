@@ -44,7 +44,7 @@ import scala.util.control.NonFatal
  * @note the provider is used from [[com.intellij.ide.CopyPasteDelegator]]
  */
 // upstream: order = "first" (not allowed on platform extension points)
-@ExtensionImpl(id = "scalaFilePasteProvider")
+@ExtensionImpl(id = "scalaFilePasteProvider", order = "before JavaFilePasteProvider, before fileList")
 final class ScalaFilePasteProvider extends FilePasteProvider {
 
   import ScalaFilePasteProvider.PasteActionIntention._

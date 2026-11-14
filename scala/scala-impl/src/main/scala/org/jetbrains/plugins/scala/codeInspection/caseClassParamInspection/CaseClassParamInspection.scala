@@ -41,7 +41,7 @@ final class CaseClassParamInspection extends LocalInspectionTool with DumbAware 
         holder.registerProblem(
           errorElement,
           ScalaBundle.message("val.on.case.class.param.redundant"),
-          ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+          ProblemHighlightType.LIKE_UNUSED_SYMBOL,
           new RemoveValQuickFix(classParam)
         )
       }

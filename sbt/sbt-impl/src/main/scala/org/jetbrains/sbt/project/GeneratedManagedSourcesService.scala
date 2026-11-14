@@ -21,6 +21,9 @@ private final class GeneratedManagedSourcesService {
   def setGeneratedForPath(path: String, value: Boolean): Unit = {
     generatedForPath.put(path, value)
   }
+
+  def generatedForAnyPath: Boolean =
+    generatedForPath.containsValue(java.lang.Boolean.TRUE)
 }
 
 private object GeneratedManagedSourcesService {

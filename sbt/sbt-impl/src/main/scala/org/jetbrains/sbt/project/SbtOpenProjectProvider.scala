@@ -28,11 +28,15 @@ class SbtOpenProjectProvider {
   def isProjectFile(file: consulo.virtualFileSystem.VirtualFile): Boolean =
     SbtProjectImportProvider.canImport(file)
 
-  def linkToExistingProject(externalProjectPath: String, project: Project): Unit = {
+  def linkToExistingProject(externalProjectPath: String, project: Project): Unit =
+    linkToExistingProject(externalProjectPath, project, _ => ())
+
+  def linkToExistingProject(externalProjectPath: String, project: Project, configure: SbtProjectSettings => Unit): Unit = {
     Log.debug(s"Link SBT project '$externalProjectPath' to existing project ${project.getName}")
 
     val sbtProjectSettings = SbtProjectSettings.forProject(project).getOrElse(SbtProjectSettings.default)
     sbtProjectSettings.setExternalProjectPath(externalProjectPath)
+    configure(sbtProjectSettings)
     attachSbtProjectAndRefresh(sbtProjectSettings, project)
   }
 

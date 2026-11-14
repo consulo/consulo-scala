@@ -9,6 +9,7 @@ import consulo.process.cmd.GeneralCommandLine
 import com.intellij.java.execution.configurations.RemoteConnection
 import consulo.process.cmd.ParametersList
 import consulo.process.cmd.GeneralCommandLine.ParentEnvironmentType
+import com.pty4j.{PtyProcess, WinSize}
 import consulo.process.{NativeProcessHandler, ProcessConsoleType, ProcessHandlerBuilder, ProcessHandlerFeature}
 import consulo.project.ui.notification.NotificationType
 import consulo.disposer.Disposable
@@ -156,7 +157,8 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
     val commandLine: GeneralCommandLine =
       createPtyCommandLine(vmExecutable, workingDir, vmOptions, launcher, programParams, sbtSettings.passParentEnvironment, sbtSettings.userSetEnvironment, useNewShell)
 
-    // upstream: PtyCommandLine with initial PTY window size and console mode settings
+    // upstream: PtyCommandLine with initial PTY window size and console mode settings - the console mode can't be set in Consulo,
+    // the window size is set right after the start (see patchInitialPtyWindowSize)
     val processHandler: NativeProcessHandler =
       ProcessHandlerBuilder.create(commandLine)
         .killable()
@@ -165,6 +167,7 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
         .shouldKillProcessSoftly(true)
         .build()
         .asInstanceOf[NativeProcessHandler]
+    patchInitialPtyWindowSize(processHandler, useNewShell)
 
     SbtProcessOutputDiagnosticsCollector.collectProcessOutputFrom(
       processHandler,
@@ -267,8 +270,13 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
       pty.withParentEnvironmentType(parentEnvironmentType)
     }
 
+    pty
+  }
+
+  private def patchInitialPtyWindowSize(processHandler: NativeProcessHandler, withNewShell: Boolean): Unit = {
     /*
-     upstream: the PTY window size is patched as described below, Consulo's pty command line has no initial size options
+     upstream: PtyCommandLine.withInitialColumns/withInitialRows - Consulo's pty command line has no initial size options,
+     the size of the started PTY process is set instead
 
      Setting an initial PTY window size for the sbt shell pty process.
 
@@ -285,7 +293,15 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
 
      Dynamic window size adjustments can be done in the custom TTY connector (see [[createTerminalConsole]]).
      */
-    pty
+    val shouldPatchInitialSize = withNewShell || Platform.current.os.isWindows
+    processHandler.getProcess match {
+      case ptyProcess: PtyProcess if shouldPatchInitialSize =>
+        try ptyProcess.setWinSize(new WinSize(2000, 100))
+        catch {
+          case e: Exception => log.warn("Can't set the initial PTY window size of the sbt shell", e)
+        }
+      case _ =>
+    }
   }
 
   /**
@@ -681,11 +697,28 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
   def sbtVersionUsedDuringProcessStart: Option[SbtVersion] =
     processData.map(_.sbtVersion)
 
-  // upstream: OSProcessUtil.terminateProcessGracefully (sends Ctrl+C on Windows)
+  // upstream: OSProcessUtil.terminateProcessGracefully (sends Ctrl+C on Windows) - the shell runs under a PTY,
+  // Ctrl+C is typed into it when there are no POSIX signals
   private def sendSigIntOrDestroy(processHandler: NativeProcessHandler): Unit =
     Option(processHandler.getFeature(classOf[ProcessHandlerFeature.POSIX])) match {
       case Some(posix) => posix.sendSignal(ProcessHandlerFeature.POSIX.SIGINT)
-      case None => processHandler.getProcess.destroy()
+      case None =>
+        processHandler.getProcess match {
+          case ptyProcess: PtyProcess if ptyProcess.isAlive && sendCtrlC(ptyProcess) =>
+          case process => process.destroy()
+        }
+    }
+
+  private def sendCtrlC(process: PtyProcess): Boolean =
+    try {
+      val input = process.getOutputStream
+      input.write(3)
+      input.flush()
+      true
+    } catch {
+      case e: java.io.IOException =>
+        log.debug("Can't send Ctrl+C to the sbt shell", e)
+        false
     }
 
   private[shell] def isRunWithNewShell: Boolean =

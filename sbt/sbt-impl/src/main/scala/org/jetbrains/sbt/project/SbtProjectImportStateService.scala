@@ -15,6 +15,8 @@ import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectUtil.{cachedModuleForPsiFile, isInSbtProject}
 
+import consulo.externalSystem.model.task.ExternalSystemTaskId
+
 import java.util.concurrent.ConcurrentHashMap
 
 // upstream: @Service(Array(Service.Level.PROJECT))
@@ -25,6 +27,16 @@ private[sbt] final class SbtProjectImportStateService @Inject()(project: Project
   import SbtProjectImportStateService.State
 
   private val state: ConcurrentHashMap[String, State] = new ConcurrentHashMap()
+
+  // upstream: IncompleteModelUtil.isIncompleteModel - Consulo has no incomplete model state, the running sbt
+  // project resolve tasks are tracked by SbtNotificationListener instead
+  private val resolveTasksInProgress: java.util.Set[ExternalSystemTaskId] = ConcurrentHashMap.newKeySet()
+
+  def isResolveInProgress: Boolean = !resolveTasksInProgress.isEmpty
+
+  def resolveStarted(id: ExternalSystemTaskId): Unit = resolveTasksInProgress.add(id)
+
+  def resolveFinished(id: ExternalSystemTaskId): Unit = resolveTasksInProgress.remove(id)
 
   /**
    * Checks if the project the provided file is in is imported as an sbt project using the

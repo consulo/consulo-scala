@@ -1,6 +1,7 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.plugins.scala.codeInsight.hints.codeVision
 
+import consulo.annotation.component.ExtensionImpl
 import consulo.versionControlSystem.codeVision.VcsCodeVisionLanguageContext
 import consulo.language.Language
 import consulo.language.psi.PsiElement
@@ -9,7 +10,8 @@ import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 
-private final class ScalaVcsCodeVisionContext extends VcsCodeVisionLanguageContext {
+@ExtensionImpl
+final class ScalaVcsCodeVisionContext extends VcsCodeVisionLanguageContext {
 
   import ScalaVcsCodeVisionContext._
 

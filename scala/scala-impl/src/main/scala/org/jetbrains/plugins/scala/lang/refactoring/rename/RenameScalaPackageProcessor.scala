@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.ScObjectImpl
 
 import java.{util => ju}
 
-@ExtensionImpl
+@ExtensionImpl(order = "before javaPackage, before RenamePsiDirectoryProcessor")
 class RenameScalaPackageProcessor extends RenamePsiPackageProcessor with ScalaRenameProcessor {
   private def substituteEnd(element: PsiElement): PsiElement = element match {
     case Target(end: ScEnd) =>

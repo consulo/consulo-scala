@@ -27,6 +27,8 @@ private object ScalaBuilder {
   /** zinc analysis files already reset in the current rebuild */
   private val ResetCacheFiles = Key.create[java.util.Set[Path]]("scala.compiler.reset.cache.files")
 
+  private val PackageObjectsCleared = Key.create[java.lang.Boolean]("scala.compiler.package.objects.cleared")
+
   // upstream: the plugin jps directory is the directory of the compiler-jps jar, the bridges are compiled into the compile server system directory
   private lazy val sbtData: Either[String, SbtData] =
     SbtData.from(ScalaPluginJars.jpsRoot, System.getProperty("java.class.version"), ContainerPathManager.get.getSystemDir.resolve("scala-compiler"))
@@ -67,8 +69,23 @@ private object ScalaBuilder {
           case NonFatal(e) if !client.isCanceled => client.trace(e)
           case NonFatal(_) =>
         }
+        if (incrementality == IncrementalityType.IDEA && !client.hasReportedErrors && !client.isCanceled) {
+          val packageObjects = packageObjectsData(project, context)
+          client.packageObjectBaseSources.foreach { case (baseSource, packageObject) => packageObjects.add(baseSource, packageObject) }
+          packageObjects.save()
+        }
         client.registerOutputs(compilationData.output, sources, sink)
     }
+  }
+
+  /** upstream: IdeaIncrementalBuilder, the data is cleared on rebuild */
+  def packageObjectsData(project: Project, context: CompileContext): PackageObjectsData = {
+    val data = PackageObjectsData.getFor(project)
+    if (context.isRebuild && context.getUserData(PackageObjectsCleared) == null) {
+      context.putUserData(PackageObjectsCleared, java.lang.Boolean.TRUE)
+      data.clear()
+    }
+    data
   }
 
   private def resetCacheFile(context: CompileContext, cacheFile: Path): Unit = {

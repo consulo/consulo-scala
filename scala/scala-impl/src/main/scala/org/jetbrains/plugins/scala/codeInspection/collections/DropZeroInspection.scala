@@ -2,6 +2,7 @@ package org.jetbrains.plugins.scala.codeInspection.collections
 
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
+import consulo.language.editor.inspection.ProblemHighlightType
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
@@ -20,6 +21,8 @@ class DropZeroInspection extends OperationOnCollectionInspection {
   override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
+
+  override protected def problemHighlightType: ProblemHighlightType = ProblemHighlightType.LIKE_UNUSED_SYMBOL
 
   override def possibleSimplificationTypes: Seq[SimplificationType] = {
     ArraySeq(DropZeroOption)

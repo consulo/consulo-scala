@@ -7,7 +7,7 @@ import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 
-import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import consulo.language.psi.PsiElementVisitor
 import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.incremental.Highlighting._
@@ -73,7 +73,7 @@ class ScalaWrongPlatformMethodsUsageInspection extends LocalInspectionTool {
                         "or use \"for Java only\" text in bounded doc comment owner ScalaDoc." +
                         properMethodText +
                         "</html>"
-                      holder.registerProblem(ref.nameId, message)
+                      holder.registerProblem(ref.nameId, message, ProblemHighlightType.LIKE_DEPRECATED)
                     }
                   case _ =>
                 }

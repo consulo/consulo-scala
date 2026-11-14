@@ -64,15 +64,28 @@ final class ScalaCompiler @Inject()(project: Project) extends TranslatingCompile
     // production first: the test target has the production output in its classpath
     for (isTests <- Seq(false, true) if !context.getProgressIndicator.isCanceled) {
       val target = BuildTarget(modules, isTests)
-      val dirty = dirtyFiles.filter(contextEx.isInTestSourceContent(_) == isTests)
+      val targetDirty = dirtyFiles.filter(contextEx.isInTestSourceContent(_) == isTests)
       val allSources = inReadAction(target.allSources(context))
+      val dirty = incrementality match {
+        // upstream: IdeaIncrementalBuilder marks the package objects of changed base class sources dirty
+        case IncrementalityType.IDEA if !context.isRebuild =>
+          val allSourcesSet = allSources.toSet
+          val packageObjects = ScalaBuilder.packageObjectsData(project, context)
+            .invalidatedPackageObjects(targetDirty.toSet)
+            .filter(file => allSourcesSet.contains(file) && Files.exists(file))
+          targetDirty ++ packageObjects.toSeq.sorted
+        case _ => targetDirty
+      }
       val run = incrementality match {
         // zinc finds the changes itself: it must also run for removed sources and for changes of the production target
         case IncrementalityType.SBT => allSources.nonEmpty || Files.exists(target.cacheFile(project))
         case IncrementalityType.IDEA => dirty.exists(_.getFileName.toString.endsWith(ScalaCompiler.ScalaExtension))
       }
       if (run) {
-        ScalaBuilder.compile(project, context, target, incrementality, dirty, allSources, sink)
+        val generated = ScalaBuilder.compile(project, context, target, incrementality, dirty, allSources, sink)
+        if (generated && incrementality == IncrementalityType.SBT) {
+          ScalaDependencyCache.in(context).foreach(_.moduleCompiled(modules))
+        }
       }
     }
   }

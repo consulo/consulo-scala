@@ -7,4 +7,6 @@ import org.jetbrains.sbt.api.SbtVersion
 class SbtNewModuleContext(isNewProject: Boolean) extends NewModuleWizardContextBase(isNewProject) {
   var sbtVersion: SbtVersion = SbtVersion.Latest.Sbt_1
   var scalaVersion: String = ScalaVersion.Latest.Scala_2_13.minor
+  var downloadScalaSdkSources: Boolean = true
+  var downloadSbtSources: Boolean = false
 }

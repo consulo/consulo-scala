@@ -6,7 +6,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
 import com.intellij.java.language.psi.{PsiAnnotationOwner, PsiDocCommentOwner, PsiMember, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiNamedElement}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
@@ -46,7 +46,7 @@ class ScalaDeprecationInspection extends LocalInspectionTool {
       element match {
         case param: ScParameter if result.isNamedParameter && !ScalaNamesUtil.equivalent(param.name, name) =>
           param.deprecatedName.foreach { deprecatedName =>
-            holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("parameter.name.is.deprecated", deprecatedName))
+            holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("parameter.name.is.deprecated", deprecatedName), ProblemHighlightType.LIKE_DEPRECATED)
           }
         case named: PsiNamedElement =>
           val context = named.nameContext
@@ -70,9 +70,9 @@ class ScalaDeprecationInspection extends LocalInspectionTool {
           deprecatedElement.foreach { deprecatedElement =>
             val message = deprecationMessage(deprecatedElement).getOrElse("")
             if (isImplicitConversion) {
-              holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("implicit.conversion.is.deprecated", name, message))
+              holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("implicit.conversion.is.deprecated", name, message), ProblemHighlightType.LIKE_DEPRECATED)
             } else {
-              holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("symbol.name.is.deprecated.with.message", name, message))
+              holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("symbol.name.is.deprecated.with.message", name, message), ProblemHighlightType.LIKE_DEPRECATED)
             }
           }
         case _ => ()
@@ -83,7 +83,7 @@ class ScalaDeprecationInspection extends LocalInspectionTool {
       result.getActualElement match {
         case owner: PsiAnnotationOwner if owner.hasAnnotation("scala.deprecatedInheritance") =>
           val message = deprecationMessage(owner).getOrElse("")
-          holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("inheriting.form.name.is.deprecated.message", name, message))
+          holder.registerProblem(elementToHighlight, ScalaInspectionBundle.message("inheriting.form.name.is.deprecated.message", name, message), ProblemHighlightType.LIKE_DEPRECATED)
         case _ =>
       }
     }
@@ -92,10 +92,10 @@ class ScalaDeprecationInspection extends LocalInspectionTool {
       superMethod match {
         case owner if owner.isDeprecated =>
           val message = deprecationMessage(owner).getOrElse("")
-          holder.registerProblem(method.nameId, ScalaInspectionBundle.message("super.method.name.is.deprecated.with.message", method.name, message))
+          holder.registerProblem(method.nameId, ScalaInspectionBundle.message("super.method.name.is.deprecated.with.message", method.name, message), ProblemHighlightType.LIKE_DEPRECATED)
         case owner  if owner.hasAnnotation("scala.deprecatedOverriding") =>
           val message = deprecationMessage(owner).getOrElse("")
-          holder.registerProblem(method.nameId, ScalaInspectionBundle.message("overriding.is.deprecated", method.name, message))
+          holder.registerProblem(method.nameId, ScalaInspectionBundle.message("overriding.is.deprecated", method.name, message), ProblemHighlightType.LIKE_DEPRECATED)
         case _ =>
       }
     }

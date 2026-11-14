@@ -20,7 +20,7 @@ import org.jetbrains.plugins.scalaDirective.lang.completion.{DirectivePrefix, Us
 import org.jetbrains.plugins.scalaDirective.lang.lexer.ScalaDirectiveTokenTypes
 import org.jetbrains.plugins.scalaDirective.psi.api.ScDirective
 
-@ExtensionImpl
+@ExtensionImpl(order = "before DebuggerCopyPastePreprocessor, before StringLiteralCopyPasteProcessor, before StringLiteralCopyPastePreProcessor")
 final class UsingDirectiveDependencyCopyPastePreProcessor extends CopyPastePreProcessor {
   override def preprocessOnCopy(file: PsiFile, startOffsets: Array[Int], endOffsets: Array[Int], text: String): String = null
 

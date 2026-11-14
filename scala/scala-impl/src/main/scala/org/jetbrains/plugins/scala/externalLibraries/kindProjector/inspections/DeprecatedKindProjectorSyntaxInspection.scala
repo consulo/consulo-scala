@@ -6,7 +6,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalInspectionTool, LocalQuickFix, ProblemHighlightType, ProblemsHolder}
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.annotations.Nls
@@ -35,7 +35,7 @@ class DeprecatedKindProjectorSyntaxInspection extends LocalInspectionTool {
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case DeprecatedIdentifier(e, qf, message) =>
       //noinspection ReferencePassedToNls
-      holder.registerProblem(e, message, qf.toArray[LocalQuickFix]*)
+      holder.registerProblem(e, message, ProblemHighlightType.LIKE_UNUSED_SYMBOL, qf.toArray[LocalQuickFix]*)
     case _ =>
   }
 }

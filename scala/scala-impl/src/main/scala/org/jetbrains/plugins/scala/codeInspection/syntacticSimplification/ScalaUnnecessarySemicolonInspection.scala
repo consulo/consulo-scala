@@ -74,7 +74,7 @@ final class ScalaUnnecessarySemicolonInspection extends LocalInspectionTool with
 
           if (canRemove) {
             holder.registerProblem(holder.getManager.createProblemDescriptor(element, ScalaInspectionBundle.message("unnecessary.semicolon"), true,
-              ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly, new RemoveSemicolonFix(element)))
+              ProblemHighlightType.LIKE_UNUSED_SYMBOL, isOnTheFly, new RemoveSemicolonFix(element)))
           }
         }
         super.visitElement(element)

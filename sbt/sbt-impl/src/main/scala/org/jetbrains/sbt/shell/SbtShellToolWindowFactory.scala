@@ -2,7 +2,9 @@ package org.jetbrains.sbt.shell
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.ui.ex.action.{ActionGroup, ActionManager}
+import consulo.ui.ex.action.{ActionGroup, ActionManager, KeyboardShortcut}
+import consulo.ui.ex.keymap.KeymapManager
+import consulo.ui.event.details.{KeyCode, KeyStroke, ModifiedInputDetails}
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.application.dumb.DumbAware
@@ -59,12 +61,34 @@ class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
     SbtUtil.isSbtProject(project)
 
   // called once per project open
-  // upstream: also adds the ctrl+shift+S shortcut of the "activate tool window" action to the default keymap
   @RequiredUIAccess
   override def init(project: Project, toolWindow: ToolWindow): Unit = {
     Log.debug("init")
     toolWindow.setDisplayName(LocalizeValue.of(SbtShellToolWindowFactory.Title))
     toolWindow.setIcon(ToolWindowIconSupplier.getOriginalIcon)
+
+    // upstream: ActivateToolWindowAction.Manager.getActionIdForToolWindow - the same id rule in Consulo (internal class)
+    val actionId = "Activate" + toolWindow.getId.replace(" ", "") + "ToolWindow"
+    addShortcuts(actionId)
+  }
+
+  private def addShortcuts(actionId: String): Unit = {
+    val keymapManager = KeymapManager.getInstance()
+
+    val defaultShortcut =
+      new KeyboardShortcut(KeyStroke.pressed(KeyCode.S, ModifiedInputDetails.Modifier.SHIFT, ModifiedInputDetails.Modifier.CTRL), null)
+
+    val defaultKeymap = keymapManager.getKeymap(KeymapManager.DEFAULT_IDEA_KEYMAP)
+    if (defaultKeymap != null && !defaultKeymap.getShortcuts(actionId).contains(defaultShortcut)) {
+      defaultKeymap.addShortcut(actionId, defaultShortcut)
+    }
+
+    // NetBeans SaveAll is the only conflicting shortcut, and has the alternative ctrl+s
+    // so I think it's low impact to just remove this one conflict
+    val netbeansKeymap = keymapManager.getKeymap("NetBeans 6.5")
+    if (netbeansKeymap != null) {
+      netbeansKeymap.removeShortcut("SaveAll", defaultShortcut)
+    }
   }
 
   // called once per project open, is not called during sbt shell restart OR close/open etc...
