@@ -29,7 +29,7 @@ class Cache[K, V](capacity: Int) {
   private val underlying: java.util.LinkedHashMap[K, Either[Promise[V], SoftReference[V]]] =
     new java.util.LinkedHashMap[K, Either[Promise[V], SoftReference[V]]](capacity, 0.75f, true) {
       override protected def removeEldestEntry(eldest: java.util.Map.Entry[K, Either[Promise[V], SoftReference[V]]]): Boolean = {
-        eldest.getValue.fold(_ => false, _ => size() > capacity)
+        eldest.getValue.fold(_ => false, _ => size() > Cache.this.capacity)
       }
     }
 

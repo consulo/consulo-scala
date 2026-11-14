@@ -498,4 +498,12 @@ open module org.intellij.scala {
     exports org.jetbrains.plugins.scalaDoc;
     exports org.jetbrains.plugins.scalaDoc.highlighter;
     exports org.jetbrains.plugins.scalaDoc.lang.parser;
+
+    // bundled scala-parser-combinators, also used by zinc in the compile-server module
+    exports scala.util.parsing.combinator;
+    exports scala.util.parsing.combinator.lexical;
+    exports scala.util.parsing.combinator.syntactical;
+    exports scala.util.parsing.combinator.token;
+    exports scala.util.parsing.input;
+    exports scala.util.parsing.json;
 }

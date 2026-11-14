@@ -1,7 +1,7 @@
 package org.jetbrains.jps.incremental.scala
 package local.zinc
 
-import com.intellij.openapi.util.io.NioFiles
+import consulo.util.io.FileUtil
 import org.jetbrains.jps.incremental.scala.local.ClassFileUtils
 import sbt.internal.inc.PlainVirtualFileConverter
 import xsbti.VirtualFile
@@ -31,7 +31,7 @@ class IntellijClassfileManager extends ClassFileManager {
     val tastyFiles = classes.flatMap { virtualFile =>
       ClassFileUtils.correspondingTastyFile(PlainVirtualFileConverter.converter.toPath(virtualFile))
     }
-    tastyFiles.foreach(NioFiles.deleteRecursively)
+    tastyFiles.foreach(FileUtil.delete(_))
     _deleted :+= classes.map { virtualFile =>
       PlainVirtualFileConverter.converter.toPath(virtualFile)
     }

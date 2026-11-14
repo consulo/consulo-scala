@@ -1,9 +1,10 @@
 package org.jetbrains.jps.incremental.scala.local
 
 import org.jetbrains.jps.incremental.scala.local.CompilerFactoryImpl._
-import org.jetbrains.jps.incremental.scala.{Client, CompileServerBundle, compilerVersion}
+import org.jetbrains.jps.incremental.scala.shared.{Client, compilerVersion}
+import org.jetbrains.jps.incremental.scala.CompileServerBundle
 import org.jetbrains.plugins.scala.compiler.data.{CompilerData, CompilerJars, IncrementalityType, SbtData}
-import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.plugins.scala.rt.project.Version
 import sbt.internal.inc._
 import sbt.internal.inc.classpath.{ClassLoaderCache, ClasspathUtil}
 import sbt.internal.inc.javac.JavaTools
@@ -98,7 +99,7 @@ class CompilerFactoryImpl(sbtData: SbtData) extends CompilerFactory {
 
 object CompilerFactoryImpl {
 
-  import com.intellij.openapi.diagnostic.{Logger => IdeaLogger}
+  import consulo.logging.{Logger => IdeaLogger}
 
   private val Log: IdeaLogger = IdeaLogger.getInstance(classOf[CompilerFactoryImpl])
 

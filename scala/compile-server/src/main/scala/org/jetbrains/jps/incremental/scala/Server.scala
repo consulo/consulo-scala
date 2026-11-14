@@ -1,5 +1,7 @@
 package org.jetbrains.jps.incremental.scala
 
+
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.data.{CompilationData, CompilerData, DocumentCompilationArguments, SbtData}
 
 import java.net.{InetAddress, SocketException, SocketTimeoutException, UnknownHostException}

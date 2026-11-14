@@ -74,6 +74,7 @@
         <module>scala/repl</module>
         <module>scala/integration/regexp</module>
         <module>scala/compiler-integration-server-management</module>
+        <module>scala/compile-server</module>
         <module>plugin</module>
     </modules>
 

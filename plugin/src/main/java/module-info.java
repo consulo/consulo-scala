@@ -13,4 +13,5 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.intellilang;
     requires transitive org.intellij.scala.repl;
     requires transitive org.intellij.scala.compiler.integration.server.management;
+    requires transitive org.intellij.scala.compile.server;
 }

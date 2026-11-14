@@ -1,6 +1,8 @@
 package org.jetbrains.jps.incremental.scala
 package local
 
+
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.data.CompilationData
 
 trait Compiler {

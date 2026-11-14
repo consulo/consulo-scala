@@ -1,6 +1,6 @@
 package org.jetbrains.jps.incremental.scala.local
 
-import org.jetbrains.jps.incremental.scala.{Client, DelegateClient}
+import org.jetbrains.jps.incremental.scala.shared.{Client, DelegateClient}
 
 import java.nio.file.Path
 

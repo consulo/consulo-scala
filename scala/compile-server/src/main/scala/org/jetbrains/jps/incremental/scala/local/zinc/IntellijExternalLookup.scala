@@ -1,6 +1,6 @@
 package org.jetbrains.jps.incremental.scala.local.zinc
 
-import org.jetbrains.jps.incremental.scala.Client
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.jps.incremental.scala.local.zinc.IntellijExternalLookup.EmptyProvenanceLookupAnalyzedClassResult
 import org.jetbrains.plugins.scala.compiler.data.CompilationData
 import sbt.internal.inc._

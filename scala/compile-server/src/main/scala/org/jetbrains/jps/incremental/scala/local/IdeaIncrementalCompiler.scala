@@ -1,6 +1,6 @@
 package org.jetbrains.jps.incremental.scala.local
 
-import org.jetbrains.jps.incremental.scala.Client
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.data.{CompilationData, DocumentCompilationData}
 import sbt.internal.inc.{AnalyzingCompiler, CompileOutput, StringVirtualFile}
 import xsbti._

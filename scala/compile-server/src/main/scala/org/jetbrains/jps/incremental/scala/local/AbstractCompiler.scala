@@ -1,7 +1,10 @@
 package org.jetbrains.jps.incremental.scala
 package local
 
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+
+import org.jetbrains.jps.incremental.scala.shared.Client
+import org.jetbrains.jps.incremental.scala.shared.MessageKind
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.diagnostics
 import xsbti._
 import xsbti.compile._
