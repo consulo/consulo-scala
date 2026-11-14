@@ -1,24 +1,34 @@
 package org.jetbrains.plugins.scala.structureView
 
+import consulo.annotation.access.RequiredReadAction
 import consulo.annotation.component.ExtensionImpl
-
+import consulo.application.ui.UISettings
+import consulo.codeEditor.Editor
+import consulo.dataContext.DataContext
 import consulo.language.editor.ui.navigationBar.StructureAwareNavBarModelExtension
 import consulo.language.Language
-import consulo.language.psi.PsiElement
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiNamedElementExt}
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
-import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScValueOrVariable, ScValueOrVariableDefinition}
+import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
+import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClause
+import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScDo, ScExpression, ScFunctionExpr, ScIf, ScMatch, ScNewTemplateDefinition, ScWhile}
+import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScClassParameter, ScParameter}
+import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScTypeAlias, ScValue, ScValueOrVariable, ScValueOrVariableDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
-import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenAlias, ScTypeDefinition, ScTypeDefinitionLike}
+import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTemplateDefinition, ScTypeDefinitionLike}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.projectView.FileKind
+import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.structureView.element.{AbstractItemPresentation, Element}
 
 // upstream: order = "first" (not allowed on platform extension points)
+// upstream: editor breadcrumbs come from ScalaBreadcrumbsInfoProvider; in Consulo the navigation bar plays that role,
+// so the leaf, the parent chain and the texts below follow the breadcrumbs provider
 @ExtensionImpl(order = "before JavaNavBarExtension, before ScratchNavBarExtension")
 class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
+  import ScalaNavBarModelExtension.*
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
@@ -46,6 +56,36 @@ class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
     // contents are the matching top-level type definition and, at most, its companion.
     FileKind.getForFile(file).map(_.representative)
 
+  @RequiredReadAction
+  override def getLeafElement(dataContext: DataContext): PsiElement = {
+    if (!UISettings.getInstance().getShowMembersInNavigationBar) return null
+
+    val file = dataContext.getData(PsiFile.KEY)
+    val editor = dataContext.getData(Editor.KEY)
+    if (!file.isInstanceOf[ScalaFile] || editor == null) return null
+
+    val offset = editor.getCaretModel.getOffset
+    val atCaret = Option(file.findElementAt(offset)).orElse(if (offset > 0) Option(file.findElementAt(offset - 1)) else None)
+    atCaret
+      .filter(_.getLanguage == getLanguage)
+      .flatMap(_.withParentsInFile.find(isShown))
+      .orNull
+  }
+
+  @Nullable
+  @RequiredReadAction
+  override def getParent(psiElement: PsiElement): PsiElement = psiElement match {
+    case _: ScalaFile =>
+      null
+    case element: ScalaPsiElement if element.getContainingFile.isInstanceOf[ScalaFile] =>
+      element.parentsInFile.find(isShown).getOrElse {
+        val file = element.getContainingFile.asInstanceOf[ScalaFile]
+        if (acceptParentFromModel(file)) file else null
+      }
+    case _ =>
+      super.getParent(psiElement)
+  }
+
   @Nullable
   override def getPresentableText(item: Any): String = getPresentableText(item, false)
 
@@ -54,65 +94,108 @@ class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
     case file: ScalaFile =>
       file.name
     case element: ScalaPsiElement =>
-      val resultText = element match {
-        case v: ScValueOrVariable => getPresentableText_ForVarOrVal(v)
-        case _: ScExtension       => Some("extension")
-        case td: ScTypeDefinition => getPresentableText_ForTypeDefinition(td)
-        case ga: ScGivenAlias     => getPresentableText_ForGivenAlias(ga)
-        case ntd: ScNewTemplateDefinition if ntd.isAnonymous => getPresentableText_ForAnonymousClass(ntd)
-        case n: ScNamedElement      => Option(n.name)
-        case _                      => Element.forPsiElement(element).collect { case e: AbstractItemPresentation => e.presentableText }
-      }
-      resultText.orNull
+      describe(element)
+        .orElse(Element.forPsiElement(element).collect { case e: AbstractItemPresentation => e.presentableText })
+        .orNull
     case _ =>
       null
   }
+}
 
-  private def getPresentableText_ForVarOrVal(valOrVar: ScValueOrVariable): Option[String] =
-    valOrVar match {
-      case definition: ScValueOrVariableDefinition if !definition.isSimple =>
-        //Example: `val (x, y) = ...` show full `(x, y)`
-        Some(definition.pList.getText)
-      case _ =>
-        val namedElement = valOrVar.declaredElements.headOption
-        namedElement.flatMap(el => Option(el.name))
+object ScalaNavBarModelExtension {
+  private val PAR_HOLDER = "(...)"
+
+  private val MAX_TEXT_LENGTH = 150
+  private val MAX_STRING_LENGTH = 25
+
+  // upstream: ScalaBreadcrumbsInfoProvider.acceptElement
+  private def isShown(element: PsiElement): Boolean = {
+    lazy val settings = ScalaProjectSettings.getInstance(element.getProject)
+
+    element match {
+      case newDef: ScNewTemplateDefinition => newDef.isAnonymous && settings.isBreadcrumbsClassEnabled
+      case _: ScTemplateDefinition => settings.isBreadcrumbsClassEnabled
+      case _: ScFunctionExpr => settings.isBreadcrumbsLambdaEnabled
+      case _: ScFunction => settings.isBreadcrumbsFunctionEnabled
+      case _: ScCaseClause | _: ScMatch => settings.isBreadcrumbsMatchEnabled
+      // upstream: shown only with the val/def setting; here vals, vars, type aliases and extensions that are
+      // class or file members are always shown, like their structure view nodes listed in the navbar popups
+      case member@(_: ScValueOrVariable | _: ScTypeAlias | _: ScExtension) =>
+        settings.isBreadcrumbsValDefEnabled || !member.asInstanceOf[ScMember].isLocal
+      case _: ScMember => settings.isBreadcrumbsValDefEnabled
+      case _: ScIf | _: ScWhile | _: ScDo => settings.isBreadcrumbsIfDoWhileEnabled
+      case _ => false
     }
-
-  private def getPresentableText_ForTypeDefinition(typeDefinition: ScTypeDefinition): Option[String] =
-    Option(typeDefinition.name)
-
-  private def getPresentableText_ForGivenAlias(givenAlias: ScGivenAlias): Option[String] =
-    Option(givenAlias.name)
-
-  private def getPresentableText_ForAnonymousClass(definition: ScNewTemplateDefinition): Option[String] = {
-    val baseTypeName = definition.firstConstructorInvocation.flatMap(_.simpleTypeElement).map(_.getText)
-    baseTypeName.map(typeName => s"anonymous $typeName")
   }
 
-  @Nullable
-  override def getParent(psiElement: PsiElement): PsiElement = psiElement match {
+  // upstream: ScalaBreadcrumbsInfoProvider.getElementInfo
+  private def describe(element: ScalaPsiElement): Option[String] = element match {
+    case newDef: ScNewTemplateDefinition if newDef.isAnonymous => Some(describeNewTemplate(newDef))
+    case _: ScNewTemplateDefinition => None
+    case clazz: ScTemplateDefinition => Option(clazz.name)
+    case funExpr: ScFunctionExpr => Some("λ" + signature(None, funExpr.parameters))
+    case fun: ScFunction => Some(describeFunction(fun))
+    case member: ScMember => describeMember(member)
+    case caseClause: ScCaseClause => Some(s"case ${limitString(caseClause.pattern.map(_.getText).getOrElse(""))} =>")
+    case expr: ScExpression => describeExpression(expr)
+    case named: ScNamedElement => Option(named.name)
+    case _ => None
+  }
+
+  private def limitString(s: String, stub: String = PAR_HOLDER): String =
+    if (s == null) "" else if (s.length < MAX_STRING_LENGTH) s else stub
+
+  private def limitText(txt: String, stub: String = "...", limit: Int = MAX_TEXT_LENGTH): String =
+    if (txt == null) "" else if (txt.length < limit) txt else txt.substring(0, limit - 1 - stub.length) + stub
+
+  private def signature(name: Option[String], parameters: Iterable[ScParameter]): String =
+    name.getOrElse("") +
+      limitString(parameters.map(p => p.name + ": " + p.typeElement.map(_.getText).getOrElse("Any")).mkString("(", ", ", ")"))
+
+  private def describeFunction(fun: ScFunction): String =
+    if (fun.isConstructor) "this" + limitString(signature(None, fun.parameters))
+    else signature(Option(fun.name), fun.parameters)
+
+  private def describeNewTemplate(newDef: ScNewTemplateDefinition): String = {
+    val constructor = newDef.firstConstructorInvocation match {
+      case None => "Object"
+      case Some(c) if c.arguments.nonEmpty => s"${c.typeElement.getText}$PAR_HOLDER"
+      case Some(c) => c.typeElement.getText
+    }
+    val hasOtherTypes = newDef.extendsBlock.templateParents.exists(_.parentClauses.size > 1)
+    val otherTypesHolder = if (hasOtherTypes) " with ..." else ""
+    limitText(s"new $constructor$otherTypesHolder", limit = MAX_STRING_LENGTH * 2)
+  }
+
+  private def describeMember(member: ScMember): Option[String] = member match {
     case v: ScValueOrVariable =>
-      // We have a special handling for val/var definitions. We can't rely on the default structure-view-based solution
-      // (BTW, there is no that much logic in the structure-view-based solution)
-      // The reason is that we can't fully mirror the structure view.
-      // Let's say we have a val definition with pattern that defines no bindings:
-      // `val Some(_) = { ... }`
-      // In this case structure view won't contain any elements for it as it doesn't have a name definition
-      // But in Nav Bar we want to still show it as is `Some(_)` (we couldn't see which better alternative to display in this case
-      getParent_FromPsiParents(v).orNull
-    case definition: ScNewTemplateDefinition =>
-      getParent_FromPsiParents(definition).orNull
-    case _ =>
-      super.getParent(psiElement)
+      val keyword = if (v.isInstanceOf[ScValue]) "val " else "var "
+      // upstream: `var` members have no text and several bindings miss the closing parenthesis
+      val names = v match {
+        case definition: ScValueOrVariableDefinition =>
+          definition.bindings match {
+            case Seq(single) if definition.isSimple => single.name
+            case _ => definition.pList.getText
+          }
+        case _ =>
+          v.declaredElements.map(_.name).mkString(", ")
+      }
+      Some(keyword + limitString(names))
+    case ext: ScExtension =>
+      Some("extension" + ext.targetParameter.map(p => " " + signature(None, Seq(p))).getOrElse(""))
+    case _: ScPrimaryConstructor =>
+      None
+    case parameter: ScClassParameter =>
+      Option(parameter.name)
+    case other =>
+      Option(other.getName)
   }
 
-  private def getParent_FromPsiParents(element: PsiElement): Option[PsiElement] = {
-    element.parents.collectFirst {
-      case p: ScValueOrVariable => p
-      case p: ScFunction => p
-      case p: ScNewTemplateDefinition => p
-      case p: ScTypeDefinition => p
-      case p: ScalaFile => p
-    }
+  private def describeExpression(expr: ScExpression): Option[String] = expr match {
+    case ifSt: ScIf => Some(s"if (${limitString(ifSt.condition.map(_.getText).getOrElse(""))}) {...}")
+    case whileSt: ScWhile => Some(s"while(${limitString(whileSt.condition.map(_.getText).getOrElse(""), "...")})")
+    case doWhileSt: ScDo => Some(s"do ... while(${limitString(doWhileSt.condition.map(_.getText).getOrElse(""), "...")})")
+    case matchSt: ScMatch => Some(limitString(matchSt.expression.map(_.getText).getOrElse(PAR_HOLDER)) + " match {...}")
+    case _ => None
   }
 }
