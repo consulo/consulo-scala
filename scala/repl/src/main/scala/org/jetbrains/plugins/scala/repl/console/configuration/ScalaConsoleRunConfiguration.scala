@@ -219,7 +219,6 @@ class ScalaConsoleRunConfiguration(
       params.setShortenCommandLine(getShortenCommandLineMethod(Option(params.getJdk)), project)
       params.setWorkingDirectory(workingDirectory)
 
-      // upstream: also reads environment variables from env files
       params.setEnv(new java.util.HashMap(getEnvs))
       params.setPassParentEnvs(isPassParentEnvs)
 

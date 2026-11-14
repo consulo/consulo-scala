@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.server.compiler
+import consulo.application.util.registry.Registry
 import consulo.logging.Logger
 import consulo.project.Project
 import org.jetbrains.jps.incremental.scala.shared.Client
@@ -21,8 +22,9 @@ final class RemoteServerRunner(project: Project) extends RemoteResourceOwner {
 
   override protected def compileServerPort: CompileServerPort = CompileServerLauncher.compileServerPort.getOrElse(throw new TCPPortMissingException())
 
-  // upstream: registry key scala.compile.server.socket.connect.timeout.milliseconds
-  override protected val socketConnectTimeout: FiniteDuration = 10000.milliseconds
+  // upstream: the default is declared by the registryKey of the plugin xml (Consulo Registry has no plugin keys)
+  override protected val socketConnectTimeout: FiniteDuration =
+    Registry.intValue("scala.compile.server.socket.connect.timeout.milliseconds", 10000).milliseconds
 
   // TODO: make it cancelable, if request is hanging we cant cancel it now.
   //  E.g. when the server is down and we retry to connect to it.

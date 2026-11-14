@@ -8,6 +8,7 @@ import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass}
 import com.intellij.java.language.util.ClassFilter
 import consulo.application.concurrent.coroutine.ReadLock
 import consulo.document.Document
+import consulo.execution.configuration.fragment.{RunConfigurationFragmentHost, StandardRunConfigurationFragmentId}
 import consulo.execution.localize.ExecutionLocalize
 import consulo.language.editor.ui.{EditorBox, EditorBoxBuilderFactory}
 import consulo.language.psi.scope.GlobalSearchScope
@@ -41,6 +42,8 @@ final class TestRunConfigurationForm @RequiredUIAccess() (val myProject: Project
 
   private var mySuitePaths: collection.Seq[String] = Seq.empty
   private var myModule    : Module                 = null
+  // the module selector is the platform module fragment of the same page
+  private var myFragmentHost: Option[RunConfigurationFragmentHost] = None
 
   // TOP PANEL: TestKind-specific
   private val myTestKind: ComboBox[TestKind] = {
@@ -95,6 +98,18 @@ final class TestRunConfigurationForm @RequiredUIAccess() (val myProject: Project
   def formComponent: Component = myForm
 
   def showProgressMessagesComponent: Component = myShowProgressMessagesCheckBox
+
+  @RequiredUIAccess
+  def attach(host: RunConfigurationFragmentHost): Unit = {
+    myFragmentHost = Some(host)
+    UiComponentsVisibility.update()
+  }
+
+  private def isModuleSelectionSupported(testKind: TestKind, searchScope: SearchForTest): Boolean =
+    (testKind, searchScope) match {
+      case (TestKind.ALL_IN_PACKAGE, SearchForTest.IN_WHOLE_PROJECT) => false
+      case _                                                         => true
+    }
 
   @RequiredUIAccess
   def resetFrom(configuration: AbstractTestRunConfiguration): Unit = {
@@ -175,7 +190,8 @@ final class TestRunConfigurationForm @RequiredUIAccess() (val myProject: Project
         case TestKind.ALL_IN_PACKAGE => setPackageVisible(true)
       }
 
-      // upstream: also disables the module selector for "All in package" in the whole project
+      val packageSearchScope = getSearchForTest
+      myFragmentHost.foreach(_.setFragmentEnabled(StandardRunConfigurationFragmentId.MODULE, isModuleSelectionSupported(testKind, packageSearchScope)))
       myUseUiWithSbt.setEnabled(getUseSbt)
     }
 

@@ -5,7 +5,6 @@ import org.jetbrains.plugins.scala.testingSupport.test.testdata.TestConfiguratio
 
 import java.util
 
-// upstream: also implements EnvFilesOptions (environment variables from .env files), not supported by Consulo
 trait DelegateCommonProgramRunConfigurationParameters extends CommonProgramRunConfigurationParameters {
 
   protected def delegateToTestData: TestConfigurationData

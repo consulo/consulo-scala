@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala
 package testingSupport.test
 
 import consulo.disposer.Disposable
-import consulo.execution.configuration.fragment.{RunConfigurationFragment, RunConfigurationFragmentEditor, RunConfigurationFragmentLayout, StandardRunConfigurationFragmentOrder}
+import consulo.execution.configuration.fragment.{RunConfigurationFragment, RunConfigurationFragmentEditor, RunConfigurationFragmentHost, RunConfigurationFragmentLayout, StandardRunConfigurationFragmentOrder}
 import consulo.localize.LocalizeValue
 import consulo.project.Project
 import consulo.ui.annotation.RequiredUIAccess
@@ -35,6 +35,9 @@ class AbstractTestRunConfigurationFragment extends RunConfigurationFragment[Abst
         layout.addUnlabeled(form.formComponent)
         layout.addUnlabeled(form.showProgressMessagesComponent)
       }
+
+      @RequiredUIAccess
+      override def attach(host: RunConfigurationFragmentHost): Unit = form.attach(host)
 
       @RequiredUIAccess
       override def reset(configuration: AbstractTestRunConfiguration): Unit = form.resetFrom(configuration)

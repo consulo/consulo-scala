@@ -93,6 +93,8 @@ abstract class AbstractTestRunConfiguration(
   override def getShortenCommandLine: ShortenCommandLine = testConfigurationData.shortenClasspath
   override def setShortenCommandLine(mode: ShortenCommandLine): Unit = testConfigurationData.shortenClasspath = mode
 
+  // upstream: ModuleBasedConfiguration.setModule is @Transient, Consulo's is not; the module is stored by ModuleBasedConfiguration
+  @Transient
   final def getModule: Module =
     getConfigurationModule.getModule
 

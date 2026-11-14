@@ -223,7 +223,6 @@ class ScalaTestFrameworkCommandLineState(
      */
     def getEnvVariablesExpanded(configuration: TestConfigurationData): Map[String, String] = {
       val envs = new ju.HashMap[String, String](configuration.getEnvs)
-      // upstream: also reads environment variables from .env files
       if (configuration.isPassParentEnvs) {
         EnvironmentUtil.inlineParentOccurrences(envs)
       }
