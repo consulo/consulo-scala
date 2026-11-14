@@ -5,7 +5,7 @@ import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
 import consulo.annotation.component.ActionRefAnchor
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.application.Application
 import consulo.language.plain.PlainTextFileType
 import consulo.navigation.OpenFileDescriptorFactory
@@ -18,9 +18,7 @@ import org.jetbrains.plugins.scala.tasty.reader.{NameTable, NodePrinter, TreeRea
 //NOTE: disabled inspection as it's an internal action
 //noinspection ScalaExtractStringToBundle
 @ActionImpl(id = "Scala.DecompileTastyRaw", parents = Array(new ActionParentRef(value = new ActionRef(id = "QuickActions"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileTasty"))))
-class ShowDecompiledTastyRawInternalAction extends AnAction("Show Tasty Raw Representation (Internal)") {
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+class ShowDecompiledTastyRawInternalAction extends AnAction("Show Tasty Raw Representation (Internal)") with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
     // upstream: internal="true"

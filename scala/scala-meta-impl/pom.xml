@@ -47,7 +47,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>scalameta_2.13,parsers_2.13,trees_2.13,common_2.13,fastparse-v2_2.13,sourcecode_2.13,geny_2.13</includeArtifactIds>
-                            <includes>**/*.class</includes>
+                            <includes>**/*.class,**/*.tasty</includes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
                     </execution>

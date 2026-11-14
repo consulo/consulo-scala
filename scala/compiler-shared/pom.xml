@@ -48,7 +48,7 @@
                         <configuration>
                             <includeGroupIds>io.spray</includeGroupIds>
                             <includeArtifactIds>spray-json_3</includeArtifactIds>
-                            <includes>**/*.class</includes>
+                            <includes>**/*.class,**/*.tasty</includes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
                     </execution>

@@ -47,7 +47,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>scala-parser-combinators_2.13,scala-compiler-indices-protocol_3,scalafmt-dynamic-core_2.13,scalafmt-sysops_2.13,interface</includeArtifactIds>
-                            <includes>**/*.class</includes>
+                            <includes>**/*.class,**/*.tasty</includes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
                     </execution>

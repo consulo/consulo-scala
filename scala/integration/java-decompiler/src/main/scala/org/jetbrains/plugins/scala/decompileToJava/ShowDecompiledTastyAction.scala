@@ -7,7 +7,7 @@ import consulo.annotation.component.ActionRefAnchor
 
 import consulo.language.psi.PsiNavigationSupport
 import consulo.project.Project
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.virtualFileSystem.fileType.{FileType, FileTypeRegistry}
 import consulo.virtualFileSystem.VirtualFile
@@ -29,9 +29,7 @@ import org.jetbrains.plugins.scala.tasty.TastyFileType
  * @see [[org.jetbrains.java.decompiler.ShowDecompiledClassAction]]
  */
 @ActionImpl(id = "Scala.DecompileTasty", parents = Array(new ActionParentRef(value = new ActionRef(id = "QuickActions"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileToJava"))))
-class ShowDecompiledTastyAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.tasty")) {
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+class ShowDecompiledTastyAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.tasty")) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
     showVisibleAndEnabled(e)

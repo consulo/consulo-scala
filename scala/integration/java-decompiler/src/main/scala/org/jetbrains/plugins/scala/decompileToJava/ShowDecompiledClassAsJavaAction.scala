@@ -6,7 +6,7 @@ import consulo.annotation.component.ActionRef
 import consulo.annotation.component.ActionRefAnchor
 
 import consulo.project.Project
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.project.DumbService
 import com.intellij.java.language.impl.psi.impl.JavaPsiImplementationHelper
@@ -33,7 +33,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
  * The result is the same as if you invoke "Decompile to Java" action from editor notification when you open  `.class` file
  */
 @ActionImpl(id = "Scala.DecompileToJava", parents = Array(new ActionParentRef(value = new ActionRef(id = "QuickActions"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ByteCodeViewer")), new ActionParentRef(value = new ActionRef(id = "RunContextPopupGroup"))))
-final class ShowDecompiledClassAsJavaAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.class.as.java")) {
+final class ShowDecompiledClassAsJavaAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.class.as.java")) with AnActionWithSyncUpdate {
 
   override def actionPerformed(event: AnActionEvent): Unit = {
     val classFile = getClassfile(event)
@@ -46,8 +46,6 @@ final class ShowDecompiledClassAsJavaAction extends AnAction(ScalaJavaDecompiler
     val enabled = project != null && classFile.isDefined
     event.getPresentation.setEnabledAndVisible(enabled)
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   private def getClassfile(event: AnActionEvent): Option[ScFile] = {
     val psiElement = getPsiElement(event)
