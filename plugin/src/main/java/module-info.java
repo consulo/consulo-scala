@@ -7,4 +7,6 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.codeInsight;
     requires transitive org.intellij.scala.structure.view;
     requires transitive org.intellij.scala.conversion;
+    requires transitive org.intellij.scala.scalastyle;
+    requires transitive org.intellij.scala.meta;
 }

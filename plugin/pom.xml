@@ -68,6 +68,16 @@
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scala.meta.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scalastyle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-conversion</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -1,8 +1,9 @@
 package scala.meta.trees
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod, PsiPackage}
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.lang.psi.api.base._
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements._

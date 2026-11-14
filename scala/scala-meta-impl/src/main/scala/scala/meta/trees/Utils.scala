@@ -1,7 +1,7 @@
 package scala.meta.trees
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.{PsiElement, PsiPackage}
+import consulo.logging.Logger
+import consulo.language.psi.{PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScSugarCallExpr, ScTypedExpression}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition

@@ -1,6 +1,5 @@
-package org.jetbrains.plugins.scala.codeInspection.scalastyle
-
-import com.intellij.openapi.diagnostic.ControlFlowException
+package org.jetbrains.plugins.scala.scalastyle.codeInspection.scalastyle
+import consulo.util.lang.ControlFlowException
 
 import java.text.MessageFormat
 import java.util.Properties

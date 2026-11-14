@@ -1,11 +1,15 @@
-package org.jetbrains.plugins.scala.codeInspection.scalastyle
+package org.jetbrains.plugins.scala.scalastyle.codeInspection.scalastyle
 
-import com.intellij.codeInspection.{InspectionManager, LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import org.jetbrains.plugins.scala.codeInspection.scalastyle.{ScalastyleService, ScalastyleSettings}
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalQuickFix, ProblemDescriptor, ProblemHighlightType}
+import consulo.module.content.ProjectFileIndex
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.editor.importOptimizer.ScalastyleImportsUtil
-import org.jetbrains.plugins.scala.extensions.implementation.iterator.DepthFirstIterator
+import org.jetbrains.plugins.scala.api.extensions.implementation.iterator.DepthFirstIterator
 import org.scalastyle.{ConfigurationChecker, Level, Message, ScalastyleChecker, ScalastyleConfiguration, SourceSpec, StyleError}
 
 import java.nio.file.Path
@@ -13,7 +17,9 @@ import java.util.regex.Pattern
 import scala.collection.mutable
 import scala.util.Try
 
-private final class ScalastyleServiceImpl extends ScalastyleService {
+@Singleton
+@ServiceImpl
+final class ScalastyleServiceImpl extends ScalastyleService {
   override def checkFile(file: PsiFile, manager: InspectionManager): Array[ProblemDescriptor] = {
     val converter = MessageToProblemDescriptorConverter(file, manager)
     configurationFor(file)

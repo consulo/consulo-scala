@@ -1,8 +1,8 @@
 package scala.meta
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.psi.{PsiFile, PsiManager}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFileManager
+import consulo.language.psi.{PsiFile, PsiManager}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
 
 trait EnvironmentProvider {

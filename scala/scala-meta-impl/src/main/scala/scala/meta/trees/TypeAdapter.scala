@@ -1,7 +1,8 @@
 package scala.meta.trees
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi._
+import consulo.application.progress.ProgressManager
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiTypeParameter}
+import consulo.language.psi.{PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.extensions.PsiMethodExt
 import org.jetbrains.plugins.scala.lang.psi.api.base._
 import org.jetbrains.plugins.scala.lang.psi.api.base.types._

@@ -1,7 +1,7 @@
 package scala.meta.intellij
 
-import com.intellij.openapi.progress.ProgressManager
-import org.jetbrains.plugins.scala.NlsString
+import consulo.application.progress.ProgressManager
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScInterpolated, ScInterpolatedStringLiteral, ScReference}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
