@@ -4,13 +4,15 @@ package hint
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.hint.DeclarationRangeHandler
+import consulo.language.editor.hint.DeclarationRangeHandler
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefinition, ScTypeDefinition}
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 final class ScTemplateDeclarationRangeHandler extends DeclarationRangeHandler[ScTemplateDefinition] {
+
+  override def getElementClass: Class[ScTemplateDefinition] = classOf[ScTemplateDefinition]
 
   import ScTemplateDeclarationRangeHandler._
 

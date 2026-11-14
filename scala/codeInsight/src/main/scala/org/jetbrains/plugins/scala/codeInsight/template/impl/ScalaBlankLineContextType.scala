@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.template.impl
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.template.TemplateActionContext
+import consulo.language.editor.template.context.TemplateActionContext
 import consulo.language.psi.PsiWhiteSpace
 import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 
 @ExtensionImpl
 final class ScalaBlankLineContextType
-  extends ScalaFileTemplateContextType.ElementContextType(ScalaCodeInsightBundle.message("element.context.type.blank.line")) {
+  extends ScalaFileTemplateContextType.ElementContextType("SCALA_BLANK_LINE", ScalaCodeInsightBundle.message("element.context.type.blank.line")) {
 
   private val TreatEofAsBlankLine = true
 

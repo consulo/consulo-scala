@@ -3,6 +3,8 @@ package codeInsight
 package intention
 package argument
 
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -22,9 +24,9 @@ import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "scala.BlockExpressionToArgumentIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Argument conversion"))
 final class BlockExpressionToArgumentIntention extends PsiElementBaseIntentionAction with DumbAware {
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.convert.to.argument.in.parentheses")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.convert.to.argument.in.parentheses")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =
     element match {

@@ -3,16 +3,14 @@ package org.jetbrains.plugins.scala.codeInsight.implicits
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.application.ApplicationManager
-import com.intellij.openapi.client.ClientSystemInfo
+import consulo.platform.Platform
 import consulo.undoRedo.CommandProcessor
 import consulo.codeEditor.{Editor, EditorFactory}
-import consulo.codeEditor.event.{EditorMouseEvent, EditorMouseMotionListener}
-import com.intellij.openapi.editor.event.EditorMouseListener
+import consulo.codeEditor.event.{EditorMouseEvent, EditorMouseListener, EditorMouseMotionListener}
 import consulo.project.Project
 import consulo.disposer.Disposer
 import consulo.util.dataholder.Key
-import com.intellij.ui.AncestorListenerAdapter
-import com.intellij.util.SlowOperations
+import consulo.ui.ex.awt.event.AncestorListenerAdapter
 import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.annotator.hints.{ErrorTooltip, Text, TooltipUI}
@@ -28,10 +26,9 @@ import java.awt.event._
 import javax.swing.event.AncestorEvent
 import javax.swing.{SwingUtilities, Timer}
 import scala.jdk.CollectionConverters._
-import scala.util.Using
 
 @ExtensionImpl
-private final class MouseHandler extends ProjectActivity {
+final class MouseHandler extends ProjectActivity {
 
   private var activeHyperlink = Option.empty[(Inlay, Text)]
   private var activeFolding = Option.empty[(Inlay, Text)]
@@ -55,7 +52,7 @@ private final class MouseHandler extends ProjectActivity {
 
         if (SwingUtilities.isLeftMouseButton(event)) {
           hyperlinkAt(editor, event.getPoint) match {
-            case Some((_, text)) if ClientSystemInfo.isMac && event.isMetaDown || event.isControlDown =>
+            case Some((_, text)) if Platform.current().os().isMac && event.isMetaDown || event.isControlDown =>
               e.consume()
               deactivateActiveHyperlink(editor)
               navigateTo(text, editor.getProject)
@@ -63,7 +60,7 @@ private final class MouseHandler extends ProjectActivity {
               inlay.getRenderer.asOptionOfUnsafe[TextPartsHintRenderer].foreach { renderer =>
                 e.consume()
                 deactivateActiveFolding(e.getEditor)
-                Using.resource(SlowOperations.knownIssue("SCL-23054"))(_ => renderer.expand(text))
+                renderer.expand(text) // upstream: wrapped in SlowOperations.knownIssue("SCL-23054")
                 inlay.update()
                 if (!ImplicitHints.expanded) {
                   addEscKeyListenerTo(editor)
@@ -110,7 +107,7 @@ private final class MouseHandler extends ProjectActivity {
   private def handleMouseMoved(e: EditorMouseEvent): Unit = {
     val textAtPoint = textAt(e.getEditor, e.getMouseEvent.getPoint)
 
-    if (ClientSystemInfo.isMac && e.getMouseEvent.isMetaDown || e.getMouseEvent.isControlDown) {
+    if (Platform.current().os().isMac && e.getMouseEvent.isMetaDown || e.getMouseEvent.isControlDown) {
       textAtPoint match {
         case Some((inlay, text)) if text.navigatable.isDefined =>
           if (!activeHyperlink.contains((inlay, text))) {

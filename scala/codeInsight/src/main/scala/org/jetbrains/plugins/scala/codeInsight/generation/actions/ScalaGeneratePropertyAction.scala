@@ -4,6 +4,8 @@ package generation
 package actions
 
 import consulo.annotation.component.ActionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -26,6 +28,8 @@ final class ScalaGeneratePropertyAction extends ScalaBaseGenerateAction(
 object ScalaGeneratePropertyAction {
 
   private[generation] final class Handler extends ScalaCodeInsightActionHandler {
+
+    override def getLanguage: Language = ScalaLanguage.INSTANCE
 
     import Handler._
 

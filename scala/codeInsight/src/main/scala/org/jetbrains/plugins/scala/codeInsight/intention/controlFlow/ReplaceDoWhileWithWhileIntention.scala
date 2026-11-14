@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -10,7 +11,7 @@ import consulo.application.CommonBundle
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.undoRedo.CommandProcessor
-import consulo.codeEditor.Editor
+import consulo.codeEditor.{Editor, EditorPopupHelper}
 import consulo.project.Project
 import consulo.ui.ex.popup.JBPopupFactory
 import consulo.language.ast.IElementType
@@ -73,10 +74,11 @@ final class ReplaceDoWhileWithWhileIntention extends PsiElementBaseIntentionActi
       if (IntentionPreviewUtils.isPreviewElement(element)) doReplacement()
       else {
         val popupFactory = JBPopupFactory.getInstance
-        popupFactory.createConfirmation(text, CommonBundle.getContinueButtonText, CommonBundle.getCancelButtonText, () => {
+        val popup = popupFactory.createConfirmation(text, CommonBundle.getContinueButtonText, CommonBundle.getCancelButtonText, () => {
           //to make action Undoable
           CommandProcessor.getInstance().executeCommand(project, () => doReplacement(), null, null)
-        }, 0).showInBestPositionFor(editor)
+        }, 0)
+        EditorPopupHelper.getInstance.showPopupInBestPositionFor(editor, popup)
       }
     }
 
@@ -131,9 +133,9 @@ final class ReplaceDoWhileWithWhileIntention extends PsiElementBaseIntentionActi
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.do.while.with.while")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.do.while.with.while")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 }
 
 object ReplaceDoWhileWithWhileIntention {

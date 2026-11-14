@@ -2,10 +2,9 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package hints
 
-import com.intellij.codeInsight.hints.ParameterHintsPassFactory.forceHintsUpdateOnNextPass
-import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.actionSystem.Separator
+import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.codeEditor.Editor
+import consulo.project.Project
 import consulo.colorScheme.EditorColorsScheme
 import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.annotations.Nls
@@ -98,20 +97,12 @@ private object ScalaTypeHintsPass {
         new AnAction(disableText) {
           override def actionPerformed(e: AnActionEvent): Unit = {
             setSettings(ScalaCodeInsightSettings.getInstance())
-            forceHintsUpdateOnNextPass()
-            TypeMismatchHints.refreshIn(e.getProject)
+            ScalaTypeHintsConfigurable.forceHintsUpdateOnNextPass()
+            TypeMismatchHints.refreshIn(e.getData(Project.KEY))
           }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
         },
-        new AnAction(ScalaCodeInsightBundle.message("configure.type.hints")) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            ScalaTypeHintsSettingsModel.navigateTo(e.getProject)
-          }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
-        },
-        Separator.getInstance,
+        // upstream: "Configure type hints" action (inlay settings models are not ported)
+        AnSeparator.getInstance,
         ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
       )
     }

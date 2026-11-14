@@ -114,7 +114,6 @@ open module org.intellij.scala.codeInsight {
     requires org.intellij.scala.sbt.api;
 
 
-    exports org.jetbrains.plugins.scala.codeInsight.completion.command;
     exports org.jetbrains.plugins.scala.codeInsight.daemon;
     exports org.jetbrains.plugins.scala.codeInsight.delegate;
     exports org.jetbrains.plugins.scala.codeInsight.editorActions;
@@ -135,9 +134,6 @@ open module org.intellij.scala.codeInsight {
     exports org.jetbrains.plugins.scala.codeInsight.intention.recursion;
     exports org.jetbrains.plugins.scala.codeInsight.intention.stringLiteral;
     exports org.jetbrains.plugins.scala.codeInsight.messages;
-    exports org.jetbrains.plugins.scala.codeInsight.messages.generation;
-    exports org.jetbrains.plugins.scala.codeInsight.messages.hints;
-    exports org.jetbrains.plugins.scala.codeInsight.messages.implicits;
     exports org.jetbrains.plugins.scala.codeInsight.template.impl;
     exports org.jetbrains.plugins.scala.codeInsight.template.macros;
     exports org.jetbrains.plugins.scala.codeInspection.recursion;

@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.template.macros
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext}
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
 
 @ExtensionImpl
 final class ScalaTypeOfVariableMacro extends ScalaMacro {

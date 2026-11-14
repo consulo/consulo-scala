@@ -3,15 +3,16 @@ package org.jetbrains.plugins.scala.codeInsight.implicits
 import consulo.annotation.component.ActionImpl
 import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
-import com.intellij.openapi.actionSystem.ToggleAction
+import consulo.ui.ex.action.{AnActionEvent, ToggleAction}
+import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
-@ActionImpl(id = "Scala.ShowImplicits", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"))))
+@ActionImpl(id = "Scala.ShowImplicits", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"), anchor = ActionRefAnchor.LAST)))
 class ShowImplicitHintsAction extends ToggleAction(
-  ScalaCodeInsightBundle.message("show.implicit.hints.action.text"),
-  ScalaCodeInsightBundle.message("show.implicit.hints.action.description"),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("show.implicit.hints.action.text")),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("show.implicit.hints.action.description")),
   /* icon = */ null
 ) {
 
@@ -24,8 +25,6 @@ class ShowImplicitHintsAction extends ToggleAction(
       MouseHandler.removeEscKeyListeners()
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
 }
 
 private object ShowImplicitHintsAction {

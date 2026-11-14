@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package recursion
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -32,9 +33,9 @@ final class AddTailRecursionAnnotationIntention extends PsiElementBaseIntentionA
       case function: ScFunctionDefinition => addTailRecursionAnnotation(function)
     }
 
-  override def getText: String = ScalaCodeInsightBundle.message("no.tailrec.annotation.fix")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("no.tailrec.annotation.fix"))
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.recursion")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.recursion")
 }
 
 object AddTailRecursionAnnotationIntention {

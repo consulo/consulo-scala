@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult, Result}
 import consulo.language.psi.scope.GlobalSearchScope
-import com.intellij.psi.search.searches.AnnotatedMembersSearch
+import com.intellij.java.indexing.search.searches.AnnotatedMembersSearch
 import com.intellij.java.language.psi.{PsiClass, PsiMember}
-import com.intellij.util.EmptyQuery
+import consulo.application.util.query.EmptyQuery
 import consulo.application.util.query.Query
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
@@ -34,7 +35,7 @@ final class ScalaAnnotatedMacro extends ScalaMacro {
 
   override def getNameShort: String = "annotated"
 
-  override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.annotated")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.annotated"))
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = {
     Option(getAnnotatedMembers(params, context).findFirst()).map(member => new TextResult(member match {

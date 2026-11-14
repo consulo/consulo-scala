@@ -1,47 +1,36 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.annotation.component.ComponentScope
-import consulo.annotation.component.ServiceAPI
-import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-import com.intellij.openapi.actionSystem.KeyboardShortcut
-import consulo.application.ApplicationManager
-import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.keymap.KeymapManager
+import consulo.platform.Platform
 import consulo.project.Project
+import consulo.ui.ex.action.KeyboardShortcut
+import consulo.ui.ex.keymap.KeymapManager
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 
-import javax.swing.KeyStroke
+import java.util.concurrent.atomic.AtomicBoolean
 
 @ExtensionImpl
-private final class ConfigureShortcutsProjectActivity extends ProjectActivity {
+final class ConfigureShortcutsProjectActivity extends ProjectActivity {
   override def execute(project: Project): Unit = {
-    // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getInstance(classOf[ConfigureShortcutsProjectActivity.AppService])
+    // upstream: an application-level service whose constructor registers the shortcuts exactly once
+    if (ConfigureShortcutsProjectActivity.Registered.compareAndSet(false, true)) {
+      ConfigureShortcutsProjectActivity.registerShortcuts()
+    }
   }
 }
 
 private object ConfigureShortcutsProjectActivity {
-  // upstream: @Service(Array(Service.Level.APP))
-  @Singleton
-  @ServiceAPI(ComponentScope.APPLICATION)
-  @ServiceImpl
-  private final class AppService {
-    // Executed in the service constructor.
-    registerShortcuts()
+  private val Registered = new AtomicBoolean(false)
 
-    private def registerShortcuts(): Unit = {
-      //noinspection ApiStatus,UnstableApiUsage
-      if (!ClientSystemInfo.isWindows && !ClientSystemInfo.isMac) { // Workaround for SCL-21346
-        val keymap = KeymapManager.getInstance.getActiveKeymap
-        keymap.removeShortcut("ZoomInIdeAction", new KeyboardShortcut(KeyStroke.getKeyStroke("shift control alt EQUALS"), null))
-        keymap.removeShortcut("ZoomOutIdeAction", new KeyboardShortcut(KeyStroke.getKeyStroke("shift control alt MINUS"), null))
-        keymap.removeShortcut("ResetIdeScaleAction", new KeyboardShortcut(KeyStroke.getKeyStroke("shift control alt 0"), null))
-      }
-
-      ImplicitShortcuts.setShortcuts(ShowImplicitHintsAction.Id, ImplicitShortcuts.EnableShortcuts)
+  private def registerShortcuts(): Unit = {
+    val os = Platform.current().os()
+    if (!os.isWindows && !os.isMac) { // Workaround for SCL-21346
+      val keymap = KeymapManager.getInstance.getActiveKeymap
+      keymap.removeShortcut("ZoomInIdeAction", KeyboardShortcut.fromString("shift control alt EQUALS"))
+      keymap.removeShortcut("ZoomOutIdeAction", KeyboardShortcut.fromString("shift control alt MINUS"))
+      keymap.removeShortcut("ResetIdeScaleAction", KeyboardShortcut.fromString("shift control alt 0"))
     }
+
+    ImplicitShortcuts.setShortcuts(ShowImplicitHintsAction.Id, ImplicitShortcuts.EnableShortcuts)
   }
 }

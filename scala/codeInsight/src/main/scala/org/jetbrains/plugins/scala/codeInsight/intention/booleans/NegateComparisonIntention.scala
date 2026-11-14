@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -30,7 +31,7 @@ final class NegateComparisonIntention extends PsiElementBaseIntentionAction with
     val refName = operation.refName
     Replacement.get(refName) match {
       case Some(replacement) if caretIsInRange(operation)(using editor) =>
-        setText(ScalaCodeInsightBundle.message("negate.operation.to.inverse", refName, replacement))
+        setText(LocalizeValue.of(ScalaCodeInsightBundle.message("negate.operation.to.inverse", refName, replacement)))
         true
       case _ => false
     }
@@ -45,7 +46,7 @@ final class NegateComparisonIntention extends PsiElementBaseIntentionAction with
     negateAndValidateExpression(infixExpr, text)(using project, editor)
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.negate.comparison")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.negate.comparison")
 }
 
 object NegateComparisonIntention {

@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -30,7 +31,7 @@ final class DeMorganLawIntention extends PsiElementBaseIntentionAction with Dumb
     val refName = operation.refName
     Replacement.get(refName) match {
       case Some(replacement) if caretIsInRange(operation)(using editor) =>
-        setText(ScalaCodeInsightBundle.message("replace.refname.with.replacement", refName, replacement))
+        setText(LocalizeValue.of(ScalaCodeInsightBundle.message("replace.refname.with.replacement", refName, replacement)))
         true
       case _ => false
     }
@@ -62,7 +63,7 @@ final class DeMorganLawIntention extends PsiElementBaseIntentionAction with Dumb
     negateAndValidateExpression(upperMostInfixExpr, inner(upperMostInfixExpr))(using project, editor)
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.demorgan.law")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.demorgan.law")
 }
 
 object DeMorganLawIntention {

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.completion.lookup.LookupElement
-import consulo.language.editor.template.{Expression, ExpressionContext}
-import consulo.java.impl.JavaBundle
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
+import consulo.language.editor.localize.CodeInsightLocalize
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.api.ExtractClass
@@ -14,7 +15,7 @@ final class ScalaComponentTypeOfMacro extends ScalaMacro {
 
   override def getNameShort: String = "componentTypeOf"
 
-  override def getPresentableName: String = JavaBundle.message("macro.component.type.of.array")
+  override def getPresentableName: LocalizeValue = CodeInsightLocalize.macroComponentTypeOfArray()
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = params match {
     case Array(head) =>

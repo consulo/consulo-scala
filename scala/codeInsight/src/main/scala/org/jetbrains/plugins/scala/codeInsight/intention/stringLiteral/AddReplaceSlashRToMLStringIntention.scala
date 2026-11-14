@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -31,7 +32,7 @@ final class AddReplaceSlashRToMLStringIntention extends PsiElementBaseIntentionA
     editor.getDocument.insertString(element.getTextRange.getEndOffset, ".replace(\"\\r\", \"\")")
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.add.replace.call")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.add.replace.call")
 
-  override def getText: String = ScalaCodeInsightBundle.message("add.replace.call")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("add.replace.call"))
 }

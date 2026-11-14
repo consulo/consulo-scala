@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.openapi.editor
 import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.InlayModel
+import consulo.codeEditor.InlayModel
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiElement
 import consulo.ui.ex.awt.JBUI
@@ -29,7 +28,7 @@ object ImplicitHint {
     // Larger priorities appear further left; preserve the order in which hints are collected.
     val priority = -existingInlays.size
 
-    val inlay: editor.Inlay[TextPartsHintRenderer] = {
+    val inlay: consulo.codeEditor.Inlay[TextPartsHintRenderer] = {
       val renderer = new TextPartsHintRenderer(parts, menu, hint.corners) {
         override protected def getMargin(editor: Editor): Insets = margin.getOrElse(EmptyInsets)
       }

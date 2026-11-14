@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
@@ -13,7 +14,7 @@ final class ScalaImplicitClassNameMacro extends ScalaMacro {
 
   override def getNameShort: String = "implicitValueClassName"
 
-  override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.implicit.value.class.name")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.implicit.value.class.name"))
 
   import ScalaCodeStyleSettings.{DEFAULT_IMPLICIT_VALUE_CLASS_SUFFIX => DefaultSuffix}
 

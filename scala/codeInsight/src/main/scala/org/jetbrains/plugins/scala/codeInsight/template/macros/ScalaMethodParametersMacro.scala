@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.codeInsight.template.macros
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
-import com.intellij.codeInsight.template.ListResult
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult, Result}
+import consulo.language.editor.template.ListResult
 import consulo.language.psi.util.PsiTreeUtil.getParentOfType
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 

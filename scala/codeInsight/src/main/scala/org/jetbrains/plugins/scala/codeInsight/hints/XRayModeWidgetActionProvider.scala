@@ -4,36 +4,21 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.ProblemHighlightFilter
 import consulo.language.editor.highlight.HighlightingLevelManager
-import consulo.application.AllIcons
-import com.intellij.ide.HelpTooltip
-import com.intellij.openapi.actionSystem.ex.CustomComponentAction
-import com.intellij.openapi.actionSystem.impl.{ActionButtonWithText, ActionToolbarImpl}
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
-import consulo.language.editor.CommonDataKeys
-import com.intellij.openapi.actionSystem.{Presentation, Separator}
-import com.intellij.openapi.client.ClientSystemInfo
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate, AnSeparator, DefaultActionGroup, DumbAwareAction}
 import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.colors.ColorKey
-import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
-import consulo.ide.setting.ShowSettingsUtil
-import com.intellij.openapi.project.DumbAwareAction
+import consulo.codeEditor.markup.InspectionWidgetActionProvider
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
 import consulo.module.content.ProjectFileIndex
-import com.intellij.openapi.util.IconLoader
-import consulo.application.util.HtmlChunk
-import consulo.ui.ex.JBColor.{`lazy` => LazyJBColor}
-import consulo.ui.ex.awt.JBUIScale
-import consulo.ui.ex.awt.{JBInsets, JBUI, UIUtil}
+import consulo.ui.image.ImageEffects
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
 import org.jetbrains.plugins.scala.settings.XRayWidgetMode
-import org.jetbrains.plugins.scala.settings.sections.XRayModeSettingsSectionConfigurable
 
-import java.awt.event.{InputEvent, MouseAdapter, MouseEvent}
-import java.awt.{Component, Insets, Toolkit}
-import javax.swing.JComponent
-import javax.swing.plaf.FontUIResource
-
+// upstream: the action is rendered by a custom ActionButtonWithText component (smaller font, HelpTooltip with
+// a link to the X-Ray settings, Ctrl/Cmd+click pass-through); Consulo: a plain action with the tooltip as description
 @ExtensionImpl
 class XRayModeWidgetActionProvider extends InspectionWidgetActionProvider {
   override def createAction(editor: Editor): AnAction = {
@@ -43,102 +28,48 @@ class XRayModeWidgetActionProvider extends InspectionWidgetActionProvider {
     val file = editor.getVirtualFile
     if (file == null || file.getExtension != "scala" && file.getExtension != "sc" && file.getExtension != "sbt" && file.getExtension != "mill") return null
 
-    val action = new DumbAwareAction(ScalaCodeInsightBundle.message("xray.mode.widget.text")) with CustomComponentAction {
-      override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
-
-      override def createCustomComponent(presentation: Presentation, place: String): JComponent = new ActionButtonWithText(this, presentation, place, JBUI.size(18)) {
-        addMouseListener(new MouseAdapter {
-          override def mousePressed(e: MouseEvent): Unit = {
-            val isModifierKeyDown = if (ClientSystemInfo.isMac) e.isMetaDown else e.isControlDown
-            if (isModifierKeyDown) {
-              e.consume()
-              val modifierKeyMask = if (ClientSystemInfo.isMac) InputEvent.META_DOWN_MASK else InputEvent.CTRL_DOWN_MASK
-              val event = new MouseEvent(e.getSource.asInstanceOf[Component],
-                e.getID, e.getWhen, e.getModifiersEx & ~modifierKeyMask,
-                e.getX, e.getY, e.getXOnScreen, e.getYOnScreen, e.getClickCount, e.isPopupTrigger,
-                e.getButton)
-              Toolkit.getDefaultToolkit.getSystemEventQueue.postEvent(event)
-            }
-          }
-        })
-
-        setForeground(LazyJBColor { () =>
-          val IconTextForegroundKey = ColorKey.createColorKey("ActionButton.iconTextForeground", UIUtil.getContextHelpForeground)
-          Option(editor.getColorsScheme.getColor(IconTextForegroundKey)).orElse(Option(IconTextForegroundKey.getDefaultColor)).getOrElse(UIUtil.getInactiveTextColor)
-        })
-
-        if (!ClientSystemInfo.isWindows) {
-          val font = getFont
-          setFont(new FontUIResource(font.deriveFont(font.getStyle, font.getSize - JBUIScale.scale(2).toFloat)))
-        }
-
-        if (ClientSystemInfo.isMac) {
-          addMouseListener(new MouseAdapter() {
-            override def mouseClicked(e: MouseEvent): Unit = if (e.getButton == MouseEvent.BUTTON1 && e.isMetaDown) {
-              click()
-              e.consume()
-            }
-          })
-        }
-
-        override def updateToolTipText(): Unit = {
-          HelpTooltip.dispose(this)
-          new HelpTooltip()
-            .setPlainTextTitle(
-              if (ScalaHintsSettings.xRayMode)
-                if (ScalaHintsSettings.xRayModePinned) ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.exit")
-                else ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.pin")
-              else
-                ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.enter"))
-            .setDescription(if (ScalaHintsSettings.xRayMode) null else HtmlChunk.raw("(" + ScalaHintsSettings.xRayModeShortcut + ")"))
-            .setLink(
-              ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.link"),
-              () => ShowSettingsUtil.getInstance.showSettingsDialog(project, classOf[XRayModeSettingsSectionConfigurable])
-            )
-            .installOn(this)
-        }
-
-        override def iconTextSpace: Int = JBUI.scale(2)
-
-        override def getInsets: Insets = JBUI.insets(2)
-
-        override def getMargins: Insets = JBInsets.addInsets(super.getMargins, JBUI.insetsRight(5))
-      }
+    val action = new DumbAwareAction(LocalizeValue.of(ScalaCodeInsightBundle.message("xray.mode.widget.text"))) with AnActionWithSyncUpdate {
 
       override def update(e: AnActionEvent): Unit = {
+        val presentation = e.getPresentation
         if (ScalaHintsSettings.xRayMode) {
-          e.getPresentation.setText(ScalaCodeInsightBundle.message("xray.mode.widget.text"))
-          e.getPresentation.setIcon(
+          presentation.setText(LocalizeValue.of(ScalaCodeInsightBundle.message("xray.mode.widget.text")))
+          presentation.setIcon(
             if (ScalaHintsSettings.xRayModePinned) Icons.PIN
-            else IconLoader.getDisabledIcon(Icons.PIN))
+            else ImageEffects.grayed(Icons.PIN))
         } else {
-          e.getPresentation.setText(null: String)
-          e.getPresentation.setIcon(IconLoader.getDisabledIcon(AllIcons.Actions.Show))
+          presentation.setText(LocalizeValue.empty())
+          presentation.setIcon(ImageEffects.grayed(PlatformIconGroup.actionsShow()))
         }
+        val tooltip =
+          if (ScalaHintsSettings.xRayMode)
+            if (ScalaHintsSettings.xRayModePinned) ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.exit")
+            else ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.pin")
+          else
+            ScalaCodeInsightBundle.message("xray.mode.widget.tooltip.enter") + " (" + ScalaHintsSettings.xRayModeShortcut + ")"
+        presentation.setDescription(LocalizeValue.of(tooltip))
       }
 
       override def actionPerformed(e: AnActionEvent): Unit = {
         if (ScalaHintsSettings.xRayMode) {
           if (ScalaHintsSettings.xRayModePinned) {
-            ScalaEditorFactoryListener.setXRayModeEnabled(false, e.getData(CommonDataKeys.EDITOR))
+            ScalaEditorFactoryListener.setXRayModeEnabled(false, e.getData(Editor.KEY))
           }
           ScalaHintsSettings.xRayModePinned = !ScalaHintsSettings.xRayModePinned
         } else {
-          ScalaEditorFactoryListener.setXRayModeEnabled(true, e.getData(CommonDataKeys.EDITOR))
+          ScalaEditorFactoryListener.setXRayModeEnabled(true, e.getData(Editor.KEY))
           ScalaHintsSettings.xRayModePinned = true
         }
-        ActionToolbarImpl.updateAllToolbarsImmediately(false) // Update the tooltip
       }
     }
 
-    new DefaultActionGroup(action, Separator.create()) {
-      override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+    new DefaultActionGroup(action, AnSeparator.create()) with AnActionWithSyncUpdate {
 
       override def update(e: AnActionEvent): Unit = {
-        def inLibrarySource = Option(CommonDataKeys.EDITOR.getData(e.getDataContext)).exists { editor =>
+        def inLibrarySource = Option(e.getData(Editor.KEY)).exists { editor =>
           Option(editor.getVirtualFile).exists(file => ProjectFileIndex.getInstance(editor.getProject).isInLibrarySource(file))
         }
-        def shouldHighlight = Option(CommonDataKeys.PSI_FILE.getData(e.getDataContext)).exists { psiFile =>
+        def shouldHighlight = Option(e.getData(PsiFile.KEY)).exists { psiFile =>
           HighlightingLevelManager.getInstance(project).shouldHighlight(psiFile) &&
             ProblemHighlightFilter.shouldHighlightFile(psiFile)
         }

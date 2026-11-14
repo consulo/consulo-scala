@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -111,9 +112,9 @@ final class InvertIfConditionIntention extends PsiElementBaseIntentionAction wit
       thenBranch.getTextRange.getEndOffset <= offset && offset < elseBranch.getTextRange.getStartOffset
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.invert.if.condition")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.invert.if.condition")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 }
 
 object InvertIfConditionIntention {

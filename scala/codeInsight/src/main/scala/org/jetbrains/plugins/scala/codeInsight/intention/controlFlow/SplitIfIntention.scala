@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -68,7 +69,7 @@ final class SplitIfIntention extends PsiElementBaseIntentionAction with DumbAwar
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.split.if")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.split.if")
 
-  override def getText: String = ScalaCodeInsightBundle.message("split.into.2.if.s")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("split.into.2.if.s"))
 }

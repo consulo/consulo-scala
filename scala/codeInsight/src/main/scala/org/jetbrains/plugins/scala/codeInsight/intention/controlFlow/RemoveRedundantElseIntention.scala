@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -72,7 +73,7 @@ final class RemoveRedundantElseIntention extends PsiElementBaseIntentionAction w
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.remove.redundant.else")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.remove.redundant.else")
 
-  override def getText: String = ScalaCodeInsightBundle.message("remove.redundant.else")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("remove.redundant.else"))
 }

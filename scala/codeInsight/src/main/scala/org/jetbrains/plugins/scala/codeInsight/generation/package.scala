@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala
-package codeInsight.messages
+package codeInsight
+
 import consulo.document.Document
 import consulo.codeEditor.Editor
 import consulo.language.codeStyle.CodeStyleManager

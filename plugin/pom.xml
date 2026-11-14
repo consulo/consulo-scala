@@ -58,6 +58,13 @@
     </build>
 
     <dependencies>
+        <!-- the packaging reads the platform version from it -->
+        <dependency>
+            <groupId>consulo</groupId>
+            <artifactId>consulo-application-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
         <dependency>
             <groupId>${project.groupId}</groupId>

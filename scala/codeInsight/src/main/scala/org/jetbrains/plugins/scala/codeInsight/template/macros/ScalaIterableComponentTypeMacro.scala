@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext}
-import consulo.java.impl.JavaBundle
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
+import consulo.language.editor.localize.CodeInsightLocalize
 
 @ExtensionImpl
 final class ScalaIterableComponentTypeMacro extends ScalaMacro {
 
   override def getNameShort: String = "iterableComponentType"
   
-  override def getPresentableName: String = JavaBundle.message("macro.iterable.component.type")
+  override def getPresentableName: LocalizeValue = CodeInsightLocalize.macroIterableComponentType()
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = params match {
     case Array(head) =>

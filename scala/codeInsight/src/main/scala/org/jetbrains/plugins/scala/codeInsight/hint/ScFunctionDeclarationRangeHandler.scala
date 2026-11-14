@@ -4,12 +4,14 @@ package hint
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.hint.DeclarationRangeHandler
+import consulo.language.editor.hint.DeclarationRangeHandler
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 final class ScFunctionDeclarationRangeHandler extends DeclarationRangeHandler[ScFunction] {
+
+  override def getElementClass: Class[ScFunction] = classOf[ScFunction]
 
   override def getDeclarationRange(function: ScFunction): TextRange = {
     val startOffset = function.getModifierList.getTextRange match {

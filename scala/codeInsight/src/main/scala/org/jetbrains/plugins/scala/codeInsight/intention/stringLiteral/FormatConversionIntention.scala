@@ -3,12 +3,15 @@ package codeInsight
 package intention
 package stringLiteral
 
-import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.{IntentionMetaData, PsiElementBaseIntentionAction}
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.project.Project
-import com.intellij.profile.codeInspection.InspectionProfileManager
+import consulo.language.editor.inspection.scheme.InspectionProjectProfileManager
 import consulo.language.psi.PsiElement
-import org.jetbrains.plugins.scala.codeInspection.parentheses.ScalaUnnecessaryParenthesesInspection
+import org.jetbrains.plugins.scala.codeInspection.parentheses.{ScalaUnnecessaryParenthesesInspection, ScalaUnnecessaryParenthesesInspectionState, UnnecessaryParenthesesSettings}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.format.{StringConcatenationParser, _}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
@@ -21,12 +24,14 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 
 sealed abstract class FormatConversionIntention[P <: StringParser](
-  override val getText: String,
+  text: String,
   protected val parser: P,
   protected val formatter: StringFormatter
 ) extends PsiElementBaseIntentionAction {
 
-  override def getFamilyName: String = getText
+  override def getText: LocalizeValue = LocalizeValue.of(text)
+
+  def getFamilyName: String = text
 
   protected def findCandidates(element: PsiElement): Seq[PsiElement] =
     element.withParentsInFile.takeWhile(!_.is[ScBlock]).toSeq
@@ -61,35 +66,58 @@ sealed abstract class FormatConversionIntention[P <: StringParser](
   }
 }
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionFormattedToInterpolated", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "Formatted strings"))
+final class FormatConversionIntentionFormattedToInterpolated extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToInterpolated,
+  FormattedStringParser,
+  InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard)
+)
+
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionInterpolatedToFormatted", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "Interpolated strings"))
+final class FormatConversionIntentionInterpolatedToFormatted extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToFormatted,
+  InterpolatedStringParser,
+  FormattedStringFormatter
+)
+
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionStringConcatenationToFormatted", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "String concatenations"))
+final class FormatConversionIntentionStringConcatenationToFormatted extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToFormatted,
+  StringConcatenationParser,
+  FormattedStringFormatter
+) with FormatConversionIntention.StringConcatenationToAnyBase
+
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionStringConcatenationToInterpolated", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "String concatenations"))
+final class FormatConversionIntentionStringConcatenationToInterpolated extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToInterpolated,
+  StringConcatenationParser,
+  InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard)
+) with FormatConversionIntention.StringConcatenationToAnyBase
+
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionFormattedToStringConcatenation", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "Formatted strings"))
+final class FormatConversionIntentionFormattedToStringConcatenation extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToStringConcat,
+  FormattedStringParser,
+  StringConcatenationFormatter
+) with FormatConversionIntention.AnyToStringConcatenationBase
+
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FormatConversionIntentionInterpolatedToStringConcatenation", fileExtensions = Array("scala"), categories = Array("Scala", "Strings", "Interpolated strings"))
+final class FormatConversionIntentionInterpolatedToStringConcatenation extends FormatConversionIntention(
+  FormatConversionIntention.ConvertToStringConcat,
+  InterpolatedStringParser,
+  StringConcatenationFormatter
+) with FormatConversionIntention.AnyToStringConcatenationBase
+
 object FormatConversionIntention {
   val ConvertToStringConcat: String = ScalaCodeInsightBundle.message("convert.to.string.concatenation")
   val ConvertToInterpolated: String = ScalaCodeInsightBundle.message("convert.to.interpolated.string")
   val ConvertToFormatted: String = ScalaCodeInsightBundle.message("convert.to.formatted.string")
-
-  final class FormattedToInterpolated extends FormatConversionIntention(
-    ConvertToInterpolated,
-    FormattedStringParser,
-    InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard)
-  )
-
-  final class InterpolatedToFormatted extends FormatConversionIntention(
-    ConvertToFormatted,
-    InterpolatedStringParser,
-    FormattedStringFormatter
-  )
-
-
-  final class StringConcatenationToFormatted extends FormatConversionIntention(
-    ConvertToFormatted,
-    StringConcatenationParser,
-    FormattedStringFormatter
-  ) with StringConcatenationToAnyBase
-
-  final class StringConcatenationToInterpolated extends FormatConversionIntention(
-    ConvertToInterpolated,
-    StringConcatenationParser,
-    InterpolatedStringFormatter(ScInterpolatedStringLiteral.Kind.Standard)
-  ) with StringConcatenationToAnyBase
 
   trait StringConcatenationToAnyBase {
     self: FormatConversionIntention[StringConcatenationParser.type] =>
@@ -103,18 +131,6 @@ object FormatConversionIntention {
       list.reverse
     }
   }
-
-  final class FormattedToStringConcatenation extends FormatConversionIntention(
-    ConvertToStringConcat,
-    FormattedStringParser,
-    StringConcatenationFormatter
-  ) with AnyToStringConcatenationBase
-
-  final class InterpolatedToStringConcatenation extends FormatConversionIntention(
-    ConvertToStringConcat,
-    InterpolatedStringParser,
-    StringConcatenationFormatter
-  ) with AnyToStringConcatenationBase
 
   trait AnyToStringConcatenationBase {
     self: FormatConversionIntention[?] =>
@@ -205,16 +221,20 @@ object FormatConversionIntention {
       if (concatParts.isEmpty)
         return Nil
 
-      val inspectionProfile = InspectionProfileManager.getInstance(project).getCurrentProfile
+      val inspectionProfile = InspectionProjectProfileManager.getInstance(project).getCurrentProfile
       val wrapper = inspectionProfile.getInspectionTool("ScalaUnnecessaryParentheses", project)
       if (wrapper == null)
         return Nil
 
       val inspection = wrapper.getTool.asInstanceOf[ScalaUnnecessaryParenthesesInspection]
+      val settings = wrapper.getState match {
+        case state: ScalaUnnecessaryParenthesesInspectionState => state.settings
+        case _ => UnnecessaryParenthesesSettings.default
+      }
 
       val result = mutable.ArrayBuffer.empty[Int]
       concatParts.foreach { (el: ScParenthesisedExpr) =>
-        if (inspection.isParenthesesRedundant(el)) {
+        if (inspection.isParenthesesRedundant(el, settings)) {
           result += el.startOffset - commonOffset
           result += el.endOffset - 1 - commonOffset
         }

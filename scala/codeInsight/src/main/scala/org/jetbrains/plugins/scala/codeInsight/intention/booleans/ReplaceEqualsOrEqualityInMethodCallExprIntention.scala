@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -42,7 +43,7 @@ final class ReplaceEqualsOrEqualityInMethodCallExprIntention extends PsiElementB
     val offset = editor.getCaretModel.getOffset
     if (range.getStartOffset > offset || range.getEndOffset < offset) return false
 
-    setText(ScalaCodeInsightBundle.message("replace.operator.with.replacement", oper, replaceOper(oper)))
+    setText(LocalizeValue.of(ScalaCodeInsightBundle.message("replace.operator.with.replacement", oper, replaceOper(oper))))
 
     invokedExpression.isQualified
   }
@@ -66,7 +67,7 @@ final class ReplaceEqualsOrEqualityInMethodCallExprIntention extends PsiElementB
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.equals.or.equality.in.method.call.expression")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.equals.or.equality.in.method.call.expression")
 }
 
 object ReplaceEqualsOrEqualityInMethodCallExprIntention {

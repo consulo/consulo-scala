@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.actions
 
 import consulo.annotation.component.ActionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.hint.HintManager
-import consulo.java.impl.JavaBundle
+import consulo.language.editor.localize.CodeInsightLocalize
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
 import consulo.document.FileDocumentManager
 import consulo.project.Project
 import consulo.ui.ex.awt.{DialogWrapper, Messages}
-import com.intellij.psi.PsiAnonymousClass
+import com.intellij.java.language.psi.PsiAnonymousClass
 import consulo.language.psi.PsiFile
 import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaCodeInsightActionHandler
@@ -39,6 +41,8 @@ object ScalaGenerateEqualsAction {
 
   private[generation] final class Handler extends ScalaCodeInsightActionHandler {
 
+    override def getLanguage: Language = ScalaLanguage.INSTANCE
+
     private lazy val myEqualsFields = collection.mutable.LinkedHashSet[ScNamedElement]()
     private lazy val myHashCodeFields = collection.mutable.LinkedHashSet[ScNamedElement]()
 
@@ -56,9 +60,9 @@ object ScalaGenerateEqualsAction {
 
       if (!needEquals && !needHashCode) {
         val text: String =
-          if (aClass.isInstanceOf[PsiAnonymousClass]) JavaBundle.message("generate.equals.and.hashcode.already.defined.warning.anonymous")
-          else JavaBundle.message("generate.equals.and.hashcode.already.defined.warning", aClass.qualifiedName)
-        if (Messages.showYesNoDialog(project, text, JavaBundle.message("generate.equals.and.hashcode.already.defined.title"), Messages.getQuestionIcon) == DialogWrapper.OK_EXIT_CODE) {
+          if (aClass.isInstanceOf[PsiAnonymousClass]) CodeInsightLocalize.generateEqualsAndHashcodeAlreadyDefinedWarningAnonymous().get
+          else CodeInsightLocalize.generateEqualsAndHashcodeAlreadyDefinedWarning(aClass.qualifiedName).get
+        if (Messages.showYesNoDialog(project, text, CodeInsightLocalize.generateEqualsAndHashcodeAlreadyDefinedTitle().get, Messages.getQuestionIcon) == DialogWrapper.OK_EXIT_CODE) {
           val deletedOk = inWriteAction {
             try {
               equalsMethod.get.delete()

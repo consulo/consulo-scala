@@ -3,6 +3,8 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -38,9 +40,9 @@ final class AddStripMarginToMLStringIntention extends PsiElementBaseIntentionAct
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.add.stripmargin")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.add.stripmargin")
 
-  override def getText: String = ScalaCodeInsightBundle.message("add.stripmargin")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("add.stripmargin"))
 
   private def getMarginChar(project: Project): String =
     CodeStyle.getSettings(project).getCustomSettings(classOf[ScalaCodeStyleSettings]).MULTILINE_STRING_MARGIN_CHAR

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
-import com.intellij.codeInsight.template.PsiElementResult
+import consulo.language.editor.template.PsiElementResult
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypeParametersOwner
 
@@ -12,7 +13,7 @@ final class ScalaTypeParametersMacro extends ScalaMacro {
 
   override def getNameShort: String = "typeParams"
 
-  override def getPresentableName: String = ScalaCodeInsightBundle.message("marco.typeParameters")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("marco.typeParameters"))
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = {
     val owner = ScalaTypeParametersMacro.typeOwner(params, context) match {
@@ -46,7 +47,7 @@ final class ScalaTypeParametersWithoutBoundsMacro extends ScalaMacro {
 
   override def getNameShort: String = "typeParamsWithoutBounds"
 
-  override def getPresentableName: String = ScalaCodeInsightBundle.message("marco.typeParameters.without.bounds")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("marco.typeParameters.without.bounds"))
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = {
     val owner = ScalaTypeParametersMacro.typeOwner(params, context) match {

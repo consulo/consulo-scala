@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package argument
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -27,7 +28,7 @@ final class AddNameToArgumentIntention extends PsiElementBaseIntentionAction {
     addNameToArgumentsFix(element, onlyBoolean = false).foreach(_.apply())
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.use.named.arguments")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.use.named.arguments")
 
-  override def getText: String = ScalaCodeInsightBundle.message("use.named.arguments.for.current.and.subsequent.arguments")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("use.named.arguments.for.current.and.subsequent.arguments"))
 }

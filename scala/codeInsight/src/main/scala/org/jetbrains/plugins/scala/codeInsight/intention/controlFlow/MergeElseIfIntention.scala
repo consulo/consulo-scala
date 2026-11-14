@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -75,7 +76,7 @@ final class MergeElseIfIntention extends PsiElementBaseIntentionAction with Dumb
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.merge.else.if")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.merge.else.if")
 
-  override def getText: String = ScalaCodeInsightBundle.message("merge.elseif")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("merge.elseif"))
 }

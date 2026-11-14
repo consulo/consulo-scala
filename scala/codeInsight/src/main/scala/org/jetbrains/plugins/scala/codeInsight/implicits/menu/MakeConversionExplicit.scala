@@ -2,20 +2,20 @@ package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
 import consulo.annotation.component.ActionImpl
 
-import com.intellij.codeInsight.daemon.impl.HintRenderer
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
+import consulo.localize.LocalizeValue
 import consulo.disposer.Disposer
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
-import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler}
+import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler, TextPartsHintRenderer}
 import org.jetbrains.plugins.scala.codeInsight.intention.expression.MakeImplicitConversionExplicit
 
 import scala.jdk.CollectionConverters.*
 
 @ActionImpl(id = "MakeExplicit")
 class MakeConversionExplicit extends AnAction(
-  ScalaCodeInsightBundle.message("make.conversion.explicit.action.text"),
-  ScalaCodeInsightBundle.message("make.conversion.explicit.action.description"),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("make.conversion.explicit.action.text")),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("make.conversion.explicit.action.description")),
   null
 ) {
   override def actionPerformed(e: AnActionEvent): Unit = {
@@ -32,7 +32,7 @@ class MakeConversionExplicit extends AnAction(
       else {
         val startOffset = inlay.getOffset
         val endOffset = {
-          val inlayText = inlay.getRenderer.asInstanceOf[HintRenderer].getText
+          val inlayText = inlay.getRenderer.asInstanceOf[TextPartsHintRenderer].getText
           startOffset + inlayText.length + element.getTextLength + 1
         }
 
@@ -41,6 +41,4 @@ class MakeConversionExplicit extends AnAction(
 
     prefixAndSuffixInlays.foreach(Disposer.dispose)
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }

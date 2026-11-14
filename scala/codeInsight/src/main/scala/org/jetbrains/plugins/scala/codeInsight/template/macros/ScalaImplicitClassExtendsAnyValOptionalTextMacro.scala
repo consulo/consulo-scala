@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
@@ -20,7 +21,7 @@ final class ScalaImplicitClassExtendsAnyValOptionalTextMacro extends ScalaMacro 
 
   override def getNameShort: String = "implicitValueExtendsValueClassOptionalText"
 
-  override def getPresentableName: String = "implicitValueExtendsValueClassOptionalText"
+  override def getPresentableName: LocalizeValue = LocalizeValue.of("implicitValueExtendsValueClassOptionalText")
 
   override def calculateResult(params: Array[Expression], context: ExpressionContext): Result = {
     val element = context.getPsiElementAtStartOffset match {

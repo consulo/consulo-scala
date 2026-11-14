@@ -3,6 +3,8 @@ package codeInsight
 package intention
 package argument
 
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -52,9 +54,9 @@ final class ArgumentToBlockExpressionIntention extends PsiElementBaseIntentionAc
         CodeStyleManager.getInstance(project).reformat(list)
       }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.convert.to.block.expression")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.convert.to.block.expression")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 }
 
 object ArgumentToBlockExpressionIntention {

@@ -1,15 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
-import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.actionSystem.Separator
+import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
 import consulo.application.ApplicationManager
 import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, EditorFontType}
 import consulo.document.Document
-import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.InlayModel
+import consulo.codeEditor.{Editor, InlayModel}
 import consulo.disposer.Disposer
 import consulo.language.psi.{PsiElement, PsiFile, PsiPackage}
 import consulo.ui.ex.awt.JBUI
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.{AnnotatorHints, Text}
@@ -135,7 +134,7 @@ private[codeInsight] trait ScalaMethodChainInlayHintsPass {
     val document = editor.getDocument
     val charWidth = editor
       .getComponent
-      .getFontMetrics(EditorColorsManager.getInstance().getGlobalScheme.getFont(EditorFontType.PLAIN))
+      .getFontMetrics(TargetAWT.to(EditorColorsManager.getInstance().getGlobalScheme.getFont(EditorFontType.PLAIN)))
       .charWidth(' ')
 
     if (ApplicationManager.getApplication.isUnitTestMode) {
@@ -341,17 +340,9 @@ private object ScalaMethodChainInlayHintsPass {
             ScalaCodeInsightSettings.getInstance().showMethodChainInlayHints = false
             ImplicitHints.updateInAllEditors()
           }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
         },
-        new AnAction(ScalaCodeInsightBundle.message("configure.method.chain.hints")) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            ScalaMethodChainInlayHintsSettingsModel.navigateTo(e.getProject)
-          }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
-        },
-        Separator.getInstance,
+        // upstream: "Configure method chain hints" action (inlay settings models are not ported)
+        AnSeparator.getInstance,
         ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
       )
     }

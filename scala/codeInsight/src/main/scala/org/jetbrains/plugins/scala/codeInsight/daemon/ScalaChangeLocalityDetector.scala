@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.daemon
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.daemon.ChangeLocalityDetector
+import consulo.language.editor.ChangeLocalityDetector
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.Tracing
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker

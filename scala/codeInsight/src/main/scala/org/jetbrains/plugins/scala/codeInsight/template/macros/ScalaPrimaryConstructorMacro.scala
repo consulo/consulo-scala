@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.localize.LocalizeValue
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult, Result}
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
@@ -26,101 +28,102 @@ sealed abstract class ScalaPrimaryConstructorMacro extends ScalaMacro {
 }
 
 
-object ScalaPrimaryConstructorMacro {
-  final class Params extends ScalaPrimaryConstructorMacro {
+@ExtensionImpl
+final class ScalaPrimaryConstructorMacroParams extends ScalaPrimaryConstructorMacro {
 
-    override def getNameShort: String = "primaryConstructorParams"
+  override def getNameShort: String = "primaryConstructorParams"
 
-    override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.primaryConstructor.param.instances")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.primaryConstructor.param.instances"))
 
-    override protected def parametersText(parameters: ScParameters): Option[String] = {
-      val clauses: Seq[ScParameterClause] = parameters.clauses
-      if (clauses.nonEmpty) {
-        val clausesStrings = clauses.map(clauseText)
-        Some(clausesStrings.mkString(")("))
-      } else {
-        None
-      }
-    }
-
-    private def clauseText(clause: ScParameterClause): String = {
-      val params: Seq[String] = clause.parameters.map { (param: ScParameter) =>
-        val name = param.name
-        val typ = param.paramType.map(_.getText).getOrElse("Any")
-        s"$name: $typ"
-      }
-
-      val paramsStr = params.commaSeparated()
-      // we do not private/final/val/var etc... but we would like to preserve implicits in apply definition
-      if (clause.hasImplicitKeyword) s"implicit $paramsStr"
-      else if (clause.hasUsingKeyword) s"using $paramsStr"
-      else paramsStr
+  override protected def parametersText(parameters: ScParameters): Option[String] = {
+    val clauses: Seq[ScParameterClause] = parameters.clauses
+    if (clauses.nonEmpty) {
+      val clausesStrings = clauses.map(clauseText)
+      Some(clausesStrings.mkString(")("))
+    } else {
+      None
     }
   }
 
-  final class ParamNames extends ScalaPrimaryConstructorMacro {
-
-    override def getNameShort: String = "primaryConstructorParamNames"
-
-    override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.primaryConstructor.param.names")
-
-    override def calculateResult(expressions: Array[Expression], context: ExpressionContext): Result = {
-      val argsVarResult: Option[TextResult] =
-        expressions.headOption
-          .map(_.calculateResult(context))
-          .filterByType[TextResult]
-
-      argsVarResult
-        .flatMap { (args: TextResult) =>
-          // ParamNames macro is calculated based on `ARGS` template variable value. User cans change it,
-          // so we have to reparse the result in `parseParameterClause` method to extract new parameter names
-          createScParametersFromText(s"(${args.toString})", context)
-        }
-        .flatMap(parametersText)
-        .map(new TextResult(_))
-        .orNull
+  private def clauseText(clause: ScParameterClause): String = {
+    val params: Seq[String] = clause.parameters.map { (param: ScParameter) =>
+      val name = param.name
+      val typ = param.paramType.map(_.getText).getOrElse("Any")
+      s"$name: $typ"
     }
 
-    private def createScParametersFromText(paramsText: String, context: ExpressionContext): Option[ScParameters] = {
-      implicit def projectContext: ProjectContext = context.getProject
+    val paramsStr = params.commaSeparated()
+    // we do not private/final/val/var etc... but we would like to preserve implicits in apply definition
+    if (clause.hasImplicitKeyword) s"implicit $paramsStr"
+    else if (clause.hasUsingKeyword) s"using $paramsStr"
+    else paramsStr
+  }
+}
 
-      val features =
-        context
-        .getPsiElementAtStartOffset
-        .toOption
-        .fold(ScalaFeatures.default: ScalaFeatures)(ScalaFeatures.forPsiOrDefault)
+@ExtensionImpl
+final class ScalaPrimaryConstructorMacroParamNames extends ScalaPrimaryConstructorMacro {
 
-      Option(ScalaPsiElementFactory.createScalaFileFromText(s"def foo$paramsText: Unit = ???", features))
-        .flatMap(file => Option(PsiTreeUtil.findChildOfType(file, classOf[ScParameters])))
-    }
+  override def getNameShort: String = "primaryConstructorParamNames"
 
-    override protected def parametersText(parameters: ScParameters): Option[String] = {
-      val clauses: Seq[ScParameterClause] = parameters.clauses
-      if (clauses.nonEmpty) {
-        val clausesStrings = clauses.map(clauseText)
-        Some(clausesStrings.mkString(")("))
-      } else {
-        None
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.primaryConstructor.param.names"))
+
+  override def calculateResult(expressions: Array[Expression], context: ExpressionContext): Result = {
+    val argsVarResult: Option[TextResult] =
+      expressions.headOption
+        .map(_.calculateResult(context))
+        .filterByType[TextResult]
+
+    argsVarResult
+      .flatMap { (args: TextResult) =>
+        // ParamNames macro is calculated based on `ARGS` template variable value. User cans change it,
+        // so we have to reparse the result in `parseParameterClause` method to extract new parameter names
+        createScParametersFromText(s"(${args.toString})", context)
       }
-    }
+      .flatMap(parametersText)
+      .map(new TextResult(_))
+      .orNull
+  }
 
-    private def clauseText(clause: ScParameterClause): String = {
-      clause.parameters.map(_.getName).commaSeparated()
+  private def createScParametersFromText(paramsText: String, context: ExpressionContext): Option[ScParameters] = {
+    implicit def projectContext: ProjectContext = context.getProject
+
+    val features =
+      context
+      .getPsiElementAtStartOffset
+      .toOption
+      .fold(ScalaFeatures.default: ScalaFeatures)(ScalaFeatures.forPsiOrDefault)
+
+    Option(ScalaPsiElementFactory.createScalaFileFromText(s"def foo$paramsText: Unit = ???", features))
+      .flatMap(file => Option(PsiTreeUtil.findChildOfType(file, classOf[ScParameters])))
+  }
+
+  override protected def parametersText(parameters: ScParameters): Option[String] = {
+    val clauses: Seq[ScParameterClause] = parameters.clauses
+    if (clauses.nonEmpty) {
+      val clausesStrings = clauses.map(clauseText)
+      Some(clausesStrings.mkString(")("))
+    } else {
+      None
     }
   }
 
-  final class ParamTypes extends ScalaPrimaryConstructorMacro {
+  private def clauseText(clause: ScParameterClause): String = {
+    clause.parameters.map(_.getName).commaSeparated()
+  }
+}
 
-    override def getNameShort: String = "primaryConstructorParamTypes"
+@ExtensionImpl
+final class ScalaPrimaryConstructorMacroParamTypes extends ScalaPrimaryConstructorMacro {
 
-    override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.primaryConstructor.param.types")
+  override def getNameShort: String = "primaryConstructorParamTypes"
 
-    override protected def parametersText(parameters: ScParameters): Option[String] = {
-      val firstParamClause = parameters.clauses.headOption.map(_.parameters)
-      firstParamClause.map { (params: Seq[ScParameter]) =>
-        val types: Seq[String] = params.map(_.paramType.map(_.getText).getOrElse(""))
-        types.commaSeparated().parenthesize(types.size > 1)
-      }
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.primaryConstructor.param.types"))
+
+  override protected def parametersText(parameters: ScParameters): Option[String] = {
+    val firstParamClause = parameters.clauses.headOption.map(_.parameters)
+    firstParamClause.map { (params: Seq[ScParameter]) =>
+      val types: Seq[String] = params.map(_.paramType.map(_.getText).getOrElse(""))
+      types.commaSeparated().parenthesize(types.size > 1)
     }
   }
 }

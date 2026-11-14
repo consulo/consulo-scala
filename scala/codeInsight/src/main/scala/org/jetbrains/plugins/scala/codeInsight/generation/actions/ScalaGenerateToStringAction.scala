@@ -4,6 +4,8 @@ package generation
 package actions
 
 import consulo.annotation.component.ActionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 
 import org.jetbrains.plugins.scala.api.isUnitTestMode
@@ -31,6 +33,8 @@ final class ScalaGenerateToStringAction extends ScalaBaseGenerateAction(
 object ScalaGenerateToStringAction {
 
   private[generation] final class Handler extends ScalaCodeInsightActionHandler {
+
+    override def getLanguage: Language = ScalaLanguage.INSTANCE
 
     import Handler._
 

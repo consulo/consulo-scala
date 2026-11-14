@@ -2,8 +2,9 @@ package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
 import consulo.annotation.component.ActionImpl
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
+import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.actions.implicitArguments.ShowImplicitArgumentsAction
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler}
@@ -11,8 +12,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.ImplicitArgumentsOwner
 
 @ActionImpl(id = "ExplicitArgumentMenu.ShowImplicitArgumentsPopup")
 class ImplicitArgumentsPopup extends AnAction(
-  ScalaCodeInsightBundle.message("implicit.arguments.popup.action.text"),
-  ScalaCodeInsightBundle.message("implicit.arguments.popup.action.description"),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("implicit.arguments.popup.action.text")),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("implicit.arguments.popup.action.description")),
   null
 ) {
   override def actionPerformed(e: AnActionEvent): Unit = {
@@ -30,6 +31,4 @@ class ImplicitArgumentsPopup extends AnAction(
       case _ =>
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }

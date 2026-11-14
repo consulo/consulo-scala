@@ -4,21 +4,19 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.CodeInsightBundle
-import consulo.language.editor.generation.ClassMember
-import com.intellij.codeInsight.generation.GenerateDelegateHandler
+import consulo.language.editor.generation.DelegateMethodHandler
+import consulo.language.editor.localize.CodeInsightLocalize
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
 import consulo.document.FileDocumentManager
 import consulo.project.Project
-import consulo.ui.ex.awt.DialogWrapper
 import com.intellij.java.language.psi.{CommonClassNames, PsiMethod}
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.util.IncorrectOperationException
-import org.jetbrains.annotations.{NotNull, Nullable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
@@ -32,10 +30,9 @@ import org.jetbrains.plugins.scala.overrideImplement
 
 import scala.annotation.nowarn
 import scala.collection.immutable.ArraySeq
-import scala.jdk.CollectionConverters._
 
 @ExtensionImpl
-final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
+final class ScalaGenerateDelegateHandler extends DelegateMethodHandler {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 
@@ -44,18 +41,24 @@ final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
   override def isValidFor(editor: Editor, file: PsiFile): Boolean =
     targetElements(file, editor).nonEmpty
 
+  override def startInWriteAction(): Boolean = false
+
+  // upstream: modal member choosers, the Consulo member chooser is asynchronous
   override def invoke(@NotNull project: Project, @NotNull editor: Editor, @NotNull file: PsiFile): Unit = {
     if (!FileDocumentManager.getInstance.requestWriting(editor.getDocument, project))
       return
     PsiDocumentManager.getInstance(project).commitAllDocuments()
 
-    val target = chooseTarget(file, editor)
-    if (target == null)
-      return
-    val candidates = chooseMethods(target, file, editor)
-    if (candidates == null || candidates.isEmpty)
-      return
+    chooseTarget(file, editor) { target =>
+      chooseMethods(target, file, editor) { candidates =>
+        if (candidates.nonEmpty)
+          generateDelegates(target, candidates, file, editor)(using project)
+      }(using project)
+    }(using project)
+  }
 
+  private def generateDelegates(target: ClassMember, candidates: Seq[ScMethodMember], file: PsiFile, editor: Editor)
+                               (implicit project: Project): Unit =
     inWriteCommandAction {
       try {
         val aClass = findClassAtCaret(file, editor)
@@ -82,8 +85,7 @@ final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
         case _: IncorrectOperationException =>
           throw new IncorrectOperationException(s"Could not delegate methods to ${target.getText}")
       }
-    }(using project)
-  }
+    }
 
   private def methodBody(delegate: ClassMember, prototype: ScFunction, context: PsiElement): ScExpression = {
     def typeParameterUsedIn(parameter: ScTypeParam, elements: Seq[PsiElement]) = {
@@ -138,11 +140,12 @@ final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
 
   //TODO 1: Select all methods from delegate which do not yet exist like in Java
   // (see com.intellij.codeInsight.generation.GenerateDelegateHandler.chooseMethods)
-  @Nullable
-  private def chooseMethods(delegate: ClassMember, file: PsiFile, editor: Editor): ArraySeq[ScMethodMember] = {
+  private def chooseMethods(delegate: ClassMember, file: PsiFile, editor: Editor)
+                           (onChosen: Seq[ScMethodMember] => Unit)
+                           (implicit project: Project): Unit = {
     val delegateType = delegate.asInstanceOf[ScalaTypedMember].scType
     val aClass = findClassAtCaret(file, editor)
-    if (aClass == null) return null
+    if (aClass == null) return
     val tBody = aClass.extendsBlock.templateBody.get
     val place = createExpressionWithContextFromText(delegateText(delegate), tBody, tBody.getFirstChild)
 
@@ -150,14 +153,10 @@ final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
     val members = toMethodMembers(candidates, place)
 
     if (ApplicationManager.getApplication.isUnitTestMode)
-      members
-    else {
-      val chooser = new ScalaMemberChooser[ScMethodMember](members, false, true, false, true, false, aClass)
-      chooser.setTitle(CodeInsightBundle.message("generate.delegate.method.chooser.title"))
-      chooser.show()
-      if (chooser.getExitCode != DialogWrapper.OK_EXIT_CODE) return null
-      chooser.getSelectedElements.asScala.to(ArraySeq)
-    }
+      onChosen(members)
+    else
+      ScalaMemberChooser.show[ScMethodMember](members, false, true, false, true, false, aClass,
+        CodeInsightLocalize.generateDelegateMethodChooserTitle().get)(onChosen)
   }
 
   private def toMethodMembers(candidates: Iterable[ScalaResolveResult], place: PsiElement): ArraySeq[ScMethodMember] = {
@@ -177,21 +176,15 @@ final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
     candidates.iterator.flatMap(toMember).to(ArraySeq)
   }
 
-  @Nullable
-  private def chooseTarget(file: PsiFile, editor: Editor): ClassMember = {
+  private def chooseTarget(file: PsiFile, editor: Editor)
+                          (onChosen: ClassMember => Unit)
+                          (implicit project: Project): Unit = {
     val elements = targetElements(file, editor)
-    if (elements.isEmpty) null
-    else if (ApplicationManager.getApplication.isUnitTestMode) elements.head
-    else {
-      val chooser = new ScalaMemberChooser(elements, false, false, false, false, false, findClassAtCaret(file, editor))
-      chooser.setTitle(CodeInsightBundle.message("generate.delegate.target.chooser.title"))
-      chooser.show()
-
-      if (chooser.getExitCode != DialogWrapper.OK_EXIT_CODE) return null
-      val selectedElements = chooser.getSelectedElements
-      if (selectedElements != null && selectedElements.size > 0) selectedElements.get(0)
-      else null
-    }
+    if (elements.isEmpty) ()
+    else if (ApplicationManager.getApplication.isUnitTestMode) onChosen(elements.head)
+    else
+      ScalaMemberChooser.show[ClassMember](elements, false, false, false, false, false, findClassAtCaret(file, editor),
+        CodeInsightLocalize.generateDelegateTargetChooserTitle().get)(_.headOption.foreach(onChosen))
   }
 
   private def targetElements(file: PsiFile, editor: Editor): ArraySeq[ClassMember] = {

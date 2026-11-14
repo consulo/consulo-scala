@@ -5,7 +5,7 @@ package impl
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.template.impl.TemplatePreprocessor
+import consulo.language.editor.template.TemplatePreprocessor
 import consulo.codeEditor.Editor
 import consulo.language.impl.psi.LeafPsiElement
 import consulo.language.psi.{PsiElement, PsiFile}

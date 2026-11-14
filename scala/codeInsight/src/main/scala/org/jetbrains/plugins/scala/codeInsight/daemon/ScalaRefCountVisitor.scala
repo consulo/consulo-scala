@@ -3,8 +3,9 @@ package codeInsight
 package daemon
 
 import consulo.annotation.component.ExtensionImpl
+import jakarta.inject.Inject
 
-import consulo.language.editor.rawHighlight.HighlightVisitor
+import consulo.language.editor.rawHighlight.{HighlightVisitor, HighlightVisitorFactory}
 import consulo.language.editor.rawHighlight.HighlightInfoHolder
 import consulo.language.inject.InjectedLanguageManager
 import consulo.logging.Logger
@@ -25,12 +26,17 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScDerivesClau
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.DerivesUtil
 
 @ExtensionImpl
-final class ScalaRefCountVisitor(project: Project) extends HighlightVisitor {
-  private val LOG = Logger.getInstance(classOf[ScalaRefCountVisitor])
-  private var analyzedWholeFile = false
+final class ScalaRefCountVisitorFactory @Inject()(project: Project) extends HighlightVisitorFactory {
 
   override def suitableForFile(file: PsiFile): Boolean =
     HighlightingAdvisor.shouldInspect(file)
+
+  override def createVisitor(): HighlightVisitor = new ScalaRefCountVisitor(project)
+}
+
+final class ScalaRefCountVisitor(project: Project) extends HighlightVisitor {
+  private val LOG = Logger.getInstance(classOf[ScalaRefCountVisitor])
+  private var analyzedWholeFile = false
 
   override def visit(element: PsiElement): Unit = {
     if (builtInHighlightingDisabledIn(project) || incremental.Highlighting.enabledIn(project)) return
@@ -144,6 +150,4 @@ final class ScalaRefCountVisitor(project: Project) extends HighlightVisitor {
       }
     }
   }
-
-  override def clone: org.jetbrains.plugins.scala.codeInsight.daemon.ScalaRefCountVisitor = new ScalaRefCountVisitor(project)
 }

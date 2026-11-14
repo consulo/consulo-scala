@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import consulo.language.editor.DaemonCodeAnalyzer
 import consulo.codeEditor.{Editor, EditorFactory}
-import com.intellij.openapi.editor.InlayModel
+import consulo.codeEditor.InlayModel
 import consulo.project.ProjectManager
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions.ObjectExt

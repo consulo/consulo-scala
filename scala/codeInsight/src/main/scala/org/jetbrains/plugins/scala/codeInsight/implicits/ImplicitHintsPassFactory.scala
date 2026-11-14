@@ -4,20 +4,16 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.Pass
 import consulo.language.editor.highlight.{TextEditorHighlightingPass, TextEditorHighlightingPassFactory}
-import com.intellij.codeHighlighting.{TextEditorHighlightingPassFactoryRegistrar, TextEditorHighlightingPassRegistrar}
 import consulo.codeEditor.Editor
-import consulo.project.Project
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaHintsSettings
 import org.jetbrains.plugins.scala.extensions.{PsiFileExt, ViewProviderExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 @ExtensionImpl
-class ImplicitHintsPassFactory
-  extends TextEditorHighlightingPassFactory
-    with TextEditorHighlightingPassFactoryRegistrar {
+class ImplicitHintsPassFactory extends TextEditorHighlightingPassFactory {
 
-  override def registerHighlightingPassFactory(registrar: TextEditorHighlightingPassRegistrar, project: Project): Unit = {
+  override def register(registrar: TextEditorHighlightingPassFactory.Registrar): Unit = {
     val runAfterAnnotator = Array(Pass.UPDATE_ALL)
 
     registrar.registerTextEditorHighlightingPass(this, runAfterAnnotator, null, false, -1)

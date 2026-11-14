@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.completion.lookup.LookupElement
-import consulo.language.editor.template.{Expression, ExpressionContext}
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
 import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
@@ -17,7 +18,7 @@ final class ScalaSubtypesMacro extends ScalaMacro {
 
   override def getNameShort: String = "subtypes"
 
-  override def getPresentableName: String = ScalaCodeInsightBundle.message("macro.subtypes")
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("macro.subtypes"))
 
   override def getDefaultValue: String = ScalaMacro.DefaultValue
 

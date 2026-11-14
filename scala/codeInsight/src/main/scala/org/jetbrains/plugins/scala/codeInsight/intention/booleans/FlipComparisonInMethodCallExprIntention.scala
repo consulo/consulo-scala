@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -40,7 +41,7 @@ final class FlipComparisonInMethodCallExprIntention extends PsiElementBaseIntent
         val text =
           if (replacement == refName) ScalaCodeInsightBundle.message("flip.operation", refName)
           else ScalaCodeInsightBundle.message("flip.operation.to.inverse", refName, replacement)
-        setText(text)
+        setText(LocalizeValue.of(text))
         operation.isQualified
       case _ => false
     }
@@ -75,9 +76,9 @@ final class FlipComparisonInMethodCallExprIntention extends PsiElementBaseIntent
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.flip.comparison.in.method.call.expression")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.flip.comparison.in.method.call.expression")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 }
 
 object FlipComparisonInMethodCallExprIntention {

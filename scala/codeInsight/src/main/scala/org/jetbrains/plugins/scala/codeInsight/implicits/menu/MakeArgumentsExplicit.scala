@@ -1,10 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
-import com.intellij.codeInsight.daemon.impl.HintRenderer
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
 import consulo.disposer.Disposer
-import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler}
+import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler, TextPartsHintRenderer}
 import org.jetbrains.plugins.scala.extensions.inWriteCommandAction
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.*
 import org.jetbrains.plugins.scala.project.ProjectContext
@@ -17,7 +16,7 @@ class MakeArgumentsExplicit extends AnAction {
     val inlay = model.getElementAt(MouseHandler.mousePressLocation)
     val element = ImplicitHint.elementOf(inlay)
 
-    val inlayText = inlay.getRenderer.asInstanceOf[HintRenderer].getText
+    val inlayText = inlay.getRenderer.asInstanceOf[TextPartsHintRenderer].getText
 
     implicit val context: ProjectContext = ProjectContext.fromProject(e.getData(CommonDataKeys.PROJECT))
 
@@ -25,6 +24,4 @@ class MakeArgumentsExplicit extends AnAction {
 
     Disposer.dispose(inlay)
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }

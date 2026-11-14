@@ -3,57 +3,46 @@ package codeInsight
 package generation
 package ui
 
-import com.intellij.ide.wizard.{AbstractWizard, Step, StepAdapter}
 import consulo.project.Project
-import com.intellij.openapi.util.AsyncResult
 import consulo.language.editor.refactoring.classMember.AbstractMemberInfoModel
-import consulo.language.editor.refactoring.ui.{AbstractMemberSelectionPanel, AbstractMemberSelectionTable}
+import consulo.ui.ex.awt.DialogWrapper
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import java.awt.BorderLayout
-import javax.swing.JCheckBox
-import javax.swing.event.{TableModelEvent, TableModelListener}
-import scala.annotation.nowarn
+import javax.swing.{JCheckBox, JComponent}
 
 /**
-  * Wizard dialog to select class members for generation of toString method.
+  * Dialog to select class members for generation of toString method.
   *
   * @param project      IntelliJ project.
   * @param classMembers Class members to choose from.
   */
+// upstream: single-step AbstractWizard (not public API in Consulo)
 final class ScalaGenerateToStringWizard(classMembers: Seq[ScNamedElement])
                                        (implicit project: Project)
-  extends AbstractWizard[Step](
-    ScalaCodeInsightBundle.message("generate.ui.toString.title"),
-    project
-  ) {
+  extends DialogWrapper(project) {
 
   import ScalaGenerateToStringWizard._
 
-  private val toStringPanel = new Panel(classMembers)((_: TableModelEvent) => updateButtons())
+  private val toStringPanel = new Panel(classMembers)
 
   def membersWithSelection: (Seq[ScNamedElement], Boolean) =
     (toStringPanel.members.toSeq, toStringPanel.isSelected)
 
-  override def showAndGetOk(): AsyncResult[java.lang.Boolean] @nowarn("cat=deprecation") = {
-    @nowarn("cat=deprecation") val result = super.showAndGetOk()
-
-    if (isOK) settings.setGenerateToStringWithPropertiesNames(toStringPanel.isSelected)
-
-    result
-  }
-
-  override protected def init(): Unit = {
-    super.init()
-    updateStep()
-
-    toStringPanel.isSelected = settings.isGenerateToStringWithPropertiesNames
-  }
-
-  addStep(new ToStringStep(toStringPanel))
+  setTitle(ScalaCodeInsightBundle.message("generate.ui.toString.title"))
+  toStringPanel.isSelected = settings.isGenerateToStringWithPropertiesNames
   init()
-  updateButtons()
+
+  override protected def createCenterPanel(): JComponent = toStringPanel
+
+  override def getPreferredFocusedComponent: JComponent = toStringPanel.getTable
+
+  override protected def doOKAction(): Unit = {
+    settings.setGenerateToStringWithPropertiesNames(toStringPanel.isSelected)
+    super.doOKAction()
+  }
 
   private def settings: ScalaProjectSettings = ScalaProjectSettings.getInstance(project)
 }
@@ -61,14 +50,11 @@ final class ScalaGenerateToStringWizard(classMembers: Seq[ScNamedElement])
 object ScalaGenerateToStringWizard {
 
   private final class Panel(members: Seq[ScNamedElement])
-                           (listener: TableModelListener)
     extends ScalaMemberSelectionPanel(
       ScalaCodeInsightBundle.message("generate.ui.toString.properties"),
       members,
       new AbstractMemberInfoModel[ScNamedElement, ScalaMemberInfo] {}
     ) {
-
-    getTable.getModel.addTableModelListener(listener)
 
     private val checkBox = new JCheckBox(ScalaCodeInsightBundle.message("generate.ui.toString.withNames"))
 
@@ -81,10 +67,4 @@ object ScalaGenerateToStringWizard {
       checkBox.setSelected(isSelected)
     }
   }
-
-  private final class ToStringStep(override val getComponent: AbstractMemberSelectionPanel[ScNamedElement, ScalaMemberInfo]) extends StepAdapter {
-
-    override def getPreferredFocusedComponent: AbstractMemberSelectionTable[ScNamedElement, ScalaMemberInfo] = getComponent.getTable
-  }
-
 }

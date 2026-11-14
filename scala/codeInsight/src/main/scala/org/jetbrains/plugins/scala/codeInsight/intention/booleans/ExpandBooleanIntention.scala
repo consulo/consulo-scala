@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -62,9 +63,9 @@ final class ExpandBooleanIntention extends PsiElementBaseIntentionAction {
     }
   }
 
-  override def getText: String = ScalaCodeInsightBundle.message("expand.boolean.use.to.ifelse")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("expand.boolean.use.to.ifelse"))
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.expand.boolean")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.expand.boolean")
 }
 
 object ExpandBooleanIntention {

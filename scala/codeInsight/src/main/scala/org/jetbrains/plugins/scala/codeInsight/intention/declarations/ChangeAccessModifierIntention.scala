@@ -2,39 +2,36 @@ package org.jetbrains.plugins.scala.codeInsight
 package intention
 package declarations
 
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
-import com.intellij.codeInsight.intention.BaseElementAtCaretIntentionAction
-import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.ide.nls.NlsMessages
+import consulo.language.editor.intention.BaseElementAtCaretIntentionAction
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.language.editor.WriteCommandAction
-import com.intellij.openapi.command.impl.{FinishMarkAction, StartMarkAction}
-import consulo.undoRedo.UndoManager
+import consulo.undoRedo.ProjectUndoManager
 import consulo.codeEditor.EditorColors
 import consulo.colorScheme.{EditorColorsManager, EditorFontType}
 import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea}
 import consulo.document.Document
-import consulo.codeEditor.Editor
+import consulo.codeEditor.{Editor, EditorPopupHelper}
 import consulo.fileEditor.FileEditorManager
 import consulo.application.progress.ProgressManager
 import consulo.project.Project
-import consulo.ui.ex.awt.Messages
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.ex.popup.JBPopupFactory
 import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
 import consulo.document.util.TextRange
-import consulo.application.util.HtmlChunk
 import consulo.util.lang.StringUtil
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiModifier, PsiModifierList}
-import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiReference, PsiWhiteSpace, SmartPointerManager}
-import com.intellij.psi.PsiParserFacade
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiParserFacade, PsiReference, PsiWhiteSpace, SmartPointerManager}
 import consulo.language.codeStyle.CodeStyleManager
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import consulo.language.editor.refactoring.ui.ConflictsDialog
-import com.intellij.refactoring.util.RefactoringUIUtil
+import consulo.language.editor.refactoring.ui.RefactoringUIUtil
 import consulo.util.collection.MultiMap
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInsight.intention.declarations.ChangeAccessModifierIntention._
@@ -94,10 +91,10 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
       available match {
         case Seq(one) =>
           targetModifier = Some(one)
-          setText(ScalaCodeInsightBundle.message("make.0.1", description, one))
+          setText(LocalizeValue.of(ScalaCodeInsightBundle.message("make.0.1", description, one)))
         case _ =>
           targetModifier = None
-          setText(actionName)
+          setText(LocalizeValue.of(actionName))
       }
       available
     }
@@ -124,25 +121,6 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
       }
     }
 
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
-    val element = file.findElementAt(editor.getCaretModel.getOffset)
-    (findMember(element), targetModifier) match {
-      case (Some(member), Some(targetModifier)) =>
-        val modifierList = member.getModifierList
-        setModifier(modifierList, targetModifier)(using project)
-        IntentionPreviewInfo.DIFF
-      case (Some(member), _) =>
-        availableModifiers(member).mkString(", ")
-        new IntentionPreviewInfo.Html(HtmlChunk.text(
-          ScalaCodeInsightBundle.message("change.access.modifier.preview",
-            member.getName,
-            NlsMessages.formatOrList(availableModifiers(member).map("'" + _ + "'").asJavaCollection))
-        ))
-      case _ =>
-        IntentionPreviewInfo.DIFF
-    }
-  }
-
   private def directlySetModifier(member: ScMember, modifier: String): Unit = {
     val modifierList = member.getModifierList
     val conflicts = checkForConflicts(member, modifier)
@@ -161,15 +139,7 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
     val originalCursorPositionMarker = document.createRangeMarker(curCursorPos, curCursorPos)
     model.moveToOffset(modifierRange.getStartOffset)
 
-    val markAction =
-      try StartMarkAction.start(editor, project, actionName)
-      catch {
-        case e: StartMarkAction.AlreadyStartedException =>
-          //noinspection ReferencePassedToNls
-          Messages.showErrorDialog(project, e.getMessage, StringUtil.toTitleCase(actionName))
-          return
-      }
-
+    // upstream: StartMarkAction/FinishMarkAction around the popup (internal API in Consulo); the updater merges its commands into one undo group instead
     val lvAttr = EditorColorsManager.getInstance.getGlobalScheme.getAttributes(EditorColors.LIVE_TEMPLATE_ATTRIBUTES)
     val highlighter = editor.getMarkupModel.addRangeHighlighter(
       modifierRange.getStartOffset, modifierRange.getEndOffset,
@@ -179,7 +149,7 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
     highlighter.setGreedyToLeft(true)
     val updater = new ModifierTextUpdater(file, document, modifierRange, actionName)
     val memberPointer = SmartPointerManager.createPointer(member)
-    JBPopupFactory.getInstance
+    val popup = JBPopupFactory.getInstance
       .createPopupChooserBuilder(possibleModifiers.asJava)
       .setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
       .setSelectedValue(possibleModifiers.head, true)
@@ -187,14 +157,13 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
       .setMovable(false)
       .setResizable(false)
       .setRequestFocus(true)
-      .setFont(editor.getColorsScheme.getFont(EditorFontType.PLAIN))
+      .setFont(TargetAWT.to(editor.getColorsScheme.getFont(EditorFontType.PLAIN)))
       .setItemSelectedCallback(updater.setModifier)
       .addListener(new JBPopupListener() {
         override def onClosed(event: LightweightWindowEvent): Unit = {
           highlighter.dispose()
           model.moveToOffset(originalCursorPositionMarker.getStartOffset)
           if (!event.isOk) {
-            FinishMarkAction.finish(project, editor, markAction)
             updater.undoChange(true)
           }
         }
@@ -206,40 +175,36 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
         updater.setModifier(modifier)
         // do not commit document now: checkForConflicts should have original content
         // while the editor should display the updated content to prevent flicker
-        try {
-          for {
-            m <- Option(memberPointer.getElement)
-            modifierList <- Option(m.getModifierList)
-          } {
-            checkForConflicts(member, modifier) match {
-              case None =>
+        for {
+          m <- Option(memberPointer.getElement)
+          modifierList <- Option(m.getModifierList)
+        } {
+          checkForConflicts(member, modifier) match {
+            case None =>
+              updater.undoChange(true)
+            case Some(conflicts) =>
+              if (conflicts.nonEmpty) {
                 updater.undoChange(true)
-              case Some(conflicts) =>
-                if (conflicts.nonEmpty) {
-                  updater.undoChange(true)
-                  PsiDocumentManager.getInstance(project).commitDocument(document)
-                  processWithConflicts(modifierList, modifier, conflicts)
-                } else {
-                  updater.undoChange(false)
-                  PsiDocumentManager.getInstance(project).commitDocument(document)
-                  changeModifier(modifierList, modifier, hasConflicts = false)
-                }
-            }
+                PsiDocumentManager.getInstance(project).commitDocument(document)
+                processWithConflicts(modifierList, modifier, conflicts)
+              } else {
+                updater.undoChange(false)
+                PsiDocumentManager.getInstance(project).commitDocument(document)
+                changeModifier(modifierList, modifier, hasConflicts = false)
+              }
           }
-        } finally {
-          FinishMarkAction.finish(project, editor, markAction)
         }
       })
       .createPopup()
-      .showInBestPositionFor(editor)
+    EditorPopupHelper.getInstance.showPopupInBestPositionFor(editor, popup)
   }
 
-  override def getFamilyName: String = ChangeAccessModifierIntention.familyName
+  def getFamilyName: String = ChangeAccessModifierIntention.familyName
 
   private def processWithConflicts(modifierList: PsiModifierList, modifier: String, conflicts: Map[PsiElement, String]): Unit = {
     if (conflicts.nonEmpty) {
       if (ApplicationManager.getApplication.isUnitTestMode && !BaseRefactoringProcessor.ConflictsInTestsException.isTestIgnore)
-        throw new BaseRefactoringProcessor.ConflictsInTestsException(conflicts.values.toSeq.asJava)
+        throw new BaseRefactoringProcessor.ConflictsInTestsException(conflicts.values.map(LocalizeValue.of(_)).toSeq.asJava)
 
       if (!confirmInConflictsDialog(modifierList, modifier, conflicts))
         return
@@ -249,8 +214,8 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
   }
 
   private def confirmInConflictsDialog(modifierList: PsiModifierList, modifier: String, conflicts: Map[PsiElement, String]): Boolean = {
-    val conflictMap = new MultiMap[PsiElement, String]()
-    conflictMap.putAllValues(conflicts.asJava)
+    val conflictMap = new MultiMap[PsiElement, LocalizeValue]()
+    conflicts.foreach { case (element, message) => conflictMap.putValue(element, LocalizeValue.of(message)) }
     val dialog = new ConflictsDialog(modifierList.getProject, conflictMap, () => changeModifier(modifierList, modifier, hasConflicts = true))
     dialog.showAndGet
   }
@@ -274,7 +239,7 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
       case _ =>
         val file = modifierList.getContainingFile
         WriteCommandAction
-          .writeCommandAction(file.getProject, file)
+          .writeCommandAction(file)
           .withName(ScalaCodeInsightBundle.message("change.access.modifier.intention"))
           .run(() => setModifier(modifierList, modifier))
     }
@@ -308,7 +273,7 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
     }
 
     val canceled = !ProgressManager.getInstance.runProcessWithProgressSynchronously((() =>
-      ReadAction.runBlocking(() => {
+      ReadAction.run(() => {
         for (declaredElement <- getElementsToSearch(member)) {
           val search = ReferencesSearch.search(declaredElement, useScope)
           search.asScala.foreach { (reference: PsiReference) =>
@@ -318,9 +283,9 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
               if (context != null) {
                 val message = ScalaCodeInsightBundle.message(
                   "0.with.1.visibility.is.not.accessible.from.2",
-                  RefactoringUIUtil.getDescription(declaredElement, false),
+                  RefactoringUIUtil.getDescription(declaredElement, false).get,
                   modifier,
-                  RefactoringUIUtil.getDescription(context, true)
+                  RefactoringUIUtil.getDescription(context, true).get
                 )
                 conflicts += (referencedElement -> message)
               }
@@ -385,6 +350,7 @@ object ChangeAccessModifierIntention {
     private val myExtendLeft = range.getStartOffset > 0 && !StringUtil.isWhiteSpace(sequence.charAt(range.getStartOffset - 1))
     private val myExtendRight = range.getEndOffset < sequence.length && !StringUtil.isWhiteSpace(sequence.charAt(range.getEndOffset))
     private val myOriginalText = sequence.subSequence(range.getStartOffset, range.getEndOffset).toString
+    private val myGroupId = s"ChangeAccessModifier@${System.identityHashCode(this)}"
     private val myMarker = {
       val marker = myDocument.createRangeMarker(range)
       marker.setGreedyToRight(true)
@@ -396,9 +362,9 @@ object ChangeAccessModifierIntention {
       val project = myFile.getProject
       val fileEditorManager = FileEditorManager.getInstance(project)
       val fileEditor = fileEditorManager.getSelectedEditor(myFile.getVirtualFile)
-      val manager = UndoManager.getInstance(project)
+      val manager = ProjectUndoManager.getInstance(project)
       if (viaUndoManager && manager.isUndoAvailable(fileEditor)) manager.undo(fileEditor)
-      else WriteCommandAction.writeCommandAction(project, myFile).withName(myActionName).run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, myOriginalText))
+      else WriteCommandAction.writeCommandAction(myFile).withName(myActionName).withGroupId(myGroupId).run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, myOriginalText))
     }
 
     def setModifier(target: String): Unit = {
@@ -414,8 +380,9 @@ object ChangeAccessModifierIntention {
       if (target == "public")
         updatedText = ""
 
-      WriteCommandAction.writeCommandAction(myFile.getProject, myFile)
+      WriteCommandAction.writeCommandAction(myFile)
         .withName(myActionName)
+        .withGroupId(myGroupId)
         .run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, updatedText))
     }
   }

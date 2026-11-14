@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.language.editor.template.`macro`.Macro
-import com.intellij.codeInsight.template.TemplateContextType
+import consulo.language.editor.template.context.TemplateContextType
 import org.jetbrains.plugins.scala.codeInsight.template.impl.ScalaCodeContextType
 
 abstract class ScalaMacro extends Macro {
@@ -10,7 +11,7 @@ abstract class ScalaMacro extends Macro {
 
   override final def getName: String = "scala_" + getNameShort
 
-  override def getPresentableName: String = getNameShort + "()"
+  override def getPresentableName: LocalizeValue = LocalizeValue.of(getNameShort + "()")
 
   override final def isAcceptableInContext(context: TemplateContextType): Boolean =
     context match {

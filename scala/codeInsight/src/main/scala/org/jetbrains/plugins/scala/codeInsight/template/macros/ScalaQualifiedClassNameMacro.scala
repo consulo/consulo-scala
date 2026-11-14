@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.template.macros
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult, Result}
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.util.PsiTreeUtil
 

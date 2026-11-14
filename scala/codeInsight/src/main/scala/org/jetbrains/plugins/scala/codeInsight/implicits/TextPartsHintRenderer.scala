@@ -1,16 +1,15 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.ide.ui.{AntialiasingType, UISettingsUtils}
-import consulo.ui.ex.action.ActionGroup
-import consulo.codeEditor.Editor
+import consulo.application.ui.UISettings
+import consulo.codeEditor.{Editor, RealEditor}
 import consulo.colorScheme.EditorFontType
-import com.intellij.openapi.editor.impl.EditorImpl
 import consulo.colorScheme.{EffectType, TextAttributes}
 import consulo.util.dataholder.Key
 import consulo.application.util.registry.Registry
-import com.intellij.ui.paint.EffectPainter
-import com.intellij.util.ui.GraphicsUtil
+import consulo.ui.ex.awt.paint.EffectPainter
+import consulo.ui.ex.awt.util.{DesktopAntialiasingTypeUtil, GraphicsUtil}
 import consulo.ui.ex.awt.JBUI
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.{Corners, Text}
 import org.jetbrains.plugins.scala.codeInsight.implicits.TextPartsHintRenderer._
@@ -27,9 +26,8 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
 
   private val originalParts = parts
 
+  // upstream: also menuProvider.actionGroupOrNull via HintRenderer.getContextMenuGroup, Consulo supports only group ids
   protected override def getContextMenuGroupId0(editor: Editor): String = menuProvider.groupIdOrNull
-
-  protected override def getContextMenuGroup0(editor: Editor): ActionGroup = menuProvider.actionGroupOrNull
 
   protected def getMargin(editor: Editor): Insets = DefaultMargin
 
@@ -45,8 +43,8 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
   protected def adjustedBoxStart(r: Rectangle, m: Insets): Int = r.x + m.left
 
   override def paint0(editor: Editor, g: Graphics, r: Rectangle, textAttributes: TextAttributes): Unit = {
-    if (!editor.is[EditorImpl]) return
-    val editorImpl = editor.asInstanceOf[EditorImpl]
+    if (!editor.is[RealEditor]) return
+    val editorImpl = editor.asInstanceOf[RealEditor]
 
     val m = getMargin(editor)
     val p = getPadding(editor)
@@ -66,7 +64,7 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
       if (backgroundColor != null) {
         val config = GraphicsUtil.setupAAPainting(g)
         GraphicsUtil.paintWithAlpha(g, BackgroundAlpha)
-        g.setColor(backgroundColor)
+        g.setColor(TargetAWT.to(backgroundColor))
         if (p.left == 0 && p.right == 0) {
           if (RoundCorners) {
             fillRoundRect(g2d, xPlusLeftMargin, r.y, widthMinusMargins, r.height, roundCorners = corners, ArcWidth, ArcHeight)
@@ -94,7 +92,7 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
           if (backgroundColor != null) {
             val config = GraphicsUtil.setupAAPainting(g)
             GraphicsUtil.paintWithAlpha(g, BackgroundAlpha)
-            g.setColor(backgroundColor)
+            g.setColor(TargetAWT.to(backgroundColor))
             if (RoundCorners) {
               val roundCorners = {
                 val left = if (text.eq(parts.head)) corners.intersect(Corners.Left) else Corners.None
@@ -109,13 +107,13 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
           }
 
           val foregroundColor = effectiveTextAttributes.getForegroundColor
-          g.setColor(foregroundColor)
+          g.setColor(TargetAWT.to(foregroundColor))
 
-          g.setFont(editor.getColorsScheme.getFont(editorFontTypeOf(effectiveTextAttributes.getFontType)))
+          g.setFont(TargetAWT.to(editor.getColorsScheme.getFont(editorFontTypeOf(effectiveTextAttributes.getFontType))))
 
           val savedHint = g2d.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING)
           val savedClip = g.getClip
-          g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, AntialiasingType.getKeyForCurrentScope(false))
+          g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, DesktopAntialiasingTypeUtil.getKeyForCurrentScope(false))
           g.clipRect(xPlusLeftMargin, r.y, widthMinusMargins, r.height)
           g.drawString(text.string, xStart, yStart)
           g.setClip(savedClip)
@@ -124,7 +122,7 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
           val effectColor = effectiveTextAttributes.getEffectColor
           val effectType = effectiveTextAttributes.getEffectType
           if (effectColor != null) {
-            g.setColor(effectColor)
+            g.setColor(TargetAWT.to(effectColor))
             val (x1, x2) = {
               val (beginOffset, endOffset) = text.effectRange.getOrElse(0, text.string.length)
               val (leftMargin, rightMargin) = (metrics.stringWidth(text.string.take(beginOffset)),
@@ -132,7 +130,7 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
               (xStart + leftMargin, xStart + width - rightMargin)
             }
             val y = r.y + ascent
-            val font = editor.getColorsScheme.getFont(EditorFontType.PLAIN)
+            val font = TargetAWT.to(editor.getColorsScheme.getFont(EditorFontType.PLAIN))
 
             effectType match {
               case EffectType.LINE_UNDERSCORE => EffectPainter.LINE_UNDERSCORE.paint(g2d, x1, y, x2 - x1, descent, font)
@@ -177,7 +175,7 @@ class TextPartsHintRenderer(var parts: Seq[Text], menuProvider: MenuProvider, co
   }
 
   private def getFontMetrics0(editor: Editor): MyFontMetrics = {
-    val font = editor.getColorsScheme.getFont(EditorFontType.PLAIN)
+    val font = TargetAWT.to(editor.getColorsScheme.getFont(EditorFontType.PLAIN))
     var metrics = editor.getUserData(HintFontMetrics)
     if (metrics != null && !metrics.isActual(editor, font.getFamily, font.getSize)) {
       metrics = null
@@ -243,11 +241,11 @@ private object TextPartsHintRenderer {
 
   private final val DefaultPadding = JBUI.emptyInsets()
 
-  private def RoundCorners = Registry.is("scala.round.hint.corners")
+  private def RoundCorners = Registry.is("scala.round.hint.corners", true)
 
-  private def ArcWidth = (8 * UISettingsUtils.getInstance.getCurrentIdeScale).round
+  private def ArcWidth = (8 * UISettings.getInstance.getIdeScale).round
 
-  private def ArcHeight = (8 * UISettingsUtils.getInstance.getCurrentIdeScale).round
+  private def ArcHeight = (8 * UISettings.getInstance.getIdeScale).round
 
   private final val ExpansionLevel = 5
 }

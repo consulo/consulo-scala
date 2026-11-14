@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala
 package codeInsight.intention.booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -38,9 +39,9 @@ final class SimplifyBooleanExprWithLiteralIntention extends PsiElementBaseIntent
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.simplify.boolean.expression.with.a.literal")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.simplify.boolean.expression.with.a.literal")
 
-  override def getText: String = ScalaCodeInsightBundle.message("simplify.boolean.expression")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("simplify.boolean.expression"))
 }
 
 object SimplifyBooleanExprWithLiteralIntention {

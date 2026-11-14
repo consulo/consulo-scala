@@ -3,7 +3,8 @@ package codeInsight
 package generation
 package actions
 
-import com.intellij.codeInsight.generation.actions.BaseGenerateAction
+import com.intellij.java.impl.codeInsight.generation.actions.BaseGenerateAction
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiClass
@@ -14,12 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefin
 
 abstract class ScalaBaseGenerateAction(handler: ScalaCodeInsightActionHandler,
                                        @Nls actionText: String,
-                                       @Nls actionDescription: String) extends BaseGenerateAction(handler) {
-  locally {
-    val presentation = getTemplatePresentation
-    presentation.setText(actionText)
-    presentation.setDescription(actionDescription)
-  }
+                                       @Nls actionDescription: String) extends BaseGenerateAction(handler, LocalizeValue.of(actionText)) {
+  getTemplatePresentation.setDescription(LocalizeValue.of(actionDescription))
 
   override protected def isValidForFile(project: Project, editor: Editor, file: PsiFile): Boolean =
     file match {

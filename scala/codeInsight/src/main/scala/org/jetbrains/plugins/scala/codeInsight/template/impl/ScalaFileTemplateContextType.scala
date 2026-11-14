@@ -2,14 +2,16 @@ package org.jetbrains.plugins.scala.codeInsight.template.impl
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.template.{FileTypeBasedContextType, TemplateActionContext, TemplateContextType}
+import consulo.language.editor.template.context.{BaseTemplateContextType, FileTypeBasedContextType, TemplateActionContext}
 import consulo.language.psi.util.PsiTreeUtil
+import consulo.localize.LocalizeValue
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 @ExtensionImpl
 final class ScalaFileTemplateContextType extends FileTypeBasedContextType(
+  "SCALA",
   ScalaLanguage.INSTANCE.getDisplayName,
   ScalaFileType.INSTANCE
 ) {
@@ -20,8 +22,8 @@ final class ScalaFileTemplateContextType extends FileTypeBasedContextType(
 
 object ScalaFileTemplateContextType {
 
-  private[impl] abstract class ElementContextType(@Nls presentableName: String)
-    extends TemplateContextType(presentableName) {
+  private[impl] abstract class ElementContextType(contextId: String, @Nls presentableName: String)
+    extends BaseTemplateContextType(contextId, LocalizeValue.of(presentableName), classOf[ScalaFileTemplateContextType]) {
 
     protected def isInContextInScalaFile(context: TemplateActionContext)(implicit file: ScalaFile): Boolean
 

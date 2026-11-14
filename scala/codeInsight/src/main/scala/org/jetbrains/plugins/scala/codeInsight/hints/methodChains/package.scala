@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.openapi.editor.InlayProperties
+import consulo.codeEditor.InlayProperties
 import consulo.util.dataholder.Key
 
 package object methodChains {

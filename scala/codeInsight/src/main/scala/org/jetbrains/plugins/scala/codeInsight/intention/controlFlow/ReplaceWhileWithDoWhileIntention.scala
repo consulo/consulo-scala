@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -60,7 +61,7 @@ final class ReplaceWhileWithDoWhileIntention extends PsiElementBaseIntentionActi
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.while.with.do.while")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.while.with.do.while")
 
-  override def getText: String = getFamilyName
+  override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)
 }

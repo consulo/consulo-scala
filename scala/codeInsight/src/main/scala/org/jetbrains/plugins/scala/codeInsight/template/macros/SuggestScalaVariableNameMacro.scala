@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult, Result}
 import consulo.language.psi.PsiDocumentManager
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
@@ -60,7 +60,7 @@ object SuggestScalaVariableNameMacro {
           case "option" => "scala.Option"
           case "foreach" => "foreach"
         }
-        (new ScalaVariableOfTypeMacro.RegularVariable)
+        (new ScalaVariableOfTypeMacroRegularVariable)
           .calculateLookups(Array(str), showOne = true)
           .map(_.getObject)
           .collectFirst {

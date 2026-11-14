@@ -3,12 +3,14 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import consulo.undoRedo.util.UndoUtil
+import consulo.language.editor.util.LanguageUndoUtil
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -27,7 +29,7 @@ final class StringToMultilineStringIntention extends PsiElementBaseIntentionActi
 
   import StringToMultilineStringIntention._
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.regular.multi.line.string.conversion")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.regular.multi.line.string.conversion")
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {
     val stringParent = stringLiteralParent(element)
@@ -36,7 +38,7 @@ final class StringToMultilineStringIntention extends PsiElementBaseIntentionActi
       case lit if lit.hasValidClosingQuotes => ScalaCodeInsightBundle.message("convert.to.multiline.string")
     }
 
-    maybeText.foreach(setText)
+    maybeText.foreach(text => setText(LocalizeValue.of(text)))
     maybeText.isDefined
   }
 
@@ -56,7 +58,7 @@ final class StringToMultilineStringIntention extends PsiElementBaseIntentionActi
     if (lit.isMultiLineString) multilineToRegular(lit, editor)
     else regularToMultiline(lit, editor)
 
-    UndoUtil.markPsiFileForUndo(containingFile)
+    LanguageUndoUtil.markPsiFileForUndo(containingFile)
   }
 }
 

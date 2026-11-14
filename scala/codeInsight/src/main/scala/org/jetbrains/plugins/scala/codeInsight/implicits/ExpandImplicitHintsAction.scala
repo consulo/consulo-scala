@@ -7,14 +7,15 @@ import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
 import consulo.annotation.component.ActionRefAnchor
 
-import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import consulo.ui.ex.action.{AnActionEvent, ToggleAction}
 import consulo.language.editor.CommonDataKeys
-import com.intellij.openapi.actionSystem.ToggleAction
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
+import consulo.localize.LocalizeValue
 
 @ActionImpl(id = "Scala.ExpandImplicits", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.ShowImplicits"))))
 class ExpandImplicitHintsAction extends ToggleAction(
-  ScalaCodeInsightBundle.message("expand.implicit.hints.action.text"),
-  ScalaCodeInsightBundle.message("expand.implicit.hints.action.description"),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("expand.implicit.hints.action.text")),
+  LocalizeValue.of(ScalaCodeInsightBundle.message("expand.implicit.hints.action.description")),
   /* icon = */ null
 ) {
   override def update(e: AnActionEvent): Unit = {
@@ -44,8 +45,6 @@ class ExpandImplicitHintsAction extends ToggleAction(
       MouseHandler.removeEscKeyListeners()
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
 }
 
 object ExpandImplicitHintsAction {

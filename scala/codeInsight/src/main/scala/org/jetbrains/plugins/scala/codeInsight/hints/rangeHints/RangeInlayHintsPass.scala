@@ -1,13 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.rangeHints
 
-import com.intellij.codeInsight.hints.presentation.{PresentationFactory, RecursivelyUpdatingRootPresentation}
-import com.intellij.codeInsight.hints.{HorizontalConstrainedPresentation, HorizontalConstraints}
-import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.actionSystem.Separator
-import com.intellij.openapi.editor.impl.EditorImpl
-import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.{EditorCustomElementRenderer, InlayModel}
-import consulo.project.Project
+import consulo.ui.ex.action.{ActionGroup, ActionManager, AnAction, AnActionEvent, AnSeparator}
+import consulo.codeEditor.{Editor, EditorCustomElementRenderer, InlayModel}
 import consulo.disposer.Disposer
 import consulo.util.dataholder.Key
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
@@ -57,7 +51,7 @@ trait RangeInlayHintsPass {
         if settings.showRangeHintsForToAndUntil =>
         hintsFor(editor, qual.endOffset, args.headOption.fold(ref.endOffset)(_.startOffset), ref, args)
       case call@ScMethodCall(ref, args) if settings.showExclusiveRangeHint && isRangeApply(ref, call.target, args) =>
-        Seq(HintTemplate(ref.endOffset, new TextPartsHintRenderer(Seq(Text(".exclusive")), rangeForExclusiveRange)))
+        Seq(HintTemplate(ref.endOffset, new TextPartsHintRenderer(Seq(Text(".exclusive")), rangeForExclusiveRange), relatesToPreceding = false))
       case _ =>
         Seq.empty
     }.toSeq
@@ -109,10 +103,9 @@ trait RangeInlayHintsPass {
             case Direction.Up => ("≤", up)
             case Direction.Down => ("≥", down)
           }
-          val factory = new PresentationFactory(editor.asInstanceOf[EditorImpl])
           Seq(
-            HintTemplate(leftOffset, smallRounded(factory, left, relatesToPreceding = true)),
-            HintTemplate(rightOffset, smallRounded(factory, right, relatesToPreceding = false))
+            HintTemplate(leftOffset, smallRounded(left), relatesToPreceding = true),
+            HintTemplate(rightOffset, smallRounded(right), relatesToPreceding = false)
           )
         }
     } else Seq.empty
@@ -128,14 +121,14 @@ trait RangeInlayHintsPass {
 
     collectedHints.foreach { tmpl =>
       inlayModel
-        .addInlineElement(tmpl.offset, tmpl.renderer)
+        .addInlineElement(tmpl.offset, tmpl.relatesToPreceding, tmpl.renderer)
         .putUserData(ScalaRangeInlayHintKey, true)
     }
   }
 }
 
 object RangeInlayHintsPass {
-  private case class HintTemplate(offset: Int, renderer: EditorCustomElementRenderer)
+  private case class HintTemplate(offset: Int, renderer: EditorCustomElementRenderer, relatesToPreceding: Boolean)
   private val ScalaRangeInlayHintKey: Key[Boolean] = Key.create[Boolean]("SCALA_RANGE_INLAY_HINT_KEY")
 
   private val rangeFunctions = Map(
@@ -143,16 +136,9 @@ object RangeInlayHintsPass {
     "to" -> ("≤", "≥"),
   )
 
-  private def smallRounded(factory: PresentationFactory, text: String, relatesToPreceding: Boolean): EditorCustomElementRenderer = {
-    val presentation = factory.roundWithBackground(
-      factory.text(text)
-    )
-    val rootPresentation = new HorizontalConstrainedPresentation(
-      new RecursivelyUpdatingRootPresentation(presentation),
-      new HorizontalConstraints(0, relatesToPreceding, false),
-    )
-    new InlineInlayRendererWithContextMenu(rootPresentation, rangeHintsForToAndUntilContextMenu)
-  }
+  // upstream: a small rounded PresentationFactory presentation in a LinearOrderInlayRenderer (Consulo internals)
+  private def smallRounded(text: String): EditorCustomElementRenderer =
+    new TextPartsHintRenderer(Seq(Text(text)), rangeHintsForToAndUntilContextMenu)
 
 
   private object InfixArgs {
@@ -164,11 +150,11 @@ object RangeInlayHintsPass {
   }
 
   private val rangeHintsForToAndUntilContextMenu =
-    createContextMenu(ScalaCodeInsightBundle.message("disable.range.hints.for.to.and.until"), _.showRangeHintsForToAndUntil = false, RangeHintsForToAndUntilSettingsModel.navigateTo)
+    createContextMenu(ScalaCodeInsightBundle.message("disable.range.hints.for.to.and.until"), _.showRangeHintsForToAndUntil = false)
   private val rangeForExclusiveRange =
-    createContextMenu(ScalaCodeInsightBundle.message("disable.hints.for.exclusive.ranges"), _.showExclusiveRangeHint = false, ExclusiveRangeHintSettingsModel.navigateTo)
+    createContextMenu(ScalaCodeInsightBundle.message("disable.hints.for.exclusive.ranges"), _.showExclusiveRangeHint = false)
 
-  private def createContextMenu(@Nls disableText: String, setSettings: ScalaCodeInsightSettings => Unit, navigate: Project => Unit): MenuProvider = {
+  private def createContextMenu(@Nls disableText: String, setSettings: ScalaCodeInsightSettings => Unit): MenuProvider = {
     val actionGroup = new ActionGroup() {
       override def getChildren(e: AnActionEvent): Array[AnAction] = Array(
         new AnAction(disableText) {
@@ -176,17 +162,9 @@ object RangeInlayHintsPass {
             setSettings(ScalaCodeInsightSettings.getInstance())
             ImplicitHints.updateInAllEditors()
           }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
         },
-        new AnAction(ScalaCodeInsightBundle.message("configure.range.hints")) {
-          override def actionPerformed(e: AnActionEvent): Unit = {
-            navigate(e.getProject)
-          }
-
-          override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
-        },
-        Separator.getInstance,
+        // upstream: "Configure range hints" action (inlay settings models are not ported)
+        AnSeparator.getInstance,
         ActionManager.getInstance.getAction(ScalaTypeHintsConfigurable.XRayModeTipAction.Id)
       )
     }

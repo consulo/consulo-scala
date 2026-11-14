@@ -1,11 +1,10 @@
-package org.jetbrains.plugins.scala.codeInsight.messages
-import com.intellij.openapi.actionSystem.KeyboardShortcut
-import consulo.ui.ex.action.Shortcut
-import com.intellij.openapi.editor.{EditorCustomElementRenderer, InlayModel}
-import com.intellij.openapi.keymap.{Keymap, KeymapManager}
+package org.jetbrains.plugins.scala.codeInsight
+
+import consulo.ui.ex.action.{KeyboardShortcut, Shortcut}
+import consulo.codeEditor.{EditorCustomElementRenderer, InlayModel}
+import consulo.ui.ex.keymap.{Keymap, KeymapManager}
 import consulo.util.dataholder.Key
 import consulo.document.util.TextRange
-import javax.swing.KeyStroke
 import org.jetbrains.plugins.scala.annotator.hints.Hint
 
 import scala.jdk.CollectionConverters._
@@ -14,7 +13,7 @@ import scala.collection.mutable
 package object implicits {
   private val ScalaImplicitHintKey = Key.create[Boolean]("SCALA_IMPLICIT_HINT")
 
-  private[implicits] type Inlay = com.intellij.openapi.editor.Inlay[? <: EditorCustomElementRenderer]
+  private[implicits] type Inlay = consulo.codeEditor.Inlay[? <: EditorCustomElementRenderer]
 
   implicit class Model(private val model: InlayModel) extends AnyVal {
     def inlaysIn(range: TextRange): collection.Seq[Inlay] =
@@ -54,13 +53,13 @@ package object implicits {
 
   object ImplicitShortcuts extends ShortcutManager {
     val EnableShortcuts = Seq(
-      register(new KeyboardShortcut(KeyStroke.getKeyStroke("control alt shift EQUALS"), null)),
-      register(new KeyboardShortcut(KeyStroke.getKeyStroke("control alt shift ADD"), null)),
+      register(KeyboardShortcut.fromString("control alt shift EQUALS")),
+      register(KeyboardShortcut.fromString("control alt shift ADD")),
     )
 
     val DisableShortcuts = Seq(
-      register(new KeyboardShortcut(KeyStroke.getKeyStroke("control alt shift MINUS"), null)),
-      register(new KeyboardShortcut(KeyStroke.getKeyStroke("control alt shift SUBTRACT"), null)),
+      register(KeyboardShortcut.fromString("control alt shift MINUS")),
+      register(KeyboardShortcut.fromString("control alt shift SUBTRACT")),
     )
   }
 

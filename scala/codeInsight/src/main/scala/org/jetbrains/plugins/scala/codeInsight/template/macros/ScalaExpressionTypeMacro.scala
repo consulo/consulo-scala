@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext}
-import consulo.java.impl.JavaBundle
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
 
 @ExtensionImpl
 final class ScalaExpressionTypeMacro extends ScalaMacro {
@@ -17,5 +17,5 @@ final class ScalaExpressionTypeMacro extends ScalaMacro {
 
   override def getNameShort: String = "expressionType"
 
-  override def getPresentableName: String = JavaBundle.message("macro.expression.type")
+  override def getPresentableName: LocalizeValue = LocalizeValue.localizeTODO("expressionType(Expression)")
 }

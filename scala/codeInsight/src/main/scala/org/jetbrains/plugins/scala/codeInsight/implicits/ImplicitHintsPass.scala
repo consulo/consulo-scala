@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.codeHighlighting.EditorBoundHighlightingPass
+import consulo.language.editor.impl.highlight.EditorBoundHighlightingPass
 import consulo.codeEditor.Editor
 import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme}
-import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import consulo.application.progress.ProgressIndicator
 import consulo.disposer.Disposer
 import consulo.util.lang.StringUtil
@@ -229,8 +228,9 @@ class ImplicitHintsPass(
   }
 
   override def doApplyInformationToEditor(): Unit = {
-    val runnable: Runnable = () => regenerateHints()
-    EditorScrollingPositionKeeper.perform(myEditor, false, runnable)
+    keepingScrollingPosition(myEditor) {
+      regenerateHints()
+    }
 
     if (rootElement == myFile) {
       ImplicitHints.setUpToDate(myEditor, myFile)
@@ -260,6 +260,41 @@ private object ImplicitHintsPass {
   import org.jetbrains.plugins.scala.annotator.hints.Hint
 
   private final val BulkChangeThreshold = 1000
+
+  // upstream: EditorScrollingPositionKeeper.perform(editor, false, runnable)
+  private def keepingScrollingPosition(editor: Editor)(operation: => Unit): Unit = {
+    val scrollingModel = editor.getScrollingModel
+    val visibleArea = scrollingModel.getVisibleAreaOnScrollingFinished
+    val caretY = editor.visualLineToY(editor.getCaretModel.getVisualPosition.line)
+    val topLeftCornerMarker =
+      if (visibleArea.height > 0 && (caretY + editor.getLineHeight <= visibleArea.y || caretY >= visibleArea.y + visibleArea.height)) {
+        val topLeftCornerOffset = editor.logicalPositionToOffset(editor.xyToLogicalPosition(visibleArea.getLocation))
+        Some(editor.getDocument.createRangeMarker(topLeftCornerOffset, topLeftCornerOffset))
+      } else None
+    val viewportShift = topLeftCornerMarker match {
+      case Some(marker) => editor.offsetToXY(marker.getStartOffset).y - visibleArea.y
+      case None => caretY - visibleArea.y
+    }
+
+    try {
+      operation
+
+      val newY = topLeftCornerMarker match {
+        case Some(marker) => Option.when(marker.isValid)(editor.offsetToXY(marker.getStartOffset).y)
+        case None => Some(editor.visualLineToY(editor.getCaretModel.getVisualPosition.line))
+      }
+      newY.foreach { y =>
+        val targetArea = scrollingModel.getVisibleAreaOnScrollingFinished
+        // when animated scrolling is in progress, we'll not stop it immediately
+        val disableAnimation = targetArea == scrollingModel.getVisibleArea
+        if (disableAnimation) scrollingModel.disableAnimation()
+        scrollingModel.scroll(targetArea.x, y - viewportShift)
+        if (disableAnimation) scrollingModel.enableAnimation()
+      }
+    } finally {
+      topLeftCornerMarker.foreach(_.dispose())
+    }
+  }
 
   private def implicitConversionHint(
     e:          ScExpression,

@@ -4,8 +4,7 @@ package daemon
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.daemon.RainbowVisitor
-import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.language.editor.rawHighlight.{HighlightInfo, RainbowVisitor, RainbowVisitorFactory}
 import consulo.colorScheme.TextAttributesKey
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -27,14 +26,19 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocTagValue
  * @see [[org.jetbrains.plugins.scala.highlighter.ScalaColorSchemeAnnotator]]
  */
 @ExtensionImpl
-final class ScalaRainbowVisitor extends RainbowVisitor {
-
-  import ScalaRainbowVisitor._
+final class ScalaRainbowVisitorFactory extends RainbowVisitorFactory {
 
   override def suitableForFile(file: PsiFile): Boolean = file match {
     case _: ScalaFile => true
     case _ => false
   }
+
+  override def createVisitor(): RainbowVisitor = new ScalaRainbowVisitor
+}
+
+final class ScalaRainbowVisitor extends RainbowVisitor {
+
+  import ScalaRainbowVisitor._
 
   override def visit(element: PsiElement): Unit = {
     val file = element.getContainingFile
@@ -63,8 +67,6 @@ final class ScalaRainbowVisitor extends RainbowVisitor {
     ScalaNamesUtil.BacktickedName.stripBackticks(name),
     colorKey
   )
-
-  override def clone: ScalaRainbowVisitor = new ScalaRainbowVisitor
 }
 
 private object ScalaRainbowVisitor {

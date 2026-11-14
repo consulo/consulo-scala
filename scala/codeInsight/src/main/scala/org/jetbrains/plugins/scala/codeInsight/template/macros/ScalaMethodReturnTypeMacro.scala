@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.codeInsight.template.macros
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.editor.template.{Expression, ExpressionContext}
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType

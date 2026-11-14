@@ -6,11 +6,11 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import consulo.language.editor.action.JavaLikeQuoteHandler
-import com.intellij.codeInsight.editorActions.MultiCharQuoteHandler
+import consulo.language.editor.action.{JavaLikeQuoteHandler, LanguageQuoteHandler}
+import consulo.language.editor.action.MultiCharQuoteHandler
 import consulo.codeEditor.Editor
 import consulo.codeEditor.HighlighterIterator
-import com.intellij.openapi.util.ProperTextRange
+import consulo.document.util.ProperTextRange
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement
 import consulo.language.ast.{IElementType, TokenSet}
@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 
 @ExtensionImpl
-final class ScalaQuoteHandler extends JavaLikeQuoteHandler with MultiCharQuoteHandler {
+final class ScalaQuoteHandler extends LanguageQuoteHandler with JavaLikeQuoteHandler with MultiCharQuoteHandler {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 

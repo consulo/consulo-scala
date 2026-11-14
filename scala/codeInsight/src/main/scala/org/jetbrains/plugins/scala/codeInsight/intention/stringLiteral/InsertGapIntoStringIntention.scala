@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.stringLiteral
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -35,9 +36,9 @@ final class InsertGapIntoStringIntention extends PsiElementBaseIntentionAction w
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.insert.gap")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.insert.gap")
 
-  override def getText: String = ScalaCodeInsightBundle.message("insert.gap.with.concatenation")
+  override def getText: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("insert.gap.with.concatenation"))
 }
 
 object InsertGapIntoStringIntention {

@@ -3,6 +3,7 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.localize.LocalizeValue
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.intention.IntentionMetaData
 
@@ -33,7 +34,7 @@ final class ReplaceEqualsOrEqualityInInfixExprIntention extends PsiElementBaseIn
 
     Replacement.get(refName) match {
       case Some(replacement) if caretIsInRange(operation)(using editor) =>
-        setText(ScalaCodeInsightBundle.message("replace.refname.with.replacement", refName, replacement))
+        setText(LocalizeValue.of(ScalaCodeInsightBundle.message("replace.refname.with.replacement", refName, replacement)))
         true
       case _ => false
     }
@@ -62,7 +63,7 @@ final class ReplaceEqualsOrEqualityInInfixExprIntention extends PsiElementBaseIn
     }
   }
 
-  override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.equals.or.equality.in.infix.expression")
+  def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.replace.equals.or.equality.in.infix.expression")
 }
 
 object ReplaceEqualsOrEqualityInInfixExprIntention {

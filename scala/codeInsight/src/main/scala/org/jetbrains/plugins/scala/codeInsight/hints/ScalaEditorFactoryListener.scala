@@ -3,16 +3,13 @@ package org.jetbrains.plugins.scala.codeInsight.hints
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.DaemonCodeAnalyzerSettings.{getInstance => DaemonCodeAnalyzerSettings}
-import com.intellij.codeInsight.hints.ParameterHintsPassFactory
 import consulo.ui.ex.action.event.AnActionListener
-import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import consulo.application.ApplicationManager
-import com.intellij.openapi.client.ClientSystemInfo
-import consulo.codeEditor.Editor
+import consulo.codeEditor.{Editor, EditorFactory, PersistentEditorSettings}
 import consulo.codeEditor.event.{EditorFactoryEvent, EditorFactoryListener}
-import com.intellij.openapi.editor.ex.EditorSettingsExternalizable.{getInstance => EditorSettingsExternalizable}
-import com.intellij.openapi.editor.impl.EditorComponentImpl
+import consulo.dataContext.DataContext
+import consulo.platform.Platform
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaEditorFactoryListener._
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
@@ -35,7 +32,7 @@ class ScalaEditorFactoryListener extends EditorFactoryListener {
   private val ArrowKeys = Set(KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN)
 
   private val actionListener = new AnActionListener {
-    override def beforeActionPerformed(action: AnAction, event: AnActionEvent): Unit = event.getInputEvent match {
+    override def beforeActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent): Unit = event.getInputEvent match {
       case e: KeyEvent if ArrowKeys.contains(e.getKeyCode) =>
         xRayMode = false
         longDelay.stop()
@@ -47,7 +44,7 @@ class ScalaEditorFactoryListener extends EditorFactoryListener {
   locally {
     longDelay.setRepeats(false)
     shortDelay.setRepeats(false)
-    ApplicationManager.getApplication.getMessageBus.connect().subscribe(AnActionListener.TOPIC, actionListener)
+    ApplicationManager.getApplication.getMessageBus.connect().subscribe(classOf[AnActionListener], actionListener)
   }
 
   override def editorCreated(event: EditorFactoryEvent): Unit = {
@@ -149,10 +146,11 @@ class ScalaEditorFactoryListener extends EditorFactoryListener {
 
   private val editorMouseWheelListener = new MouseWheelListener {
     override def mouseWheelMoved(e: MouseWheelEvent): Unit = if (xRayMode) {
-      val isModifierKeyDown = if (ClientSystemInfo.isMac) e.isMetaDown else e.isControlDown
+      val isMac = Platform.current.os.isMac
+      val isModifierKeyDown = if (isMac) e.isMetaDown else e.isControlDown
       if (isModifierKeyDown) {
         e.consume()
-        val modifierKeyMask = if (ClientSystemInfo.isMac) InputEvent.META_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK else InputEvent.CTRL_DOWN_MASK
+        val modifierKeyMask = if (isMac) InputEvent.META_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK else InputEvent.CTRL_DOWN_MASK
         val event = new MouseWheelEvent(e.getSource.asInstanceOf[Component],
           e.getID, e.getWhen, e.getModifiersEx & ~modifierKeyMask,
           e.getX, e.getY, e.getXOnScreen, e.getYOnScreen, e.getClickCount, e.isPopupTrigger,
@@ -169,7 +167,10 @@ class ScalaEditorFactoryListener extends EditorFactoryListener {
 
     if (ScalaHintsSettings.xRayModePinned) return
 
-    setXRayModeEnabled(enabled, keyPressEvent.getSource.asInstanceOf[EditorComponentImpl].getEditor)
+    val source = keyPressEvent.getSource
+    EditorFactory.getInstance.getAllEditors.find(_.getContentComponent eq source).foreach { editor =>
+      setXRayModeEnabled(enabled, editor)
+    }
   }
 }
 
@@ -181,8 +182,8 @@ private object ScalaEditorFactoryListener {
 
     if (enabled) {
       if (ScalaApplicationSettings.XRAY_SHOW_INDENT_GUIDES) {
-        indentGuidesShownSetting = EditorSettingsExternalizable.isIndentGuidesShown
-        EditorSettingsExternalizable.setIndentGuidesShown(true)
+        indentGuidesShownSetting = PersistentEditorSettings.getInstance.isIndentGuidesShown
+        PersistentEditorSettings.getInstance.setIndentGuidesShown(true)
       }
 
       if (ScalaApplicationSettings.XRAY_SHOW_METHOD_SEPARATORS) {
@@ -198,7 +199,7 @@ private object ScalaEditorFactoryListener {
       onTime = System.currentTimeMillis()
     } else {
       if (ScalaApplicationSettings.XRAY_SHOW_INDENT_GUIDES) {
-        EditorSettingsExternalizable.setIndentGuidesShown(indentGuidesShownSetting)
+        PersistentEditorSettings.getInstance.setIndentGuidesShown(indentGuidesShownSetting)
       }
 
       if (ScalaApplicationSettings.XRAY_SHOW_METHOD_SEPARATORS) {
@@ -212,13 +213,9 @@ private object ScalaEditorFactoryListener {
       ScalaActionUsagesCollector.logXRayMode(editor.getProject, System.currentTimeMillis() - onTime)
     }
 
-    if (ScalaApplicationSettings.XRAY_SHOW_PARAMETER_HINTS || ScalaApplicationSettings.XRAY_SHOW_ARGUMENT_HINTS) {
-      ParameterHintsPassFactory.forceHintsUpdateOnNextPass(editor)
-    }
-
+    // upstream: ParameterHintsPassFactory.forceHintsUpdateOnNextPass(editor) and
+    // ActionToolbarImpl.updateAllToolbarsImmediately(true) (Consulo internals)
     ImplicitHints.updateInAllEditors()
-
-    ActionToolbarImpl.updateAllToolbarsImmediately(true)
   }
 
   private var indentGuidesShownSetting: Boolean = scala.compiletime.uninitialized

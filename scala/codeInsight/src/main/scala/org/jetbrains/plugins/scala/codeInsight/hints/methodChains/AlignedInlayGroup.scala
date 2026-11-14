@@ -2,11 +2,9 @@ package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
 import consulo.disposer.Disposable
 import consulo.codeEditor.EditorEx
-import com.intellij.openapi.editor.impl.EditorImpl
 import consulo.colorScheme.TextAttributes
 import consulo.document.{Document, RangeMarker}
-import consulo.codeEditor.Editor
-import com.intellij.openapi.editor.{Inlay, InlayModel}
+import consulo.codeEditor.{Editor, EditorLinePainter, Inlay, InlayModel}
 import consulo.disposer.Disposer
 import consulo.util.dataholder.Key
 import consulo.ui.ex.awt.JBUI
@@ -146,8 +144,15 @@ private object AlignedInlayGroup {
         r.width += cached.margin - oldMargin
       }
 
-      var hasSomethingElseInLine = false
-      editor.asOptionOf[EditorImpl].foreach(_.processLineExtensions(line.lineNumber, _ => { hasSomethingElseInLine = true; false }))
+      // upstream: EditorImpl.processLineExtensions, which also sees painters registered directly on the editor
+      val hasSomethingElseInLine = (editor.getProject, editor.getVirtualFile) match {
+        case (project, file) if project != null && file != null =>
+          !project.getApplication.getExtensionPoint(classOf[EditorLinePainter]).allMatchSafe { painter =>
+            val extensions = painter.getLineExtensions(project, file, line.lineNumber)
+            extensions == null || extensions.isEmpty
+          }
+        case _ => false
+      }
       if (!hasSomethingElseInLine) {
         super.paint0(editor, g, r, textAttributes)
       }
@@ -156,7 +161,7 @@ private object AlignedInlayGroup {
     override def getMargin(editor: Editor): Insets = {
       // JBUI.insetsLeft scales the given margin according to ui scale (influenced by zoom and font size)
       // But the margin is already calculated pixel perfectly, so we must use the unscaled version
-      JBUI.insetsLeft(cached.margin).getUnscaled
+      new Insets(0, cached.margin, 0, 0)
     }
   }
 }
