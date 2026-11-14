@@ -1,5 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.delegate
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.CodeInsightBundle
 import consulo.language.editor.generation.ClassMember
 import com.intellij.codeInsight.generation.GenerateDelegateHandler
@@ -30,7 +34,10 @@ import scala.annotation.nowarn
 import scala.collection.immutable.ArraySeq
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ScalaGenerateDelegateHandler extends GenerateDelegateHandler {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import overrideImplement._
 

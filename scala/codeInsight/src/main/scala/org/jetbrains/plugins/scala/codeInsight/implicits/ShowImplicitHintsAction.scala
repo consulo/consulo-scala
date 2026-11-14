@@ -1,9 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
 import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
 import com.intellij.openapi.actionSystem.ToggleAction
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
+@ActionImpl(id = "Scala.ShowImplicits", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"))))
 class ShowImplicitHintsAction extends ToggleAction(
   ScalaCodeInsightBundle.message("show.implicit.hints.action.text"),
   ScalaCodeInsightBundle.message("show.implicit.hints.action.description"),

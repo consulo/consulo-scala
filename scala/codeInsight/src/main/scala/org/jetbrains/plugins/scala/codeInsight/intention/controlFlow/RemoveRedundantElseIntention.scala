@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -18,6 +21,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createNe
 
 import scala.collection.immutable.ArraySeq
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.RemoveRedundantElseIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class RemoveRedundantElseIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {

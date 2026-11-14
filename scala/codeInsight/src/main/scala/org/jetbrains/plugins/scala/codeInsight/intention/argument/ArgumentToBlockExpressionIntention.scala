@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package argument
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -16,6 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScBloc
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.{createAnonFunBlockFromFunExpr, createBlockFromExpr}
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ArgumentToBlockExpressionIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Argument conversion"))
 final class ArgumentToBlockExpressionIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import ArgumentToBlockExpressionIntention.{FunctionExpression, argListForElement}

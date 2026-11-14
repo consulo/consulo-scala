@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package recursion
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -11,6 +14,8 @@ import org.jetbrains.plugins.scala.annotator.FunctionAnnotator
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.AddTailRecursionAnnotationIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Recursion"))
 final class AddTailRecursionAnnotationIntention extends PsiElementBaseIntentionAction {
 
   import AddTailRecursionAnnotationIntention._

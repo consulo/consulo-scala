@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -19,6 +22,8 @@ import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
 import scala.util.chaining.scalaUtilChainingOps
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FlipComparisonInInfixExprIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class FlipComparisonInInfixExprIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import FlipComparisonInInfixExprIntention._

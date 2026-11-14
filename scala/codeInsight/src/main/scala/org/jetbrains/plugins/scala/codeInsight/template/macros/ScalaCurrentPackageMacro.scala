@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
 import consulo.language.psi.PsiDocumentManager
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
+@ExtensionImpl
 final class ScalaCurrentPackageMacro extends ScalaMacro {
 
   override def getNameShort: String = "currentPackage"

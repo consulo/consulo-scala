@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.Pass
 import consulo.language.editor.highlight.{TextEditorHighlightingPass, TextEditorHighlightingPassFactory}
 import com.intellij.codeHighlighting.{TextEditorHighlightingPassFactoryRegistrar, TextEditorHighlightingPassRegistrar}
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.codeInsight.hints.ScalaHintsSettings
 import org.jetbrains.plugins.scala.extensions.{PsiFileExt, ViewProviderExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
+@ExtensionImpl
 class ImplicitHintsPassFactory
   extends TextEditorHighlightingPassFactory
     with TextEditorHighlightingPassFactoryRegistrar {

@@ -2,6 +2,10 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package editorActions
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import consulo.language.editor.action.JavaLikeQuoteHandler
 import com.intellij.codeInsight.editorActions.MultiCharQuoteHandler
 import consulo.codeEditor.Editor
@@ -17,7 +21,10 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.MultilineQuotes
 
+@ExtensionImpl
 final class ScalaQuoteHandler extends JavaLikeQuoteHandler with MultiCharQuoteHandler {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaQuoteHandler._
 

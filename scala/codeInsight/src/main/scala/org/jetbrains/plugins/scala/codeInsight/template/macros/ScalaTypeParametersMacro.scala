@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import com.intellij.codeInsight.template.PsiElementResult
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypeParametersOwner
 
+@ExtensionImpl
 final class ScalaTypeParametersMacro extends ScalaMacro {
 
   override def getNameShort: String = "typeParams"
@@ -38,6 +41,7 @@ object ScalaTypeParametersMacro {
     }
 }
 
+@ExtensionImpl
 final class ScalaTypeParametersWithoutBoundsMacro extends ScalaMacro {
 
   override def getNameShort: String = "typeParamsWithoutBounds"

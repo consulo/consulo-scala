@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.impl
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.template.TemplateActionContext
 import consulo.language.psi.PsiElement
 import consulo.language.impl.psi.LeafPsiElement
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
 
+@ExtensionImpl
 final class ScalaImplicitClassContextType
   extends ScalaFileTemplateContextType.ElementContextType(ScalaCodeInsightBundle.message("element.context.type.implicit.class")) {
 

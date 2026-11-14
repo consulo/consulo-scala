@@ -3,6 +3,8 @@ package codeInsight
 package generation
 package actions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiFile
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.{createD
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
+@ActionImpl(id = "Scala.GenerateProperty")
 final class ScalaGeneratePropertyAction extends ScalaBaseGenerateAction(
   new ScalaGeneratePropertyAction.Handler,
   ScalaCodeInsightBundle.message("generate.proprty.action.text"),

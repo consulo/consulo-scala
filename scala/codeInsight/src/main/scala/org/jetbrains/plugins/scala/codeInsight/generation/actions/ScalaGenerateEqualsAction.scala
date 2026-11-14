@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.actions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.language.editor.hint.HintManager
 import consulo.java.impl.JavaBundle
 import consulo.application.ApplicationManager
@@ -26,6 +28,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, PhysicalMethodSignat
 import org.jetbrains.plugins.scala.overrideImplement.ScalaOIUtil._
 import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
+@ActionImpl(id = "Scala.GenerateEquals")
 final class ScalaGenerateEqualsAction extends ScalaBaseGenerateAction(
   new ScalaGenerateEqualsAction.Handler,
   ScalaCodeInsightBundle.message("generate.equals.and.hashcode.methods.action.text"),

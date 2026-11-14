@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.actions
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.codeEditor.{Editor, ScrollType}
 import consulo.project.Project
 import consulo.language.codeStyle.CodeStyleManager
@@ -11,6 +13,7 @@ import org.jetbrains.plugins.scala.codeInsight.intention.CreateCompanionObjectIn
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnum, ScObject, ScTrait, ScTypeDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createNewLine
 
+@ActionImpl(id = "Scala.GenerateCompanionObject")
 final class ScalaGenerateCompanionObjectAction extends ScalaBaseGenerateAction(
   new ScalaGenerateCompanionObjectAction.Handler,
   ScalaCodeInsightBundle.message("generate.companion.object.action.text"),

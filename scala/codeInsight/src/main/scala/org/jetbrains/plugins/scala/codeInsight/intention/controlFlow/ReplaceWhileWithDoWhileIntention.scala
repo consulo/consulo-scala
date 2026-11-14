@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -15,6 +18,8 @@ import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScWhile
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ReplaceWhileWithDoWhileIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class ReplaceWhileWithDoWhileIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {

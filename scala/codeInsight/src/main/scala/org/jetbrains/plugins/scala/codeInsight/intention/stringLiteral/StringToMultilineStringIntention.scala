@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.undoRedo.util.UndoUtil
@@ -18,6 +21,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createEx
 import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectPsiElementExt}
 import org.jetbrains.plugins.scala.util.MultilineStringUtil
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.StringToMultilineStringIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Strings"))
 final class StringToMultilineStringIntention extends PsiElementBaseIntentionAction {
 
   import StringToMultilineStringIntention._

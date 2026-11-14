@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package argument
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -16,6 +19,8 @@ import scala.annotation.tailrec
 /**
   * Jason Zaugg
   */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.PermuteArgumentsIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Argument conversion"))
 final class PermuteArgumentsIntention extends PsiElementBaseIntentionAction {
 
   import PermuteArgumentsIntention._

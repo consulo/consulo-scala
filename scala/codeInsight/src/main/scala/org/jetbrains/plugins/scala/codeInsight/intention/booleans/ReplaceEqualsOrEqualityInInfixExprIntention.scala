@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -15,6 +18,8 @@ import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ReplaceEqualsOrEqualityInInfixExprIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class ReplaceEqualsOrEqualityInInfixExprIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import ReplaceEqualsOrEqualityInInfixExprIntention._

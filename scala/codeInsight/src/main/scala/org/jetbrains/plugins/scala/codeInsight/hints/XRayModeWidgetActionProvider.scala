@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.ProblemHighlightFilter
 import consulo.language.editor.highlight.HighlightingLevelManager
 import consulo.application.AllIcons
@@ -32,6 +34,7 @@ import java.awt.{Component, Insets, Toolkit}
 import javax.swing.JComponent
 import javax.swing.plaf.FontUIResource
 
+@ExtensionImpl
 class XRayModeWidgetActionProvider extends InspectionWidgetActionProvider {
   override def createAction(editor: Editor): AnAction = {
     val project = editor.getProject

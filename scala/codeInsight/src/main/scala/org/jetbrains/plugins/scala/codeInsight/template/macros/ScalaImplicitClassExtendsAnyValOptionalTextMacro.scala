@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import consulo.language.psi.PsiElement
 import consulo.language.impl.psi.LeafPsiElement
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
 final class ScalaImplicitClassExtendsAnyValOptionalTextMacro extends ScalaMacro {
 
   override def getNameShort: String = "implicitValueExtendsValueClassOptionalText"

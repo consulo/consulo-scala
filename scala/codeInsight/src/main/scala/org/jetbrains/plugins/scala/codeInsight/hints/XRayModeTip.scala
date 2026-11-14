@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.project.ui.notification.{NotificationType, Notifications}
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
 import com.intellij.openapi.actionSystem.AnActionResult
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.settings.sections.XRayModeSettingsSectionConfigurable
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
+@ExtensionImpl
 class XRayModeTip extends StartupActivity.DumbAware {
   private var messageBusConnection: Option[MessageBusConnection] = None
 

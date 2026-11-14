@@ -3,6 +3,8 @@ package codeInsight
 package generation
 package actions
 
+import consulo.annotation.component.ActionImpl
+
 
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import consulo.application.ApplicationManager
@@ -19,6 +21,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 /**
   * Generate toString metod action.
   */
+@ActionImpl(id = "Scala.GenerateToString")
 final class ScalaGenerateToStringAction extends ScalaBaseGenerateAction(
   new ScalaGenerateToStringAction.Handler,
   ScalaCodeInsightBundle.message("generate.tostring.method.action.text"),

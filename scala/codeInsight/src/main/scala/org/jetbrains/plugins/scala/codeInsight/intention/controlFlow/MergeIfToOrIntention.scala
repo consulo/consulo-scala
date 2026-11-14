@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.PsiEquivalenceUtil
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -21,6 +24,8 @@ import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
 import scala.collection.mutable
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.MergeIfToOrIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class MergeIfToOrIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {

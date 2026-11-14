@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -17,6 +20,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScIf, ScInfi
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createElementFromText
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.SplitIfIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class SplitIfIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =

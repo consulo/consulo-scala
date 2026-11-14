@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -17,6 +20,8 @@ import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt
 import org.jetbrains.plugins.scala.lang.psi.types.result.Typeable
 import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ExpandBooleanIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class ExpandBooleanIntention extends PsiElementBaseIntentionAction {
 
   import ExpandBooleanIntention._

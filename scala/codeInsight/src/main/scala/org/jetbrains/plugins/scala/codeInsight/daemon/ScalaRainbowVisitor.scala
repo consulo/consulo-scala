@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package daemon
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.daemon.RainbowVisitor
 import consulo.language.editor.rawHighlight.HighlightInfo
 import consulo.colorScheme.TextAttributesKey
@@ -24,6 +26,7 @@ import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocTagValue
  * @see [[org.jetbrains.plugins.scala.highlighter.ScalaSyntaxHighlighter]]
  * @see [[org.jetbrains.plugins.scala.highlighter.ScalaColorSchemeAnnotator]]
  */
+@ExtensionImpl
 final class ScalaRainbowVisitor extends RainbowVisitor {
 
   import ScalaRainbowVisitor._

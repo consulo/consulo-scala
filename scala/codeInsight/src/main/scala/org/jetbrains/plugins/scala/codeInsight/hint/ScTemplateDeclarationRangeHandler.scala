@@ -2,11 +2,14 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package hint
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.hint.DeclarationRangeHandler
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefinition, ScTypeDefinition}
 
+@ExtensionImpl(order = "first")
 final class ScTemplateDeclarationRangeHandler extends DeclarationRangeHandler[ScTemplateDefinition] {
 
   import ScTemplateDeclarationRangeHandler._

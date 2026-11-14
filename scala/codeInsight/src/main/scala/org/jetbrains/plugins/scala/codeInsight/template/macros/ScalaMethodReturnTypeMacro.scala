@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext}
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 
+@ExtensionImpl
 final class ScalaMethodReturnTypeMacro extends ScalaMacro {
 
   override def getNameShort: String = "methodReturnType"

@@ -1,11 +1,16 @@
 package org.jetbrains.plugins.scala.codeInsight.completion.command
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import com.intellij.codeInsight.completion.command.commands.ActionCommandProvider
 import consulo.application.AllIcons
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.hints.XRayModeAction
 
 //noinspection UnstableApiUsage
+@ExtensionImpl
 final class ScalaToggleXRayModeCompletionCommandProvider extends ActionCommandProvider(
   XRayModeAction.ActionId,
   ScalaCodeInsightBundle.message("xray.mode.command.completion.presentable.name"),
@@ -13,4 +18,6 @@ final class ScalaToggleXRayModeCompletionCommandProvider extends ActionCommandPr
   -1000,
   null, // TODO(SCL-24924): add some preview text
   java.util.List.of("Toggle X-Ray Mode"),
-)
+) {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+}

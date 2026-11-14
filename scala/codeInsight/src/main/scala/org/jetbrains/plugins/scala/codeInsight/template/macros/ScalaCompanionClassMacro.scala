@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, Result}
 import com.intellij.codeInsight.template.PsiElementResult
 import com.intellij.java.language.psi.PsiClass
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObj
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.extensions.OptionExt
 
+@ExtensionImpl
 class ScalaCompanionClassMacro extends ScalaMacro {
 
   override def getNameShort: String = "companionClass"

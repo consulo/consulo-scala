@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.language.editor.template.TextResult
 import com.intellij.codeInsight.template._
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 
+@ExtensionImpl
 final class ScalaSuggestVariableNameByTypeMacro extends ScalaMacro {
 
   override def getNameShort: String = "suggestVariableNameByTypeText"

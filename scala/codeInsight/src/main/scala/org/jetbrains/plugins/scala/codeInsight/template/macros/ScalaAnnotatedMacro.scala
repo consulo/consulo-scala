@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
 import consulo.language.psi.scope.GlobalSearchScope
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ScalaAnnotatedMacro extends ScalaMacro {
 
   protected def getAnnotatedMembers(params: Array[Expression], context: ExpressionContext): Query[PsiMember] = {

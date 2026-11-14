@@ -2,6 +2,9 @@ package org.jetbrains.plugins.scala.codeInsight
 package intention
 package declarations
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import com.intellij.codeInsight.intention.BaseElementAtCaretIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.ide.nls.NlsMessages
@@ -50,6 +53,8 @@ import org.jetbrains.plugins.scala.lang.resolve.ResolveUtils
 import javax.swing.ListSelectionModel
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ChangeAccessModifierIntention", fileExtensions = Array("scala"), categories = Array("Scala"))
 class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
   private def getMemberDescription(member: ScMember): Option[String] = member match {
     case idOwner: PsiNameIdentifierOwner => Option(idOwner.getNameIdentifier).map(_.getText)

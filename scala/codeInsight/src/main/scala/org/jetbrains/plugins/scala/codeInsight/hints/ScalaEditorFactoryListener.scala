@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.DaemonCodeAnalyzerSettings.{getInstance => DaemonCodeAnalyzerSettings}
 import com.intellij.codeInsight.hints.ParameterHintsPassFactory
 import consulo.ui.ex.action.event.AnActionListener
@@ -21,6 +23,7 @@ import java.awt.event.{FocusAdapter, FocusEvent, InputEvent, KeyAdapter, KeyEven
 import java.awt.{Component, Toolkit}
 import javax.swing.{JScrollPane, JViewport, Timer}
 
+@ExtensionImpl
 class ScalaEditorFactoryListener extends EditorFactoryListener {
   private final val DoublePressInterval = 500
   private final val DoublePressHoldDuration = 500

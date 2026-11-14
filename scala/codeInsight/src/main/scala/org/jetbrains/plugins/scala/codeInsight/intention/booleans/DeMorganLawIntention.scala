@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -13,6 +16,8 @@ import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.DeMorganLawIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class DeMorganLawIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import DeMorganLawIntention._

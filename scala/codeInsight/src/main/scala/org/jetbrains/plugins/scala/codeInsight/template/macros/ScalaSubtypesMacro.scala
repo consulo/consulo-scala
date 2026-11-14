@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.completion.lookup.LookupElement
 import consulo.language.editor.template.{Expression, ExpressionContext}
 import consulo.language.psi.scope.GlobalSearchScope
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.ExtractClass
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 final class ScalaSubtypesMacro extends ScalaMacro {
 
   override def getNameShort: String = "subtypes"

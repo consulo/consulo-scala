@@ -2,6 +2,8 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package daemon
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.rawHighlight.HighlightVisitor
 import consulo.language.editor.rawHighlight.HighlightInfoHolder
 import consulo.language.inject.InjectedLanguageManager
@@ -22,6 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScDerivesClause
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.DerivesUtil
 
+@ExtensionImpl
 final class ScalaRefCountVisitor(project: Project) extends HighlightVisitor {
   private val LOG = Logger.getInstance(classOf[ScalaRefCountVisitor])
   private var analyzedWholeFile = false

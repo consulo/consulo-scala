@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -18,6 +21,8 @@ import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
 import scala.util.chaining.scalaUtilChainingOps
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.FlipComparisonInMethodCallExprIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class FlipComparisonInMethodCallExprIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean = {

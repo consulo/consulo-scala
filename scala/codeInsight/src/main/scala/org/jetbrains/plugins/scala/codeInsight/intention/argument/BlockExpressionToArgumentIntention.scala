@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package argument
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -16,6 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.BlockExpressionToArgumentIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Argument conversion"))
 final class BlockExpressionToArgumentIntention extends PsiElementBaseIntentionAction with DumbAware {
   override def getFamilyName: String = ScalaCodeInsightBundle.message("family.name.convert.to.argument.in.parentheses")
 

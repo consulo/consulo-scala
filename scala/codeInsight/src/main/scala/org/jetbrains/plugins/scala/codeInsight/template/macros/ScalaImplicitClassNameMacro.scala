@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScParameterizedTypeElement, ScTypeElement}
 
+@ExtensionImpl
 final class ScalaImplicitClassNameMacro extends ScalaMacro {
 
   override def getNameShort: String = "implicitValueClassName"

@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -11,6 +14,8 @@ import consulo.project.Project
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.AddReplaceSlashRToMLStringIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Strings"))
 final class AddReplaceSlashRToMLStringIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =

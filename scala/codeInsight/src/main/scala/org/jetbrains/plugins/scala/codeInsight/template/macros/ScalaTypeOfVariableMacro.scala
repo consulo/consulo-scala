@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext}
 
+@ExtensionImpl
 final class ScalaTypeOfVariableMacro extends ScalaMacro {
 
   override def getNameShort: String = "typeOfVariable"

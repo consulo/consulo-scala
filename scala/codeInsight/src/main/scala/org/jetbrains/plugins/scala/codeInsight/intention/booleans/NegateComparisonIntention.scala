@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import consulo.codeEditor.Editor
 import consulo.application.dumb.DumbAware
@@ -13,6 +16,8 @@ import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.NegateComparisonIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class NegateComparisonIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import NegateComparisonIntention._

@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
+import consulo.annotation.component.ActionImpl
+
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
 import consulo.disposer.Disposer
@@ -7,6 +9,7 @@ import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler}
 import org.jetbrains.plugins.scala.extensions.inWriteCommandAction
 
+@ActionImpl(id = "RemoveExplicitArguments")
 class RemoveExplicitArguments extends AnAction(
   ScalaCodeInsightBundle.message("remove.explicit.arguments.action.text"),
   ScalaCodeInsightBundle.message("remove.explicit.arguments.action.description"),

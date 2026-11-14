@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.application.ApplicationManager
 import com.intellij.openapi.client.ClientSystemInfo
 import consulo.undoRedo.CommandProcessor
@@ -28,6 +30,7 @@ import javax.swing.{SwingUtilities, Timer}
 import scala.jdk.CollectionConverters._
 import scala.util.Using
 
+@ExtensionImpl
 private final class MouseHandler extends ProjectActivity {
 
   private var activeHyperlink = Option.empty[(Inlay, Text)]

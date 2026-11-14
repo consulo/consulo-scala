@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.application.CommonBundle
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -25,6 +28,8 @@ import org.jetbrains.plugins.scala.lang.resolve.processor.CompletionProcessor
 import org.jetbrains.plugins.scala.lang.resolve.{ScalaResolveResult, ScalaResolveState, StdKinds}
 import org.jetbrains.plugins.scala.project.ProjectContext
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.ReplaceDoWhileWithWhileIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class ReplaceDoWhileWithWhileIntention extends PsiElementBaseIntentionAction {
 
   import ReplaceDoWhileWithWhileIntention._

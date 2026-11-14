@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package stringLiteral
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.codeStyle.CodeStyle
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -13,6 +16,8 @@ import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.{hasMarginChars, hasStripMarginCall}
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.AddStripMarginToMLStringIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Strings"))
 final class AddStripMarginToMLStringIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   override def isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean =

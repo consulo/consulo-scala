@@ -2,11 +2,14 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package highlighting
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.highlighting.HighlightErrorFilter
 import consulo.language.psi.PsiErrorElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 
+@ExtensionImpl
 final class ScalaDocHighlightErrorFilter extends HighlightErrorFilter {
 
   override def shouldHighlightErrorElement(element: PsiErrorElement): Boolean = !isInScaladoc(element)

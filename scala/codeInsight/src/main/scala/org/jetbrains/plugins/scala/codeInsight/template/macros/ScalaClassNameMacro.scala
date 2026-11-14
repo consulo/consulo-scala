@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 
+@ExtensionImpl
 final class ScalaClassNameMacro extends ScalaMacro {
 
   override def getNameShort: String = "className"

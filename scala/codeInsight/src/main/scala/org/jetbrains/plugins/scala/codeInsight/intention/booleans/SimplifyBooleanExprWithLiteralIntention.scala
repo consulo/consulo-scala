@@ -1,6 +1,9 @@
 package org.jetbrains.plugins.scala
 package codeInsight.intention.booleans
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -12,6 +15,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.SimplifyBooleanExprWithLiteralIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Boolean"))
 final class SimplifyBooleanExprWithLiteralIntention extends PsiElementBaseIntentionAction {
 
   import SimplifyBooleanExprWithLiteralIntention._

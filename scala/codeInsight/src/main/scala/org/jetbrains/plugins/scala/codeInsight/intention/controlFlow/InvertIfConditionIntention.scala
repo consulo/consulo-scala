@@ -3,6 +3,9 @@ package codeInsight
 package intention
 package controlFlow
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -17,6 +20,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlockExpr, ScExpression,
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createElementFromText
 import org.jetbrains.plugins.scala.project.{ProjectContext, ScalaFeatures}
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.InvertIfConditionIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Control flow"))
 final class InvertIfConditionIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import InvertIfConditionIntention._

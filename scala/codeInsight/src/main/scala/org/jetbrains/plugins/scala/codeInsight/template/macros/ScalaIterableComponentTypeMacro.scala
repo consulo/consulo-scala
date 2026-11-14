@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.language.editor.template.{Expression, ExpressionContext}
 import consulo.java.impl.JavaBundle
 
+@ExtensionImpl
 final class ScalaIterableComponentTypeMacro extends ScalaMacro {
 
   override def getNameShort: String = "iterableComponentType"

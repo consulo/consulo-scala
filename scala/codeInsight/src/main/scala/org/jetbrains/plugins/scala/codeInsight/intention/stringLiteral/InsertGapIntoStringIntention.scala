@@ -1,5 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.stringLiteral
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+
 import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import consulo.codeEditor.Editor
@@ -10,6 +13,8 @@ import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes.{tMULTILINE_STRING, tSTRING}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.InsertGapIntoStringIntention", fileExtensions = Array("scala"), categories = Array("Scala", "Strings"))
 final class InsertGapIntoStringIntention extends PsiElementBaseIntentionAction with DumbAware {
 
   import InsertGapIntoStringIntention._

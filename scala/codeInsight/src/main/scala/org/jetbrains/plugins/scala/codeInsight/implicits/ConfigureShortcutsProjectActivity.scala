@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
+import consulo.annotation.component.ExtensionImpl
+
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
@@ -13,6 +15,7 @@ import org.jetbrains.plugins.scala.startup.ProjectActivity
 
 import javax.swing.KeyStroke
 
+@ExtensionImpl
 private final class ConfigureShortcutsProjectActivity extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.

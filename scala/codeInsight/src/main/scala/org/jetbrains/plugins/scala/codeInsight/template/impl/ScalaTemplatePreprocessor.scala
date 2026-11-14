@@ -3,6 +3,8 @@ package codeInsight
 package template
 package impl
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.template.impl.TemplatePreprocessor
 import consulo.codeEditor.Editor
 import consulo.language.impl.psi.LeafPsiElement
@@ -12,6 +14,7 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
 final class ScalaTemplatePreprocessor extends TemplatePreprocessor {
 
   import ScalaTemplatePreprocessor._

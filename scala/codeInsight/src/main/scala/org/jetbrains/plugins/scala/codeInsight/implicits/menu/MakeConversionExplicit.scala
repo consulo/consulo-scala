@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
+import consulo.annotation.component.ActionImpl
+
 import com.intellij.codeInsight.daemon.impl.HintRenderer
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
 import consulo.language.editor.CommonDataKeys
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.codeInsight.intention.expression.MakeImplicit
 
 import scala.jdk.CollectionConverters.*
 
+@ActionImpl(id = "MakeExplicit")
 class MakeConversionExplicit extends AnAction(
   ScalaCodeInsightBundle.message("make.conversion.explicit.action.text"),
   ScalaCodeInsightBundle.message("make.conversion.explicit.action.description"),

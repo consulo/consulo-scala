@@ -2,10 +2,13 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package hint
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.hint.DeclarationRangeHandler
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
+@ExtensionImpl(order = "first")
 final class ScFunctionDeclarationRangeHandler extends DeclarationRangeHandler[ScFunction] {
 
   override def getDeclarationRange(function: ScFunction): TextRange = {
