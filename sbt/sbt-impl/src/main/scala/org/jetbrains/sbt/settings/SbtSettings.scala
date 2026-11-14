@@ -32,7 +32,7 @@ import scala.beans.BeanProperty
 // upstream: lives in sbt-api
 @State(
   name = "ScalaSbtSettings",
-  storages = Array[Storage](new Storage(value = "$PROJECT_CONFIG_DIR$/sbt.xml", roamingType = RoamingType.DISABLED))
+  storages = Array[Storage](new Storage(value = "sbt.xml", roamingType = RoamingType.DISABLED))
 )
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl

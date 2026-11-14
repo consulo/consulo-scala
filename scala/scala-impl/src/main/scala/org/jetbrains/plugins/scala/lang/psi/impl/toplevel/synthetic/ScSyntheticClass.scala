@@ -116,11 +116,12 @@ object SyntheticNamedElement {
     scalaLibraryRepresentativeClass: String
   ): Option[PsiDirectory] = {
     val classFromStdLib = ScalaPsiManager.instance(project).getCachedClass(GlobalSearchScope.allScope(project), scalaLibraryRepresentativeClass)
-    classFromStdLib.map { clazz =>
+    // upstream casts to ScalaFile; the class may also come from a Java class file (no Scala library kind)
+    classFromStdLib.map(_.getContainingFile.getNavigationElement).collect {
       //.../scala-library-2.13.11-sources.jar!/scala/Array.scala
-      val navigationFile = clazz.getContainingFile.getNavigationElement.asInstanceOf[ScalaFile]
-      //.../scala-library-2.13.11-sources.jar!/scala
-      navigationFile.getParent;
+      case navigationFile: ScalaFile =>
+        //.../scala-library-2.13.11-sources.jar!/scala
+        navigationFile.getParent
     }
   }
 }

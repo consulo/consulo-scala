@@ -61,7 +61,7 @@ class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
   @RequiredUIAccess
   override def init(project: Project, toolWindow: ToolWindow): Unit = {
     Log.debug("init")
-    toolWindow.setStripeTitle(SbtShellToolWindowFactory.Title)
+    toolWindow.setDisplayName(LocalizeValue.of(SbtShellToolWindowFactory.Title))
     toolWindow.setIcon(ToolWindowIconSupplier.getOriginalIcon)
   }
 
