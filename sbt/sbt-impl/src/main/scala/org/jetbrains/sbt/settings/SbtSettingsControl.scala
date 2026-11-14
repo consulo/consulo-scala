@@ -83,8 +83,8 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
     if (customVMPath != null) {
       settings.customLauncherPath = nonEmpty(launcherPath.getValue)
       settings.maximumHeapSize = heapSize
-      settings.vmParameters = vmParameters.getValue
-      settings.sbtOptions = sbtOptions.getValue
+      settings.vmParameters = Option(vmParameters.getValue).getOrElse("")
+      settings.sbtOptions = Option(sbtOptions.getValue).getOrElse("")
       settings.customVMPath = nonEmpty(customVMPath.getValue)
       settings.sbtEnvironment = sbtEnvironment.getEnvs
       settings.sbtPassParentEnvironment = sbtEnvironment.isPassParentEnvs

@@ -88,8 +88,10 @@ object SbtProjectImportProvider {
       (Files.isRegularFile(projectDirectory.resolve(Sbt.PropertiesFile)) || containsSbtBuildFile(projectDirectory))
   }
 
+  // unreadable directories (e.g. other users' dirs shown in the file chooser) are not sbt projects
   private def containsSbtBuildFile(directory: Path) =
-    Using.resource(Files.list(directory))(_.toScala(LazyList).exists(isSbtFile))
+    try Using.resource(Files.list(directory))(_.toScala(LazyList).exists(isSbtFile))
+    catch { case _: java.io.IOException => false }
 
   private def isSbtFile(file: Path) =
     Files.isRegularFile(file) && fileName(file).endsWith(Sbt.Extension)

@@ -71,8 +71,8 @@ final class SbtSettings @Inject()(project: Project)
 
     customLauncherPath = state.customLauncherPath
     maximumHeapSize = state.maximumHeapSize
-    vmParameters = state.vmParameters
-    sbtOptions = state.sbtOptions
+    vmParameters = Option(state.vmParameters).getOrElse("")
+    sbtOptions = Option(state.sbtOptions).getOrElse("")
     customVMPath = state.customVMPath
     customSbtStructurePath = state.customSbtStructurePath
     sbtEnvironment = state.sbtEnvironment
