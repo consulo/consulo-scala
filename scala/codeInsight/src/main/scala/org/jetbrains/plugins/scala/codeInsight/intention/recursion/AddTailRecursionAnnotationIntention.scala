@@ -3,12 +3,12 @@ package codeInsight
 package intention
 package recursion
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.FunctionAnnotator
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.statements._
 
 final class AddTailRecursionAnnotationIntention extends PsiElementBaseIntentionAction {

@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.actions
 
-import com.intellij.codeInsight.hint.HintManager
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{DialogWrapper, Messages}
-import com.intellij.psi.{PsiAnonymousClass, PsiFile}
-import com.intellij.util.IncorrectOperationException
+import consulo.language.editor.hint.HintManager
+import consulo.java.impl.JavaBundle
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.ui.ex.awt.{DialogWrapper, Messages}
+import com.intellij.psi.PsiAnonymousClass
+import consulo.language.psi.PsiFile
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.plugins.scala.ScalaCodeInsightActionHandler
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.generation._
 import org.jetbrains.plugins.scala.extensions.{PsiModifierListOwnerExt, inWriteAction}
 import org.jetbrains.plugins.scala.lang.completion.ScalaKeyword

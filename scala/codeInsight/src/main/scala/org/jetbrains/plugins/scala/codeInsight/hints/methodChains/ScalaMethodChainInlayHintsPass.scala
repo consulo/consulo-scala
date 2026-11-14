@@ -1,19 +1,23 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent, Separator}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme, EditorFontType}
-import com.intellij.openapi.editor.{Document, Editor, InlayModel}
-import com.intellij.openapi.util.Disposer
-import com.intellij.psi.{PsiElement, PsiFile, PsiPackage}
-import com.intellij.util.ui.JBUI
+import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.Separator
+import consulo.application.ApplicationManager
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, EditorFontType}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import com.intellij.openapi.editor.InlayModel
+import consulo.disposer.Disposer
+import consulo.language.psi.{PsiElement, PsiFile, PsiPackage}
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.{AnnotatorHints, Text}
 import org.jetbrains.plugins.scala.codeInsight.hints.methodChains.ScalaMethodChainInlayHintsPass.{hasObviousReturnType, isFollowedByLineEnd, isUnqualifiedReference, methodChainContextMenu, removeLastIfHasTypeMismatch}
 import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, ScalaTypeHintsConfigurable, isTypeObvious, textPartsOf}
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHints, TextPartsHintRenderer}
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt, PsiFileExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{MethodInvocation, ScArgumentExprList, ScBlockExpr, ScExpression, ScFunctionExpr, ScInfixExpr, ScMethodCall, ScParenthesisedExpr, ScReferenceExpression}

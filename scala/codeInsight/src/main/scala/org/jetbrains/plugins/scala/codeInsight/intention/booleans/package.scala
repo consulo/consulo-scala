@@ -3,9 +3,9 @@ package codeInsight
 package intention
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiDocumentManager
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText

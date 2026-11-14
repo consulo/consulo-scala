@@ -2,12 +2,12 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package daemon
 
-import com.intellij.codeInsight.daemon.impl.HighlightVisitor
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
-import com.intellij.lang.injection.InjectedLanguageManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.language.editor.rawHighlight.HighlightVisitor
+import consulo.language.editor.rawHighlight.HighlightInfoHolder
+import consulo.language.inject.InjectedLanguageManager
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.annotator.HighlightingAdvisor
 import org.jetbrains.plugins.scala.annotator.hints.AnnotatorHints
 import org.jetbrains.plugins.scala.annotator.usageTracker.ScalaRefCountHolder

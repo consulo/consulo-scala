@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template.Result
-import com.intellij.openapi.editor.Document
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.template.Result
+import consulo.document.Document
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 
 case class ScalaTypeResult(`type`: ScType) extends Result {

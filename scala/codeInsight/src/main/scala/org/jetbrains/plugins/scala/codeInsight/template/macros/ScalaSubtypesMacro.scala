@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.template._
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.language.editor.template.{Expression, ExpressionContext}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.api.ExtractClass
 

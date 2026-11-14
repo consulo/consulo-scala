@@ -2,10 +2,11 @@ package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import java.awt.font.FontRenderContext
 import java.awt.{Font, FontMetrics, RenderingHints}
-import com.intellij.ide.ui.{AntialiasingType, UISettings}
-import com.intellij.openapi.editor.Editor
+import com.intellij.ide.ui.AntialiasingType
+import consulo.application.ui.UISettings
+import consulo.codeEditor.Editor
 import com.intellij.openapi.editor.impl.{EditorImpl, FontInfo}
-import com.intellij.util.ui.UIUtil
+import consulo.ui.ex.awt.UIUtil
 
 private class MyFontMetrics(editor: Editor, familyName: String, size: Int) {
   private val font = UIUtil.getFontWithFallback(familyName, Font.PLAIN, size)

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.ui
 
 import com.intellij.codeInsight.generation.ui.AbstractGenerateEqualsWizard
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.project.Project
-import com.intellij.refactoring.classMembers.AbstractMemberInfoModel
-import com.intellij.refactoring.ui.AbstractMemberSelectionPanel
+import consulo.java.impl.JavaBundle
+import consulo.project.Project
+import consulo.language.editor.refactoring.classMember.AbstractMemberInfoModel
+import consulo.language.editor.refactoring.ui.AbstractMemberSelectionPanel
 import org.jetbrains.plugins.scala.codeInsight.generation.{fields, isVar}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass

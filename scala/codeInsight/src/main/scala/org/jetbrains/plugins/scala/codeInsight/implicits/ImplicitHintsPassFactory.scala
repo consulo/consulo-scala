@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.codeHighlighting._
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.language.editor.Pass
+import consulo.language.editor.highlight.{TextEditorHighlightingPass, TextEditorHighlightingPassFactory}
+import com.intellij.codeHighlighting.{TextEditorHighlightingPassFactoryRegistrar, TextEditorHighlightingPassRegistrar}
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaHintsSettings
 import org.jetbrains.plugins.scala.extensions.{PsiFileExt, ViewProviderExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

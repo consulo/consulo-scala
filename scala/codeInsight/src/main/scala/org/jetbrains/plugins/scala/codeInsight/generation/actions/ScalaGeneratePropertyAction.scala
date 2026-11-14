@@ -3,10 +3,10 @@ package codeInsight
 package generation
 package actions
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiFile
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.TypeAdjuster
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScVariableDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.OptionalBracesCode._

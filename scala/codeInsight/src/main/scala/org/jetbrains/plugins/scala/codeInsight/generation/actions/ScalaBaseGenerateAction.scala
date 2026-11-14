@@ -4,9 +4,10 @@ package generation
 package actions
 
 import com.intellij.codeInsight.generation.actions.BaseGenerateAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition

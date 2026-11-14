@@ -4,8 +4,9 @@ package template
 package impl
 
 import com.intellij.codeInsight.template.TemplateActionContext
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api._
+import org.jetbrains.plugins.scala.api.lang.psi.api._
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 
 final class ScalaStringContextType

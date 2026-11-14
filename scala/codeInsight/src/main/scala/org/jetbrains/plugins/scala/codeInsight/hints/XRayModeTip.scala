@@ -1,14 +1,15 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.notification.{NotificationType, Notifications}
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.actionSystem.ex.AnActionListener
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import consulo.project.ui.notification.{NotificationType, Notifications}
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.AnActionResult
+import consulo.ui.ex.action.event.AnActionListener
+import consulo.application.ApplicationManager
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.project.Project
+import consulo.project.startup.StartupActivity
 import com.intellij.util.messages.MessageBusConnection
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.settings.sections.XRayModeSettingsSectionConfigurable
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups

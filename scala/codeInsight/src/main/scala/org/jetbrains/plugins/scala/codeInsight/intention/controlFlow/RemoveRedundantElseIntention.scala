@@ -3,13 +3,14 @@ package codeInsight
 package intention
 package controlFlow
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiManager}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiManager}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*

@@ -1,15 +1,16 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import com.intellij.ide.ui.{AntialiasingType, UISettingsUtils}
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorFontType
+import consulo.ui.ex.action.ActionGroup
+import consulo.codeEditor.Editor
+import consulo.colorScheme.EditorFontType
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.markup.{EffectType, TextAttributes}
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.registry.Registry
+import consulo.colorScheme.{EffectType, TextAttributes}
+import consulo.util.dataholder.Key
+import consulo.application.util.registry.Registry
 import com.intellij.ui.paint.EffectPainter
-import com.intellij.util.ui.{GraphicsUtil, JBUI}
+import com.intellij.util.ui.GraphicsUtil
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
 import org.jetbrains.plugins.scala.annotator.hints.{Corners, Text}
 import org.jetbrains.plugins.scala.codeInsight.implicits.TextPartsHintRenderer._

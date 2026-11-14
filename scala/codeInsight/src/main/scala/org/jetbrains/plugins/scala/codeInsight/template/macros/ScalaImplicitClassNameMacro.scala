@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template.{Expression, ExpressionContext, Result, TextResult}
+import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
 import org.apache.commons.lang3.StringUtils
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.{ScParameterizedTypeElement, ScTypeElement}
 

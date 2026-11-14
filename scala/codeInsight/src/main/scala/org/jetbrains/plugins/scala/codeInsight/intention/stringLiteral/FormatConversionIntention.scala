@@ -3,11 +3,11 @@ package codeInsight
 package intention
 package stringLiteral
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import com.intellij.profile.codeInspection.InspectionProfileManager
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.parentheses.ScalaUnnecessaryParenthesesInspection
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.format.{StringConcatenationParser, _}

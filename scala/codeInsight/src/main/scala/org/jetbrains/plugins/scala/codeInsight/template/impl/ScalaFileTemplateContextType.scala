@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.template.impl
 
 import com.intellij.codeInsight.template.{FileTypeBasedContextType, TemplateActionContext, TemplateContextType}
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
-import org.jetbrains.plugins.scala.{ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 final class ScalaFileTemplateContextType extends FileTypeBasedContextType(
   ScalaLanguage.INSTANCE.getDisplayName,

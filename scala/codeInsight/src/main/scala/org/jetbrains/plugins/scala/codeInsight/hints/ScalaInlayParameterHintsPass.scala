@@ -4,18 +4,21 @@ import com.intellij.codeInsight.hints.HintInfo.MethodInfo
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension.{INSTANCE => InlayParameterHintsExtension}
 import com.intellij.codeInsight.hints.settings.ParameterNameHintsSettings.{getInstance => ParameterNameHintsSettings}
 import com.intellij.codeInsight.hints.{HintInfo, HintInfoFilter, InlayParameterHintsProvider, MethodInfoExcludeListFilter}
-import com.intellij.lang.Language
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent, Separator}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile, PsiMethod}
-import com.intellij.util.containers.ContainerUtil
+import consulo.language.Language
+import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.Separator
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.language.psi.PsiMethod
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.incremental.Highlighting._
-import org.jetbrains.plugins.scala.ScalaLanguage.{INSTANCE => ScalaLanguage}
+import org.jetbrains.plugins.scala.api.ScalaLanguage.{INSTANCE => ScalaLanguage}
 import org.jetbrains.plugins.scala.annotator.hints.Hint.{HintPosition, MenuProvider}
 import org.jetbrains.plugins.scala.annotator.hints.{Hint, Text}
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaInlayParameterHintsPass._
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocQuickInfoGenerator
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

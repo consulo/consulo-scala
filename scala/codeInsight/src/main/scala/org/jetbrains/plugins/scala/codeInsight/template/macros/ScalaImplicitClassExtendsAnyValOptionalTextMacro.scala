@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template.{Expression, ExpressionContext, Result, TextResult}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LeafPsiElement
 import org.jetbrains.plugins.scala.extensions.{&, OptionExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

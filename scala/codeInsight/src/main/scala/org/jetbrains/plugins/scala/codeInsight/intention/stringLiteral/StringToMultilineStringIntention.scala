@@ -3,12 +3,12 @@ package codeInsight
 package intention
 package stringLiteral
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.command.undo.UndoUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.undoRedo.util.UndoUtil
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.format._

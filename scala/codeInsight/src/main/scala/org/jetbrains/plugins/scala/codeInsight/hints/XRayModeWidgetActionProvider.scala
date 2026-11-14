@@ -1,25 +1,27 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.codeInsight.daemon.ProblemHighlightFilter
-import com.intellij.codeInsight.daemon.impl.analysis.HighlightingLevelManager
-import com.intellij.icons.AllIcons
+import consulo.language.editor.ProblemHighlightFilter
+import consulo.language.editor.highlight.HighlightingLevelManager
+import consulo.application.AllIcons
 import com.intellij.ide.HelpTooltip
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.actionSystem.impl.{ActionButtonWithText, ActionToolbarImpl}
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys, DefaultActionGroup, Presentation, Separator}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.{Presentation, Separator}
 import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
-import com.intellij.openapi.options.ShowSettingsUtil
+import consulo.ide.setting.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.roots.ProjectFileIndex
+import consulo.module.content.ProjectFileIndex
 import com.intellij.openapi.util.IconLoader
-import com.intellij.openapi.util.text.HtmlChunk
-import com.intellij.ui.JBColor.{`lazy` => LazyJBColor}
-import com.intellij.ui.scale.JBUIScale
-import com.intellij.util.ui.{JBInsets, JBUI, UIUtil}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.application.util.HtmlChunk
+import consulo.ui.ex.JBColor.{`lazy` => LazyJBColor}
+import consulo.ui.ex.awt.JBUIScale
+import consulo.ui.ex.awt.{JBInsets, JBUI, UIUtil}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
 import org.jetbrains.plugins.scala.settings.XRayWidgetMode

@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template._
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.psi.scope.GlobalSearchScope
 import com.intellij.psi.search.searches.AnnotatedMembersSearch
-import com.intellij.psi.{PsiClass, PsiMember}
-import com.intellij.util.{EmptyQuery, Query}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import com.intellij.java.language.psi.{PsiClass, PsiMember}
+import com.intellij.util.EmptyQuery
+import consulo.application.util.query.Query
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 
 import scala.jdk.CollectionConverters._

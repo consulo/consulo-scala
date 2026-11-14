@@ -3,12 +3,13 @@ package codeInsight
 package intention
 package stringLiteral
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.util.MultilineStringUtil.{hasMarginChars, hasStripMarginCall}
 

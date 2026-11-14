@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.openapi.actionSystem._
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import com.intellij.openapi.actionSystem.ToggleAction
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
 class ShowImplicitHintsAction extends ToggleAction(
   ScalaCodeInsightBundle.message("show.implicit.hints.action.text"),

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala
-package codeInsight
-
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiDocumentManager, PsiElement, PsiFile}
+package codeInsight.messages
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScValueOrVariable, ScVariable}

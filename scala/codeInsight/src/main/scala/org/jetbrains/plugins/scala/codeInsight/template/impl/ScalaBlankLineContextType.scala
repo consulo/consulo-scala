@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.template.impl
 
 import com.intellij.codeInsight.template.TemplateActionContext
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.psi.PsiWhiteSpace
+import consulo.language.impl.psi.LeafPsiElement
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.{&, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference

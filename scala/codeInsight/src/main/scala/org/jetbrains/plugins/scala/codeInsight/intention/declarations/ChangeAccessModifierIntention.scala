@@ -5,28 +5,34 @@ package declarations
 import com.intellij.codeInsight.intention.BaseElementAtCaretIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.ide.nls.NlsMessages
-import com.intellij.openapi.application.{ApplicationManager, ReadAction}
-import com.intellij.openapi.command.WriteCommandAction
+import consulo.application.{ApplicationManager, ReadAction}
+import consulo.language.editor.WriteCommandAction
 import com.intellij.openapi.command.impl.{FinishMarkAction, StartMarkAction}
-import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.editor.colors.{EditorColors, EditorColorsManager, EditorFontType}
-import com.intellij.openapi.editor.markup.{HighlighterLayer, HighlighterTargetArea}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.ui.popup.{JBPopupFactory, JBPopupListener, LightweightWindowEvent}
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.{HtmlChunk, StringUtil}
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.BaseRefactoringProcessor
-import com.intellij.refactoring.ui.ConflictsDialog
+import consulo.undoRedo.UndoManager
+import consulo.codeEditor.EditorColors
+import consulo.colorScheme.{EditorColorsManager, EditorFontType}
+import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.fileEditor.FileEditorManager
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.ui.ex.popup.event.{JBPopupListener, LightweightWindowEvent}
+import consulo.document.util.TextRange
+import consulo.application.util.HtmlChunk
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiModifier, PsiModifierList}
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiNameIdentifierOwner, PsiReference, PsiWhiteSpace, SmartPointerManager}
+import com.intellij.psi.PsiParserFacade
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.refactoring.BaseRefactoringProcessor
+import consulo.language.editor.refactoring.ui.ConflictsDialog
 import com.intellij.refactoring.util.RefactoringUIUtil
-import com.intellij.util.containers.MultiMap
+import consulo.util.collection.MultiMap
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.codeInsight.intention.declarations.ChangeAccessModifierIntention._
 import org.jetbrains.plugins.scala.extensions.{PsiNamedElementExt, _}

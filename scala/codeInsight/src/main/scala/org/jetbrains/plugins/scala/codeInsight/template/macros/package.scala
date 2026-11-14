@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package template
 
-import com.intellij.codeInsight.template.{Expression, ExpressionContext, Result}
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.editor.template.{Expression, ExpressionContext, Result}
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement

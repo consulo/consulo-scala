@@ -3,16 +3,17 @@ package codeInsight
 package hints
 
 import com.intellij.codeInsight.hints.ParameterHintsPassFactory.forceHintsUpdateOnNextPass
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent, Separator}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.Separator
+import consulo.codeEditor.Editor
+import consulo.colorScheme.EditorColorsScheme
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.TypeMismatchHints
 import org.jetbrains.plugins.scala.annotator.hints.Hint.{HintPosition, MenuProvider}
 import org.jetbrains.plugins.scala.annotator.hints.{Corners, Hint, Text}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaTypeHintsPass._
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes

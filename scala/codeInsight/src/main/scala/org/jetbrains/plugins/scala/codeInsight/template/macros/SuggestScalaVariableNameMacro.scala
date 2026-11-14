@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template._
-import com.intellij.psi.PsiDocumentManager
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.psi.PsiDocumentManager
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypedDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 import org.jetbrains.plugins.scala.lang.psi.types.api.{JavaArrayType, ParameterizedType}

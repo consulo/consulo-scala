@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiFile
+import consulo.codeEditor.Editor
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiFile
 
 private class ModificationCount(key: String) {
   private val CountKey = Key.create[Long](key)

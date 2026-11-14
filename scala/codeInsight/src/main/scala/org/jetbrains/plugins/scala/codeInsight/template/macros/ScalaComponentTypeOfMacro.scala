@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.template._
-import com.intellij.java.JavaBundle
+import consulo.language.editor.completion.lookup.LookupElement
+import consulo.language.editor.template.{Expression, ExpressionContext}
+import consulo.java.impl.JavaBundle
 import org.jetbrains.plugins.scala.lang.completion.lookups.ScalaLookupItem
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.api.ExtractClass

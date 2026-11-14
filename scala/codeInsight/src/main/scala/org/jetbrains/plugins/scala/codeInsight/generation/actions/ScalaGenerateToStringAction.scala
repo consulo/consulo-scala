@@ -3,12 +3,14 @@ package codeInsight
 package generation
 package actions
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+
+import org.jetbrains.plugins.scala.api.isUnitTestMode
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.language.psi.PsiFile
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTrait, ScTypeDefinition}

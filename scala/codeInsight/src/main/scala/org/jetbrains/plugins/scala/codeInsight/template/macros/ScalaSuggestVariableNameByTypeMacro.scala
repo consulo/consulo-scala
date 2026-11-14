@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template.{TextResult, _}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.TextResult
+import com.intellij.codeInsight.template._
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.NameSuggester
 
 final class ScalaSuggestVariableNameByTypeMacro extends ScalaMacro {

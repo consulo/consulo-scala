@@ -2,12 +2,15 @@ package org.jetbrains.plugins.scala.codeInsight.hints.rangeHints
 
 import com.intellij.codeInsight.hints.presentation.{PresentationFactory, RecursivelyUpdatingRootPresentation}
 import com.intellij.codeInsight.hints.{HorizontalConstrainedPresentation, HorizontalConstraints}
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent, Separator}
+import consulo.ui.ex.action.{ActionGroup, ActionManager, ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.{Editor, EditorCustomElementRenderer, InlayModel}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Disposer, Key}
-import com.intellij.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.codeEditor.Editor
+import com.intellij.openapi.editor.{EditorCustomElementRenderer, InlayModel}
+import consulo.project.Project
+import consulo.disposer.Disposer
+import consulo.util.dataholder.Key
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.annotator.hints.Hint.MenuProvider
@@ -15,7 +18,8 @@ import org.jetbrains.plugins.scala.annotator.hints.Text
 import org.jetbrains.plugins.scala.codeInsight.hints.rangeHints.RangeInlayHintsPass._
 import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, ScalaTypeHintsConfigurable}
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHints, TextPartsHintRenderer}
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr._

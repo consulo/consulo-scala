@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits.menu
 
 import com.intellij.codeInsight.daemon.impl.HintRenderer
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.util.Disposer
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.disposer.Disposer
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHint, MouseHandler}
 import org.jetbrains.plugins.scala.extensions.inWriteCommandAction
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.*

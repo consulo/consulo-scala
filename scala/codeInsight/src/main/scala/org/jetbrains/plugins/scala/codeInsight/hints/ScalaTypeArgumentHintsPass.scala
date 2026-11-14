@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.hints.Hint.HintPosition
 import org.jetbrains.plugins.scala.annotator.hints.{Hint, Text}
 import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings

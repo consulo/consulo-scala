@@ -3,10 +3,10 @@ package codeInsight
 package daemon
 
 import com.intellij.codeInsight.daemon.RainbowVisitor
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.colorScheme.TextAttributesKey
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.incremental.Highlighting._
 import org.jetbrains.plugins.scala.highlighter.{DefaultHighlighter, ScalaColorsSchemeUtils}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}

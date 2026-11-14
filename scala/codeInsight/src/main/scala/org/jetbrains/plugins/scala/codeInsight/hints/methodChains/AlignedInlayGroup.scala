@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.editor.ex.EditorEx
+import consulo.disposer.Disposable
+import consulo.codeEditor.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.editor.{Document, Editor, Inlay, InlayModel, RangeMarker}
-import com.intellij.openapi.util.{Disposer, Key}
-import com.intellij.util.ui.JBUI
+import consulo.colorScheme.TextAttributes
+import consulo.document.{Document, RangeMarker}
+import consulo.codeEditor.Editor
+import com.intellij.openapi.editor.{Inlay, InlayModel}
+import consulo.disposer.Disposer
+import consulo.util.dataholder.Key
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.annotator.hints.{Corners, Text}
 import org.jetbrains.plugins.scala.codeInsight.hints.methodChains.AlignedInlayGroup.{AlignedInlayRenderer, AlignmentLine, ScalaMethodChainDisposableKey}
 import org.jetbrains.plugins.scala.codeInsight.implicits.TextPartsHintRenderer

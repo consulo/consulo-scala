@@ -2,7 +2,9 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package implicits
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent, CommonDataKeys, ToggleAction}
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.ToggleAction
 
 class ExpandImplicitHintsAction extends ToggleAction(
   ScalaCodeInsightBundle.message("expand.implicit.hints.action.text"),

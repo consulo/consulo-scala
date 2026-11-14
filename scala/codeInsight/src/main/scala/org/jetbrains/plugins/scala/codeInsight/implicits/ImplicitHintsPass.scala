@@ -1,22 +1,23 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import com.intellij.codeHighlighting.EditorBoundHighlightingPass
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme}
+import consulo.codeEditor.Editor
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme}
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.pom.Navigatable
-import com.intellij.psi.{PsiClass, PsiElement}
-import com.intellij.util.DocumentUtil
+import consulo.application.progress.ProgressIndicator
+import consulo.disposer.Disposer
+import consulo.util.lang.StringUtil
+import consulo.navigation.Navigatable
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import consulo.document.util.DocumentUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.annotator.HighlightingAdvisor
 import org.jetbrains.plugins.scala.annotator.hints.Hint.HintPosition
 import org.jetbrains.plugins.scala.annotator.hints._
 import org.jetbrains.plugins.scala.autoImport.quickFix.{ImportImplicitInstanceFix, PopupPosition}
 import org.jetbrains.plugins.scala.caches.{ModTracker, cachedInUserData}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.hints.methodChains.ScalaMethodChainInlayHintsPass
 import org.jetbrains.plugins.scala.codeInsight.hints.rangeHints.RangeInlayHintsPass
 import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaApplyMethodHintsPass, ScalaHintsSettings, ScalaInlayParameterHintsPass, ScalaTypeArgumentHintsPass, ScalaTypeHintsPass}
@@ -42,7 +43,7 @@ import org.jetbrains.plugins.scala.lang.resolve.MethodTypeProvider.fromScMethodL
 import org.jetbrains.plugins.scala.lang.resolve.ScalaResolveResult
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
 import org.jetbrains.plugins.scala.settings.{ScalaHighlightingMode, ScalaProjectSettings}
-import org.jetbrains.plugins.scala.util.CommonQualifiedNames
+import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames
 
 import scala.collection.mutable
 

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.editor.{Editor, EditorFactory, InlayModel}
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.psi.PsiFile
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.codeEditor.{Editor, EditorFactory}
+import com.intellij.openapi.editor.InlayModel
+import consulo.project.ProjectManager
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 object ImplicitHints {

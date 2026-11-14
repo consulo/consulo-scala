@@ -3,10 +3,11 @@ package codeInsight
 package intention
 package argument
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.{PsiElement, PsiWhiteSpace}
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.expr._

@@ -2,11 +2,12 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package hints
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, ToggleAction}
-import com.intellij.openapi.options.ShowSettingsUtil
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import com.intellij.openapi.actionSystem.ToggleAction
+import consulo.ide.setting.ShowSettingsUtil
 import com.intellij.openapi.util.{Getter, Setter}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings.{getInstance => ScalaCodeInsightSettings}
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
 import org.jetbrains.plugins.scala.settings.sections.XRayModeSettingsSectionConfigurable

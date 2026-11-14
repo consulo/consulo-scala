@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
-import com.intellij.openapi.application.ApplicationManager
+import consulo.application.ApplicationManager
 import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.editor.event._
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Disposer, Key}
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.codeEditor.event.{EditorMouseEvent, EditorMouseMotionListener}
+import com.intellij.openapi.editor.event.EditorMouseListener
+import consulo.project.Project
+import consulo.disposer.Disposer
+import consulo.util.dataholder.Key
 import com.intellij.ui.AncestorListenerAdapter
 import com.intellij.util.SlowOperations
-import com.intellij.util.ui.UIUtil
+import consulo.ui.ex.awt.UIUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.annotator.hints.{ErrorTooltip, Text, TooltipUI}
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaHintsSettings

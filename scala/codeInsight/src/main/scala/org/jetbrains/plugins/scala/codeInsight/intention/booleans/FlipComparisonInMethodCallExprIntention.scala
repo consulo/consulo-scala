@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.codeInsight.intention.booleans
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.booleans.FlipComparisonInMethodCallExprIntention.{Replacement, createFlippedCall}
 import org.jetbrains.plugins.scala.codeInsight.intention.caretIsInRange
 import org.jetbrains.plugins.scala.extensions.ParenthesizedElement.Ops

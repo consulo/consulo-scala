@@ -2,12 +2,14 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package editorActions
 
-import com.intellij.codeInsight.editorActions.{JavaLikeQuoteHandler, MultiCharQuoteHandler}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.highlighter.HighlighterIterator
-import com.intellij.openapi.util.{ProperTextRange, TextRange}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.{IElementType, TokenSet}
+import consulo.language.editor.action.JavaLikeQuoteHandler
+import com.intellij.codeInsight.editorActions.MultiCharQuoteHandler
+import consulo.codeEditor.Editor
+import consulo.codeEditor.HighlighterIterator
+import com.intellij.openapi.util.ProperTextRange
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.ast.{IElementType, TokenSet}
 import org.jetbrains.plugins.scala.extensions.childOf
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

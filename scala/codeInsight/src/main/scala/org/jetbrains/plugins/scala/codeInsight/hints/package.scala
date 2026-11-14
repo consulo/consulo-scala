@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala
-package codeInsight
+package codeInsight.messages
 
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import com.intellij.codeInsight.hints.settings.{InlayProviderSettingsModel, InlaySettingsConfigurable, InlaySettingsConfigurableKt}
-import com.intellij.ide.DataManager
-import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.options.ex.Settings
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.dataContext.DataManager
+import consulo.colorScheme.EditorColorsScheme
+import consulo.configurable.Settings
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.Tree.{Leaf, Node}
 import org.jetbrains.plugins.scala.annotator.TypeDiff.Match
 import org.jetbrains.plugins.scala.annotator.hints.{Text, foldedAttributes, foldedString}

@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.generation.actions
 
-import com.intellij.openapi.editor.{Editor, ScrollType}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiDocumentManager, PsiFile}
+import consulo.codeEditor.{Editor, ScrollType}
+import consulo.project.Project
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.ScalaCodeInsightActionHandler
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInsight.generation.elementOfTypeAtCaret
 import org.jetbrains.plugins.scala.codeInsight.intention.CreateCompanionObjectIntention
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnum, ScObject, ScTrait, ScTypeDefinition}

@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits;
 
 import com.intellij.codeInsight.daemon.impl.HintRenderer;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.editor.Editor;
+import consulo.ui.ex.action.ActionGroup;
+import consulo.codeEditor.Editor;
 import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.markup.TextAttributes;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.colorScheme.TextAttributes;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
 
@@ -20,35 +19,35 @@ abstract class HintRendererProxy extends HintRenderer {
         super(text);
     }
 
-    protected abstract int calcWidthInPixels0(@NotNull Editor editor);
+    protected abstract int calcWidthInPixels0(Editor editor);
 
     @Override
-    final public int calcWidthInPixels(@NotNull Inlay inlay) {
+    final public int calcWidthInPixels(Inlay inlay) {
         return calcWidthInPixels0(inlay.getEditor());
     }
 
-    protected abstract void paint0(@NotNull Editor editor, @NotNull Graphics g, @NotNull Rectangle r, @NotNull TextAttributes textAttributes);
+    protected abstract void paint0(Editor editor, Graphics g, Rectangle r, TextAttributes textAttributes);
 
     @Override
-    final public void paint(@NotNull Inlay inlay, @NotNull Graphics g, @NotNull Rectangle r, @NotNull TextAttributes textAttributes) {
+    final public void paint(Inlay inlay, Graphics g, Rectangle r, TextAttributes textAttributes) {
         paint0(inlay.getEditor(), g, r, textAttributes);
     }
 
     @Nullable
-    protected abstract String getContextMenuGroupId0(@NotNull Editor editor);
+    protected abstract String getContextMenuGroupId0(Editor editor);
 
     @Nullable
     @Override
-    final public String getContextMenuGroupId(@NotNull Inlay inlay) {
+    final public String getContextMenuGroupId(Inlay inlay) {
         return getContextMenuGroupId0(inlay.getEditor());
     }
 
     @Nullable
-    protected abstract ActionGroup getContextMenuGroup0(@NotNull Editor editor);
+    protected abstract ActionGroup getContextMenuGroup0(Editor editor);
 
     @Nullable
     @Override
-    final public ActionGroup getContextMenuGroup(@NotNull Inlay inlay) {
+    final public ActionGroup getContextMenuGroup(Inlay inlay) {
         return getContextMenuGroup0(inlay.getEditor());
     }
 }

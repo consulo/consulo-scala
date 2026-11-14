@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala
 package codeInsight
 package generation
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.generate.tostring.GenerateToStringClassFilter
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper

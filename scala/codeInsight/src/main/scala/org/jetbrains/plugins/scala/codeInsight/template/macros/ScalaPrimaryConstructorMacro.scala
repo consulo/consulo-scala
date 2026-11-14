@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template._
-import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.psi.util.PsiTreeUtil
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.{ScParameter, ScParameterClause, ScParameters}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory

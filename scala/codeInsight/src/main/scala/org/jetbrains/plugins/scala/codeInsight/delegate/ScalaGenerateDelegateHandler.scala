@@ -1,17 +1,19 @@
 package org.jetbrains.plugins.scala.codeInsight.delegate
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.codeInsight.generation._
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.psi._
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.IncorrectOperationException
+import consulo.language.editor.CodeInsightBundle
+import consulo.language.editor.generation.ClassMember
+import com.intellij.codeInsight.generation.GenerateDelegateHandler
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
+import com.intellij.java.language.psi.{CommonClassNames, PsiMethod}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression

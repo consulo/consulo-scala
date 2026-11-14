@@ -3,7 +3,7 @@ package codeInsight.generation.ui
 
 import java.{util => ju}
 
-import com.intellij.refactoring.classMembers.AbstractMemberInfoModel
+import consulo.language.editor.refactoring.classMember.AbstractMemberInfoModel
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.refactoring.ui._

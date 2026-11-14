@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.codeInspection.recursion
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElementVisitor
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.annotator.FunctionAnnotator
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, intention}
+import org.jetbrains.plugins.scala.codeInsight.intention
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.util.IntentionAvailabilityChecker

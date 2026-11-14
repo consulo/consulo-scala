@@ -1,14 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzerSettings.{getInstance => DaemonCodeAnalyzerSettings}
+import consulo.language.editor.DaemonCodeAnalyzerSettings.{getInstance => DaemonCodeAnalyzerSettings}
 import com.intellij.codeInsight.hints.ParameterHintsPassFactory
-import com.intellij.openapi.actionSystem.ex.AnActionListener
+import consulo.ui.ex.action.event.AnActionListener
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
-import com.intellij.openapi.application.ApplicationManager
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
+import consulo.application.ApplicationManager
 import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.event.{EditorFactoryEvent, EditorFactoryListener}
+import consulo.codeEditor.Editor
+import consulo.codeEditor.event.{EditorFactoryEvent, EditorFactoryListener}
 import com.intellij.openapi.editor.ex.EditorSettingsExternalizable.{getInstance => EditorSettingsExternalizable}
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaEditorFactoryListener._

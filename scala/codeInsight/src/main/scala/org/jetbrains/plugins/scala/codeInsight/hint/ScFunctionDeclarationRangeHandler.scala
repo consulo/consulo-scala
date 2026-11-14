@@ -3,7 +3,7 @@ package codeInsight
 package hint
 
 import com.intellij.codeInsight.hint.DeclarationRangeHandler
-import com.intellij.openapi.util.TextRange
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 
 final class ScFunctionDeclarationRangeHandler extends DeclarationRangeHandler[ScFunction] {

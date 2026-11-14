@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template.{Expression, ExpressionContext, PsiElementResult, Result, TextResult}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.editor.template.{Expression, ExpressionContext, Result, TextResult}
+import com.intellij.codeInsight.template.PsiElementResult
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScTypeParametersOwner
 
 final class ScalaTypeParametersMacro extends ScalaMacro {

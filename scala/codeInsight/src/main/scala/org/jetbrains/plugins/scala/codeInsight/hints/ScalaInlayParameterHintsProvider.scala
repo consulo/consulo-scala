@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
 import com.intellij.codeInsight.hints.InlayParameterHintsProvider
-import com.intellij.lang.Language
-import com.intellij.lang.java.JavaLanguage.{INSTANCE => JavaLanguage}
+import consulo.language.Language
+import com.intellij.java.language.JavaLanguage.{INSTANCE => JavaLanguage}
 
 import java.util
 import java.util.Collections

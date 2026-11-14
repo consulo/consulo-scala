@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template._
-import com.intellij.codeInsight.template.impl.TextExpression
-import com.intellij.java.JavaBundle
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.{Expression, ExpressionContext, TextResult}
+import consulo.language.editor.template.TextExpression
+import consulo.java.impl.JavaBundle
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInsight.template.util.VariablesCompletionProcessor
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition

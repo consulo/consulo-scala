@@ -1,9 +1,10 @@
-package org.jetbrains.plugins.scala.codeInsight
-
-import com.intellij.openapi.actionSystem.{KeyboardShortcut, Shortcut}
+package org.jetbrains.plugins.scala.codeInsight.messages
+import com.intellij.openapi.actionSystem.KeyboardShortcut
+import consulo.ui.ex.action.Shortcut
 import com.intellij.openapi.editor.{EditorCustomElementRenderer, InlayModel}
 import com.intellij.openapi.keymap.{Keymap, KeymapManager}
-import com.intellij.openapi.util.{Key, TextRange}
+import consulo.util.dataholder.Key
+import consulo.document.util.TextRange
 import javax.swing.KeyStroke
 import org.jetbrains.plugins.scala.annotator.hints.Hint
 

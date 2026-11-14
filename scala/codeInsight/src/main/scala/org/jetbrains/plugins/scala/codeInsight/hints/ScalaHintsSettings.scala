@@ -3,7 +3,7 @@ package hints
 
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaBundle
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.settings.{ScalaApplicationSettings, XRayUtils}
 
 trait ScalaHintsSettings {

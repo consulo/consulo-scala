@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.template.macros
 
-import com.intellij.codeInsight.template._
+import consulo.language.editor.template.`macro`.Macro
+import com.intellij.codeInsight.template.TemplateContextType
 import org.jetbrains.plugins.scala.codeInsight.template.impl.ScalaCodeContextType
 
 abstract class ScalaMacro extends Macro {

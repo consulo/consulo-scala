@@ -61,6 +61,7 @@
         <module>scala/compiler-shared</module>
         <module>sbt/sbt-api</module>
         <module>scala/scala-impl</module>
+        <module>scala/codeInsight</module>
     </modules>
 
     <build>

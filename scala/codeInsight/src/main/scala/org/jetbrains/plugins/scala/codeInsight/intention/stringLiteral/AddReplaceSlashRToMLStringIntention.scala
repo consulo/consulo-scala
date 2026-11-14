@@ -3,12 +3,13 @@ package codeInsight
 package intention
 package stringLiteral
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.codeEditor.Editor
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
 final class AddReplaceSlashRToMLStringIntention extends PsiElementBaseIntentionAction with DumbAware {
 

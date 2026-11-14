@@ -3,12 +3,12 @@ package codeInsight
 package intention
 package booleans
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScIf, ScParenthesisedExpr, ScReturn}

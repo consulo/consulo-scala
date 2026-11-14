@@ -4,9 +4,9 @@ package template
 package impl
 
 import com.intellij.codeInsight.template.impl.TemplatePreprocessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.codeEditor.Editor
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 

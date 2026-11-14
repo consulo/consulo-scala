@@ -3,7 +3,7 @@ package codeInsight
 package highlighting
 
 import com.intellij.codeInsight.highlighting.HighlightErrorFilter
-import com.intellij.psi.PsiErrorElement
+import consulo.language.psi.PsiErrorElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.scaladoc.psi.api.ScDocComment
 

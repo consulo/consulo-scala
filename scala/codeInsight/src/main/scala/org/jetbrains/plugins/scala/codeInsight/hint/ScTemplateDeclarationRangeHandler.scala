@@ -3,7 +3,7 @@ package codeInsight
 package hint
 
 import com.intellij.codeInsight.hint.DeclarationRangeHandler
-import com.intellij.openapi.util.TextRange
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefinition, ScTypeDefinition}
 

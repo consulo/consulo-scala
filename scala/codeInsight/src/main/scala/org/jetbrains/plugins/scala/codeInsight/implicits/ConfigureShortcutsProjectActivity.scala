@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.openapi.actionSystem.KeyboardShortcut
-import com.intellij.openapi.application.ApplicationManager
+import consulo.application.ApplicationManager
 import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 
 import javax.swing.KeyStroke
@@ -13,12 +16,15 @@ import javax.swing.KeyStroke
 private final class ConfigureShortcutsProjectActivity extends ProjectActivity {
   override def execute(project: Project): Unit = {
     // Application-level services are initialised exactly once.
-    ApplicationManager.getApplication.getService(classOf[ConfigureShortcutsProjectActivity.AppService])
+    ApplicationManager.getApplication.getInstance(classOf[ConfigureShortcutsProjectActivity.AppService])
   }
 }
 
 private object ConfigureShortcutsProjectActivity {
-  @Service(Array(Service.Level.APP))
+  // upstream: @Service(Array(Service.Level.APP))
+  @Singleton
+  @ServiceAPI(ComponentScope.APPLICATION)
+  @ServiceImpl
   private final class AppService {
     // Executed in the service constructor.
     registerShortcuts()

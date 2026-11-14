@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
 import com.intellij.openapi.editor.InlayProperties
-import com.intellij.openapi.util.Key
+import consulo.util.dataholder.Key
 
 package object methodChains {
   private[methodChains] val ScalaMethodChainKey: Key[Boolean] = Key.create[Boolean]("SCALA_METHOD_CHAIN_KEY")

@@ -4,10 +4,10 @@ package generation
 package ui
 
 import com.intellij.ide.wizard.{AbstractWizard, Step, StepAdapter}
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.openapi.util.AsyncResult
-import com.intellij.refactoring.classMembers.AbstractMemberInfoModel
-import com.intellij.refactoring.ui.{AbstractMemberSelectionPanel, AbstractMemberSelectionTable}
+import consulo.language.editor.refactoring.classMember.AbstractMemberInfoModel
+import consulo.language.editor.refactoring.ui.{AbstractMemberSelectionPanel, AbstractMemberSelectionTable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 

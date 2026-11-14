@@ -3,18 +3,18 @@ package codeInsight
 package intention
 package controlFlow
 
-import com.intellij.CommonBundle
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import consulo.application.CommonBundle
+import consulo.language.editor.intention.PsiElementBaseIntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.undoRedo.CommandProcessor
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.language.ast.IElementType
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.implicits
 
 import com.intellij.openapi.editor
-import com.intellij.openapi.editor.{Editor, InlayModel}
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiElement
-import com.intellij.util.ui.JBUI
+import consulo.codeEditor.Editor
+import com.intellij.openapi.editor.InlayModel
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiElement
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.annotator.hints.Hint
 
 import java.awt.Insets

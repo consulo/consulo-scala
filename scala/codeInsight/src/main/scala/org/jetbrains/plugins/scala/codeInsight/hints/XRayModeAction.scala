@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent, CommonDataKeys, ToggleAction}
-import com.intellij.openapi.editor.Editor
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.application.AllIcons
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.ToggleAction
+import consulo.codeEditor.Editor
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
 class XRayModeAction extends ToggleAction(() => ScalaCodeInsightBundle.message("action.xray.mode"), AllIcons.Actions.Show) {
   override def isSelected(e: AnActionEvent): Boolean =
