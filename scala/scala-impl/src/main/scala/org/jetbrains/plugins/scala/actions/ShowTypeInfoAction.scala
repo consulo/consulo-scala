@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.actions
 import consulo.annotation.component.ActionImpl
 import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
-import consulo.annotation.component.ActionRefAnchor
 
 import consulo.language.editor.TargetElementUtil
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -39,7 +38,8 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
  *       but later the change was reverted for some reasons (see the comments in the YT ticket)
  *       We might give it another go, we need to review the latest state of the feature in platform to see if it satisfies our needs
  */
-@ActionImpl(id = "Scala.TypeInfo", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"), anchor = ActionRefAnchor.BEFORE, relatedToAction = new ActionRef(id = "Scala.ShowImplicits"))))
+// upstream anchor: before Scala.ShowImplicits (codeInsight module, not ported yet)
+@ActionImpl(id = "Scala.TypeInfo", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeEditorViewGroup"))))
 class ShowTypeInfoAction extends AnAction(
   ScalaBundle.message("type.info.text"),
   ScalaBundle.message("type.info.description"),
