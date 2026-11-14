@@ -167,8 +167,10 @@ package object project {
      *       (the method was previously `org.jetbrains.sbt.project.module.SbtModuleType.unapply`)
      *
      */
-    // upstream: ModuleType.get(module).isInstanceOf[SbtModuleType], Consulo has no module types
-    def hasBuildModuleType: Boolean = false
+    // upstream: ModuleType.get(module).isInstanceOf[SbtModuleType], Consulo has no module types - the sbt import stores
+    // the build URI of a build module as an option of its external system module extension (sbt-impl SbtModule.Build)
+    def hasBuildModuleType: Boolean =
+      ExternalSystemApiUtil.getExtensionSystemOption(module, "sbt.build.for.uri") != null
 
     def isSourceModule: Boolean = !hasBuildModuleType
 

@@ -81,7 +81,8 @@ private[sbt] final class SbtProjectImportStateService @Inject()(project: Project
   }
 
   private def isSbtLibrary(library: LibraryOrderEntry): Boolean = {
-    def expectedName = Option(library.getLibraryName).exists(_.startsWith(s"sbt: sbt-"))
+    // upstream: "sbt: sbt-" - Consulo prefixes external system libraries with the capitalized system id
+    def expectedName = Option(library.getLibraryName).exists(_.startsWith(s"${SbtProjectSystem.Id.getLibraryPrefix}: sbt-"))
     def expectedJars = library.getFiles(BinariesOrderRootType.ID).nonEmpty
     expectedName && expectedJars
   }
