@@ -1,7 +1,7 @@
-package org.jetbrains.plugins.scala.testingSupport.specs2;
+package org.jetbrains.plugins.scala.testrunners.testingSupport.specs2;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil;
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil;
 import org.specs2.execute.Details;
 import org.specs2.reporter.Notifier;
 
@@ -10,10 +10,10 @@ import java.io.StringWriter;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.escapeString;
-import static org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil.formatCurrentTimestamp;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.escapeString;
+import static org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil.formatCurrentTimestamp;
 
-/** see {@link org.jetbrains.plugins.scala.testingSupport.specs2.JavaSpecs2Notifier} */
+/** see {@link org.jetbrains.plugins.scala.testrunners.testingSupport.specs2.JavaSpecs2Notifier} */
 public class JavaSpecs2Notifier_spec2x implements Notifier {
   public static boolean myShowProgressMessages = true;
 

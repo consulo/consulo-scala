@@ -1,22 +1,21 @@
 package org.jetbrains.plugins.scala.worksheet.ui
 
-import com.intellij.diff.util.DiffDividerDrawUtil.DividerPolygon
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.event.{VisibleAreaEvent, VisibleAreaListener}
-import com.intellij.openapi.fileEditor.impl.text.TextEditorComponent
-import com.intellij.openapi.ui.{Divider, Splitter}
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.ui.JBColor
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.codeEditor.event.{VisibleAreaEvent, VisibleAreaListener}
+import consulo.ui.ex.awt.{Divider, Splitter}
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiDocumentManager
+import consulo.ui.ex.JBColor
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterFactory
 
 import java.awt.event.{MouseAdapter, MouseEvent}
-import java.awt.{Component, Graphics, Graphics2D, GridBagConstraints, GridBagLayout, RenderingHints}
+import java.awt.geom.Path2D
+import java.awt.{BorderLayout, Color, Component, Container, Graphics, Graphics2D, GridBagLayout, RenderingHints}
 import javax.swing.{JComponent, JLayeredPane}
 
 //noinspection ApiStatus
@@ -98,7 +97,7 @@ object WorksheetDiffSplitters {
         val polygons = generatePolygons
 
         for (polygon <- polygons) {
-          polygon.paint(gg, width, true)
+          polygon.paint(gg, width)
         }
 
         gg.dispose()
@@ -142,7 +141,7 @@ object WorksheetDiffSplitters {
             // to switch color between sibling polygons, to make them more noticeable
             val fillColor = if (isEven) COLOR1 else COLOR2
 
-            new DividerPolygon(start1, start2, end1, end2, fillColor, null, true)
+            new DividerPolygon(start1, start2, end1, end2, fillColor)
         }
         plainPolygons
       }
@@ -163,6 +162,27 @@ object WorksheetDiffSplitters {
         Segment(0, 100500)
       }
     }
+  }
+
+  /**
+   * upstream: com.intellij.diff.util.DiffDividerDrawUtil.DividerPolygon (internal in Consulo), painted with curved
+   * borders
+   */
+  final class DividerPolygon(val start1: Int, val start2: Int, val end1: Int, val end2: Int, val fillColor: Color) {
+
+    def paint(g: Graphics2D, width: Int): Unit = {
+      val path = new Path2D.Double()
+      val middle = width / 2.0
+      path.moveTo(0, start1)
+      path.curveTo(middle, start1, middle, start2, width, start2)
+      path.lineTo(width, end2)
+      path.curveTo(middle, end2, middle, end1, 0, end1)
+      path.closePath()
+      g.setColor(fillColor)
+      g.fill(path)
+    }
+
+    override def toString: String = s"DividerPolygon($start1, $start2, $end1, $end2)"
   }
 
   /**
@@ -215,22 +235,23 @@ object WorksheetDiffSplitters {
     val editorComponent: JComponent = editor.getComponent
     val editorContentComponent: JComponent = editor.getContentComponent
 
-    val editorComponentParent = editorComponent.getParent
-    val textEditorComponent = editorComponentParent match {
-      case tec: TextEditorComponent => tec
-      case other =>
-        throw new IllegalStateException(s"Unexpected type of `editorComponentParent` - ${other.getClass}")
+    // upstream: the parent is com.intellij.openapi.fileEditor.impl.text.TextEditorComponent (internal in Consulo)
+    val textEditorComponent = editorComponent.getParent match {
+      case null =>
+        throw new IllegalStateException("Editor component has no parent")
+      case parent => parent
     }
 
     //NOTE: we need to get constraint before creating splitter, because latter will modify the UI structure
-    val constraint = getGridBagConstraint(textEditorComponent)
+    val constraint = getConstraint(textEditorComponent, editorComponent)
 
     //NOTE: `createSimpleSplitter` deletes `editorComponent` from `editorComponentParent` children
     val splitter = new SimpleWorksheetSplitter(editor, viewer, Nil, proportion)
 
     preserveFocus(editorContentComponent) {
       textEditorComponent.remove(editorComponent) //NOTE: seems like no need to do this, after we create splitter this component is already deleted
-      textEditorComponent.__add(splitter, constraint)
+      textEditorComponent.add(splitter, constraint)
+      textEditorComponent.revalidate()
     }
 
     splitter
@@ -246,19 +267,19 @@ object WorksheetDiffSplitters {
     }
   }
 
-  private def getGridBagConstraint(textEditorComponent: TextEditorComponent): GridBagConstraints = {
+  /**
+   * Sometimes text editor component can have some extra non-content layers, which we are not interested in
+   * For example during IDEA open, when editor is loaded, an extra special `coverComponent` component is added with non-default layer
+   * @see SCL-21282
+   */
+  private def getConstraint(textEditorComponent: Container, component: Component): AnyRef = {
     val componentsAll = textEditorComponent.getComponents
-    /**
-     * Sometimes text editor component can have some extra non-content layers, which we are not interested in
-     * For example during IDEA open, when editor is loaded, an extra special `coverComponent` component is added with non-default layer
-     * @see SCL-21282
-     * @see [[com.intellij.openapi.fileEditor.impl.text.AsyncEditorLoader]]
-     */
-    val componentsFromDefaultLayer = componentsAll.filter(c => textEditorComponent.getLayer(c) == JLayeredPane.DEFAULT_LAYER)
-    val layout = textEditorComponent.getLayout.asInstanceOf[GridBagLayout]
+    val componentsFromDefaultLayer = textEditorComponent match {
+      case layered: JLayeredPane => componentsAll.filter(c => layered.getLayer(c) == JLayeredPane.DEFAULT_LAYER)
+      case _                     => componentsAll
+    }
     if (componentsFromDefaultLayer.length != 1) {
-      Log.assertTrue(
-        false,
+      Log.debug(
         s"""Expected 1 child component in text editor component but got ${componentsFromDefaultLayer.length}
            |Parent component:
            |${textEditorComponent.getClass.getName}
@@ -266,8 +287,11 @@ object WorksheetDiffSplitters {
            |${componentsFromDefaultLayer.map(_.getClass.getName).mkString("\n")}""".stripMargin
       )
     }
-    val firstComponent = componentsFromDefaultLayer(0)
-    layout.getConstraints(firstComponent)
+    textEditorComponent.getLayout match {
+      case layout: GridBagLayout => layout.getConstraints(component)
+      case layout: BorderLayout  => Option(layout.getConstraints(component)).getOrElse(BorderLayout.CENTER)
+      case _                     => null
+    }
   }
 
   @RequiresEdt
@@ -281,15 +305,16 @@ object WorksheetDiffSplitters {
         return
     }
     val textEditorComponent = splitter.getParent match {
-      case tec: TextEditorComponent => tec
-      case _ =>
+      case null =>
         //generally not expected, but could be in some debugging use-cases
         return
+      case parent => parent
     }
 
-    val constraint = getGridBagConstraint(textEditorComponent)
+    val constraint = getConstraint(textEditorComponent, splitter)
     textEditorComponent.remove(splitter)
-    textEditorComponent.__add(editorComponent, constraint)
+    textEditorComponent.add(editorComponent, constraint)
+    textEditorComponent.revalidate()
     editor.putUserData(DiffSplitterKey, null)
   }
 }

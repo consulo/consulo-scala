@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.runners.ExecutionEnvironment
+import consulo.execution.configuration.RunProfileState
+import consulo.execution.runner.ExecutionEnvironment
 import org.jetbrains.plugins.scala.testingSupport.test.CustomTestRunnerBasedStateProvider.TestFrameworkRunnerInfo
 import org.jetbrains.plugins.scala.testingSupport.test.sbt.SbtTestRunningSupport
 

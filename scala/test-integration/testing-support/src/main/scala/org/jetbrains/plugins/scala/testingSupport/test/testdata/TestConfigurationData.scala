@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.testdata
 
-import com.intellij.execution.configurations.RuntimeConfigurationException
-import com.intellij.execution.{CommonProgramRunConfigurationParameters, EnvFilesOptions, ExternalizablePath, ShortenCommandLine}
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.util.xmlb.{Accessor, XmlSerializer}
+import consulo.execution.RuntimeConfigurationException
+import consulo.execution.CommonProgramRunConfigurationParameters
+import consulo.execution.configuration.ExternalizablePath
+import com.intellij.java.execution.ShortenCommandLine
+import consulo.module.Module
+import consulo.project.{DumbService, Project}
+import consulo.util.xml.serializer.Accessor
+import consulo.util.xml.serializer.XmlSerializer
 import org.apache.commons.lang3.StringUtils
 import org.jdom.Element
-import org.jetbrains.jps.model.serialization.PathMacroUtil
+import consulo.component.`macro`.PathMacroUtil
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.testingSupport.TestWorkingDirectoryProvider
 import org.jetbrains.plugins.scala.testingSupport.test.ui.TestRunConfigurationForm
@@ -27,7 +30,6 @@ import scala.jdk.CollectionConverters._
 //noinspection ConvertNullInitializerToUnderscore
 abstract class TestConfigurationData(config: AbstractTestRunConfiguration)
   extends CommonProgramRunConfigurationParameters
-    with EnvFilesOptions
     with exceptions {
 
   type SelfType <: TestConfigurationData
@@ -50,19 +52,16 @@ abstract class TestConfigurationData(config: AbstractTestRunConfiguration)
   final def searchTestsInWholeProject: Boolean =
     getKind == TestKind.ALL_IN_PACKAGE && searchTest == SearchForTest.IN_WHOLE_PROJECT
 
+  /**
+   * upstream: the form also contains the common java options, in Consulo they are edited by the platform run
+   * configuration fragments directly in the current test data of the configuration
+   */
   def copyFieldsFromForm(form: TestRunConfigurationForm): Unit = {
+    copyCommonFieldsFrom(config.testConfigurationData)
     searchTest = form.getSearchForTest
-    javaOptions = form.getJavaOptions
-    testArgs = form.getTestArgs
-    jrePath = form.getJrePath
     showProgressMessages = form.getShowProgressMessages
     useSbt = form.getUseSbt
     useUiWithSbt = form.getUseUiWithSbt
-    setWorkingDirectory(form.getWorkingDirectory)
-    shortenClasspath = form.getShortenCommandLine
-    envs = form.getEnvironmentVariables
-    envFilePaths = form.getEnvironmentVariableFiles
-    setPassParentEnvs(form.isPassParentEnvs)
   }
 
   final def copyCommonFieldsFrom(other: TestConfigurationData): Unit = {
@@ -76,7 +75,6 @@ abstract class TestConfigurationData(config: AbstractTestRunConfiguration)
     setWorkingDirectory(other.getWorkingDirectory)
     shortenClasspath = other.shortenClasspath
     envs = new java.util.HashMap(other.envs)
-    envFilePaths = new java.util.ArrayList(other.envFilePaths)
     setPassParentEnvs(other.passParentEnvs)
   }
 
@@ -130,15 +128,20 @@ abstract class TestConfigurationData(config: AbstractTestRunConfiguration)
   @BeanProperty var jrePath             : String                        = scala.compiletime.uninitialized
   @BeanProperty var testArgs            : String                        = ""
   @BeanProperty var javaOptions         : String                        = ""
-  @BeanProperty var envs                : java.util.Map[String, String] = new java.util.HashMap[String, String]()
+  var envs                            : java.util.Map[String, String] = new java.util.HashMap[String, String]()
   @BeanProperty var shortenClasspath    : ShortenCommandLine            = null // null is valid value, see ConfigurationWithCommandLineShortener doc
-  @BeanProperty var envFilePaths        : ju.List[String]               = Collections.emptyList()
+  // upstream: also envFilePaths (environment variables from .env files), not supported by Consulo
 
-  @BooleanBeanProperty var passParentEnvs: Boolean = true
+  var passParentEnvs: Boolean = true
+
+  override def getEnvs: java.util.Map[String, String] = envs
+  override def setEnvs(value: java.util.Map[String, String]): Unit = envs = value
+  override def isPassParentEnvs: Boolean = passParentEnvs
+  override def setPassParentEnvs(value: Boolean): Unit = passParentEnvs = value
 
   private var workingDirectory: String     = "$" + PathMacroUtil.PROJECT_DIR_MACRO_NAME + "$"
-  def setWorkingDirectory(s: String): Unit = workingDirectory = ExternalizablePath.urlValue(s)
-  def getWorkingDirectory: String          = ExternalizablePath.localPathValue(workingDirectory)
+  override def setWorkingDirectory(s: String): Unit = workingDirectory = ExternalizablePath.urlValue(s)
+  override def getWorkingDirectory: String =  ExternalizablePath.localPathValue(workingDirectory)
 
   def initWorkingDirIfEmpty(): Unit =
     if (StringUtils.isBlank(workingDirectory)) {

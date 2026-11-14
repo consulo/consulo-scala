@@ -1,19 +1,16 @@
 package org.jetbrains.plugins.scala.worksheet.ui.printers
 
-import com.intellij.diff.tools.util.BaseSyncScrollable
-import com.intellij.diff.tools.util.SyncScrollSupport.TwosideSyncScrollSupport
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataProvider}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.event.{CaretEvent, CaretListener, VisibleAreaEvent, VisibleAreaListener}
-import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.{Editor, EditorFactory, VisualPosition}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.newvfs.FileAttribute
-import com.intellij.ui.JBSplitter
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.dataContext.{DataManager, DataSink, UiDataProvider}
+import consulo.language.editor.CommonDataKeys
+import consulo.application.ApplicationManager
+import consulo.codeEditor.event.{CaretEvent, CaretListener, VisibleAreaEvent, VisibleAreaListener}
+import consulo.codeEditor.{Editor, EditorEx, EditorFactory, VisualPosition}
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.FileAttribute
+import consulo.ui.ex.awt.JBSplitter
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -27,7 +24,6 @@ import org.jetbrains.plugins.scala.worksheet.utils.FileAttributeUtilCache
 import java.awt.{Dimension, Rectangle}
 import java.util
 import javax.swing.JComponent
-import scala.annotation.nowarn
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 //noinspection TypeAnnotation
@@ -43,7 +39,7 @@ object WorksheetEditorPrinterFactory {
 
 
   val DEFAULT_WORKSHEET_VIEWERS_RATIO = 0.5f
-  private val SYNC_SCROLL_SUPPORT_KEY: Key[TwosideSyncScrollSupport] = Key.create("SyncScrollSupport")
+  private val SYNC_SCROLL_SUPPORT_KEY: Key[SyncScrollSupport] = Key.create("SyncScrollSupport")
 
   private val LAST_WORKSHEET_RUN_RESULT = new FileAttribute("LastWorksheetRunResult", 2, false)
   private val LAST_WORKSHEET_RUN_RATIO = new FileAttribute("ScalaWorksheetLastRatio", 1, false)
@@ -59,7 +55,7 @@ object WorksheetEditorPrinterFactory {
       case Some(group) =>
         new CaretListener {
           override def caretPositionChanged(e: CaretEvent): Unit = {
-            if (!e.getEditor.asInstanceOf[EditorImpl].getContentComponent.hasFocus) return
+            if (!e.getEditor.getContentComponent.hasFocus) return
             val line = Math.min(group.left2rightOffset(editor.getCaretModel.getVisualPosition.getLine), recipient.getDocument.getLineCount)
             recipient.getCaretModel.moveToVisualPosition(new VisualPosition(line, 0))
           }
@@ -68,7 +64,7 @@ object WorksheetEditorPrinterFactory {
       case _ =>
         new CaretListener {
           override def caretPositionChanged(e: CaretEvent): Unit = {
-            if (!e.getEditor.asInstanceOf[EditorImpl].getContentComponent.hasFocus) return
+            if (!e.getEditor.getContentComponent.hasFocus) return
             recipient.getCaretModel.moveToVisualPosition(editor.getCaretModel.getVisualPosition)
           }
         }
@@ -88,17 +84,14 @@ object WorksheetEditorPrinterFactory {
 
     //TODO: do this matching early, maybe even extract separate private method which would accept EditorImpl
     (originalEditor, worksheetViewer) match {
-      case (originalImpl: EditorImpl, viewerImpl: EditorImpl) =>
+      case (originalImpl: EditorEx, viewerImpl: EditorEx) =>
         invokeLater {
           checkAndAdd(originalImpl, viewerImpl)
 
           val line = Math.min(originalImpl.getCaretModel.getVisualPosition.getLine, viewerImpl.getDocument.getLineCount)
           viewerImpl.getCaretModel.moveToVisualPosition(new VisualPosition(line, 0))
 
-          val syncSupport = new TwosideSyncScrollSupport(
-            util.Arrays.asList(originalEditor, worksheetViewer),
-            SynchronizingNoopScrollable
-          )
+          val syncSupport = new SyncScrollSupport(originalEditor, worksheetViewer)
           originalEditor.putUserData(SYNC_SCROLL_SUPPORT_KEY, syncSupport)
 
           diffSplitter.foreach { splitter =>
@@ -115,9 +108,30 @@ object WorksheetEditorPrinterFactory {
     }
   }
 
-  private object SynchronizingNoopScrollable extends BaseSyncScrollable {
-    override def processHelper(scrollHelper: BaseSyncScrollable.ScrollHelper): Unit = ()
-    override def isSyncScrollEnabled: Boolean = true
+  /**
+   * upstream: com.intellij.diff.tools.util.SyncScrollSupport.TwosideSyncScrollSupport with a no-op BaseSyncScrollable
+   * (lines are mapped one to one), here the vertical scroll offset of one editor is copied to the other one
+   */
+  private final class SyncScrollSupport(editor1: Editor, editor2: Editor) {
+    private var duringSyncScroll = false
+
+    def visibleAreaChanged(e: VisibleAreaEvent): Unit = {
+      if (duringSyncScroll) return
+      val oldRectangle = e.getOldRectangle
+      val newRectangle = e.getNewRectangle
+      if (oldRectangle != null && oldRectangle.y == newRectangle.y) return
+
+      val target = if (e.getEditor == editor1) editor2 else if (e.getEditor == editor2) editor1 else return
+      duringSyncScroll = true
+      try {
+        val targetScrollingModel = target.getScrollingModel
+        targetScrollingModel.disableAnimation()
+        try targetScrollingModel.scrollVertically(newRectangle.y)
+        finally targetScrollingModel.enableAnimation()
+      } finally {
+        duringSyncScroll = false
+      }
+    }
   }
 
   /**
@@ -127,9 +141,8 @@ object WorksheetEditorPrinterFactory {
   def synchronizeViewerScrollWithMainEditor(mainEditor: Editor): Unit = {
     val syncScrollSupport = mainEditor.getUserData(SYNC_SCROLL_SUPPORT_KEY)
 
-    //NOTE: SyncScrollSupport.ScrollHelper.syncVerticalScroll is private
-    //So the only way to trigger proper synchronization is via visibleAreaChanged
-    //We need to invoke it twice with a +-1 y coordinate change because in SyncScrollSupport.ScrollHelper.visibleAreaChanged
+    //NOTE: the only way to trigger proper synchronization is via visibleAreaChanged
+    //We need to invoke it twice with a +-1 y coordinate change because in SyncScrollSupport.visibleAreaChanged
     //it's checked that coordinate is actually changed
 
     val scrollModel = mainEditor.getScrollingModel
@@ -137,8 +150,10 @@ object WorksheetEditorPrinterFactory {
     val visibleAreaIntermediate = new Rectangle(visibleArea)
     visibleAreaIntermediate.y -= 1
 
-    syncScrollSupport.visibleAreaChanged(new VisibleAreaEvent(mainEditor, visibleArea, visibleAreaIntermediate))
-    syncScrollSupport.visibleAreaChanged(new VisibleAreaEvent(mainEditor, visibleAreaIntermediate, visibleArea))
+    if (syncScrollSupport != null) {
+      syncScrollSupport.visibleAreaChanged(new VisibleAreaEvent(mainEditor, visibleArea, visibleAreaIntermediate))
+      syncScrollSupport.visibleAreaChanged(new VisibleAreaEvent(mainEditor, visibleAreaIntermediate, visibleArea))
+    }
   }
 
   def saveWorksheetEvaluation(file: VirtualFile, result: String, ratio: Float): Unit = {
@@ -244,7 +259,7 @@ object WorksheetEditorPrinterFactory {
     val project = editor.getProject
     val viewer = WorksheetCache.getInstance(project).getViewer(editor)
     viewer match {
-      case editor: EditorImpl => editor
+      case editor: EditorEx => editor
       case _                  => createBlankViewerEditor(editor, project)
     }
   }
@@ -266,15 +281,13 @@ object WorksheetEditorPrinterFactory {
   private def createBlankViewerEditor(editor: Editor, project: Project): Editor = {
     val factory: EditorFactory = EditorFactory.getInstance
     val viewer: Editor = factory.createViewer(factory.createDocument(""), project)
-    viewer.setBorder(null)
+    // upstream: EditorEx.setBorder(null)
+    viewer.getComponent.setBorder(null)
     setOriginalEditor(viewer, editor)
     viewer.getContentComponent.getParent match {
       case jComp: JComponent =>
-        val dataProvider: DataProvider = (dataId: String) => {
-          if (CommonDataKeys.HOST_EDITOR.is(dataId)) viewer
-          else null
-        }
-        DataManager.registerDataProvider(jComp, dataProvider): @nowarn("cat=deprecation")
+        val dataProvider: UiDataProvider = (sink: DataSink) => sink.set(CommonDataKeys.HOST_EDITOR, viewer)
+        DataManager.registerUiDataProvider(jComp, dataProvider)
       case _ =>
     }
     viewer

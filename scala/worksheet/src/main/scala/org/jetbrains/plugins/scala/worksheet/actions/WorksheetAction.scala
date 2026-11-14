@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.worksheet.actions
 
-import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
-import com.intellij.openapi.editor.Editor
+import consulo.ui.ex.action.AnActionEvent
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.extensions.{OptionExt, inReadAction}
 import org.jetbrains.plugins.scala.worksheet.WorksheetFile
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterFactory
@@ -26,8 +28,8 @@ trait WorksheetAction {
 
   protected final def getCurrentScalaWorksheetEditorAndFile(context: DataContext): Option[(Editor, WorksheetFile)] = {
     for {
-      editorFromContext <- Option(CommonDataKeys.EDITOR.getData(context))
-      file <- Option(CommonDataKeys.PSI_FILE.getData(context)).filterByType[WorksheetFile]
+      editorFromContext <- Option(context.getData(CommonDataKeys.EDITOR))
+      file <- Option(context.getData(CommonDataKeys.PSI_FILE)).filterByType[WorksheetFile]
     } yield {
       //When worksheet viewer editor is focused we want top-panel actions to work anyway
       //For that we need to return the original editor, because most of the code in other places expects it instead of viewer

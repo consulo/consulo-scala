@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.testingSupport.test.munit
 
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 import org.jetbrains.plugins.scala.extensions.PsiMemberExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScInterpolatedStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScMethodCall, ScReferenceExpression}
 
-private[testingSupport]
+// upstream: private[testingSupport], also used by testing-support-munit
+private[scala]
 object MUnitUtils {
 
   /** see munit.BaseFunSuite.test & see munit.FunSuite.property */

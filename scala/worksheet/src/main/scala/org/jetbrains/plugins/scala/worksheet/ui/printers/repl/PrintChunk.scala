@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.worksheet.ui.printers.repl
 
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import org.apache.commons.lang3.StringUtils
 /**
  * @param lineOffset relative offset of chunk output text (in lines) after previous chunk

@@ -1,17 +1,22 @@
 package org.jetbrains.plugins.scala.testingSupport
 
-import com.intellij.codeInsight.CodeInsightUtil
-import com.intellij.ide.fileTemplates.{FileTemplate, FileTemplateManager, FileTemplateUtil}
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.psi._
-import com.intellij.refactoring.util.classMembers.MemberInfo
-import com.intellij.testIntegration.createTest.{CreateTestDialog, TestGenerator}
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
+import com.intellij.java.impl.codeInsight.CodeInsightUtil
+import consulo.fileTemplate.{FileTemplate, FileTemplateManager, FileTemplateUtil}
+import consulo.java.impl.JavaBundle
+import consulo.util.lang.ControlFlowException
+import consulo.fileEditor.history.IdeDocumentHistory
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.impl.refactoring.util.classMembers.MemberInfo
+import com.intellij.java.impl.testIntegration.createTest.CreateTestDialog
+import com.intellij.java.impl.testIntegration.createTest.TestGenerator
+import consulo.language.util.IncorrectOperationException
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.actions.ScalaFileTemplateUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.formatting.ScalaFormatterUtil
@@ -36,7 +41,10 @@ import scala.jdk.CollectionConverters._
  * @note The class is indirectly tested in org.jetbrains.plugins.scala.testingSupport.ScalaTestCreatorInSbtProjectsTest
  * @todo cover the whole functionality with tests
  */
+@ExtensionImpl
 class ScalaTestGenerator extends TestGenerator {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import ScalaTestGenerator._
 
@@ -59,7 +67,7 @@ class ScalaTestGenerator extends TestGenerator {
     }
   }
 
-  override def toString: String = ScalaLanguage.INSTANCE.getDisplayName
+  override def toString: String = ScalaLanguage.INSTANCE.getDisplayName.get
 
   private def createTestFileFromTemplate(dialog: CreateTestDialog, project: Project): PsiFile = {
     //copy-paste from JavaTestGenerator
@@ -71,7 +79,7 @@ class ScalaTestGenerator extends TestGenerator {
     val defaultProperties = FileTemplateManager.getInstance(project).getDefaultProperties
     val properties = new Properties(defaultProperties)
     properties.setProperty(FileTemplate.ATTRIBUTE_NAME, dialog.getClassName)
-    val targetClass = dialog.getTargetClass
+    val targetClass = ScalaTestCreator.targetClassOf(dialog)
     if (targetClass != null && targetClass.isValid)
       properties.setProperty(FileTemplate.ATTRIBUTE_CLASS_NAME, targetClass.getQualifiedName)
     try {

@@ -1,100 +1,102 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.ui
 
-import com.intellij.application.options.ModuleDescriptionsComboBox
-import com.intellij.execution.configuration.BrowseModuleValueActionListener
-import com.intellij.execution.ui._
-import com.intellij.execution.{ExecutionBundle, ShortenCommandLine}
-import com.intellij.ide.util.{ClassFilter, PackageChooserDialog}
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{ComboBox, ComponentWithBrowseButton, LabeledComponent}
-import com.intellij.psi.PsiClass
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.ui.{EditorTextField, EditorTextFieldWithBrowseButton, EnumComboBoxModel, IdeBorderFactory}
-import com.intellij.uiDesigner.core.{GridConstraints, Spacer}
-import com.intellij.util.ui.JBUI
-import org.jetbrains.annotations.Nls
+import com.intellij.java.execution.impl.ui.ClassBrowser
+import com.intellij.java.language.impl.JavaFileType
+import com.intellij.java.language.impl.ui.{JavaReferenceEditorUtil, PackageChooserFactory}
+import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass}
+import com.intellij.java.language.util.ClassFilter
+import consulo.application.concurrent.coroutine.ReadLock
+import consulo.document.Document
+import consulo.execution.localize.ExecutionLocalize
+import consulo.language.editor.ui.{EditorBox, EditorBoxBuilderFactory}
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.localize.LocalizeValue
+import consulo.module.Module
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.project.Project
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.action.{ActionGroup, ActionToolbar, ActionToolbarFactory, AnAction, AnActionEvent, AnActionWithSyncUpdate, DumbAwareAction}
+import consulo.ui.image.Image
+import consulo.ui.layout.HorizontalLayout
+import consulo.ui.util.FormBuilder
+import consulo.ui.{CheckBox, ComboBox, Component, HasSuffixComponent, Label, TextArea, UIAction}
+import consulo.util.concurrent.coroutine.{Coroutine, CoroutineScope}
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
-import org.jetbrains.plugins.scala.settings.SimpleMappingListCellRenderer
 import org.jetbrains.plugins.scala.testingSupport.test._
 import org.jetbrains.plugins.scala.testingSupport.test.testdata._
-import org.jetbrains.plugins.scala.testingSupport.test.ui.TestRunConfigurationForm.{PackageChooserActionListener, _}
-import org.jetbrains.plugins.scala.util.ui.TextWithMnemonic.AbstractButtonExt
+import org.jetbrains.plugins.scala.testingSupport.test.ui.TestRunConfigurationForm._
 import org.jetbrains.sbt.settings.SbtSettings
 
-import java.awt._
-import java.util
-import javax.swing._
 import scala.jdk.CollectionConverters._
 
-//noinspection ConvertNullInitializerToUnderscore
-final class TestRunConfigurationForm(val myProject: Project) {
+/**
+ * upstream: Swing form with the common java options (VM options, program arguments, working directory, environment
+ * variables, module, JRE, shorten command line). In Consulo these are edited by the platform run configuration fragments,
+ * see [[AbstractTestRunConfigurationFragment]]; the form keeps the test specific options.
+ */
+final class TestRunConfigurationForm @RequiredUIAccess() (val myProject: Project) {
 
-  private var myWholePanel: JPanel                      = null
-  def getPanel: JPanel = myWholePanel
-
-  private var mySuitePaths    : collection.Seq[String]      = null
-  private var myModuleSelector: ConfigurationModuleSelector = null
+  private var mySuitePaths: collection.Seq[String] = Seq.empty
+  private var myModule    : Module                 = null
 
   // TOP PANEL: TestKind-specific
-  private var myTestKind      : LabeledComponent[ComboBox[TestKind]]                                  = null
-  private var myClass         : LabeledComponent[EditorTextFieldWithBrowseButton]                     = null
-  private var myTestName      : LabeledComponent[TestRunConfigurationForm.MyMultilineEditorTextField] = null
-  private var myPackage       : LabeledComponent[EditorTextFieldWithBrowseButton]                     = null
-  private var mySearchForTest : LabeledComponent[JComboBox[SearchForTest]]                            = null
-  private var myRegex         : LabeledComponent[RegexpPanel]                                         = null
-  private var myUseSbtCheckBox: JCheckBox                                                             = null
-  private var myUseUiWithSbt  : JCheckBox                                                             = null
+  private val myTestKind: ComboBox[TestKind] = {
+    val box = ComboBox.create(TestKind.values().toSeq.asJava)
+    box.setTextRenderer(kind => if (kind == null) LocalizeValue.empty() else testKindName(kind))
+    box
+  }
+  private val myClass        : EditorBox    = createReferenceField(classesAccepted = true)
+  private val myTestName     : TextArea     = TextArea.create()
+  private val myPackage      : EditorBox    = createReferenceField(classesAccepted = false)
+  private val mySearchForTest: ComboBox[SearchForTest] = {
+    val box = ComboBox.create(SearchForTest.values().toSeq.asJava)
+    box.setTextRenderer(scope => if (scope == null) LocalizeValue.empty() else searchForTestName(scope))
+    box
+  }
+  private val myRegex           : RegexpPanel = new RegexpPanel
+  private val myUseSbtCheckBox  : CheckBox    = CheckBox.create(LocalizeValue.of(TestingSupportBundle.message("test.run.config.use.sbt")))
+  private val myUseUiWithSbt    : CheckBox    = CheckBox.create(LocalizeValue.of(TestingSupportBundle.message("test.run.config.use.ui.with.sbt")))
 
   // BOTTOM PANEL: common options
-  private var myCommonScalaParameters       : CommonScalaParametersPanel                    = null
-  private var myModule                      : LabeledComponent[ModuleDescriptionsComboBox]  = null
-  private var myJrePathEditor               : JrePathEditor                                 = null
-  private var myShortenClasspathMode        : LabeledComponent[ShortenCommandLineModeCombo] = null
-  private var myShowProgressMessagesCheckBox: JCheckBox                                     = null
+  private val myShowProgressMessagesCheckBox: CheckBox =
+    CheckBox.create(LocalizeValue.of(TestingSupportBundle.message("test.run.config.print.information.messages.to.console")))
+
+  private val builder = FormBuilder.create()
+  private val myClassRow         = Row.add(builder, TestingSupportBundle.message("test.run.config.test.class"), myClass)
+  private val myTestNameRow      = Row.add(builder, TestingSupportBundle.message("test.run.config.test.name"), myTestName)
+  private val myPackageRow       = Row.add(builder, TestingSupportBundle.message("test.run.config.test.package"), myPackage)
+  private val mySearchForTestRow = Row.add(builder, TestingSupportBundle.message("test.run.config.search.for.tests"), mySearchForTest)
+  private val myRegexRow         = Row.add(builder, TestingSupportBundle.message("test.run.config.regular.expressions"), myRegex.getComponent)
+  private val myForm: Component = builder.build()
 
   init()
 
-  def init(): Unit = {
-    createUiComponents()
+  @RequiredUIAccess
+  private def init(): Unit = {
+    if (!myProject.getApplication.isUnifiedApplication)
+      installChooserActions()
 
-    myTestKind.component.setModel(new EnumComboBoxModel[TestKind](classOf[TestKind]))
-    myTestKind.component.setRenderer(SimpleMappingListCellRenderer.create(
-      TestKind.ALL_IN_PACKAGE -> TestingSupportBundle.message("test.run.config.test.kind.all.in.package"),
-      TestKind.CLAZZ -> TestingSupportBundle.message("test.run.config.test.kind.class"),
-      TestKind.TEST_NAME -> TestingSupportBundle.message("test.run.config.test.kind.test.name"),
-      TestKind.REGEXP -> TestingSupportBundle.message("test.run.config.test.kind.regular.expression")
-    ))
+    myTestKind.addValueListener(_ => UiComponentsVisibility.update())
+    mySearchForTest.addValueListener(_ => UiComponentsVisibility.update())
+    myUseSbtCheckBox.addValueListener(_ => UiComponentsVisibility.update())
 
-    mySearchForTest.component.setModel(new EnumComboBoxModel[SearchForTest](classOf[SearchForTest]))
-    mySearchForTest.component.setRenderer(SimpleMappingListCellRenderer.create(
-      SearchForTest.IN_WHOLE_PROJECT -> TestingSupportBundle.message("test.run.config.search.scope.in.whole.project"),
-      SearchForTest.IN_SINGLE_MODULE -> TestingSupportBundle.message("test.run.config.search.scope.in.single.module"),
-      SearchForTest.ACCROSS_MODULE_DEPENDENCIES -> TestingSupportBundle.message("test.run.config.search.scope.across.module.dependencies")
-    ))
-
-    myClass.getComponent.setBrowser(new MyClassBrowser(myProject))
-    myPackage.getComponent.setBrowser(new PackageChooserActionListener(myProject))
-
-    myJrePathEditor.setDefaultJreSelector(DefaultJreSelector.fromModuleDependencies(myModule.getComponent, false))
-    myModuleSelector = new ConfigurationModuleSelector(myProject, myModule.getComponent)
-
-    myTestKind.component.addItemListener(_ => UiComponentsVisibility.update())
-    mySearchForTest.component.addItemListener(_ => UiComponentsVisibility.update())
-    myUseSbtCheckBox.addItemListener(_ => UiComponentsVisibility.update())
-
+    myTestKind.setValue(TestKind.CLAZZ, false)
+    mySearchForTest.setValue(SearchForTest.ACCROSS_MODULE_DEPENDENCIES, false)
     UiComponentsVisibility.update()
   }
 
-  private def isModuleSelectionSupported(testKind: TestKind, searchScope: SearchForTest): Boolean =
-    (testKind, searchScope) match {
-      case (TestKind.ALL_IN_PACKAGE, SearchForTest.IN_WHOLE_PROJECT) => false
-      case _                                                         => true
-    }
+  def testKindComponent: Component = myTestKind
 
+  def sbtOptionsComponent: Component = HorizontalLayout.create().add(myUseSbtCheckBox).add(myUseUiWithSbt)
+
+  def formComponent: Component = myForm
+
+  def showProgressMessagesComponent: Component = myShowProgressMessagesCheckBox
+
+  @RequiredUIAccess
   def resetFrom(configuration: AbstractTestRunConfiguration): Unit = {
     val configurationData = configuration.testConfigurationData
     configurationData match {
@@ -114,11 +116,7 @@ final class TestRunConfigurationForm(val myProject: Project) {
 
     resetSbtOptionsFrom(configuration)
 
-    myCommonScalaParameters.reset(configurationData)
-    myCommonScalaParameters.setModuleContext(configuration.getModule)
-    myModuleSelector.reset(configuration)
-    myJrePathEditor.setPathOrName(configurationData.jrePath, true)
-    setShortenCommandLine(configuration.getShortenCommandLine)
+    myModule = configuration.getModule
     setShowProgressMessages(configurationData.showProgressMessages)
 
     mySuitePaths = configuration.javaSuitePaths.asScala
@@ -126,53 +124,47 @@ final class TestRunConfigurationForm(val myProject: Project) {
     UiComponentsVisibility.update(configuration)
   }
 
+  @RequiredUIAccess
   def applyTo(configuration: AbstractTestRunConfiguration): Unit = {
     configuration.testKind = this.getTestKind
-    configuration.setModule(this.getModule)
+    myModule = configuration.getModule
     configuration.testConfigurationData = TestConfigurationData.createFromForm(this, configuration)
     configuration.testConfigurationData.initWorkingDirIfEmpty()
   }
 
+  @RequiredUIAccess
   private def resetSbtOptionsFrom(configuration: AbstractTestRunConfiguration): Unit = {
     val configurationData = configuration.testConfigurationData
     setUseSbt(configurationData.useSbt)
     setUseUiWithSbt(configurationData.useUiWithSbt)
   }
 
-  def getModule: Module = myModuleSelector.getModule
-  def getJrePath: String = myJrePathEditor.getJrePathOrName
+  def getModule: Module = myModule
 
-  def getTestKind: TestKind = myTestKind.getComponent.getSelectedItem.asInstanceOf[TestKind]
-  def getTestClassPath: String = myClass.getComponent.getText
-  def getTestName: String = myTestName.getComponent.getText
-  def getTestPackagePath: String = myPackage.getComponent.getText
-  def getSearchForTest: SearchForTest = mySearchForTest.getComponent.getSelectedItem.asInstanceOf[SearchForTest]
-  def getRegexps: (Array[String], Array[String]) = myRegex.getComponent.getRegexps
-  def getUseSbt: Boolean = myUseSbtCheckBox.isSelected
-  def getUseUiWithSbt: Boolean = myUseUiWithSbt.isSelected
-  def getJavaOptions: String = myCommonScalaParameters.getVMParameters
-  def getEnvironmentVariables: util.Map[String, String] = myCommonScalaParameters.getEnvironmentVariables
-  def getEnvironmentVariableFiles: util.List[String] = myCommonScalaParameters.getEnvironmentVariableFiles
-  def isPassParentEnvs: Boolean = myCommonScalaParameters.isPassParentEnvs
-  def getWorkingDirectory: String = myCommonScalaParameters.getWorkingDirectoryAccessor.getText
-  def getTestArgs: String = myCommonScalaParameters.getProgramParameters
-  def getShowProgressMessages: Boolean = myShowProgressMessagesCheckBox.isSelected
-  def getShortenCommandLine: ShortenCommandLine = myShortenClasspathMode.getComponent.getSelectedItem
+  def getTestKind: TestKind = Option(myTestKind.getValue).getOrElse(TestKind.CLAZZ)
+  def getTestClassPath: String = text(myClass.getValue)
+  def getTestName: String = StringUtil.notNullize(myTestName.getValue)
+  def getTestPackagePath: String = text(myPackage.getValue)
+  def getSearchForTest: SearchForTest = Option(mySearchForTest.getValue).getOrElse(SearchForTest.ACCROSS_MODULE_DEPENDENCIES)
+  def getRegexps: (Array[String], Array[String]) = myRegex.getRegexps
+  def getUseSbt: Boolean = myUseSbtCheckBox.getValueOrError
+  def getUseUiWithSbt: Boolean = myUseUiWithSbt.getValueOrError
+  def getShowProgressMessages: Boolean = myShowProgressMessagesCheckBox.getValueOrError
 
-  private def setTestKind(kind: TestKind): Unit = myTestKind.getComponent.setSelectedItem(kind)
-  private def setTestClassPath(s: String): Unit = myClass.getComponent.setText(s)
-  private def setTestName(s: String): Unit = myTestName.getComponent.setText(s)
-  private def setTestPackagePath(s: String): Unit = myPackage.getComponent.setText(s)
-  private def setSearchForTest(searchTest: SearchForTest): Unit = mySearchForTest.getComponent.setSelectedItem(searchTest)
-  private def setRegexps(classRegexps: Array[String], testRegexps: Array[String]): Unit = myRegex.getComponent.setRegexps(classRegexps, testRegexps)
-  private def setRegexps(regexps: (Array[String], Array[String])): Unit = setRegexps(regexps._1, regexps._2)
-  private def setUseSbt(b: Boolean): Unit = myUseSbtCheckBox.setSelected(b)
-  private def setUseUiWithSbt(b: Boolean): Unit = myUseUiWithSbt.setSelected(b)
-  private def setShowProgressMessages(b: Boolean): Unit = myShowProgressMessagesCheckBox.setSelected(b)
-  private def setShortenCommandLine(mode: ShortenCommandLine): Unit = myShortenClasspathMode.getComponent.setSelectedItem(mode)
+  @RequiredUIAccess private def setTestKind(kind: TestKind): Unit = myTestKind.setValue(kind, false)
+  @RequiredUIAccess private def setTestClassPath(s: String): Unit = myClass.setValue(s)
+  @RequiredUIAccess private def setTestName(s: String): Unit = myTestName.setValue(s, false)
+  @RequiredUIAccess private def setTestPackagePath(s: String): Unit = myPackage.setValue(s)
+  @RequiredUIAccess private def setSearchForTest(searchTest: SearchForTest): Unit = mySearchForTest.setValue(searchTest, false)
+  @RequiredUIAccess private def setRegexps(classRegexps: Array[String], testRegexps: Array[String]): Unit = myRegex.setRegexps(classRegexps, testRegexps)
+  @RequiredUIAccess private def setRegexps(regexps: (Array[String], Array[String])): Unit = setRegexps(regexps._1, regexps._2)
+  @RequiredUIAccess private def setUseSbt(b: Boolean): Unit = myUseSbtCheckBox.setValue(b, false)
+  @RequiredUIAccess private def setUseUiWithSbt(b: Boolean): Unit = myUseUiWithSbt.setValue(b, false)
+  @RequiredUIAccess private def setShowProgressMessages(b: Boolean): Unit = myShowProgressMessagesCheckBox.setValue(b, false)
 
   private object UiComponentsVisibility {
 
+    @RequiredUIAccess
     def update(): Unit = {
       val testKind = getTestKind
       hideAll()
@@ -183,11 +175,11 @@ final class TestRunConfigurationForm(val myProject: Project) {
         case TestKind.ALL_IN_PACKAGE => setPackageVisible(true)
       }
 
-      val packageSearchScope = getSearchForTest
-      myModule.setEnabled(isModuleSelectionSupported(testKind, packageSearchScope))
-      myUseUiWithSbt.setEnabled(myUseSbtCheckBox.isSelected)
+      // upstream: also disables the module selector for "All in package" in the whole project
+      myUseUiWithSbt.setEnabled(getUseSbt)
     }
 
+    @RequiredUIAccess
     def update(configuration: AbstractTestRunConfiguration): Unit = {
       update()
       val sbtSupport = configuration.runStateProvider match {
@@ -206,6 +198,7 @@ final class TestRunConfigurationForm(val myProject: Project) {
       }
     }
 
+    @RequiredUIAccess
     private def hideAll(): Unit = {
       setPackageVisible(false)
       setClassVisible(false)
@@ -213,135 +206,89 @@ final class TestRunConfigurationForm(val myProject: Project) {
       setRegexpVisible(false)
     }
 
+    @RequiredUIAccess
     private def setClassVisible(visible: Boolean): Unit =
-      myClass.setVisible(visible)
+      myClassRow.setVisible(visible)
 
+    @RequiredUIAccess
     private def setTestNameVisible(visible: Boolean): Unit = {
-      myTestName.setVisible(visible)
-      myClass.setVisible(visible)
+      myTestNameRow.setVisible(visible)
+      myClassRow.setVisible(visible)
     }
 
+    @RequiredUIAccess
     private def setPackageVisible(visible: Boolean): Unit = {
-      myPackage.setVisible(visible)
-      mySearchForTest.setVisible(visible)
+      myPackageRow.setVisible(visible)
+      mySearchForTestRow.setVisible(visible)
     }
 
+    @RequiredUIAccess
     private def setRegexpVisible(visible: Boolean): Unit =
-      myRegex.setVisible(visible)
+      myRegexRow.setVisible(visible)
   }
 
-  private def createUiComponents(): Unit = {
-    myWholePanel = new JPanel
-
-    implicit val uiBuilder: GridUiBuilder = new GridUiBuilder(myWholePanel, columns = 4)
-    import uiBuilder._
-
-    myTestKind = labeledComponent(TestingSupportBundle.message("test.run.config.test.kind"), new ComboBox[TestKind])
-
-    myUseSbtCheckBox = (new JCheckBox).setTextWithMnemonic(TestingSupportBundle.message("test.run.config.use.sbt"))
-    myUseUiWithSbt = (new JCheckBox).setTextWithMnemonic(TestingSupportBundle.message("test.run.config.use.ui.with.sbt"))
-
-    appendRow(myTestKind, myUseSbtCheckBox, myUseUiWithSbt, new Spacer())
-
-    myClass = append(labeledComponent(
-      TestingSupportBundle.message("test.run.config.test.class"),
-      new EditorTextFieldWithBrowseButton(myProject, true)
-    ))
-    myTestName = append(labeledComponent(
-      TestingSupportBundle.message("test.run.config.test.name"),
-      new TestRunConfigurationForm.MyMultilineEditorTextField, isMultilineContent = true
-    ))
-    myPackage = append(labeledComponent(
-      TestingSupportBundle.message("test.run.config.test.package"),
-      new EditorTextFieldWithBrowseButton(myProject, false)
-    ))
-    mySearchForTest = labeledComponent(
-      TestingSupportBundle.message("test.run.config.search.for.tests"),
-      new ComboBox[SearchForTest]
-    )
-    appendRow(mySearchForTest, new Spacer(), new Spacer())
-    //    append(mySearchForTest)
-    myRegex = append(labeledComponent(
-      TestingSupportBundle.message("test.run.config.regular.expressions"),
-      new RegexpPanel, isMultilineContent = true
-    ))
-
-    addSeparatorBetweenTopAndBottomPanel()
-
-    myCommonScalaParameters = append(new CommonScalaParametersPanel(myProject))
-    myModule = append(labeledComponent(
-      ExecutionBundle.message("application.configuration.use.classpath.and.jdk.of.module.label"),
-      new ModuleDescriptionsComboBox
-    ))
-    myJrePathEditor = append(new JrePathEditor(myProject))
-    myShortenClasspathMode = append(labeledComponent(
-      ExecutionBundle.message("application.configuration.shorten.command.line.label"),
-      new ShortenCommandLineModeCombo(myProject, myJrePathEditor, myModule.getComponent())
-    ))
-    myShowProgressMessagesCheckBox = (new JCheckBox)
-      .setTextWithMnemonic(TestingSupportBundle.message("test.run.config.print.information.messages.to.console"))
-    append(myShowProgressMessagesCheckBox)
-
-    addBottomFiller()
-
-    val topPanelAnchor = myRegex.getLabel
-    mySearchForTest.setAnchor(topPanelAnchor)
-    myTestKind.setAnchor(topPanelAnchor)
-    myClass.setAnchor(topPanelAnchor)
-    myTestName.setAnchor(topPanelAnchor)
-    myPackage.setAnchor(topPanelAnchor)
-
-    myJrePathEditor.setAnchor(myModule.getLabel)
-    myCommonScalaParameters.setAnchor(myModule.getLabel)
-    myShortenClasspathMode.setAnchor(myModule.getLabel)
-  }
-
-  private def labeledComponent[T <: JComponent](@Nls labelText: String, component: T): LabeledComponent[T] =
-    labeledComponent(labelText, component, isMultilineContent = false)
-
-  private def labeledComponent[T <: JComponent](@Nls labelText: String, component: T, isMultilineContent: Boolean): LabeledComponent[T] = {
-    val result = new LabeledComponent[T]
-    result.setText(labelText)
-    result.setComponent(component)
-    result.setLabelLocation(BorderLayout.WEST)
-    if (isMultilineContent) {
-      // by default LabeledComponent's label is aligned in center, so if the inner component is multiline
-      // the label has a gab in the TOP and BOTTOM. Moreover, when the inner component grows in height
-      // the label "jumps" below it's previous position, which looks awkward
-      // This is a workaround to make label position fixed in the TOP
-      val TOP_PADDING = 5
-      val label = result.getLabel
-      label.setVerticalAlignment(SwingConstants.TOP)
-      label.setBorder(IdeBorderFactory.createEmptyBorder(JBUI.insetsTop(TOP_PADDING)))
+  @RequiredUIAccess
+  private def createReferenceField(classesAccepted: Boolean): EditorBox = {
+    val field = myProject.getApplication.getInstance(classOf[EditorBoxBuilderFactory]).create(myProject).build()
+    if (!myProject.isDefault) {
+      CoroutineScope.launchAsync(
+        myProject.coroutineContext(),
+        () => Coroutine
+          .first(ReadLock.apply[Void, Document] { _ =>
+            JavaReferenceEditorUtil.createDocument("", myProject, classesAccepted, JavaCodeFragment.VisibilityChecker.EVERYTHING_VISIBLE)
+          })
+          .`then`(UIAction.apply[Document, Void] { document =>
+            if (document != null) {
+              val text = StringUtil.notNullize(field.getValue)
+              field.setDocument(document, JavaFileType.INSTANCE)
+              field.setValue(text)
+            }
+            null
+          })
+      )
     }
-    result
+    field
   }
 
-  private def addSeparatorBetweenTopAndBottomPanel()(implicit uiBuilder: GridUiBuilder) = {
-    val dim = new Dimension(-1, 32)
-    import uiBuilder._
-    append(new Spacer, new GridConstraints(
-      rowIdx, 0, 1, columns,
-      GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
-      GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED,
-      dim, dim, dim, 0, false
+  @RequiredUIAccess
+  private def installChooserActions(): Unit = {
+    installAction(myPackage, "ScalaTestConfigurationPackage", new ChooserAction(
+      myProject,
+      ExecutionLocalize.choosePackageDialogTitle(),
+      PlatformIconGroup.nodesPackage(),
+      () => {
+        val chooser = myProject.getInstance(classOf[PackageChooserFactory]).create()
+        val packages = chooser.showAndSelect()
+        if (packages != null && !packages.isEmpty)
+          myPackage.setValue(packages.get(0).getQualifiedName)
+      }
     ))
-    append(new JSeparator(SwingConstants.HORIZONTAL))
-  }
 
-  private def addBottomFiller()(implicit uiBuilder: GridUiBuilder): Unit = {
-    import uiBuilder._
-    append(new Spacer, new GridConstraints(
-      rowIdx, 0, 1, columns,
-      GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
-      GridConstraints.SIZEPOLICY_WANT_GROW | GridConstraints.SIZEPOLICY_CAN_GROW,
-      GridConstraints.SIZEPOLICY_WANT_GROW | GridConstraints.SIZEPOLICY_CAN_GROW,
-      null, null, null, 0, false
+    val classBrowser = new MyClassBrowser(myProject)
+    installAction(myClass, "ScalaTestConfigurationClass", new ChooserAction(
+      myProject,
+      LocalizeValue.of(TestingSupportBundle.message("test.run.config.choose.test.class")),
+      PlatformIconGroup.nodesClass(),
+      () => {
+        val className = classBrowser.chooseClass(myClass.getValue)
+        if (className != null)
+          myClass.setValue(className)
+      }
     ))
   }
 
-  private class MyClassBrowser[T <: JComponent](project: Project)
-    extends ClassBrowser[T](project, TestingSupportBundle.message("test.run.config.choose.test.class")) {
+  @RequiredUIAccess
+  private def installAction[C <: Component & HasSuffixComponent](field: C, place: String, action: AnAction): Unit = {
+    val toolbar = myProject.getApplication
+      .getInstance(classOf[ActionToolbarFactory])
+      .createActionToolbar(place, ActionGroup.newImmutableBuilder().add(action).build(), ActionToolbar.Style.INPLACE)
+    toolbar.setTargetUIComponent(field)
+    toolbar.updateActionsAsync()
+    field.setSuffixComponent(toolbar.getUIComponent)
+  }
+
+  private class MyClassBrowser(project: Project)
+    extends ClassBrowser(project, TestingSupportBundle.message("test.run.config.choose.test.class")) {
 
     override protected def getFilter: ClassFilter.ClassFilterWithScope = new ClassFilter.ClassFilterWithScope() {
       override def getScope: GlobalSearchScope =
@@ -374,30 +321,47 @@ final class TestRunConfigurationForm(val myProject: Project) {
 
 private object TestRunConfigurationForm {
 
-  /** copied from [[com.intellij.execution.junit2.configuration.JUnitConfigurable]] */
-  private class PackageChooserActionListener[T <: JComponent](val project: Project)
-    extends BrowseModuleValueActionListener[T](project) {
+  private def testKindName(kind: TestKind): LocalizeValue = LocalizeValue.of(kind match {
+    case TestKind.ALL_IN_PACKAGE => TestingSupportBundle.message("test.run.config.test.kind.all.in.package")
+    case TestKind.CLAZZ          => TestingSupportBundle.message("test.run.config.test.kind.class")
+    case TestKind.TEST_NAME      => TestingSupportBundle.message("test.run.config.test.kind.test.name")
+    case TestKind.REGEXP         => TestingSupportBundle.message("test.run.config.test.kind.regular.expression")
+  })
 
-    override protected def showDialog: String = {
-      val dialog = new PackageChooserDialog(ExecutionBundle.message("choose.package.dialog.title"), getProject)
-      dialog.show()
-      val aPackage = dialog.getSelectedPackage
-      if (aPackage != null) aPackage.getQualifiedName
-      else null
+  private def searchForTestName(scope: SearchForTest): LocalizeValue = LocalizeValue.of(scope match {
+    case SearchForTest.IN_WHOLE_PROJECT            => TestingSupportBundle.message("test.run.config.search.scope.in.whole.project")
+    case SearchForTest.IN_SINGLE_MODULE            => TestingSupportBundle.message("test.run.config.search.scope.in.single.module")
+    case SearchForTest.ACCROSS_MODULE_DEPENDENCIES => TestingSupportBundle.message("test.run.config.search.scope.across.module.dependencies")
+  })
+
+  private def text(value: String): String = StringUtil.notNullize(value).trim
+
+  private final class Row(label: Label, field: Component) {
+    @RequiredUIAccess
+    def setVisible(visible: Boolean): Unit = {
+      label.setVisible(visible)
+      field.setVisible(visible)
     }
   }
 
-  private class MyMultilineEditorTextField() extends EditorTextField {
-    this.setOneLineMode(false)
-    override protected def updateBorder(editor: EditorEx): Unit = setupBorder(editor) // in base class border isn't set in multiline mode
+  private object Row {
+    @RequiredUIAccess
+    def add(builder: FormBuilder, text: String, field: Component): Row = {
+      val label = Label.create(LocalizeValue.of(StringUtil.trimEnd(text.replace("&", ""), ":")))
+      builder.addLabeled(label, field)
+      new Row(label, field)
+    }
   }
 
-  implicit class EditorTextFieldWithBrowseButtonOps[C <: JComponent](private val target: EditorTextFieldWithBrowseButton) extends AnyVal {
-    def setBrowser[B](browser: B)(implicit ev: B <:< BrowseModuleValueActionListener[C]): Unit =
-      browser.setField(target.asInstanceOf[ComponentWithBrowseButton[C]])
-  }
-  implicit class LabeledComponentOps[C <: JComponent](private val target: LabeledComponent[C]) extends AnyVal {
-    def component: C = target.getComponent
+  private final class ChooserAction(project: Project, text: LocalizeValue, icon: Image, @RequiredUIAccess chooser: Runnable)
+    extends DumbAwareAction(text, LocalizeValue.empty(), icon) with AnActionWithSyncUpdate {
+
+    override def update(e: AnActionEvent): Unit =
+      e.getPresentation.setEnabled(!project.isDefault)
+
+    @RequiredUIAccess
+    override def actionPerformed(e: AnActionEvent): Unit =
+      chooser.run()
   }
 
   private def hasSbt(project: Project): Boolean = {

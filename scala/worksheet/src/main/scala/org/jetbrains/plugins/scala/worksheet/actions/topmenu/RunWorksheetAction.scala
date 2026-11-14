@@ -1,15 +1,19 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.task.{ProjectTaskContext, ProjectTaskManager}
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
+import consulo.ui.ModalityState
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.module.Module
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.compiler.{CompileContext, CompileStatusNotification, CompilerManager}
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.{LoggerExt, inWriteAction, invokeAndWait, invokeLater}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -21,21 +25,22 @@ import org.jetbrains.plugins.scala.worksheet.runconfiguration.WorksheetCache
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings
 import org.jetbrains.plugins.scala.worksheet.{WorksheetBundle, WorksheetFile}
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
 // "Evaluate Worksheet" shouldn't be present in context menu in project view always
+@ActionImpl(id = "Scala.RunWorksheet", parents = Array(new ActionParentRef(value = new ActionRef(id = "RunContextPopupGroup"))))
 class RunWorksheetAction extends AnAction(
   WorksheetBundle.message("run.scala.worksheet.action.text"),
   WorksheetBundle.message("run.scala.worksheet.action.description"),
-  AllIcons.Actions.Execute
+  PlatformIconGroup.actionsExecute()
 ) with TopComponentAction {
 
   override def genericText: String = WorksheetBundle.message("worksheet.execute.button")
 
-  override def actionIcon: Icon = AllIcons.Actions.Execute
+  override def actionIcon: Image = PlatformIconGroup.actionsExecute()
 
   override def shortcutId: Option[String] = Some(RunWorksheetAction.ShortcutId)
 
@@ -68,7 +73,7 @@ object RunWorksheetAction {
   
     sealed trait Error extends RunWorksheetActionResult
     case object AlreadyRunning extends Error
-    final case class ProjectCompilationError(aborted: Boolean, errors: Boolean, context: ProjectTaskContext) extends Error
+    final case class ProjectCompilationError(aborted: Boolean, errors: Boolean, context: CompileContext) extends Error
     final case class WorksheetRunError(error: WorksheetCompilerError) extends Error
   
     case object NoModuleError extends Error
@@ -203,18 +208,20 @@ object RunWorksheetAction {
     }
 
     if (makeBeforeRun) {
-      ProjectTaskManager.getInstance(project)
-        .build(module)
-        .`then`[Unit] { (result: ProjectTaskManager.Result) =>
-          if (result.hasErrors || result.isAborted) {
-            promise.success(RunWorksheetActionResult.ProjectCompilationError(result.isAborted, result.hasErrors, result.getContext))
-            invokeLater {
-              WorksheetFileHook.enableRun(vFile, result.hasErrors)
-            }
-          } else {
-            runnable()
+      // upstream: ProjectTaskManager.build(module)
+      val notification: CompileStatusNotification = (aborted: Boolean, errors: Int, _: Int, context: CompileContext) => {
+        if (errors > 0 || aborted) {
+          promise.success(RunWorksheetActionResult.ProjectCompilationError(aborted, errors > 0, context))
+          invokeLater {
+            WorksheetFileHook.enableRun(vFile, errors > 0)
           }
+        } else {
+          runnable()
         }
+      }
+      invokeLater {
+        CompilerManager.getInstance(project).make(module, notification)
+      }
     } else {
       runnable()
     }

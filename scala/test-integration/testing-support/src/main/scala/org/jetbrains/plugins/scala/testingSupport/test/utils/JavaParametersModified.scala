@@ -1,12 +1,16 @@
 package org.jetbrains.plugins.scala.testingSupport.test.utils
 
-import com.intellij.execution.CantRunException
-import com.intellij.execution.configurations.JavaParameters
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.roots._
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.jrt.JrtFileSystem
+import com.intellij.java.language.vfs.jrt.JrtFileSystem
+import consulo.content.base.BinariesOrderRootType
+import consulo.content.bundle.Sdk
+import consulo.execution.CantRunException
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.java.language.fileTypes.JModFileType
+import consulo.module.content.ProjectRootManager
+import consulo.module.content.layer.orderEntry.{ModuleExtensionWithSdkOrderEntry, OrderEntry}
+import consulo.module.content.layer.{OrderEnumerator, OrderRootsEnumerator}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
 
 import scala.jdk.CollectionConverters._
@@ -17,12 +21,12 @@ import scala.jdk.CollectionConverters._
  * Such modules can contain Scala runtime libraries with version different from project version.
  * E.g. if you use sbt 1.3.x and scala 2.13.3, "build module" will use scala 2.12.x anyway
  */
-private[test] class JavaParametersModified extends JavaParameters {
+private[test] class JavaParametersModified extends OwnJavaParameters {
 
-  import JavaParameters._
+  import OwnJavaParameters._
 
   /**
-   * copied from [[com.intellij.execution.configurations.JavaParameters.configureByProject]]
+   * copied from [[consulo.java.execution.configurations.OwnJavaParameters.configureByProject]]
    * modified to include non-build modules classpath only
    */
   override def configureByProject(project: Project, classPathType: Int, jdk: Sdk): Unit = {
@@ -42,7 +46,7 @@ private[test] class JavaParametersModified extends JavaParameters {
     configureEnumerator(nonBuildModulesRoots.runtimeOnly, classPathType, jdk).collectPaths(getClassPath)
   }
 
-  private def configureEnumerator(enumerator0: OrderEnumerator, classPathType: Int, jdk: Sdk) = {
+  private def configureEnumerator(enumerator0: OrderEnumerator, classPathType: Int, jdk: Sdk): OrderRootsEnumerator = {
     var enumerator = enumerator0
     if ((classPathType & INCLUDE_PROVIDED) == 0) enumerator = enumerator.runtimeOnly
     if ((classPathType & JDK_ONLY) == 0) enumerator = enumerator.withoutSdk
@@ -51,14 +55,17 @@ private[test] class JavaParametersModified extends JavaParameters {
     var rootsEnumerator = enumerator.classes
 
     if ((classPathType & JDK_ONLY) != 0)
-      rootsEnumerator = rootsEnumerator.usingCustomSdkRootProvider { (_: JdkOrderEntry) =>
-        jdkRoots(jdk)
+      rootsEnumerator = rootsEnumerator.usingCustomRootProvider { (entry: OrderEntry) =>
+        entry match {
+          case _: ModuleExtensionWithSdkOrderEntry => jdkRoots(jdk)
+          case _                                   => entry.getFiles(BinariesOrderRootType.ID)
+        }
       }
     rootsEnumerator
   }
 
   private def jdkRoots(jdk: Sdk): Array[VirtualFile] = {
-    val files = jdk.getRootProvider.getFiles(OrderRootType.CLASSES)
-    files.filterNot(JrtFileSystem.isModuleRoot)
+    val files = jdk.getRootProvider.getFiles(BinariesOrderRootType.ID)
+    files.filterNot(f => JModFileType.isModuleRoot(f) || JrtFileSystem.isModuleRoot(f))
   }
 }

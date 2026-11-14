@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.worksheet.processor
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.document.Document
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.{JavaDirectoryService, PsiClass}
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -18,7 +19,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.imports.ScImportStmt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef._
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.lang.psi.types.api.presentation.AccessModifierRenderer
-import org.jetbrains.plugins.scala.project.{ScalaLanguageLevel, _}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.worksheet.runconfiguration.WorksheetCache
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings

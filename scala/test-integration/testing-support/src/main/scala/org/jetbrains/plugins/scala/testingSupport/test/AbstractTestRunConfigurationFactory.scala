@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType}
-
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.execution.configuration.ConfigurationType
 abstract class AbstractTestRunConfigurationFactory(val typ: ConfigurationType)
   extends ConfigurationFactory(typ)  {
 

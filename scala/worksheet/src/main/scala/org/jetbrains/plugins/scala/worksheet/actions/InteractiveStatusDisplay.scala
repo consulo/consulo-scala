@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.worksheet.actions
 
-import com.intellij.icons.AllIcons
-import com.intellij.ui.AnimatedIcon
-import com.intellij.ui.roots.ScalableIconComponent
-import com.intellij.util.ui.{AsyncProcessIcon, EmptyIcon}
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.awt.{AsyncProcessIcon, JBLabel}
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.worksheet.actions.InteractiveStatusDisplay.{createAnimatedIcon, createIconWrapper}
 import org.jetbrains.plugins.scala.worksheet.ui.WorksheetUiUtils
 
-import javax.swing.{Icon, JPanel}
+import javax.swing.{JComponent, JPanel}
 
 class InteractiveStatusDisplay {
 
@@ -15,11 +14,11 @@ class InteractiveStatusDisplay {
 
   private var currentIcon: Option[AsyncProcessIcon] = None
 
-  private val successIcon = createAnimatedIcon(AllIcons.General.InspectionsOK)
-  private val failureIcon = createAnimatedIcon(AllIcons.General.Error)
+  private val successIcon = createAnimatedIcon(PlatformIconGroup.generalInspectionsok())
+  private val failureIcon = createAnimatedIcon(PlatformIconGroup.generalError())
 
   def addTo(panel: JPanel): Unit = {
-    iconPanel.add(createIconWrapper(EmptyIcon.ICON_18), 0)
+    iconPanel.add(createIconWrapper(Image.empty(18)), 0)
     panel.add(iconPanel)
     WorksheetUiUtils.fixUnboundMaxSize(iconPanel)
   }
@@ -47,11 +46,11 @@ class InteractiveStatusDisplay {
 
 private object InteractiveStatusDisplay {
 
-  private def createIconWrapper(icon: Icon): ScalableIconComponent =
-    new ScalableIconComponent(icon)
+  // upstream: ScalableIconComponent
+  private def createIconWrapper(icon: Image): JComponent =
+    new JBLabel(icon)
 
-  private def createAnimatedIcon(passiveIcon: Icon): AsyncProcessIcon = {
-    val frames = AnimatedIcon.Default.ICONS.toArray(Array.empty[Icon])
-    new AsyncProcessIcon("Compiling...", frames, passiveIcon)
-  }
+  // upstream: AnimatedIcon.Default.ICONS frames
+  private def createAnimatedIcon(passiveIcon: Image): AsyncProcessIcon =
+    new AsyncProcessIcon("Compiling...", Array(Image.busy()), passiveIcon)
 }

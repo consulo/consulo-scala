@@ -1,17 +1,24 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.ui
 
-import com.intellij.codeInsight.TestFrameworks
-import com.intellij.execution.TestStateStorage
-import com.intellij.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
-import com.intellij.execution.testframework.TestIconMapper
-import com.intellij.execution.testframework.sm.runner.states.TestStateInfo.Magnitude
-import com.intellij.icons.AllIcons.RunConfigurations.TestState
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testIntegration.{TestFramework, TestRunLineMarkerProvider}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import com.intellij.java.language.codeInsight.TestFrameworks
+import consulo.execution.test.TestStateStorage
+import consulo.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
+import consulo.execution.test.TestIconMapper
+import consulo.execution.icon.ExecutionIconGroup
+import consulo.execution.test.TestStateInfo.Magnitude
+import consulo.ui.image.Image
+import consulo.project.Project
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.testIntegration.TestFramework
+import com.intellij.java.execution.impl.testframework.TestRunLineMarkerProvider
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -26,7 +33,6 @@ import org.jetbrains.plugins.scala.testingSupport.test.scalatest.{ScalaTestTestF
 import org.jetbrains.plugins.scala.testingSupport.test.specs2.{Specs2TestFramework, Specs2TestLocationsFinder}
 import org.jetbrains.plugins.scala.testingSupport.test.utest.UTestTestFramework
 
-import javax.swing.Icon
 import scala.jdk.CollectionConverters.IterableHasAsScala
 
 /**
@@ -34,7 +40,10 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
  *
  * @todo split providers by test frameworks, if some logic should be reused, just move to some base/utility classes
  */
+@ExtensionImpl
 class ScalaTestRunLineMarkerProvider extends TestRunLineMarkerProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   /**
    * for scalatest location hint format see:
@@ -228,22 +237,22 @@ class ScalaTestRunLineMarkerProvider extends TestRunLineMarkerProvider {
   protected def buildLineInfo(url: String, project: Project, isClass: Boolean): RunLineMarkerContributor.Info = {
     val icon = iconFor(url, project, isClass)
     val actions = ExecutorAction.getActions(1)
-    new RunLineMarkerContributor.Info(icon, actions, (_: PsiElement) => TestingSupportBundle.message("scalatest.gutter.run.test"))
+    new RunLineMarkerContributor.Info(icon, (_: PsiElement) => TestingSupportBundle.message("scalatest.gutter.run.test"), actions*)
   }
 
-  private def iconFor(url: String, project: Project, isClass: Boolean): Icon = {
+  private def iconFor(url: String, project: Project, isClass: Boolean): Image = {
     import Magnitude._
 
     def defaultIcon =
-      if (isClass) TestState.Run_run
-      else TestState.Run
+      if (isClass) ExecutionIconGroup.gutterRerun()
+      else ExecutionIconGroup.gutterRun()
 
     val testState = Option(TestStateStorage.getInstance(project).getState(url))
     val testMagnitude = testState.map(state => TestIconMapper.getMagnitude(state.magnitude))
 
     testMagnitude.fold(defaultIcon) {
-      case ERROR_INDEX | FAILED_INDEX => TestState.Red2
-      case PASSED_INDEX | COMPLETE_INDEX => TestState.Green2
+      case ERROR_INDEX | FAILED_INDEX => ExecutionIconGroup.gutterRunerror()
+      case PASSED_INDEX | COMPLETE_INDEX => ExecutionIconGroup.gutterRunsuccess()
       case _ => defaultIcon
     }
   }

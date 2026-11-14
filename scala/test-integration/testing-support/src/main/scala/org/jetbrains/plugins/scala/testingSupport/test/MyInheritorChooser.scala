@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test
 
-import com.intellij.execution.actions.ConfigurationContext
-import com.intellij.execution.junit.InheritorChooser
-import com.intellij.ide.util.PsiClassListCellRenderer
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
-import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.Condition
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ClassInheritorsSearch
-import com.intellij.ui.components.JBList
+import consulo.execution.action.ConfigurationContext
+import com.intellij.java.execution.impl.junit.InheritorChooser
+import com.intellij.java.language.impl.codeInsight.PsiClassListCellRenderer
+import consulo.fileEditor.{FileEditor, TextEditor}
+import consulo.ui.ex.awt.popup.AWTPopupFactory
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.util.lang.function.Condition
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{PsiClass, PsiClassOwner, PsiMethod}
+import consulo.language.psi.PsiDocumentManager
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.ui.ex.awt.JBList
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.testingSupport.test.testdata._
@@ -30,7 +31,7 @@ private class MyInheritorChooser(
     performRunnable: Runnable,
     psiMethod: PsiMethod,
     containingClass: PsiClass,
-    acceptAbstractCondition: Condition[? >: PsiClass]
+    acceptAbstractCondition: Condition[PsiClass]
   ): Boolean = {
     //TODO: SCL-10530 this is mostly copy-paste from InheritorChooser; get rid of this once we support pattern test runs
     if (containingClass == null) return false
@@ -45,7 +46,7 @@ private class MyInheritorChooser(
       return true
     }
 
-    val fileEditor = PlatformCoreDataKeys.FILE_EDITOR.getData(context.getDataContext)
+    val fileEditor = context.getDataContext.getData(FileEditor.KEY)
     fileEditor match {
       case editor: TextEditor =>
         val document = editor.getEditor.getDocument
@@ -69,21 +70,15 @@ private class MyInheritorChooser(
     //scala type system gets confused because someone forgot generics in PsiElementListCellRenderer definition
     jbList.setCellRenderer(renderer.asInstanceOf[ListCellRenderer[PsiClass]])
     val testName = if (psiMethod != null) psiMethod.getName else containingClass.getName
-    @nowarn("cat=deprecation")
-    val pupupFactory = JBPopupFactory.getInstance().createListPopupBuilder(jbList)
+    val pupupFactory = JBPopupFactory.getInstance().asInstanceOf[AWTPopupFactory].createListPopupBuilder(jbList)
     pupupFactory
       .setTitle(TestingSupportBundle.message("test.config.choose.executable.classes.to.run.test", testName))
       .setMovable(false)
       .setResizable(false)
       .setRequestFocus(true)
-      .setItemChosenCallback(new Runnable() {
-        override def run(): Unit = {
-          val values = jbList.getSelectedValuesList
-          if (values == null) return
-          if (values.size == 1) {
-            runForClass(values.get(0), psiMethod, context, performRunnable)
-          }
-        }
+      .setItemChosenCallback((aClass: PsiClass) => {
+        if (aClass != null)
+          runForClass(aClass, psiMethod, context, performRunnable)
       })
     pupupFactory.createPopup().showInBestPositionFor(context.getDataContext)
     true

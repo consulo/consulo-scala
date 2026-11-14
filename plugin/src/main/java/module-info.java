@@ -16,4 +16,7 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.debugger;
     requires transitive org.intellij.scala.compiler.consulo;
     requires transitive org.intellij.scala.sbt.impl;
+    requires transitive org.intellij.scala.worksheet;
+    requires transitive org.intellij.scala.testing.support;
+    requires transitive org.intellij.scala.text.analysis;
 }

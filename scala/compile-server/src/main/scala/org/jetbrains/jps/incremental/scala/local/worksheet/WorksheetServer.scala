@@ -1,7 +1,9 @@
 package org.jetbrains.jps.incremental.scala.local.worksheet
 
 import org.jetbrains.jps.incremental.scala.local.worksheet.ILoopWrapperFactoryHandler.ReplContext
-import org.jetbrains.jps.incremental.scala.{Client, CompileServerBundle}
+import org.jetbrains.jps.incremental.scala.local.worksheet.util.IOUtils
+import org.jetbrains.jps.incremental.scala.CompileServerBundle
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.data.worksheet._
 import org.jetbrains.plugins.scala.compiler.data.{Arguments, CompilerJars}
 
@@ -27,13 +29,16 @@ class WorksheetServer {
         client.error(CompileServerBundle.message("compiler.jars.are.missing"))
         return
     }
-    worksheetArgs match {
+    try worksheetArgs match {
       case args: WorksheetArgs.RunRepl  =>
         val context = replContext(commonArgs, compilerJars)
         replFactoryHandler.loadReplWrapperAndRun(args, context, printStream, client)
       case args: WorksheetArgs.RunPlain =>
         val context = plainContext(commonArgs, compilerJars)
         plainFactory.getRunner(printStream).loadAndRun(args, context, client)
+    } finally {
+      // upstream: the Nailgun session restores System.out of the thread
+      IOUtils.resetSystemOut()
     }
   }
 

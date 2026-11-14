@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.testingSupport
 
-import com.intellij.codeInsight.TestFrameworks
-import com.intellij.codeInspection.reference.{EntryPoint, RefElement}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.xmlb.XmlSerializer
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.java.language.codeInsight.TestFrameworks
+import com.intellij.java.analysis.codeInspection.ex.EntryPoint
+import consulo.language.editor.inspection.reference.RefElement
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.util.xml.serializer.XmlSerializer
 import org.jdom.Element
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTemplateDefinition}
@@ -12,6 +15,7 @@ import org.jetbrains.plugins.scala.testingSupport.test.scalatest.ScalaTestTestLo
 
 import scala.beans.BooleanBeanProperty
 
+@ExtensionImpl
 class ScalaTestingFrameworkEntryPoint extends EntryPoint {
 
   @BooleanBeanProperty

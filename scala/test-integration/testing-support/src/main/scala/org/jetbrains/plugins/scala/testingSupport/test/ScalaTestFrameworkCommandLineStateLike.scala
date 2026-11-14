@@ -1,24 +1,26 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test
 
-import com.intellij.execution.configuration.RunConfigurationExtensionsManager
-import com.intellij.execution.configurations.{CommandLineState, RunConfigurationBase}
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.testDiscovery.JavaAutoRunManager
-import com.intellij.execution.testframework.autotest.{AbstractAutoTestManager, ToggleAutoTestAction}
-import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
-import com.intellij.execution.testframework.ui.BaseTestsOutputConsoleView
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.execution.{DefaultExecutionResult, JavaRunConfigurationExtensionManager}
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import org.jetbrains.annotations.ApiStatus
+import consulo.execution.configuration.RunConfigurationExtensionsManager
+import consulo.execution.configuration.CommandLineState
+import consulo.execution.configuration.RunConfigurationBase
+import consulo.process.ProcessHandler
+import com.intellij.java.execution.impl.testDiscovery.JavaAutoRunManager
+import consulo.execution.test.autotest.AbstractAutoTestManager
+import consulo.execution.test.action.ToggleAutoTestAction
+import consulo.execution.test.sm.ui.SMTRunnerConsoleView
+import consulo.execution.test.ui.BaseTestsOutputConsoleView
+import consulo.execution.ui.console.ConsoleView
+import consulo.execution.DefaultExecutionResult
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
+import consulo.ui.ex.action.AnAction
+import consulo.module.Module
+import consulo.project.Project
 import org.jetbrains.plugins.scala.testingSupport.test.actions.ScalaRerunFailedTestsAction
 import org.jetbrains.plugins.scala.testingSupport.test.exceptions.executionException
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.TestConfigurationData
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait ScalaTestFrameworkCommandLineStateLike {
   self: CommandLineState =>
 
@@ -89,7 +91,7 @@ trait ScalaTestFrameworkCommandLineStateLike {
     }
 
   protected def attachExtensionsToProcess(
-    configuration: RunConfigurationBase[?],
+    configuration: RunConfigurationBase,
     processHandler: ProcessHandler
   ): Unit = {
     val runnerSettings = getRunnerSettings
@@ -97,8 +99,8 @@ trait ScalaTestFrameworkCommandLineStateLike {
   }
 
   // case is required to avoid bad red-highlighting by Scala Plugin which can't understand Kotlin generics
-  private def configurationExtensionManager: RunConfigurationExtensionsManager[RunConfigurationBase[?], ?] =
-    JavaRunConfigurationExtensionManager.getInstance.asInstanceOf[RunConfigurationExtensionsManager[RunConfigurationBase[?], ?]]
+  private def configurationExtensionManager: RunConfigurationExtensionsManager[RunConfigurationBase, ?] =
+    JavaRunConfigurationExtensionManager.getInstance.asInstanceOf[RunConfigurationExtensionsManager[RunConfigurationBase, ?]]
 }
 
 

@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.specs2
 
-import com.intellij.testIntegration.TestFramework
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.java.language.testIntegration.TestFramework
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
 
+@ExtensionImpl
 final class Specs2TestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "Specs2"

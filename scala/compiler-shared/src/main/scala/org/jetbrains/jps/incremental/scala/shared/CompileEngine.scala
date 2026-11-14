@@ -1,6 +1,6 @@
 package org.jetbrains.jps.incremental.scala.shared
 
-import org.jetbrains.plugins.scala.compiler.data.{CompilationData, CompilerData, ExpressionEvaluationArguments, SbtData}
+import org.jetbrains.plugins.scala.compiler.data.{Arguments, CompilationData, CompilerData, ExpressionEvaluationArguments, SbtData}
 
 import java.net.URLClassLoader
 import java.nio.file.Path
@@ -18,6 +18,14 @@ trait CompileEngine {
 
   /** Scala 3 expression compiler of the debugger, errors are reported to the client */
   def evaluateExpression(arguments: ExpressionEvaluationArguments, client: Client): Unit
+
+  /**
+   * upstream: compile server Main.compileLogic with worksheet arguments - compiles the sources (unless it is a REPL
+   * worksheet) and, if there were no errors, runs the worksheet in the IDE process: the main class of a plain worksheet
+   * or a code chunk in a cached REPL session. The worksheet output is reported by [[Client.worksheetOutput]].
+   * Throws if the compilation could not be performed.
+   */
+  def compileAndRunWorksheet(arguments: Arguments, client: Client): Unit
 }
 
 object CompileEngine {
@@ -31,6 +39,7 @@ object CompileEngine {
     "compiler-interface.jar",
     "sbt-interface.jar",
     "incremental-compiler.jar",
+    "repl-interface.jar",
     "compile-server.jar"
   ).map(pluginJpsDirectory.resolve)
 

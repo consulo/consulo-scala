@@ -1,7 +1,6 @@
-package org.jetbrains.plugins.scala.testingSupport.test.munit
-
-import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit
+import consulo.execution.configuration.RunConfiguration
+import consulo.project.Project
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfigurationFactory
 
 final class MUnitConfigurationFactory(typ: MUnitConfigurationType)

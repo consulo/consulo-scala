@@ -1,16 +1,14 @@
 package org.jetbrains.plugins.scala.worksheet.settings
 
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.util.SlowOperations
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerConfiguration, ScalaCompilerSettingsProfile}
 import org.jetbrains.plugins.scala.util.ScalaUtil
 import org.jetbrains.plugins.scala.worksheet.WorksheetUtils
 import org.jetbrains.plugins.scala.worksheet.settings.persistent.{WorksheetFilePersistentSettings, WorksheetProjectDefaultPersistentSettings}
 
-import scala.util.Using
 
 /**
  * The class represent worksheet settings which are actually used by the worksheet
@@ -118,9 +116,7 @@ final class WorksheetFileSettings private(
     filePersistentSettings.setRunType(getRunType)
     filePersistentSettings.setInteractive(isInteractive)
     filePersistentSettings.setMakeBeforeRun(isMakeBeforeRun)
-    Using.resource(SlowOperations.knownIssue("SCL-22095, SCL-22097")) { _ =>
-      getModuleName.foreach(filePersistentSettings.setModuleName)
-    }
+    getModuleName.foreach(filePersistentSettings.setModuleName)
     filePersistentSettings.setCompilerProfileName(getCompilerProfileName)
   }
 }

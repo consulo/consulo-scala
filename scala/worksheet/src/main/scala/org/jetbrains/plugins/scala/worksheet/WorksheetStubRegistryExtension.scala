@@ -1,11 +1,21 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.psi.stubs.StubRegistry
-import org.jetbrains.plugins.scala.lang.psi.stubs.ScalaStubRegistryExtensionAdapter
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.psi.stub.{ObjectStubSerializerProvider, StubElementTypeHolder}
 
-final class WorksheetStubRegistryExtension extends ScalaStubRegistryExtensionAdapter {
-  override def register(registry: StubRegistry): Unit = {
-    registerFileStubSerializer(registry, WorksheetParserDefinition.FileNodeType)
-    registerFileStubSerializer(registry, WorksheetParserDefinition3.FileNodeType)
+import java.util
+
+/**
+ * upstream: languageStubDefinition + stubElementRegistryExtension registering the worksheet file stub serializers,
+ * see [[org.jetbrains.plugins.scala.lang.psi.stubs.ScalaStubRegistryExtension]]
+ */
+@ExtensionImpl
+final class WorksheetStubRegistryExtension extends StubElementTypeHolder[AnyRef] {
+  override def getExternalIdPrefix: String = null
+
+  override def loadSerializers(): util.List[ObjectStubSerializerProvider] = {
+    WorksheetParserDefinition.FileNodeType
+    WorksheetParserDefinition3.FileNodeType
+    util.List.of()
   }
 }

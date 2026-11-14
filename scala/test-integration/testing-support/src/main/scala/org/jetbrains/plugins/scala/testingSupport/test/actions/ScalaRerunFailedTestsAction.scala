@@ -1,19 +1,17 @@
 package org.jetbrains.plugins.scala.testingSupport.test.actions
 
-import com.intellij.execution.Executor
-import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.target.{LanguageRuntimeType, TargetEnvironmentAwareRunProfile, TargetEnvironmentConfiguration}
-import com.intellij.execution.testframework.AbstractTestProxy
-import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction
-import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction.MyRunProfile
-import com.intellij.execution.testframework.sm.runner.states.TestStateInfo.Magnitude
-import com.intellij.execution.testframework.sm.runner.{SMTRunnerConsoleProperties, SMTestProxy}
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import org.jetbrains.annotations.ApiStatus
+import consulo.execution.executor.Executor
+import consulo.execution.configuration.RunProfileState
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.execution.test.AbstractTestProxy
+import consulo.execution.test.action.AbstractRerunFailedTestsAction
+import consulo.execution.test.TestStateInfo.Magnitude
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties
+import consulo.execution.test.sm.runner.SMTestProxy
+import consulo.execution.ui.console.ConsoleView
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.testingSupport.locationProvider.{PsiLocationWithName, ScalaTestLocationProvider}
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfiguration
@@ -25,7 +23,7 @@ import java.util
 import java.util.stream.Collectors
 import scala.jdk.CollectionConverters._
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ScalaRerunFailedTestsAction(
   consoleView: ConsoleView,
   properties: SMTRunnerConsoleProperties
@@ -35,7 +33,7 @@ class ScalaRerunFailedTestsAction(
     this.init(properties)
   }
 
-  override def getFailedTests(project: Project): util.List[AbstractTestProxy] = {
+  override protected def getFailedTests(project: Project): util.List[AbstractTestProxy] = {
     val allTests = getModel.getRoot.getAllTests
     val failedTests = allTests.stream().filter(isFailed)
     val list = failedTests.collect(Collectors.toList[AbstractTestProxy])
@@ -54,7 +52,7 @@ class ScalaRerunFailedTestsAction(
   private def isFailure(info: Magnitude): Boolean =
     info == Magnitude.FAILED_INDEX || info == Magnitude.ERROR_INDEX
 
-  override def getRunProfile(environment: ExecutionEnvironment): MyRunProfile = {
+  override protected def getRunProfile(environment: ExecutionEnvironment): AbstractRerunFailedTestsAction.MyRunProfile = {
     val properties = getModel.getProperties
     val configuration = properties.getConfiguration.asInstanceOf[AbstractTestRunConfiguration]
     val failedTestNodes = getFailedTests(configuration.getProject).asScala.toSeq
@@ -67,7 +65,7 @@ object ScalaRerunFailedTestsAction {
   private class MyScalaRunProfile(
     configuration: AbstractTestRunConfiguration,
     failedTestsProxies: Seq[AbstractTestProxy]
-  ) extends MyRunProfile(configuration) with TargetEnvironmentAwareRunProfile {
+  ) extends AbstractRerunFailedTestsAction.MyRunProfile(configuration) {
 
     override def getModules: Array[Module] = configuration.getModules
 
@@ -84,25 +82,7 @@ object ScalaRerunFailedTestsAction {
       }
     }
 
-    /*
-     * Implement the `TargetEnvironmentAwareRunProfile` interface by delegating all method calls to the
-     * `configuration: AbstractTestRunConfiguration` parameter, which also implements the same interface.
-     */
-
-    override def canRunOn(target: TargetEnvironmentConfiguration): Boolean =
-      configuration.canRunOn(target)
-
-    override def getDefaultLanguageRuntimeType: LanguageRuntimeType[?] =
-      configuration.getDefaultLanguageRuntimeType
-
-    override def getDefaultTargetName: String =
-      configuration.getDefaultTargetName
-
-    override def setDefaultTargetName(targetName: String): Unit =
-      configuration.setDefaultTargetName(targetName)
-
-    override def needPrepareTarget(): Boolean =
-      configuration.needPrepareTarget()
+    // upstream: also implements TargetEnvironmentAwareRunProfile, no execution targets in Consulo
 
     private def collectFailedTests(failedTestNodes: Seq[AbstractTestProxy]): Seq[(String, String)] =
       for {

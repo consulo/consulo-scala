@@ -1,10 +1,14 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test
 
-import com.intellij.lang.Language
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.{PsiClass, PsiElement}
-import com.intellij.testIntegration.createTest.CreateTestDialog
+
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.Language
+import consulo.logging.Logger
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import consulo.language.util.ModuleUtilCore
+import com.intellij.java.impl.testIntegration.createTest.CreateTestDialog
 import org.jetbrains.plugins.scala.extensions.LoggerExt
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScTemplateDefinition, ScTypeDefinition}
@@ -12,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import scala.annotation.nowarn
 
@@ -22,14 +26,15 @@ abstract class AbstractTestFramework extends JavaTestFrameworkBridge {
 
   def baseSuitePaths: Seq[String]
 
-  override def getIcon: Icon = Icons.SCALA_TEST
+  override def getIcon: Image = Icons.SCALA_TEST
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def isTestMethod(element: PsiElement): Boolean = false
 
-  override def isFrameworkAvailable(clazz: PsiElement): Boolean = {
-    super.isFrameworkAvailable(clazz) || {
+  // upstream: overrides TestFramework.isFrameworkAvailable, Consulo's TestFramework has no such method
+  def isFrameworkAvailable(clazz: PsiElement): Boolean = {
+    isLibraryAttachedFor(clazz) || {
       //Workaround for SCL-20136, IDEA-292278, SCL-20154 (see comments for all tickets)
       clazz match {
         case td: ScTemplateDefinition if td.isInScala3Module =>
@@ -41,9 +46,15 @@ abstract class AbstractTestFramework extends JavaTestFrameworkBridge {
     }
   }
 
+  // upstream: TestFramework.isFrameworkAvailable default implementation
+  private def isLibraryAttachedFor(clazz: PsiElement): Boolean = {
+    val module = ModuleUtilCore.findModuleForPsiElement(clazz)
+    module != null && isLibraryAttached(module)
+  }
+
   override final def isTestClass(clazz: PsiElement): Boolean = super.isTestClass(clazz)
 
-  override final def isTestClass(clazz: PsiClass, canBePotential: Boolean): Boolean = {
+  override protected final def isTestClass(clazz: PsiClass, canBePotential: Boolean): Boolean = {
     val definition: ScTemplateDefinition = clazz match {
       case PsiClassWrapper(definition)  => definition
       case definition: ScTypeDefinition => definition

@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.lang.Language
-import com.intellij.psi.FileViewProvider
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import consulo.language.Language
+import consulo.language.file.FileViewProvider
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings
 

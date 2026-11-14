@@ -2,25 +2,29 @@ package org.jetbrains.plugins.scala
 package testingSupport
 package test.scalatest
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, ConfigurationTypeUtil}
-import com.intellij.openapi.project.DumbAware
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.execution.configuration.ConfigurationType
+import consulo.execution.configuration.ConfigurationTypeUtil
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.icons.Icons
 
-import javax.swing.Icon
-
-class ScalaTestConfigurationType extends ConfigurationType with DumbAware {
+@ExtensionImpl
+class ScalaTestConfigurationType extends ConfigurationType {
 
   val confFactory = new ScalaTestRunConfigurationFactory(this)
 
   override def getConfigurationFactories: Array[ConfigurationFactory] = Array[ConfigurationFactory](confFactory)
 
-  override def getDisplayName: String = TestingSupportBundle.message("scalatest.config.display.name")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(TestingSupportBundle.message("scalatest.config.display.name"))
 
-  override def getConfigurationTypeDescription: String = TestingSupportBundle.message("scalatest.config.description")
+  override def getConfigurationTypeDescription: LocalizeValue = LocalizeValue.of(TestingSupportBundle.message("scalatest.config.description"))
 
   override def getId: String = "ScalaTestRunConfiguration" //if you want to change id, change it in Android plugin too
 
-  override def getIcon: Icon = Icons.SCALA_TEST
+  override def getIcon: Image = Icons.SCALA_TEST
 }
 
 object ScalaTestConfigurationType {

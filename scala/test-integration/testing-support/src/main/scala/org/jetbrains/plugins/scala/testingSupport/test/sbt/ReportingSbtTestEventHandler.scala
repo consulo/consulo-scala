@@ -1,23 +1,22 @@
 package org.jetbrains.plugins.scala.testingSupport.test.sbt
 
-import com.intellij.execution.process.ProcessOutputTypes
-import com.intellij.openapi.util.Key
-import org.jetbrains.annotations.ApiStatus
+import consulo.process.ProcessOutputTypes
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.build.BuildMessages
-import org.jetbrains.plugins.scala.testingSupport.TestRunnerUtil
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil
 import org.jetbrains.plugins.scala.testingSupport.test.sbt.ReportingSbtTestEventHandler.TeamCityTestStatusReporter
 import org.jetbrains.sbt.shell.communication.ShellEvent
 import org.jetbrains.sbt.shell.communication.ShellEvent.{ErrorWaitForInput, Output, ProcessTerminated, TaskComplete, TaskStart}
 
 import java.util.regex.{Matcher, Pattern}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait SbtTestEventHandler {
 
   def processEvent(event: ShellEvent): Unit
 }
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ReportingSbtTestEventHandler(messageConsumer: TeamCityTestStatusReporter)
   extends SbtTestEventHandler {
 

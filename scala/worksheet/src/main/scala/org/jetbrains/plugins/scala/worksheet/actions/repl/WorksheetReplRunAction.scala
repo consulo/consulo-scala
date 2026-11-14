@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.worksheet.actions.repl
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CustomShortcutSet}
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate, CustomShortcutSet}
 import org.jetbrains.plugins.scala.worksheet.WorksheetFile
 import org.jetbrains.plugins.scala.worksheet.actions.WorksheetAction
 import org.jetbrains.plugins.scala.worksheet.actions.topmenu.RunWorksheetAction
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings
 
-final class WorksheetReplRunAction extends AnAction with WorksheetAction {
+final class WorksheetReplRunAction extends AnAction with AnActionWithSyncUpdate with WorksheetAction {
 
   setShortcutSet(CustomShortcutSet.fromString("ctrl ENTER"))
   setInjectedContext(false)
@@ -19,8 +19,6 @@ final class WorksheetReplRunAction extends AnAction with WorksheetAction {
       RunWorksheetAction.runCompilerForEditor(editor, psiFile, auto = false)
     }
   }
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override protected def isActionEnabledForFile(file: WorksheetFile): Boolean =
     WorksheetFileSettings(file).isRepl

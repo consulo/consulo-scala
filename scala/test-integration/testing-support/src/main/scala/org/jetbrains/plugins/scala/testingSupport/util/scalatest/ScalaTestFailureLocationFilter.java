@@ -1,19 +1,30 @@
 package org.jetbrains.plugins.scala.testingSupport.util.scalatest;
 
-import com.intellij.execution.filters.ExceptionInfoCache;
-import com.intellij.execution.filters.Filter;
-import com.intellij.execution.filters.HyperlinkInfo;
-import com.intellij.execution.filters.HyperlinkInfoFactory;
-import com.intellij.openapi.editor.colors.CodeInsightColors;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.search.PsiShortNamesCache;
+import consulo.project.DumbService;
+import consulo.execution.ui.console.Filter;
+import consulo.execution.ui.console.HyperlinkInfo;
+import consulo.execution.ui.console.HyperlinkInfoFactory;
+import consulo.codeEditor.CodeInsightColors;
+import consulo.colorScheme.EditorColorsManager;
+import consulo.colorScheme.TextAttributes;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.module.content.ProjectFileIndex;
+import consulo.module.content.ProjectRootManager;
+import consulo.project.Project;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.ui.color.ColorValue;
+import consulo.ui.style.ComponentColors;
+import consulo.virtualFileSystem.VirtualFile;
+import org.jspecify.annotations.Nullable;
 
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,22 +33,22 @@ import java.awt.*;
  */
 public class ScalaTestFailureLocationFilter implements Filter {
 
-  private final ExceptionInfoCache myCache;
+  private final Project myProject;
+  private final GlobalSearchScope mySearchScope;
 
 //  private final static Pattern fqnPattern = Pattern.compile("(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
   //See org.jetbrains.plugins.scala.testingSupport.scalaTest.ScalaTestReporterWithLocation.apply
   private final static String SCALA_TEST_FAILURE_LOCATION = "ScalaTestFailureLocation: ";
 
-  public ScalaTestFailureLocationFilter(@NotNull final Project project, @NotNull final GlobalSearchScope scope) {
-    myCache = new ExceptionInfoCache(project, scope);
+  public ScalaTestFailureLocationFilter(final Project project, final GlobalSearchScope scope) {
+    myProject = project;
+    mySearchScope = scope;
   }
 
   @Nullable
   @Override
   public Result applyFilter(String line, int entireLength) {
-    Project myProject = myCache.getProject();
-
     //Examples of the line we are looking for:
     //   ScalaTestFailureLocation: org.example.MyTest1 at (MyTest1.scala:31)
     //   ScalaTestFailureLocation: bug.TestSpec at (TestSpec.scala:11)
@@ -69,9 +80,9 @@ public class ScalaTestFailureLocationFilter implements Filter {
       ? line.substring(classNameStartIndex, classNameEndIndex).trim()
       : "";
 
-    final var resolutionResult = myCache.resolveClassOrFile(className, fileName);
+    final var resolutionResult = resolveClassOrFile(className, fileName);
 
-    final var virtualFiles = resolutionResult.getClasses().keySet().stream().toList();
+    final List<VirtualFile> virtualFiles = new ArrayList<>(resolutionResult.classes().keySet());
     if (virtualFiles.isEmpty())
       return null;
 
@@ -81,14 +92,70 @@ public class ScalaTestFailureLocationFilter implements Filter {
     final int highlightEndOffset = textStartOffset + rparenthIndex;
 
     TextAttributes attributes = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(CodeInsightColors.HYPERLINK_ATTRIBUTES);
-    if (resolutionResult.isInLibrary()) {
-      Color libTextColor = UIUtil.getInactiveTextColor();
+    if (resolutionResult.inLibrary()) {
+      ColorValue libTextColor = ComponentColors.DISABLED_TEXT;
       attributes = attributes.clone();
       attributes.setForegroundColor(libTextColor);
       attributes.setEffectColor(libTextColor);
     }
     HyperlinkInfo linkInfo = HyperlinkInfoFactory.getInstance().createMultipleFilesHyperlinkInfo(virtualFiles, lineNumber - 1, myProject);
     return new Filter.Result(highlightStartOffset, highlightEndOffset, linkInfo, attributes);
+  }
+
+  // upstream: ExceptionInfoCache.resolveClassOrFile, not public in Consulo
+  private ClassResolveInfo resolveClassOrFile(String className, String fileName) {
+    ClassResolveInfo info = resolveClass(className);
+    if (info.classes().isEmpty() && fileName != null) {
+      PsiFile[] files = PsiShortNamesCache.getInstance(myProject).getFilesByName(fileName);
+      info = ClassResolveInfo.create(myProject, files);
+    }
+    return info;
+  }
+
+  private ClassResolveInfo resolveClass(String className) {
+    if (className.isEmpty() || DumbService.isDumb(myProject)) {
+      return new ClassResolveInfo(Map.of(), false);
+    }
+
+    PsiClass[] classes = findClassesPreferringMyScope(className);
+    if (classes.length == 0) {
+      final int dollarIndex = className.indexOf('$');
+      if (dollarIndex >= 0) {
+        classes = findClassesPreferringMyScope(className.substring(0, dollarIndex));
+      }
+    }
+    return ClassResolveInfo.create(myProject, classes);
+  }
+
+  private PsiClass[] findClassesPreferringMyScope(String className) {
+    JavaPsiFacade psiFacade = JavaPsiFacade.getInstance(myProject);
+    PsiClass[] result = psiFacade.findClasses(className, mySearchScope);
+    return result.length != 0 ? result : psiFacade.findClasses(className, GlobalSearchScope.allScope(myProject));
+  }
+
+  private record ClassResolveInfo(Map<VirtualFile, PsiElement> classes, boolean inLibrary) {
+    static ClassResolveInfo create(Project project, PsiElement[] elements) {
+      ProjectFileIndex index = ProjectRootManager.getInstance(project).getFileIndex();
+      Map<VirtualFile, PsiElement> result = new LinkedHashMap<>();
+      boolean library = true;
+      for (PsiElement element : elements) {
+        element = element.getNavigationElement();
+        PsiFile file = element.getContainingFile();
+        VirtualFile virtualFile = file == null ? null : file.getVirtualFile();
+        if (virtualFile == null) continue;
+        if (index.isInContent(virtualFile)) {
+          if (library) {
+            library = false;
+            result.clear();
+          }
+        }
+        else if (!library) {
+          continue;
+        }
+        result.put(virtualFile, element);
+      }
+      return new ClassResolveInfo(result, library);
+    }
   }
 
   private static int getLineNumber(String lineString) {

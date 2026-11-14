@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.testingSupport.test.munit
 
-import com.intellij.execution.Location
-import com.intellij.execution.testframework.JavaTestLocator
-import com.intellij.execution.testframework.sm.runner.SMTestLocator
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.execution.action.Location
+import com.intellij.java.execution.impl.testframework.JavaTestLocator
+import consulo.execution.test.sm.runner.SMTestLocator
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScMethodCall, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody

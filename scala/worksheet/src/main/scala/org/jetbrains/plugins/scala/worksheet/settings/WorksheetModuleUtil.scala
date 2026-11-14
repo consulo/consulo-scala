@@ -1,11 +1,8 @@
 package org.jetbrains.plugins.scala.worksheet.settings
 
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.module.Module
+import consulo.project.Project
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
-import org.jetbrains.sbt.SbtSourceSetUtil.SbtSourceSetModuleExt
-import org.jetbrains.sbt.SbtUtil
 
 private object WorksheetModuleUtil {
   def allModulesWithScalaSdk(project: Project): Seq[Module] = {
@@ -21,17 +18,11 @@ private object WorksheetModuleUtil {
     if (modulesWithScalaLibrary.nonEmpty) modulesWithScalaLibrary else allScalaModules
   }
 
-  def allProductionModulesWithScalaSdk(project: Project): Seq[Module] = {
-    val separate = SbtUtil.isBuiltWithSeparateModulesForProdTest(project)
-    val modules = allModulesWithScalaSdk(project)
-    // If the project has separate production and test modules enabled, only offer the production modules as a choice.
-    if (separate) modules.filter(_.isMain) else modules
-  }
+  // upstream: only production modules for sbt projects imported with separate production and test modules
+  // (the Consulo sbt import creates one module per directory)
+  def allProductionModulesWithScalaSdk(project: Project): Seq[Module] =
+    allModulesWithScalaSdk(project)
 
-  def isStale(module: Module): Boolean = {
-    val externalProjectPath = Option(ExternalSystemApiUtil.getExternalRootProjectPath(module))
-    val separate = SbtUtil.isBuiltWithSeparateModulesForProdTest(module.getProject, externalProjectPath)
-    val isMainOrTest = module.isMain || module.isTest
-    if (separate) !isMainOrTest else isMainOrTest
-  }
+  // upstream: stale sbt source set modules (see allProductionModulesWithScalaSdk)
+  def isStale(module: Module): Boolean = false
 }

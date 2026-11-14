@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala
 package worksheet
 
-import com.intellij.lang.Language
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{FileViewProviderFactory, PsiManager, SingleRootFileViewProvider}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.file.LanguageFileViewProviderFactory
+import consulo.language.impl.file.SingleRootFileViewProvider
+import consulo.language.psi.PsiManager
+import consulo.virtualFileSystem.VirtualFile
 
-final class WorksheetFileViewProviderFactory extends FileViewProviderFactory {
+abstract class WorksheetFileViewProviderFactoryBase extends LanguageFileViewProviderFactory {
 
   override def createFileViewProvider(
     file: VirtualFile,
@@ -14,6 +17,16 @@ final class WorksheetFileViewProviderFactory extends FileViewProviderFactory {
     eventSystemEnabled: Boolean
   ): SingleRootFileViewProvider =
     new WorksheetFileViewProvider(manager, file, eventSystemEnabled, language)
+}
+
+@ExtensionImpl
+final class WorksheetFileViewProviderFactory extends WorksheetFileViewProviderFactoryBase {
+  override def getLanguage: Language = WorksheetLanguage.INSTANCE
+}
+
+@ExtensionImpl
+final class WorksheetFileViewProviderFactory3 extends WorksheetFileViewProviderFactoryBase {
+  override def getLanguage: Language = WorksheetLanguage3.INSTANCE
 }
 
 private final class WorksheetFileViewProvider(

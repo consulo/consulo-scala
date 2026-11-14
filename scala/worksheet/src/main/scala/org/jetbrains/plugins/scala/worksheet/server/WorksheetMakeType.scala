@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.worksheet.server
 
+// upstream: InProcessServer / OutOfProcessServer / NonServer - there is no compile server, the worksheet is always
+// compiled in the IDE process by the compile engine
 abstract sealed class WorksheetMakeType
 
-case object InProcessServer extends WorksheetMakeType // compile server is enabled, worksheet is compiled in server and run inside the server process
-case object OutOfProcessServer extends WorksheetMakeType // compile server is enabled, worksheet is compiled in server is run outside the server process
-case object NonServer extends WorksheetMakeType // compile server is disabled
-
+case object InProcess extends WorksheetMakeType // the worksheet is compiled and run in the IDE process
+case object OutOfProcess extends WorksheetMakeType // the worksheet is compiled in the IDE process and run in a separate JVM

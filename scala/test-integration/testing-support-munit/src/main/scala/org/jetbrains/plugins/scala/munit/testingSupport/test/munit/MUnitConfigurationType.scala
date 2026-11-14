@@ -1,26 +1,24 @@
-package org.jetbrains.plugins.scala.testingSupport
-package test.munit
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, ConfigurationTypeUtil}
-import org.jetbrains.annotations.ApiStatus
+import consulo.annotation.component.ExtensionImpl
+import consulo.execution.configuration.{ConfigurationFactory, ConfigurationType, ConfigurationTypeUtil}
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.icons.Icons
 
-import javax.swing.Icon
-
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Experimental
+@ExtensionImpl
 final class MUnitConfigurationType extends ConfigurationType {
 
   val confFactory = new MUnitConfigurationFactory(this)
 
   override def getId: String = "MUnitRunConfiguration"
 
-  override def getDisplayName: String = MUnitTestingSupportBundle.message("munit.config.display.name")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(MUnitTestingSupportBundle.message("munit.config.display.name"))
 
-  override def getConfigurationTypeDescription: String = MUnitTestingSupportBundle.message("munit.config.description")
+  override def getConfigurationTypeDescription: LocalizeValue = LocalizeValue.of(MUnitTestingSupportBundle.message("munit.config.description"))
 
-  override def getHelpTopic: String = super.getHelpTopic
-
-  override def getIcon: Icon = Icons.SCALA_TEST
+  override def getIcon: Image = Icons.SCALA_TEST
 
   override def getConfigurationFactories: Array[ConfigurationFactory] = Array(confFactory)
 }

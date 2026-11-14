@@ -1,13 +1,17 @@
 package org.jetbrains.plugins.scala.worksheet.actions.repl
 
-import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.PsiElement
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.navigation.GotoDeclarationHandler
+import consulo.dataContext.DataContext
+import consulo.localize.LocalizeValue
+import consulo.codeEditor.Editor
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.worksheet.{GotoOriginalHandlerUtil, WorksheetFile}
 
+@ExtensionImpl
 final class WorksheetResNGotoHandler extends GotoDeclarationHandler {
 
   override def getGotoDeclarationTargets(sourceElement: PsiElement, offset: Int, editor: Editor): Array[PsiElement] = {
@@ -24,7 +28,7 @@ final class WorksheetResNGotoHandler extends GotoDeclarationHandler {
     }
   }
 
-  override def getActionText(context: DataContext): String = null
+  override def getActionText(context: DataContext): LocalizeValue = null
 }
 
 private object WorksheetResNGotoHandler {

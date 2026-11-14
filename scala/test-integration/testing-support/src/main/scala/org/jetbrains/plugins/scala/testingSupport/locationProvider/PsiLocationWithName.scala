@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.testingSupport.locationProvider
 
-import com.intellij.execution.PsiLocation
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import consulo.execution.action.PsiLocation
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 
 case class PsiLocationWithName[T <: PsiElement](
   project: Project,

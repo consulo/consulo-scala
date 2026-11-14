@@ -28,9 +28,10 @@ object ScalaPluginJars {
   val compilerSharedJar: Path = libRoot / "compiler-shared.jar"
   val scalaJpsJar: Path = libRoot / "scala-jps.jar"
   val runnersJarName: String = "runners.jar"
-  val runnersJar: Path = libRoot / runnersJarName
-  val replInterface: Path = libRoot / "repl-interface.jar"
-  val worksheetReplInterfaceImplsJar: Path = libRoot.getParent / "worksheet-repl-interface" / "impls.jar"
+  // upstream: libRoot / runners.jar - in Consulo the jar would split the worksheet package of the plugin layer
+  val runnersJar: Path = libRoot / "runners" / runnersJarName
+  val replInterface: Path = jpsRoot / "repl-interface.jar"
+  val worksheetReplInterfaceImplsJar: Path = libRoot / "worksheet-repl-interface" / "impls.jar"
   val semanticDecompiler: Path = libRoot / "semantic" / "decompiler.jar"
   val utilsRt: Path = libRoot / "utils_rt.jar"
 

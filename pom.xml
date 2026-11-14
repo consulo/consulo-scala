@@ -58,6 +58,7 @@
         <module>scala/scala-api</module>
         <module>scala/runners</module>
         <module>scala/test-integration/test-runners</module>
+        <module>scala/test-integration/test-runners-spec2_2x</module>
         <module>scala/test-integration/scalatest-finders</module>
         <module>scala/compiler-settings-definition</module>
         <module>scala/compiler-shared</module>
@@ -77,10 +78,19 @@
         <module>scala/integration/regexp</module>
         <module>scala/compiler-integration-server-management</module>
         <module>scala/incremental-compiler</module>
+        <module>scala/worksheet-repl-interface</module>
+        <module>scala/worksheet-repl-interface/impls</module>
         <module>scala/compile-server</module>
         <module>scala/debugger</module>
         <module>scala/compiler-consulo</module>
         <module>sbt/sbt-impl</module>
+        <module>scala/integration/properties</module>
+        <module>scala/worksheet</module>
+        <module>scala/test-integration/testing-support</module>
+        <module>scala/integration/maven</module>
+        <module>scala/integration/gradle</module>
+        <module>scala/integration/textAnalysis</module>
+        <module>scala/test-integration/testing-support-munit</module>
         <module>plugin</module>
     </modules>
 

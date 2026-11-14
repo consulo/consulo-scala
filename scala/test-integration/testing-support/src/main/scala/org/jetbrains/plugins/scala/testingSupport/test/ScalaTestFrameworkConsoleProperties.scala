@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.execution.Executor
-import com.intellij.execution.testframework.TestConsoleProperties
-import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.execution.executor.Executor
+import consulo.execution.test.TestConsoleProperties
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties
+import consulo.execution.ui.console.ConsoleView
+import consulo.ui.ex.action.DefaultActionGroup
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.testingSupport.locationProvider.ScalaTestLocationProvider
 import org.jetbrains.plugins.scala.testingSupport.test.actions.ScalaRerunFailedTestsAction
 

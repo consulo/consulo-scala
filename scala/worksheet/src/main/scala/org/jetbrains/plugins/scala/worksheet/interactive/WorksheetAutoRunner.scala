@@ -1,15 +1,22 @@
 package org.jetbrains.plugins.scala
 package worksheet.interactive
 
-import com.intellij.openapi.editor.event.{DocumentEvent, DocumentListener}
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.problems.WolfTheProblemSolver
-import com.intellij.psi.{PsiDocumentManager, PsiWhiteSpace}
-import com.intellij.util.Alarm
-import com.intellij.util.containers.ContainerUtil
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
+import consulo.document.event.{DocumentEvent, DocumentListener}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.editor.wolfAnalyzer.WolfTheProblemSolver
+import consulo.language.psi.{PsiDocumentManager, PsiWhiteSpace}
+import consulo.ui.ex.awt.util.Alarm
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.worksheet.actions.WorksheetFileHook
@@ -22,10 +29,13 @@ import scala.annotation.nowarn
 
 object WorksheetAutoRunner {
 
-  def getInstance(project: Project): WorksheetAutoRunner = project.getService(classOf[WorksheetAutoRunner])
+  def getInstance(project: Project): WorksheetAutoRunner = project.getInstance(classOf[WorksheetAutoRunner])
 }
 
-class WorksheetAutoRunner(project: Project) {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class WorksheetAutoRunner @Inject()(project: Project) {
 
   private val listeners = ContainerUtil.createConcurrentWeakMap[Document, DocumentListener]()
   private val myAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, project.unloadAwareDisposable)
@@ -144,7 +154,7 @@ class WorksheetAutoRunner(project: Project) {
         if (needToRunWorksheet) {
           RunWorksheetAction.runCompiler(editor, psiFile, auto = true)
         }
-      }): Runnable, requestDelay, true)
+      }): Runnable, requestDelay)
     }
   }
 }

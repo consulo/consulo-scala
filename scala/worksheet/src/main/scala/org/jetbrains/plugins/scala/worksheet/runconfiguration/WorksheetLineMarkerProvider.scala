@@ -1,26 +1,34 @@
 package org.jetbrains.plugins.scala.worksheet.runconfiguration
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import java.{util => ju}
 
-import com.intellij.codeInsight.daemon.{LineMarkerInfo, LineMarkerProvider}
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.editor.{Document, EditorFactory}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiWhiteSpace}
-import com.intellij.util.FunctionUtil
+import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.codeEditor.markup.GutterIconRenderer
+import consulo.document.Document
+import consulo.codeEditor.EditorFactory
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiWhiteSpace}
+import consulo.language.editor.Pass
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.plugins.scala.worksheet.{WorksheetBundle, WorksheetFile}
+import org.jetbrains.plugins.scala.worksheet.WorksheetFile
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class WorksheetLineMarkerProvider extends LineMarkerProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def getLineMarkerInfo(psiElement: PsiElement): LineMarkerInfo[?] = null
 
-  override def collectSlowLineMarkers(elements: ju.List[? <: PsiElement],
-                                      result: ju.Collection[? >: LineMarkerInfo[?]]): Unit =
+  override def collectSlowLineMarkers(elements: ju.List[PsiElement],
+                                      result: ju.Collection[LineMarkerInfo[?]]): Unit =
     // assuming that all elements are from the same file
     for {
       firstElement <- elements.iterator.asScala.nextOption()
@@ -64,11 +72,12 @@ class WorksheetLineMarkerProvider extends LineMarkerProvider {
     new LineMarkerInfo[PsiElement](
       leaf,
       leaf.getTextRange,
-      AllIcons.Actions.Forward,
-      FunctionUtil.nullConstant[PsiElement, String],
+      PlatformIconGroup.actionsForward(),
+      Pass.LINE_MARKERS,
+      // upstream: no tooltip, accessible name "accessibility.worksheet.arrow"
+      (_: PsiElement) => null,
       null,
-      GutterIconRenderer.Alignment.RIGHT,
-      () => WorksheetBundle.message("accessibility.worksheet.arrow")
+      GutterIconRenderer.Alignment.RIGHT
     )
   }
 }

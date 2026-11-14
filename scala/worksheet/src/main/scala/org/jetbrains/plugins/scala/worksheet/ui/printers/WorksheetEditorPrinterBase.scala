@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.worksheet.ui.printers
 
-import com.intellij.openapi.editor.ex.FoldingModelEx
-import com.intellij.openapi.editor.{Document, Editor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.util.ExceptionUtil
+import consulo.codeEditor.FoldingModelEx
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiDocumentManager
+import consulo.util.lang.ExceptionUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.worksheet.{WorksheetBundle, WorksheetUtils}

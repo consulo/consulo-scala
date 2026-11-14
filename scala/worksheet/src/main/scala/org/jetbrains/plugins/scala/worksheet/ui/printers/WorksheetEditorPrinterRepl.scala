@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.worksheet.ui.printers
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.compiler.CompilerMessageImpl
-import com.intellij.openapi.compiler.{CompilerMessage, CompilerMessageCategory}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.{Document, Editor, LogicalPosition}
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.util.concurrency.annotations.{RequiresEdt, RequiresWriteLock}
-import org.jetbrains.jps.incremental.scala.local.worksheet.repl_interface.PrintWriterReporter
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.compiler.{CompilerMessage, CompilerMessageCategory}
+import consulo.logging.Logger
+import consulo.document.Document
+import consulo.codeEditor.{Editor, LogicalPosition}
+import consulo.content.library.{Library => LibraryEx}
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
+import consulo.annotation.access.{RequiredWriteAction => RequiresWriteLock}
 import org.jetbrains.plugins.scala.compiler.data.worksheet.ReplMessages
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -25,7 +25,8 @@ import org.jetbrains.plugins.scala.worksheet.server.RemoteServerConnector.Compil
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterBase.InputOutputFoldingInfo
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterFactory.synchronizeViewerScrollWithMainEditor
-import org.jetbrains.plugins.scala.worksheet.ui.printers.repl.{PrintChunk, QueuedPsi}
+import org.jetbrains.plugins.scala.worksheet.server.WorksheetCompilerMessage
+import org.jetbrains.plugins.scala.worksheet.ui.printers.repl.{PrintChunk, QueuedPsi, ReplReportParser}
 
 import scala.collection.mutable
 import scala.util.matching.Regex
@@ -346,7 +347,7 @@ final class WorksheetEditorPrinterRepl private[printers](
     }
 
     val messageText = buildMessageText(replMessageInfo, includeErrorLineContent = true)
-    new CompilerMessageImpl(
+    WorksheetCompilerMessage(
       project,
       severity,
       messageText,
@@ -354,17 +355,16 @@ final class WorksheetEditorPrinterRepl private[printers](
       // compiler messages positions are 1-based
       // (NOTE: Scala 3 doesn't report errors at this moment, it prints them to stdout/err)
       messagePosition.line + 1,
-      messagePosition.column + 1,
-      null
+      messagePosition.column + 1
     )
   }
 
   private def extractReplMessage(messageLine: String): Option[ReplMessageInfo] = {
-    val parsed = Option(PrintWriterReporter.parse(messageLine))
+    val parsed = Option(ReplReportParser.parse(messageLine))
     parsed.map(toReplMessageInfo)
   }
 
-  private def toReplMessageInfo(res: PrintWriterReporter.MessageLineParsed): ReplMessageInfo = {
+  private def toReplMessageInfo(res: ReplReportParser.MessageLineParsed): ReplMessageInfo = {
     val messageCategory = res.severity match {
       case "INFO"    => CompilerMessageCategory.INFORMATION
       case "ERROR"   => CompilerMessageCategory.ERROR
@@ -375,7 +375,7 @@ final class WorksheetEditorPrinterRepl private[printers](
   }
 
   private def updateLastLineMarker(): Unit = inReadAction {
-    DaemonCodeAnalyzer.getInstance(project).restart(getScalaFile, "WorksheetEditorPrinterRepl.updateLastLineMarker")
+    DaemonCodeAnalyzer.getInstance(project).restart(getScalaFile)
   }
 }
 
@@ -412,7 +412,7 @@ object WorksheetEditorPrinterRepl {
   // but unfortunately old scala versions does not provide such API
   private def extraOffset(scalaSdk: LibraryEx, chunk: QueuedPsi): (Int, Int) = {
     import project._
-    import ScalaLanguageLevel._
+    import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel._
 
     val languageLevel = scalaSdk.properties.languageLevel
 
@@ -451,7 +451,7 @@ object WorksheetEditorPrinterRepl {
 
   object ReplMessage {
 
-    private val CONSOLE_REPORT_PREFIX = PrintWriterReporter.IJReportPrefix
+    private val CONSOLE_REPORT_PREFIX = ReplReportParser.IJReportPrefix
 
     def unapply(line: String): Option[String] =
       if (line.startsWith(CONSOLE_REPORT_PREFIX)) {

@@ -1,20 +1,17 @@
 package org.jetbrains.jps.incremental.scala.local.worksheet
 
-import com.intellij.openapi.util.SystemInfoRt
-import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.jps.incremental.scala.local.worksheet.repl_interface.ILoopWrapper
+import org.jetbrains.jps.incremental.scala.local.worksheet.repl_interface.{ILoopWrapper, ILoopWrapperReporter, NoopReporter, PrintWriterReporter}
 import org.jetbrains.jps.incremental.scala.local.worksheet.util.IOUtils
-import org.jetbrains.jps.incremental.scala.{Client, CompileServerBundle, MessageKind, compilerVersion}
+import org.jetbrains.jps.incremental.scala.CompileServerBundle
+import org.jetbrains.jps.incremental.scala.shared.{Client, compilerVersion}
 import org.jetbrains.plugins.scala.compiler.data.worksheet.WorksheetArgs
 import org.jetbrains.plugins.scala.compiler.data.{CompilerJars, SbtData}
-import org.jetbrains.plugins.scala.project.Version
-import sbt.util.{Level, Logger}
+import org.jetbrains.plugins.scala.rt.project.Version
 
 import java.io.PrintStream
 import java.lang.reflect.InvocationTargetException
-import java.net.{URLClassLoader, URLDecoder}
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path, Paths}
+import java.net.{URL, URLClassLoader}
+import java.nio.file.{Files, Path}
 
 class ILoopWrapperFactoryHandler {
   import ILoopWrapperFactoryHandler._
@@ -119,25 +116,11 @@ object ILoopWrapperFactoryHandler {
 
   private val FallBackScalaVersion = ScalaVersion("2.12.0")
 
-  private def findContainingJar(clazz: Class[_]): Option[Path] = {
-    val resource = clazz.getResource(s"/${clazz.getName.replace('.', '/')}.class")
-    if (resource == null) return None
-
-    val url = URLDecoder.decode(resource.toString.stripPrefix("jar:file:"), StandardCharsets.UTF_8.name())
-    val jarPathSuffix = ".jar!"
-    val idx = url.indexOf(jarPathSuffix)
-
-    if (idx == -1) return None
-
-    val jarPath = url.substring(0, idx + jarPathSuffix.length - 1)
-
-    val rawPath =
-      if (SystemInfoRt.isWindows && jarPath.startsWith("/")) jarPath.stripPrefix("/")
-      else jarPath
-
-    val systemDependentPath = FileUtil.toSystemDependentName(rawPath)
-    Some(Paths.get(systemDependentPath)).filter(Files.exists(_))
-  }
+  // upstream: parsed the jar path from the class resource URL
+  private def findContainingJar(clazz: Class[?]): Option[Path] =
+    Option(clazz.getProtectionDomain.getCodeSource)
+      .map(source => Path.of(source.getLocation.toURI))
+      .filter(path => Files.isRegularFile(path))
 
   private def createClassLoader(compilerJars: CompilerJars): URLClassLoader = {
     val iLoopWrapperClass = classOf[ILoopWrapper]
@@ -147,23 +130,26 @@ object ILoopWrapperFactoryHandler {
         .toSeq
 
     val jars = wrapperImplsJar ++ compilerJars.allJars ++ compilerJars.replClasspath
-    val replInterfaceLoader = classOf[ILoopWrapper].getClassLoader
-    new URLClassLoader(jars.map(_.toUri.toURL).toArray, replInterfaceLoader)
+    new ReplClassLoader(jars.map(_.toUri.toURL).toArray, classOf[ILoopWrapper].getClassLoader)
   }
 
-  // use for debugging
-  private class ClientDelegatingLogger(client: Client) extends Logger {
-    override def trace(t: => Throwable): Unit = client.trace(t)
-    override def success(message: => String): Unit = client.info(s"success: $message")
-    override def log(level: Level.Value, message: => String): Unit = client.message(toMessageKind(level), message)
+  /**
+   * upstream: the parent is the class loader of the REPL interface (the compile server class path), here it is the
+   * class loader of the compile engine which sees the classes of the IDE (the Scala library of the plugin), so only
+   * the REPL interface classes are taken from there, everything else - from the Scala compiler of the worksheet module
+   */
+  private final class ReplClassLoader(urls: Array[URL], replInterfaceLoader: ClassLoader)
+    extends URLClassLoader("scala-worksheet-repl", urls, ClassLoader.getPlatformClassLoader) {
 
-    private def toMessageKind(level: Level.Value): MessageKind = level match {
-      case sbt.util.Level.Debug => MessageKind.Info
-      case sbt.util.Level.Info  => MessageKind.Info
-      case sbt.util.Level.Warn  => MessageKind.Warning
-      case Level.Error          => MessageKind.Error
-    }
+    override def loadClass(name: String, resolve: Boolean): Class[?] =
+      if (ReplInterfaceClasses.exists(c => name == c.getName || name.startsWith(c.getName + "$")))
+        replInterfaceLoader.loadClass(name)
+      else
+        super.loadClass(name, resolve)
   }
+
+  private val ReplInterfaceClasses: Seq[Class[?]] =
+    Seq(classOf[ILoopWrapper], classOf[ILoopWrapperReporter], classOf[NoopReporter], classOf[PrintWriterReporter])
 
   case class ReplContext(sbtData: SbtData,
                          compilerJars: CompilerJars,

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.textAnalysis.spellchecker
 
-import com.intellij.codeInsight.AnnotationUtil
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiModifierListOwner}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.spellchecker.inspections.PlainTextSplitter
-import com.intellij.spellchecker.tokenizer.{EscapeSequenceTokenizer, TokenConsumer}
+import com.intellij.java.language.codeInsight.AnnotationUtil
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiModifierListOwner
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.spellcheker.tokenizer.splitter.PlainTextTokenSplitter
+import consulo.language.spellcheker.tokenizer.{EscapeSequenceTokenizer, TokenConsumer}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.base.literals.escapers.ScalaStringParser
 
@@ -36,7 +37,7 @@ private final class ScLiteralExpressionTokenizer extends EscapeSequenceTokenizer
       return
 
     if (!text.contains("\\")) {
-      consumer.consumeToken(element, PlainTextSplitter.getInstance)
+      consumer.consumeToken(element, PlainTextTokenSplitter.getInstance)
     }
     else {
       val rangeInHost = element.contentRangeInParent

@@ -1,36 +1,38 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
-import com.intellij.openapi.editor._
-import com.intellij.openapi.ide.CopyPasteManager
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiFile
+import consulo.annotation.component.ActionImpl
+
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
+import consulo.document.Document
+import consulo.codeEditor.Editor
+import consulo.ui.ex.CopyPasteManager
+import consulo.util.lang.StringUtil
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.extensions.StringExt
 import org.jetbrains.plugins.scala.worksheet.WorksheetBundle
 import org.jetbrains.plugins.scala.worksheet.runconfiguration.WorksheetCache
 import org.jetbrains.plugins.scala.worksheet.ui.WorksheetFoldGroup
 
-import java.awt.datatransfer.StringSelection
-import javax.swing.Icon
+import consulo.ui.image.Image
 
+@ActionImpl(id = "Scala.CopyWorksheet")
 class CopyWorksheetAction extends AnAction(
   WorksheetBundle.message("copy.scala.worksheet.action.text"),
   WorksheetBundle.message("copy.scala.worksheet.action.description"),
-  AllIcons.Actions.Copy
+  PlatformIconGroup.actionsCopy()
 ) with TopComponentAction {
 
   override def genericText: String = WorksheetBundle.message("worksheet.copy.button")
 
-  override def actionIcon: Icon = AllIcons.Actions.Copy
+  override def actionIcon: Image = PlatformIconGroup.actionsCopy()
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     for {
       (editor, psiFile) <- getCurrentScalaWorksheetEditorAndFile(e)
       copiedText <- CopyWorksheetAction.prepareCopiableText(editor, psiFile)
     } {
-      val contents = new StringSelection(copiedText)
-      CopyPasteManager.getInstance.setContents(contents)
+      CopyPasteManager.getInstance.setText(copiedText)
     }
   }
 }

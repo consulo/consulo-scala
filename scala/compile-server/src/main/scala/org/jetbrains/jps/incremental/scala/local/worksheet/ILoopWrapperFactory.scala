@@ -3,7 +3,8 @@ package org.jetbrains.jps.incremental.scala.local.worksheet
 import org.jetbrains.jps.incremental.scala.local.worksheet.ILoopWrapperFactory.{ILoopCreationException, MyUpdatePrintStream, MyUpdatePrintWriter}
 import org.jetbrains.jps.incremental.scala.local.worksheet.ILoopWrapperFactoryHandler.{ReplContext, ScalaVersion}
 import org.jetbrains.jps.incremental.scala.local.worksheet.repl_interface.{ILoopWrapper, ILoopWrapperReporter, NoopReporter, PrintWriterReporter}
-import org.jetbrains.jps.incremental.scala.{Client, CompileServerBundle}
+import org.jetbrains.jps.incremental.scala.CompileServerBundle
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.data.worksheet.{ReplMessages, WorksheetArgs}
 
 import java.io.{BufferedWriter, Flushable, IOException, OutputStream, OutputStreamWriter, PrintStream, PrintWriter}

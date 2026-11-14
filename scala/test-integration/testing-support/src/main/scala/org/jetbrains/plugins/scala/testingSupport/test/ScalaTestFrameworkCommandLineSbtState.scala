@@ -1,15 +1,13 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.filters.HyperlinkInfo
-import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
-import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.execution.{ExecutionResult, Executor}
-import org.jetbrains.annotations.{ApiStatus, Nullable}
-import org.jetbrains.plugins.scala.build.BuildMessages
+import consulo.execution.configuration.CommandLineState
+import consulo.execution.ui.console.{ConsoleView, TextConsoleBuilderFactory}
+import consulo.process.{BaseProcessHandler, ProcessHandler}
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
+import consulo.execution.test.sm.SMTestRunnerConnectionUtil
+import consulo.execution.ExecutionResult
+import consulo.execution.executor.Executor
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.plugins.scala.statistics.SbtShellCommandsUsagesCollector
 import org.jetbrains.plugins.scala.testingSupport.test.sbt.{ReportingSbtTestEventHandler, SbtShellTestsRunner, SbtTestRunningSupport}
@@ -19,7 +17,7 @@ import org.jetbrains.sbt.shell.communication.SbtShellCommandEventProcessor
 
 import java.io.OutputStream
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ScalaTestFrameworkCommandLineSbtState(
   override val configuration: AbstractTestRunConfiguration,
   env: ExecutionEnvironment,
@@ -40,16 +38,14 @@ class ScalaTestFrameworkCommandLineSbtState(
 
     RawProcessOutputDebugLogger.maybeAddListenerTo(processHandler)
 
-    val consoleView =
+    val consoleView: ConsoleView =
       if (useUiWithSbt) {
         val consoleProperties = configuration.createTestConsoleProperties(executor)
         consoleProperties.setIdBasedTestTree(true)
         SMTestRunnerConnectionUtil.createConsole("Scala", consoleProperties)
       } else {
-        new ConsoleViewImpl(project, true) {
-          override def print(text: String, contentType: ConsoleViewContentType, info: HyperlinkInfo): Unit =
-            super.print(BuildMessages.stripAnsiCodes(text), contentType, info)
-        }
+        // upstream: ConsoleViewImpl stripping ANSI codes, RunContentConsoleOutputProcessor already strips them
+        TextConsoleBuilderFactory.getInstance.createBuilder(project).getConsole
       }
     consoleView.attachToProcess(processHandler)
 
@@ -107,7 +103,7 @@ class ScalaTestFrameworkCommandLineSbtState(
    *
    * @see [[org.jetbrains.sbt.runner.SbtProgramRunnerBase.DummyProcessHandler]]
    */
-  private class DummyProcessHandler extends ProcessHandler {
+  private class DummyProcessHandler extends BaseProcessHandler {
     def terminate(exitCode: Int): Unit =
       notifyProcessTerminated(exitCode)
 

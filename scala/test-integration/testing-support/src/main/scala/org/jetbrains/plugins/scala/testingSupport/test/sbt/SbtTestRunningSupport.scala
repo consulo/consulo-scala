@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.testingSupport.test.sbt
 
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
+import consulo.module.Module
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfiguration.SettingMap
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait SbtTestRunningSupport {
 
   implicit def executionContext: ExecutionContext

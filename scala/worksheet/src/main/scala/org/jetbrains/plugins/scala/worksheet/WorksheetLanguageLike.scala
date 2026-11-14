@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.lang.Language
+import consulo.language.Language
 
 trait WorksheetLanguageLike { self: Language =>
 }

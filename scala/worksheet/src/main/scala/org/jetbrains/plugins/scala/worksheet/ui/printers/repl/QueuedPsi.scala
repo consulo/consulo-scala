@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.worksheet.ui.printers.repl
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 

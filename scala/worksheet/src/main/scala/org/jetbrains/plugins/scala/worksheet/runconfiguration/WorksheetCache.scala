@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.worksheet.runconfiguration
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.project.Project
-import com.intellij.platform.eel.provider.utils.EelProjectUtils
-import org.jetbrains.annotations.{ApiStatus, TestOnly}
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.{Inject, Singleton}
+import consulo.disposer.Disposable
+import consulo.logging.Logger
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.project.Project
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.worksheet.processor.WorksheetCompiler.CompilerMessagesCollector
 import org.jetbrains.plugins.scala.worksheet.ui.printers.{WorksheetEditorPrinter, WorksheetEditorPrinterRepl}
@@ -20,9 +22,12 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Try}
 
-@ApiStatus.Internal
-@Service(Array(Service.Level.PROJECT))
-final class WorksheetCache(project: Project) extends Disposable {
+// upstream: @ApiStatus.Internal
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class WorksheetCache @Inject()(project: Project) extends Disposable {
 
   //TODO: why this map value has collection type?
   // One worksheet editor can have only one viewer so instead it should be some bidirectional map Editor <-> Editor
@@ -49,8 +54,8 @@ final class WorksheetCache(project: Project) extends Disposable {
         result
       case _ =>
         val prefix = tempDirName.getOrElse("")
-        //noinspection ApiStatus,UnstableApiUsage
-        val tempDir = EelProjectUtils.createTemporaryDirectory(project, prefix, "", true)
+        // upstream: EelProjectUtils.createTemporaryDirectory (a temporary directory in the project environment)
+        val tempDir = Files.createTempDirectory(prefix)
         val src = tempDir / fileName
         val out = tempDir / "out"
         Files.createDirectories(out)
@@ -185,5 +190,5 @@ final class WorksheetCache(project: Project) extends Disposable {
 }
 
 object WorksheetCache {
-  def getInstance(project: Project): WorksheetCache = project.getService(classOf[WorksheetCache])
+  def getInstance(project: Project): WorksheetCache = project.getInstance(classOf[WorksheetCache])
 }

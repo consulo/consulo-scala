@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.textAnalysis.grazie
 
-import com.intellij.grazie.text.TextContent.{Exclusion, TextDomain}
-import com.intellij.grazie.text.{TextContent, TextContentBuilder, TextExtractor}
-import com.intellij.grazie.utils.{HtmlUtilsKt, PsiUtilsKt}
-import com.intellij.openapi.fileTypes.PlainTextLanguage
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.PsiUtilCore
-import com.intellij.util.containers.ContainerUtil
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.plain.PlainTextLanguage
+import consulo.language.spellcheker.text.TextContent.{Exclusion, TextDomain}
+import consulo.language.spellcheker.text.{TextContent, TextContentBuilder, TextExtractor}
+import consulo.language.spellcheker.text.util.{HtmlUtils, PsiUtils}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.psi.PsiElement
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.ast.TokenSet
+import consulo.language.psi.PsiUtilCore
+import consulo.util.collection.ContainerUtil
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.intelliLang.injection.ScalaInjectionInfosCollector
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -21,9 +24,12 @@ import java.util
 import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
- * @see java example [[com.intellij.grazie.ide.language.java.JavaTextExtractor]]
+ * @see java example [[consulo.java.impl.spellchecker.JavaTextExtractor]]
  */
+@ExtensionImpl
 final class ScalaTextExtractor extends TextExtractor:
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   private val ExcludedScalaDocElementTypes: TokenSet = TokenSet.create(
     ScalaDocTokenType.DOC_COMMENT_START,
@@ -35,7 +41,7 @@ final class ScalaTextExtractor extends TextExtractor:
     ScalaDocTokenType.DOC_HTTP_LINK_VALUE,
   )
 
-  /** @see [[com.intellij.grazie.text.TextContent.ExclusionKind.unknown]] */
+  /** @see [[consulo.language.spellcheker.text.TextContent.ExclusionKind.unknown]] */
   private val UnknownTokens = TokenSet.create(
     //link in `[[...]]`` (note, we still process description inside (e.g. `[[a.b.c description text]]`
     ScalaDocTokenType.DOC_LINK_TAG,
@@ -63,9 +69,9 @@ final class ScalaTextExtractor extends TextExtractor:
     if (allowedDomains.contains(TextDomain.DOCUMENTATION))
       root match
         case _: ScDocComment =>
-          return HtmlUtilsKt.excludeHtml(scaladocBuilderWithoutTags.build(root, TextDomain.DOCUMENTATION))
+          return HtmlUtils.excludeHtml(scaladocBuilderWithoutTags.build(root, TextDomain.DOCUMENTATION))
         case tag: ScDocTag if !ScalaDocCommentTokenizer.ExcludedTags.contains(tag.name) =>
-          return HtmlUtilsKt.excludeHtml(scaladocBuilder.build(root, TextDomain.DOCUMENTATION))
+          return HtmlUtils.excludeHtml(scaladocBuilder.build(root, TextDomain.DOCUMENTATION))
         case _ =>
 
     // Handle line & block comments
@@ -73,7 +79,7 @@ final class ScalaTextExtractor extends TextExtractor:
       ScalaTokenTypes.PLAIN_COMMENTS_TOKEN_SET.contains(PsiUtilCore.getElementType(e))
 
     if (allowedDomains.contains(TextDomain.COMMENTS) && isPlainCommentToken(root))
-      val roots = PsiUtilsKt.getNotSoDistantSimilarSiblings(root, e => isPlainCommentToken(e))
+      val roots = PsiUtils.getNotSoDistantSimilarSiblings(root, e => isPlainCommentToken(e))
       return ContainerUtil.createMaybeSingletonList(
         TextContent.joinWithWhitespace('\n', ContainerUtil.mapNotNull(roots, (c: PsiElement) => {
           TextContentBuilder.FromPsi.removingIndents(" \t*/").removingLineSuffixes(" \t").build(c, TextDomain.COMMENTS)
@@ -100,8 +106,8 @@ final class ScalaTextExtractor extends TextExtractor:
             val excludedRanges = contentRangesInLiteral.zip(contentRangesInLiteral.tail).flatMap { case (prev, next) =>
               // We need to use `max` and `max`
               // because `TextContentBuilder.build` returns content with spaces trimmed from both sides
-              val start = (prev.range.getEndOffset - offsetFromLiteralStart).max(0).min(contentText.length)
-              val end = (next.range.getStartOffset - offsetFromLiteralStart).max(0).min(contentText.length)
+              val start = (prev.third.getEndOffset - offsetFromLiteralStart).max(0).min(contentText.length)
+              val end = (next.third.getStartOffset - offsetFromLiteralStart).max(0).min(contentText.length)
 
               // Multiline string literals without margin can empty ranges for every blank line
               // We need to filter such empty ranges because `Exclusion` constructor will fail otherwise

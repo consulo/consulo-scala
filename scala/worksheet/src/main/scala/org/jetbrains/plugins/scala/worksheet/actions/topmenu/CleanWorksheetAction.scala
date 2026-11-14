@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem._
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.annotation.component.ActionImpl
+
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.codeEditor.EditorEx
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions._
@@ -18,17 +20,20 @@ import org.jetbrains.plugins.scala.worksheet.runconfiguration.WorksheetCache
 import org.jetbrains.plugins.scala.worksheet.ui.WorksheetDiffSplitters
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterFactory
 
-import javax.swing.{DefaultBoundedRangeModel, Icon}
+import consulo.ui.image.Image
 
+import javax.swing.DefaultBoundedRangeModel
+
+@ActionImpl(id = "Scala.CleanWorksheet")
 class CleanWorksheetAction extends AnAction(
   WorksheetBundle.message("clean.scala.worksheet.action.text"),
   WorksheetBundle.message("clean.scala.worksheet.action.description"),
-  AllIcons.Actions.GC
+  PlatformIconGroup.actionsGc()
 ) with TopComponentAction {
 
   override def genericText: String = WorksheetBundle.message("worksheet.clear.button")
 
-  override def actionIcon: Icon = AllIcons.Actions.GC
+  override def actionIcon: Image = PlatformIconGroup.actionsGc()
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     for { (editor, psiFile) <- getCurrentScalaWorksheetEditorAndFile(e) } {
@@ -59,7 +64,7 @@ object CleanWorksheetAction {
 
         editor.getSettings.setFoldingOutlineShown(true)
         editor.getContentComponent.requestFocus() //  properly repaints editor SCL-16073
-        DaemonCodeAnalyzer.getInstance(project).restart(psiFile, "Restart because of clean worksheets")
+        DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
       }
     }
   }
@@ -67,7 +72,7 @@ object CleanWorksheetAction {
   @RequiresEdt
   def resetScrollModel(viewer: Editor): Unit = {
     viewer match {
-      case viewerEx: EditorImpl =>
+      case viewerEx: EditorEx if viewerEx.isScrollPaneAvailable =>
         val scrollbar = viewerEx.getScrollPane.getVerticalScrollBar
         val commonModel = scrollbar.getModel
         val newModel = new DefaultBoundedRangeModel(

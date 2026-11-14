@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.worksheet.settings.persistent
 
-import com.intellij.util.xmlb.Converter
+import consulo.util.xml.serializer.Converter
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType.ReplRunType
 

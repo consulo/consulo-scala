@@ -1,9 +1,11 @@
-package org.jetbrains.plugins.scala.testingSupport.test.munit
-
-import com.intellij.testIntegration.TestFramework
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit
+import com.intellij.java.language.testIntegration.TestFramework
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
+import consulo.annotation.component.ExtensionImpl
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
+import org.jetbrains.plugins.scala.testingSupport.test.munit.{MUnitTestFrameworkMarker, MUnitUtils}
 
+@ExtensionImpl
 final class MUnitTestFramework extends AbstractTestFramework
   with TestFrameworkSetupSupportBase
   with MUnitTestFrameworkMarker {

@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.testingSupport.test.utils
 
-import com.intellij.execution.process.{ProcessEvent, ProcessHandler, ProcessListener}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.registry.Registry
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.process.ProcessHandler
+import consulo.logging.Logger
+import consulo.util.dataholder.Key
+import consulo.application.util.registry.Registry
 import org.jetbrains.plugins.scala.testingSupport.test.utils.RawProcessOutputDebugLogger.Log
 
 final class RawProcessOutputDebugLogger extends ProcessListener {

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiElement
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiElement
 
 private object GotoOriginalHandlerUtil {
   private val WorksheetGotoPsiKey = new Key[PsiElement]("WORKSHEET_GOTO_PSI_KEY")

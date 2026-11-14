@@ -14,7 +14,7 @@ DEPS=$MODULE/target/consulo-plugin-dependencies
 mkdir -p "$DEPS"
 fetch_plugin() {
   local id=$1
-  if [ "$(cat "$DEPS/$id.platform" 2>/dev/null)" != "$PLATFORM" ]; then
+  if [ ! -d "$DEPS/$id" ] || [ "$(cat "$DEPS/$id.platform" 2>/dev/null)" != "$PLATFORM" ]; then
     rm -rf "${DEPS:?}/$id"
     curl -sfL -o "$DEPS/$id.zip" "https://api.consulo.io/repository/download?id=$id&platformVersion=$PLATFORM&version=SNAPSHOT&channel=nightly&platformBuildSelect=true" || { echo "no build of $id for $PLATFORM"; exit 1; }
     unzip -q -o "$DEPS/$id.zip" -d "$DEPS" && rm "$DEPS/$id.zip"
@@ -31,6 +31,10 @@ fetch_plugin() {
 fetch_plugin consulo.java
 fetch_plugin org.jetbrains.fernflower
 fetch_plugin com.intellij.regexp
+fetch_plugin com.intellij.junit
+fetch_plugin com.intellij.properties
+fetch_plugin org.jetbrains.idea.maven
+fetch_plugin org.jetbrains.plugins.gradle
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
 for module in java.language.api java.compiler.impl; do

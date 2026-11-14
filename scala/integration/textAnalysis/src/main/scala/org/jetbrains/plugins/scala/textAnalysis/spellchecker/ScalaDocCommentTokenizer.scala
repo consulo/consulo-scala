@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.textAnalysis.spellchecker
 
-import com.intellij.psi.javadoc.{PsiDocComment, PsiDocTag}
-import com.intellij.spellchecker.inspections.CommentSplitter
-import com.intellij.spellchecker.tokenizer.{TokenConsumer, Tokenizer}
+import com.intellij.java.language.psi.javadoc.{PsiDocComment, PsiDocTag}
+import consulo.language.spellcheker.tokenizer.splitter.CommentTokenSplitter
+import consulo.language.spellcheker.tokenizer.{TokenConsumer, Tokenizer}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiNamedElementExt}
 
 /**
- * @see [[com.intellij.spellchecker.DocCommentTokenizer]] for the Java version
+ * @see [[consulo.java.impl.spellchecker.DocCommentTokenizer]] for the Java version
  */
 private class ScalaDocCommentTokenizer extends Tokenizer[PsiDocComment] {
   override def tokenize(comment: PsiDocComment, consumer: TokenConsumer): Unit = {
-    val splitter = CommentSplitter.getInstance
+    val splitter = CommentTokenSplitter.getInstance
     comment.children.foreach {
       case tag: PsiDocTag =>
         if (!ScalaDocCommentTokenizer.ExcludedTags.contains(tag.name))

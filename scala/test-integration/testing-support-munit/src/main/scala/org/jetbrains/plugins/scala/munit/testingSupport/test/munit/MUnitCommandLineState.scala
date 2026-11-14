@@ -1,18 +1,22 @@
-package org.jetbrains.plugins.scala.testingSupport
-package test.munit
-
-import com.intellij.execution.configurations.{CompositeParameterTargetedValue, JavaParameters, ParametersList}
-import com.intellij.execution.junit.JUnitConfiguration
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.testframework.TestSearchScope
-import com.intellij.execution.{ExecutionException, ExecutionResult, Executor, JavaTestFrameworkRunnableState}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.rt.junit.JUnitStarter
-import com.intellij.util.PathUtil
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.process.cmd.ParametersList
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
+import consulo.execution.test.TestSearchScope
+import consulo.process.ExecutionException
+import consulo.execution.ExecutionResult
+import com.intellij.java.execution.impl.JavaTestFrameworkRunnableState
+import consulo.execution.executor.Executor
+import consulo.logging.Logger
+import consulo.module.Module
+import com.intellij.rt.execution.junit.JUnitStarter
+import consulo.process.ProcessHandler
+import consulo.execution.process.ProcessTerminatedListener
+import consulo.process.ProcessHandlerBuilder
+import consulo.util.io.ClassPathUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.testingSupport.test.exceptions
-import org.jetbrains.plugins.scala.testingSupport.test.munit.MUnitCommandLineState.Log
+import org.jetbrains.plugins.scala.munit.testingSupport.test.munit.MUnitCommandLineState.Log
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.{AllInPackageTestData, TestConfigurationData}
 import org.jetbrains.plugins.scala.testingSupport.test.utils.RawProcessOutputDebugLogger
 
@@ -34,10 +38,10 @@ private class MUnitCommandLineState(
 
   private def testData: TestConfigurationData = conf.testConfigurationData
 
-  override def configureRTClasspath(javaParameters: JavaParameters, module: Module): Unit = {
+  override def configureRTClasspath(javaParameters: OwnJavaParameters): Unit = {
     val classPath = javaParameters.getClassPath
     try {
-      classPath.addFirst(PathUtil.getJarPathForClass(classOf[JUnitStarter]))
+      classPath.addFirst(ClassPathUtil.getJarPathForClass(classOf[JUnitStarter]))
     } catch {
       case noCassDef: NoClassDefFoundError if noCassDef.getMessage.toLowerCase.contains("junit") =>
         Log.warn(noCassDef)
@@ -46,29 +50,28 @@ private class MUnitCommandLineState(
   }
 
   // no fork supported for now
-  override def getForkMode: String = JUnitConfiguration.FORK_NONE
+  // upstream: JUnitConfiguration.FORK_NONE, the JUnit plugin does not export its packages
+  override def getForkMode: String = "none"
 
-  override def passForkMode(forkMode: String, tempFile: java.io.File, parameters: JavaParameters): Unit = ()
+  override def passForkMode(forkMode: String, tempFile: java.io.File, parameters: OwnJavaParameters): Unit = ()
 
   override def passTempFile(parametersList: ParametersList, tempFilePath: String): Unit = {
-    parametersList.add(
-      new CompositeParameterTargetedValue()
-        .addLocalPart("@")
-        .addPathPart(tempFilePath)
-    )
+    // upstream: CompositeParameterTargetedValue (local "@" and a target path), no execution targets in Consulo
+    parametersList.add("@" + tempFilePath)
   }
 
   override def deleteTempFiles(): Unit =
     super.deleteTempFiles()
 
   @throws[ExecutionException]
-  override protected def createJavaParameters: JavaParameters = {
+  override protected def createJavaParameters: OwnJavaParameters = {
     val javaParameters = super.createJavaParameters
 
-    javaParameters.setMainClass(JUnitConfiguration.JUNIT_START_CLASS)
+    // upstream: JUnitConfiguration.JUNIT_START_CLASS
+    javaParameters.setMainClass(classOf[JUnitStarter].getName)
     javaParameters.getProgramParametersList.add(JUnitStarter.IDE_VERSION + JUnitStarter.VERSION)
 
-    val preferredRunner = com.intellij.rt.junit.JUnitStarter.JUNIT4_PARAMETER // munit works with junit 4
+    val preferredRunner = JUnitStarter.JUNIT4_PARAMETER // munit works with junit 4
     javaParameters.getProgramParametersList.add(preferredRunner)
 
     val suitesToTestsMap = failedTests match {
@@ -108,6 +111,14 @@ private class MUnitCommandLineState(
     }
 
     javaParameters
+  }
+
+  // see com.intellij.execution.junit.TestObject.createHandler
+  override protected def createHandler(executor: Executor): ProcessHandler = {
+    appendForkInfo(executor)
+    val processHandler = ProcessHandlerBuilder.create(createCommandLine()).killable().build()
+    ProcessTerminatedListener.attach(processHandler)
+    processHandler
   }
 
   override def execute(executor: Executor, runner: ProgramRunner[?]): ExecutionResult = {

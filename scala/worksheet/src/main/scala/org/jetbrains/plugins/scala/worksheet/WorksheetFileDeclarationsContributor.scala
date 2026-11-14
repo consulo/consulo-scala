@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.codeInsight.completion.CompletionUtil
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.completion.CompletionInitializationContext
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.FileDeclarationsContributor
@@ -29,6 +32,7 @@ import org.jetbrains.plugins.scala.worksheet.actions.repl.ResNUtils
  *
  * @see SCL-14198
  */
+@ExtensionImpl
 final class WorksheetFileDeclarationsContributor extends FileDeclarationsContributor {
 
   override def accept(holder: PsiElement): Boolean =
@@ -70,7 +74,7 @@ final class WorksheetFileDeclarationsContributor extends FileDeclarationsContrib
       val expr = expressions.next()
       val exprText = expr.getText
 
-      val isCompletionInvokedOnElement = exprText.contains(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED)
+      val isCompletionInvokedOnElement = exprText.contains(CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED)
       if (!isCompletionInvokedOnElement) {
         val resNName = s"res$currResIndex"
 

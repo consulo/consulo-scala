@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.textAnalysis.grazie
 
-import com.intellij.grazie.text.TextContent
-import com.intellij.grazie.text.TextContent.Exclusion
-import com.intellij.grazie.utils.EscapeUtilsKt
-import com.intellij.openapi.util.TextRange
+import consulo.language.spellcheker.text.TextContent
+import consulo.language.spellcheker.text.TextContent.Exclusion
+import consulo.language.spellcheker.text.util.EscapeUtils
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.extensions.IterableOnceExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.base.literals.escapers.ScalaStringParser
@@ -21,7 +21,7 @@ object TextContentEscapeUtils {
    * Some escape sequences are replaced with the content (for now only white space) and others are marked as unknown.
    *
    * @example `aaa \n bbb \u0024 ccc \\ ddd` -> `aaa \n bbb ? ccc ? ddd`
-   * @note The logic in this method is similar to [[com.intellij.grazie.utils.EscapeUtilsKt#replaceBackslashEscapes]]
+   * @note The logic in this method is similar to [[consulo.language.spellcheker.text.util.EscapeUtils#replaceBackslashEscapes]]
    *       but respects all the sophisiticated rules of Scala language
    * @note These rules are quite complicated and depend on following:
    * 1. type of string literal (plain/interpolated(s/f/raw), multilie/singleline)
@@ -147,7 +147,7 @@ object TextContentEscapeUtils {
   }
 
   /**
-   * @note this is a more advanced alternative to [[EscapeUtilsKt#replaceBackslashEscapedWhitespace]].<br>
+   * @note this is a more advanced alternative to [[EscapeUtils#replaceBackslashEscapedWhitespace]].<br>
    *       It combines replacing whitespace escape sequences with whitespace characters and marking other escape sequences as unknown.
    */
   private def applyBackslashEscapeActions(content: TextContent, actions: Seq[BackslashEscapeAction]): TextContent = {
@@ -163,12 +163,12 @@ object TextContentEscapeUtils {
 
   private implicit class TextContentOps(private val content: TextContent) extends AnyVal {
     def replaceBackslashEscapedWhitespace(wsChars: Seq[Char]): TextContent = {
-      // NOTE: ideally, EscapeUtilsKt should provide API to replace all whitespaces in a single pass.
+      // NOTE: ideally, EscapeUtils should provide API to replace all whitespaces in a single pass.
       // In the current version of Grazie code (261.22158.46 March 5, 2026) this is not supported.
       // Peter Gromov mentioned that he might add dit later.
-      // If you are reading this, please check if EscapeUtilsKt supports anything like this nowadays
+      // If you are reading this, please check if EscapeUtils supports anything like this nowadays
       wsChars.foldLeft(content) { (acc, wsChar) =>
-        EscapeUtilsKt.replaceBackslashEscapedWhitespace(acc, wsChar)
+        EscapeUtils.replaceBackslashEscapedWhitespace(acc, wsChar)
       }
     }
   }

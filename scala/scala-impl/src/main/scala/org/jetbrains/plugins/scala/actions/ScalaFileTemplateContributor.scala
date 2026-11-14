@@ -9,6 +9,6 @@ import consulo.fileTemplate.{FileTemplateContributor, FileTemplateRegistrator}
 @ExtensionImpl
 final class ScalaFileTemplateContributor extends FileTemplateContributor {
   override def register(registrator: FileTemplateRegistrator): Unit =
-    Seq("Scala Class", "Scala CaseClass", "Scala CaseObject", "Scala Trait", "Scala Object", "Package Object", "Scala File", "Scala Enum")
+    Seq("Scala Class", "Scala CaseClass", "Scala CaseObject", "Scala Trait", "Scala Object", "Package Object", "Scala File", "Scala Enum", "Scala Worksheet")
       .foreach(registrator.registerInternalTemplate)
 }

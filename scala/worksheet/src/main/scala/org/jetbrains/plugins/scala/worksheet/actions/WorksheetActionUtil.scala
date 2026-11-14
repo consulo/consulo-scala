@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.worksheet.actions
 
-import com.intellij.openapi.actionSystem.AnActionEvent
+import consulo.ui.ex.action.AnActionEvent
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.worksheet.WorksheetFile

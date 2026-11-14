@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala
 package worksheet.ui
 
-import com.intellij.openapi.editor.ex.{FoldingListener, FoldingModelEx}
-import com.intellij.openapi.editor.{Document, Editor, FoldRegion}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.newvfs.FileAttribute
+import consulo.codeEditor.event.FoldingListener
+import consulo.codeEditor.FoldingModelEx
+import consulo.document.Document
+import consulo.codeEditor.{Editor, FoldRegion}
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.FileAttribute
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.worksheet.ui.WorksheetDiffSplitters.{DiffMapping, SimpleWorksheetSplitter}
 import org.jetbrains.plugins.scala.worksheet.ui.WorksheetFoldGroup._

@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.worksheet.server
 
-import com.intellij.compiler.CompilerMessageImpl
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.compiler.CompilerMessageCategory
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.application.ApplicationManager
+import consulo.compiler.CompilerMessageCategory
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.incremental.scala.{Client, DummyClient, MessageKind}
+import org.jetbrains.jps.incremental.scala.shared.{Client, DummyClient, MessageKind}
 import org.jetbrains.plugins.scala.extensions.LoggerExt
 import org.jetbrains.plugins.scala.util.ScalaPluginUtils
 import org.jetbrains.plugins.scala.worksheet.WorksheetUtils
@@ -85,7 +84,7 @@ private class MyTranslatingClient(
         WorksheetUtils.prependWithJdkCompatibilityWarning(finalText, project)
       } else finalText
 
-    val message = new CompilerMessageImpl(project, category, textWithOptionalJdkWarning, worksheet, line1, column1, null)
+    val message = WorksheetCompilerMessage(project, category, textWithOptionalJdkWarning, worksheet, line1, column1)
     worksheetEvaluation.message(message)
   }
 

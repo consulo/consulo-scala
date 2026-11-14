@@ -1,11 +1,9 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.ide.fileTemplates.FileTemplateDescriptor
-import com.intellij.openapi.module.Module
-import com.intellij.psi.{PsiClass, PsiMethod}
-import com.intellij.testIntegration.JavaTestFramework
-import org.jetbrains.concurrency.{Promise, Promises}
-
+import consulo.fileTemplate.FileTemplateDescriptor
+import consulo.module.Module
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import com.intellij.java.language.testIntegration.JavaTestFramework
 /**
  * This intermediate class is added to mute/hide some base methods from JavaTestFramework
  * TODO: investigate possibility to extend TestFramework instead of JavaTestFramework cause it has too many redundant methods
@@ -13,22 +11,18 @@ import org.jetbrains.concurrency.{Promise, Promises}
 abstract class JavaTestFrameworkBridge extends JavaTestFramework {
 
   /**
-   * Needed any non-null value to make "Fix" button in "Create test dialog" work.
-   * The hack is required due to how current dialog is implemented in platform.
-   *
-   * @see [[com.intellij.testIntegration.createTest.CreateTestDialog#onLibrarySelected]]
+   * upstream: a dummy non-null value to make the "Fix" button in "Create test dialog" call `setupLibrary`.
+   * Consulo's dialog adds the jar of `getLibraryPath` to the module roots instead, so no path is provided.
    */
-  override final def getLibraryPath: String =
-    this match {
-      case _: TestFrameworkSetupSupport => "DUMMY_NON_NULL_VALUE"
-      case _                            => null
-    }
+  override final def getLibraryPath: String = null
 
-  override final def setupLibrary(module: Module): Promise[Void] =
+  override final def setupLibrary(module: Module): Unit =
     this match {
       case framework: TestFrameworkSetupSupport => framework.setupFramework(module)
-      case _                                    => Promises.rejectedPromise()
+      case _                                    =>
     }
+
+  override def getMnemonic: Char = 0
 
   //
   // Explicitly override with dummy values: Scala Plugin doesn't use these features,
@@ -38,12 +32,10 @@ abstract class JavaTestFrameworkBridge extends JavaTestFramework {
   override final def getTestMethodFileTemplateDescriptor: FileTemplateDescriptor = null // TODO: @NotNull in platform
   override final def getTestClassFileTemplateDescriptor: FileTemplateDescriptor = null
   override final def getParametersMethodFileTemplateDescriptor: FileTemplateDescriptor = null
-  override final def getAfterClassMethodFileTemplateDescriptor: FileTemplateDescriptor = null
-  override final def getBeforeClassMethodFileTemplateDescriptor: FileTemplateDescriptor = null
   override final def getSetUpMethodFileTemplateDescriptor: FileTemplateDescriptor = null
   override final def getTearDownMethodFileTemplateDescriptor: FileTemplateDescriptor = null
 
-  override final def findSetUpMethod(clazz: PsiClass): PsiMethod = null
-  override final def findTearDownMethod(clazz: PsiClass): PsiMethod = null
-  override final def findOrCreateSetUpMethod(clazz: PsiClass): PsiMethod = null
+  override protected final def findSetUpMethod(clazz: PsiClass): PsiMethod = null
+  override protected final def findTearDownMethod(clazz: PsiClass): PsiMethod = null
+  override protected final def findOrCreateSetUpMethod(clazz: PsiClass): PsiMethod = null
 }

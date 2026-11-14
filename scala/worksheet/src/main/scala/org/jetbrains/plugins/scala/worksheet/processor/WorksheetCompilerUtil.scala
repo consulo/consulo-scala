@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.worksheet.processor
 
-import com.intellij.compiler.impl.CompilerErrorTreeView
-import com.intellij.openapi.editor.LogicalPosition
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.content.{ContentFactory, MessageView}
-import com.intellij.util.ui.MessageCategory
+import consulo.codeEditor.LogicalPosition
+import consulo.compiler.{CompilerMessage, CompilerMessageCategory}
+import consulo.project.Project
+import consulo.project.ui.view.MessageView
+import consulo.ui.ex.MessageCategory
+import consulo.ui.ex.content.ContentFactory
+import consulo.ui.ex.errorTreeView.{NewErrorTreeViewPanel, NewErrorTreeViewPanelFactory}
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.worksheet.ui.printers.repl.QueuedPsi
 
@@ -54,34 +56,63 @@ object WorksheetCompilerUtil {
                              msg: Array[String], severity: CompilationMessageSeverity,
                              onShow: () => Unit)
                             (implicit project: Project): Unit = {
-    val contentManager = MessageView.getInstance(project).getContentManager
-
-    def addMessageToView(treeView: CompilerErrorTreeView): Unit =
-      treeView.addMessage(severity.toType, msg, file, pos.line, pos.column, null)
-
     invokeLater {
       if (file != null && file.isValid) {
-        val (currentContent, treeError) =
-          Option(contentManager.findContent(ERROR_CONTENT_NAME)) match {
-            case Some(old) if old.getComponent.is[CompilerErrorTreeView] =>
-              val oldView = old.getComponent.asInstanceOf[CompilerErrorTreeView]
-              addMessageToView(oldView)
-              (old, oldView)
-            case _ =>
-              val newView = new CompilerErrorTreeView(project, null)
-              addMessageToView(newView)
-              //noinspection ReferencePassedToNls
-              val errorContent = ContentFactory.getInstance.createContent(newView, ERROR_CONTENT_NAME, true)
-              contentManager.addContent(errorContent)
-              (errorContent, newView)
-          }
-
-        contentManager.setSelectedContent(currentContent)
-
+        addMessagesToView(project, Seq((severity.toType, msg, file, pos.line, pos.column)))
         onShow()
       }
     }
   }
+
+  /**
+   * upstream: the compiler messages of a worksheet evaluation are shown by CompilerTask in the build tool window
+   * (CompilerTask is internal in Consulo)
+   */
+  def showCompilerMessages(project: Project, messages: Seq[CompilerMessage]): Unit =
+    if (messages.nonEmpty) invokeLater {
+      if (!project.isDisposed) {
+        val fileManager = VirtualFileManager.getInstance
+        val viewMessages = messages.map { message =>
+          val category = message.getCategory match {
+            case CompilerMessageCategory.ERROR   => MessageCategory.ERROR
+            case CompilerMessageCategory.WARNING => MessageCategory.WARNING
+            case _                               => MessageCategory.INFORMATION
+          }
+          val file = Option(message.getUrl).map(fileManager.findFileByUrl).orNull
+          // error tree view lines and columns are 0-based
+          (category, message.getMessage.get.split("\n"), file, message.getLine - 1, message.getColumn - 1)
+        }
+        addMessagesToView(project, viewMessages)
+      }
+    }
+
+  private def addMessagesToView(project: Project, messages: Seq[(Int, Array[String], VirtualFile, Int, Int)]): Unit = {
+    val messageView = MessageView.getInstance(project)
+    messageView.runWhenInitialized { () =>
+      val contentManager = messageView.getContentManager
+      val (currentContent, treeView) =
+        Option(contentManager.findContent(ERROR_CONTENT_NAME)) match {
+          case Some(old) if old.getUserData(ErrorTreeViewKey) != null =>
+            (old, old.getUserData(ErrorTreeViewKey))
+          case _ =>
+            val newView = consulo.application.Application.get.getInstance(classOf[NewErrorTreeViewPanelFactory]).createPanel(project, null, false, true, null)
+            //noinspection ReferencePassedToNls
+            val errorContent = ContentFactory.getInstance.createContent(newView.getComponent, ERROR_CONTENT_NAME, true)
+            errorContent.putUserData(ErrorTreeViewKey, newView)
+            errorContent.setDisposer(newView)
+            contentManager.addContent(errorContent)
+            (errorContent, newView)
+        }
+      messages.foreach { case (category, text, file, line, column) =>
+        treeView.addMessage(category, text, file, line, column, null)
+      }
+
+      contentManager.setSelectedContent(currentContent)
+      messageView.getToolWindow.activate(null, false)
+    }
+  }
+
+  private val ErrorTreeViewKey = consulo.util.dataholder.Key.create[NewErrorTreeViewPanel]("WORKSHEET_ERROR_TREE_VIEW")
 
   def showCompilationError(file: VirtualFile, pos: LogicalPosition, msg: Array[String], onShow: () => Unit)
                           (implicit project: Project): Unit =
@@ -91,11 +122,13 @@ object WorksheetCompilerUtil {
   // instance for the project has not been fully initialized, `getInstance` throws an IllegalStateException.
   // For the purposes of not complicating the code, we catch the exception and ignore it. If the MessageView instance
   // has not been initialized, there is no old content to remove.
-  def removeOldMessageContent(project: Project): Unit = Try {
-    val contentManager = MessageView.getInstance(project).getContentManager
-    val oldContent = contentManager.findContent(ERROR_CONTENT_NAME)
-    if (oldContent != null) {
-      contentManager.removeContent(oldContent, true)
+  def removeOldMessageContent(project: Project): Unit = invokeLater {
+    if (!project.isDisposed) Try {
+      val contentManager = MessageView.getInstance(project).getContentManager
+      val oldContent = contentManager.findContent(ERROR_CONTENT_NAME)
+      if (oldContent != null) {
+        contentManager.removeContent(oldContent, true)
+      }
     }
   }
 }

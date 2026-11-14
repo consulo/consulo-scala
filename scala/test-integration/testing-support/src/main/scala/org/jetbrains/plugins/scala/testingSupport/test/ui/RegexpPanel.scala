@@ -1,99 +1,81 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.ui
 
-import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.ui.table.JBTable
-import com.intellij.ui.{AnActionButton, AnActionButtonRunnable, ToolbarDecorator}
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.action.AnActionEvent
+import consulo.ui.ex.toolbar.{AddAction, DownMoveAction, EditAction, RemoveAction, ToolbarDecoratorBuilderFactory, UpMoveAction}
+import consulo.ui.model.{FlatDataModel, MutableFlatDataModel}
+import consulo.ui.{Component, Table, TableItemEditor, TextBox, ValueComponent}
 import org.jetbrains.plugins.scala.testingSupport.test.ui.RegexpPanel._
 
-import javax.swing.JPanel
-import javax.swing.table.DefaultTableModel
+import scala.jdk.CollectionConverters._
 
-final class RegexpPanel extends JPanel {
+final class RegexpPanel @RequiredUIAccess() {
 
-  private var myRegexpTable: JBTable = scala.compiletime.uninitialized
-  private var myPanel: JPanel  = scala.compiletime.uninitialized
+  private val myModel: MutableFlatDataModel[RegexpRow] = FlatDataModel.of(java.util.List.of[RegexpRow]())
 
-  init()
-
-  private def init(): Unit = {
-    setLayout(new VerticalFlowLayout(VerticalFlowLayout.MIDDLE, 0, 5, true, false))
-    myRegexpTable = createRegexpTable
-    myPanel = createRegexpPanel(myRegexpTable)
-    add(myPanel)
-  }
-
-  private def createRegexpTable: JBTable = {
-    val table = new JBTable
-    val model = table.getModel.asInstanceOf[DefaultTableModel]
-    model.addColumn(TestingSupportBundle.message("test.run.config.for.class.pattern"))
-    model.addColumn(TestingSupportBundle.message("test.run.config.test.pattern"))
+  private val myRegexpTable: Table[RegexpRow] = {
+    val table = Table.create(myModel)
+    table.addColumn[String](LocalizeValue.of(TestingSupportBundle.message("test.run.config.for.class.pattern")), _.classPattern)
+      .setEditor(new PatternEditor(_.classPattern, _.classPattern = _))
+    table.addColumn[String](LocalizeValue.of(TestingSupportBundle.message("test.run.config.test.pattern")), _.testPattern)
+      .setEditor(new PatternEditor(_.testPattern, _.testPattern = _))
     table
   }
 
-  private def createRegexpPanel(regexpTable: JBTable): JPanel = {
-    val addAction: AnActionButtonRunnable   = (_: AnActionButton) => {
-      val editor = regexpTable.getCellEditor
-      val rowAdd = regexpTable.getSelectedRow + 1
-
-      if (editor != null)
-        editor.stopCellEditing
-
-      regexpTable.model.insertRow(rowAdd, Array[AnyRef]("", ""))
-      if (rowAdd == 0)
-        regexpTable.requestFocus()
-
-      regexpTable.setRowSelectionInterval(rowAdd, rowAdd)
-      regexpTable.setColumnSelectionInterval(0, 0)
-    }
-
-    val removeAction: AnActionButtonRunnable = (_: AnActionButton) => {
-      val row = regexpTable.getSelectedRow
-      if (row != -1) {
-        val editor = regexpTable.getCellEditor
-
-        if (editor != null)
-          editor.stopCellEditing
-
-        regexpTable.model.removeRow(row)
-
-        if (row > 0) {
-          regexpTable.setRowSelectionInterval(row - 1, row - 1)
-          regexpTable.setColumnSelectionInterval(0, 0)
+  val getComponent: Component =
+    ToolbarDecoratorBuilderFactory.getInstance()
+      .create(myRegexpTable)
+      .addOrReplaceAction(new AddAction[RegexpRow] {
+        @RequiredUIAccess
+        override protected def doAdd(e: AnActionEvent): Unit = {
+          val selected = myRegexpTable.getSelectedItem
+          val rowAdd = if (selected == null) myModel.getSize else myModel.indexOf(selected) + 1
+          val row = new RegexpRow("", "")
+          myModel.add(row, rowAdd)
+          myRegexpTable.select(row)
         }
-      }
-    }
+      })
+      .addOrReplaceAction(new RemoveAction[RegexpRow] {
+        @RequiredUIAccess
+        override protected def doRemove(value: RegexpRow, e: AnActionEvent): Unit = {
+          val row = myModel.indexOf(value)
+          myModel.remove(value)
+          if (row > 0)
+            myRegexpTable.select(myModel.get(row - 1))
+        }
+      })
+      .disableAction(classOf[EditAction[?]])
+      .disableAction(classOf[UpMoveAction[?]])
+      .disableAction(classOf[DownMoveAction[?]])
+      .build()
 
-    ToolbarDecorator.createDecorator(regexpTable)
-      .setAddAction(addAction)
-      .setRemoveAction(removeAction)
-      .createPanel()
-  }
-
+  @RequiredUIAccess
   def setRegexps(classRegexps: Array[String], testRegexps: Array[String]): Unit = {
-    val model = myRegexpTable.model
-    model.removeRows()
-    val rows = classRegexps.zipAll(testRegexps, "", "").map { case (cr, tr) => Array[AnyRef](cr, tr) }
-    rows.foreach(model.addRow)
+    val rows = classRegexps.zipAll(testRegexps, "", "").map { case (cr, tr) => new RegexpRow(cr, tr) }
+    myModel.replaceAll(rows.toSeq.asJava)
   }
 
   def getRegexps: (Array[String], Array[String]) = {
-    val model = myRegexpTable.model
-    val column1 = Array.tabulate(model.getRowCount)(model.getValueAt(_, 0)).map(_.toString)
-    val column2 = Array.tabulate(model.getRowCount)(model.getValueAt(_, 1)).map(_.toString)
-    (column1, column2)
+    val rows = myModel.iterator().asScala.toArray
+    (rows.map(_.classPattern), rows.map(_.testPattern))
+  }
+
+  private class PatternEditor(getter: RegexpRow => String, setter: (RegexpRow, String) => Unit) extends TableItemEditor[RegexpRow, String] {
+    @RequiredUIAccess
+    override def createComponent(item: RegexpRow): ValueComponent[String] = TextBox.create(getter(item))
+
+    @RequiredUIAccess
+    override def commit(item: RegexpRow, value: String): Unit = {
+      setter(item, Option(value).getOrElse(""))
+      myModel.update(item)
+    }
   }
 }
 
 private object RegexpPanel {
 
-  implicit class JBTableExt(private val table: JBTable) extends AnyVal {
-    def model: DefaultTableModel = table.getModel.asInstanceOf[DefaultTableModel]
-  }
-
-  implicit class DefaultTableModelExt(private val model: DefaultTableModel) extends AnyVal {
-    def removeRows(): Unit =
-      for (rowIdx <- (0 until model.getRowCount).reverse)
-        model.removeRow(rowIdx)
-  }
+  // identity of a row is the instance (FlatDataModel.getId)
+  private final class RegexpRow(var classPattern: String, var testPattern: String)
 }

@@ -48,6 +48,12 @@
                                 <artifact>${project.groupId}:org.intellij.scala-semantic.decompiler:${project.version}</artifact>
                                 <path>lib/semantic/decompiler.jar</path>
                             </copy>
+                            <!-- upstream: merged into runners.jar; runs only in the test JVM (specs2 2.x notifier in the package
+                                 of test-runners), must not be loaded by the IDE -->
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-test.runners.spec2_2x:${project.version}</artifact>
+                                <path>lib/runners/test-runners-spec2_2x.jar</path>
+                            </copy>
                             <!-- upstream layout: compile-server.jar, zinc assembly and the interface jars are loaded in
                                  their own class loader (CompileEngine), zinc also needs the interface jars and compiler bridges
                                  as files: SbtData.Jars -->
@@ -58,6 +64,22 @@
                             <copy>
                                 <artifact>${project.groupId}:org.intellij.scala-incremental.compiler:${project.version}</artifact>
                                 <path>lib/jps/incremental-compiler.jar</path>
+                            </copy>
+                            <!-- upstream: lib/runners.jar - runs in user JVMs (worksheets, tests), contains the precompiled
+                                 MacroPrinter classes in package org.jetbrains.plugins.scala.worksheet, so it can't be a module of the
+                                 plugin layer in lib (split package with the worksheet module) -->
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-runners:${project.version}</artifact>
+                                <path>lib/runners/runners.jar</path>
+                            </copy>
+                            <!-- upstream: lib/repl-interface.jar and lib/worksheet-repl-interface/impls.jar (the REPL worksheets) -->
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-worksheet.repl.interface:${project.version}</artifact>
+                                <path>lib/jps/repl-interface.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-worksheet.repl.interface.impls:${project.version}</artifact>
+                                <path>lib/worksheet-repl-interface/impls.jar</path>
                             </copy>
                             <copy>
                                 <artifact>org.scala-sbt:compiler-interface:1.12.1</artifact>
@@ -194,6 +216,24 @@
         <!-- not plugin modules: lib/jps jars of CompileEngine (provided - only for the build order of the copies) -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-runners</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-worksheet.repl.interface</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-worksheet.repl.interface.impls</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-compile.server</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -201,6 +241,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-incremental.compiler</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- not a plugin module: lib/runners jar for the test JVM (provided - only for the build order of the copy) -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-test.runners.spec2_2x</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -212,6 +259,52 @@
             <scope>provided</scope>
         </dependency>
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
+        <!-- test-runners: TestRunnerUtil is used by the IDE, the jar is also added to the classpath of the test JVM -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-test.runners</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scalatest.finders</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-testing.support.munit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-text.analysis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-gradle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-maven</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-testing.support</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-worksheet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-properties</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-sbt.impl</artifactId>

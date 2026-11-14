@@ -1,53 +1,43 @@
 package org.jetbrains.plugins.scala.project.maven
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.platform.workspace.jps.entities.LibraryRoot.InclusionOptions
-import com.intellij.platform.workspace.jps.entities.{LibraryEntity, LibraryRoot, ModuleEntity}
-import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.util.JavaCoroutines
+import consulo.annotation.component.ExtensionImpl
+import consulo.content.ContentFolderTypeProvider
+import consulo.language.content.{ProductionContentFolderTypeProvider, TestContentFolderTypeProvider}
+import consulo.maven.importing.MavenImporterFromBuildPlugin
+import consulo.maven.rt.server.common.model.{MavenArtifact, MavenArtifactInfo, MavenPlugin}
+import consulo.maven.rt.server.common.server.NativeMavenProjectHolder
+import consulo.module.Module
+import consulo.project.Project
+import consulo.util.dataholder.Key
 import org.jdom.Element
-import org.jetbrains.idea.maven.importing.MavenWorkspaceConfigurator.{AdditionalFolder, FolderType, FoldersContext, MutableModelContext}
-import org.jetbrains.idea.maven.importing.{MavenApplicableConfigurator, MavenWorkspaceConfigurator}
-import org.jetbrains.idea.maven.model.{MavenArtifact, MavenArtifactInfo, MavenPlugin}
+import org.jetbrains.idea.maven.importing.{MavenContentFolder, MavenModifiableModelsProvider, MavenRootModelAdapter}
 import org.jetbrains.idea.maven.project.*
-import org.jetbrains.idea.maven.server.{MavenArtifactResolutionRequest, MavenEmbedderWrapper}
-import org.jetbrains.idea.maven.utils.MavenJDOMUtil
-import org.jetbrains.jps.model.serialization.SerializationConstants
+import org.jetbrains.idea.maven.server.MavenEmbedderWrapper
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.plugins.scala.project.external.CompanionProxyUtils.LibraryRootTypeIdCompanion
-import org.jetbrains.plugins.scala.project.external.{ReplClasspathCachedResolver, ScalaSdkUtils}
+import org.jetbrains.plugins.scala.project.extension.ScalaModuleExtension
+import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
 import org.jetbrains.plugins.scala.project.maven.ScalaMavenImporter.*
 
 import java.nio.file.Path
 import java.util
-import java.util.stream.Stream
-import kotlin.coroutines.Continuation
-import scala.annotation.nowarn
+import java.util.function.BiFunction
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
-final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId, PluginArtifactId)
-  with MavenProjectResolutionContributor with MavenWorkspaceConfigurator {
+// upstream: MavenWorkspaceConfigurator + MavenProjectResolutionContributor, Consulo Maven has the MavenImporter API
+@ExtensionImpl
+final class ScalaMavenImporter extends MavenImporterFromBuildPlugin(PluginGroupId, PluginArtifactId) {
 
-  override def getAdditionalFolders(
-    context: FoldersContext
-  ): Stream[AdditionalFolder] = {
-    def createAdditionalFolders(folder: String, folderType: FolderType): AdditionalFolder =
-      new AdditionalFolder(folder, folderType)
+  override def collectContentFolders(
+    mavenProject: MavenProject,
+    folderAcceptor: BiFunction[ContentFolderTypeProvider, String, MavenContentFolder]
+  ): Unit = {
+    if (validConfigurationIn(mavenProject).isEmpty) return
 
-    val scalaConfiguration = validConfigurationIn(context.getMavenProject)
-    val folders = scalaConfiguration match {
-      case Some(_) =>
-        val sourceFolders = getSourceFolders(context.getMavenProject).map(createAdditionalFolders(_, FolderType.SOURCE))
-        val testFolders = getTestFolders(context.getMavenProject).map(createAdditionalFolders(_, FolderType.TEST_SOURCE))
-        sourceFolders ++ testFolders
-      case _ => Seq.empty
-    }
-    folders.asJava.stream()
+    getSourceFolders(mavenProject).foreach(folderAcceptor.apply(ProductionContentFolderTypeProvider.getInstance, _))
+    getTestFolders(mavenProject).foreach(folderAcceptor.apply(TestContentFolderTypeProvider.getInstance, _))
   }
 
   private def getSourceFolders(mavenProject: MavenProject): Seq[String] =
@@ -61,12 +51,7 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
     goalPath: String,
     defaultDir: String,
   ): Seq[String] = {
-    def findGoalConfigValue(): String = {
-      val goalConfig = mavenProject.getPluginGoalConfiguration(PluginGroupId, PluginArtifactId, "add-source")
-      MavenJDOMUtil.findChildValueByPath(goalConfig, goalPath)
-    }
-
-    val goalConfigValue = findGoalConfigValue()
+    val goalConfigValue = findGoalConfigValue(mavenProject, "add-source", goalPath)
     val result = if (goalConfigValue == null) defaultDir else goalConfigValue
     Seq(result)
   }
@@ -74,51 +59,43 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
   // exclude "default" plugins, should be done inside IDEA's MavenImporter itself
   override def isApplicable(mavenProject: MavenProject): Boolean = validConfigurationIn(mavenProject).isDefined
 
-  override def beforeModelApplied(context: MutableModelContext): Unit = {
-    val mavenProjectsWithModules = context.getMavenProjectsWithModules.iterator().asScala
-    val project = context.getProject
+  override def preProcess(
+    module: Module,
+    mavenProject: MavenProject,
+    changes: MavenProjectChanges,
+    modelsProvider: MavenModifiableModelsProvider
+  ): Unit = {}
 
-    //noinspection ApiStatus
-    val replClasspathResolver = ReplClasspathCachedResolver(project)
+  // called after `resolve`
+  override def process(
+    modelsProvider: MavenModifiableModelsProvider,
+    module: Module,
+    rootModel: MavenRootModelAdapter,
+    mavenModel: MavenProjectsTree,
+    mavenProject: MavenProject,
+    changes: MavenProjectChanges,
+    mavenProjectToModuleName: util.Map[MavenProject, String],
+    postTasks: util.List[MavenProjectsProcessorTask]
+  ): Unit = {
+    validConfigurationIn(mavenProject).foreach { configuration =>
+      // Consulo: Scala is enabled in a module by the Scala module extension
+      enableModuleExtension(module, modelsProvider, classOf[ScalaModuleExtension])
 
-    mavenProjectsWithModules.foreach { mavenProjectWithModules =>
-      val mavenProject = mavenProjectWithModules.getMavenProject
-      validConfigurationIn(mavenProject).foreach { configuration =>
-        // TODO configuration.vmOptions
-        val compilerOptions = {
-          val plugins = configuration.plugins.map(id => localPathTo(mavenProject, id))
-          configuration.compilerOptions ++ plugins.map(path => "-Xplugin:" + path.toString)
-        }
-
-        val compileOrder = configuration.compileOrder.getOrElse(CompileOrder.Mixed)
-        val storage = context.getStorage
-
-        val implicitScalaLibrary = addImplicitScalaLibraryIfNeeded(mavenProject, project, storage)
-        val modules = mavenProjectWithModules.getModules.asScala
-        modules.foreach { module =>
-          val moduleEntity = module.getModule
-          moduleEntity.configureScalaCompilerSettingsFrom(project, "Maven", compilerOptions, compileOrder)
-
-          implicitScalaLibrary.foreach(moduleEntity.addLibraryDependency(storage, _))
-
-          configuration.compilerVersion match {
-            case Some(compilerVersion) =>
-              configureScalaSdk(moduleEntity, storage, project, compilerVersion, mavenProject, replClasspathResolver.resolve)
-            case _ =>
-          }
-        }
+      // TODO configuration.vmOptions
+      val compilerOptions = {
+        val plugins = configuration.plugins.map(id => localPathTo(mavenProject, id))
+        configuration.compilerOptions ++ plugins.map(path => "-Xplugin:" + path.toString)
       }
-    }
-  }
 
-  private def addImplicitScalaLibraryIfNeeded(mavenProject: MavenProject, project: Project, storage: MutableEntityStorage): Option[LibraryEntity] = {
-    val implicitScalaLibraryInfo = Option(mavenProject.getCachedValue(MavenImplicitScalaLibraryInfo))
-    implicitScalaLibraryInfo.map { info =>
-      val vfUrlManager = WorkspaceModel.getInstance(project).getVirtualFileUrlManager
-      val jarUrl = vfUrlManager.storeAndGet(s"jar://${info.path}!/")
+      val compileOrder = configuration.compileOrder.getOrElse(CompileOrder.Mixed)
 
-      val libraryRoot = new LibraryRoot(jarUrl, LibraryRootTypeIdCompanion.getCOMPILED, InclusionOptions.ROOT_ITSELF)
-      storage.addLibraryEntity(info.libraryName, project, SerializationConstants.MAVEN_EXTERNAL_SOURCE_ID, Seq(libraryRoot))
+      module.configureScalaCompilerSettingsFrom("Maven", compilerOptions, module.getProject, compileOrder)
+
+      configuration.compilerVersion match {
+        case Some(compilerVersion) =>
+          configureScalaSdk(module, modelsProvider, compilerVersion, mavenProject)
+        case _ =>
+      }
     }
   }
 
@@ -132,12 +109,10 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
    * see [[implicitScalaLibraryIfNeeded]]
    */
   private def configureScalaSdk(
-    module: ModuleEntity,
-    storage: MutableEntityStorage,
-    project: Project,
+    module: Module,
+    modelsProvider: MavenModifiableModelsProvider,
     compilerVersion: String,
-    mavenProject: MavenProject,
-    resolveReplClasspath: String => ReplClasspath
+    mavenProject: MavenProject
   ): Unit = {
     val compilerClasspathFull = mavenProject.getCachedValue(MavenFullCompilerClasspathKey)
     if (compilerClasspathFull != null) {
@@ -145,7 +120,7 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
         compilerClasspathFull.find(_.getFileName.toString == bridgeJarName)
       }
 
-      val replClasspath = resolveReplClasspath(compilerVersion)
+      val replClasspath = Option(mavenProject.getCachedValue(MavenReplClasspathKey)).getOrElse(ReplClasspath.Bundled)
 
       val toRemove = compilerBridgeBinaryJar.toSeq ++ replClasspath.asPaths
 
@@ -159,15 +134,20 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
         compilerBridgeBinaryJar,
         replClasspath,
         sdkPrefix = "Maven",
-        storage,
-        project,
-        scalaSdkSourceId = SerializationConstants.MAVEN_EXTERNAL_SOURCE_ID
+        modelsProvider.getProjectLibrariesModel,
+        modelsProvider.getRootModel(module)
       )
     }
   }
 
-  // called before `beforeModelApplied`
-  def resolve(mavenProject: MavenProject, embedder: MavenEmbedderWrapper): Unit = {
+  // called before `process`
+  override def resolve(
+    project: Project,
+    mavenProject: MavenProject,
+    nativeMavenProject: NativeMavenProjectHolder,
+    embedder: MavenEmbedderWrapper,
+    resolveContext: ResolveContext
+  ): Unit = {
     val configuration = validConfigurationIn(mavenProject)
     configuration.foreach { configuration =>
       val repositories = mavenProject.getRemoteRepositories
@@ -175,22 +155,16 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
       def pom(id: MavenId): MavenArtifactInfo = new MavenArtifactInfo(id.groupId, id.artifactId, id.version, "pom", null)
       def jar(id: MavenId): MavenArtifactInfo = new MavenArtifactInfo(id.groupId, id.artifactId, id.version, "jar", id.classifier.orNull)
 
-      def resolveArtifact(info: MavenArtifactInfo): util.List[MavenArtifact] = {
-        val request = new MavenArtifactResolutionRequest(info, repositories)
-        embedder.resolveArtifacts(util.List.of(request), null, null, null): @nowarn("cat=deprecation") // deprecated to be replaced with a suspend fun
-      }
-
       def resolveJar(id: MavenId): MavenArtifact = {
         //note sure why, but resolving of poms is done before resolving jars, it was done so since this class was created
-        resolveArtifact(pom(id))
-        resolveArtifact(jar(id)).get(0)
+        embedder.resolve(pom(id), repositories)
+        embedder.resolve(jar(id), repositories)
       }
 
       def resolveTransitively(id: MavenId): Seq[MavenArtifact] = {
         // NOTE: we can't use Seq + `asScala` here because the list will be serialised and passed to an external process
         val artifacts = util.Arrays.asList(jar(id))
-        val artifactResolveResult = embedder.resolveArtifactTransitively(artifacts, repositories): @nowarn("cat=deprecation") // TODO: deprecated to be replaced with a suspend fun. See IDEA-340501
-        val resolved = artifactResolveResult.mavenResolvedArtifacts.asScala.toSeq
+        val resolved = embedder.resolveTransitively(artifacts, repositories).asScala.toSeq
         // TODO: ideally test scope dependencies shouldn't be downloaded at all (see IDEA-270126)
         // note, resolved also includes root compiler jar with a `null` scope
         resolved.filter(_.getScope != "test")
@@ -199,11 +173,9 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
       // Scala Maven plugin can add scala-library to compilation classpath, without listing it as a project dependency.
       // Such an approach is probably incorrect, but we have to support that behaviour "as is".
       // TODO even the maintainer is not sure if it should be supported https://github.com/davidB/scala-maven-plugin/discussions/803
-      val implicitScalaLibraryInfo = {
-        val implicitScalaLibrary = implicitScalaLibraryIfNeeded(configuration)
-        val mavenArtifact = implicitScalaLibrary.map(resolveJar)
-        mavenArtifact.map { m => ImplicitScalaLibraryInfo(m.getLibraryName, Path.of(m.getPath)) }
-      }
+      // upstream: the implicit library is added to the workspace model, Consulo imports it as a regular project dependency
+      val implicitScalaLibrary = implicitScalaLibraryIfNeeded(configuration)
+      implicitScalaLibrary.map(resolveJar).foreach(mavenProject.addDependency)
 
       val compilerBridgeJar = configuration.compilerBridgeArtifact.map(resolveJar).map(a => Path.of(a.getPath))
 
@@ -212,25 +184,15 @@ final class ScalaMavenImporter extends MavenApplicableConfigurator(PluginGroupId
         resolveTransitively(configuration.compilerArtifact).map(a => Path.of(a.getPath)) ++ compilerBridgeJar
 
       mavenProject.putCachedValue(MavenFullCompilerClasspathKey, compilerClasspathWithTransitives)
-      implicitScalaLibraryInfo.foreach(mavenProject.putCachedValue(MavenImplicitScalaLibraryInfo, _))
+
+      // upstream: resolved by ReplClasspathCachedResolver while the model is applied, here it is done in the background resolve phase
+      configuration.compilerVersion.foreach { version =>
+        mavenProject.putCachedValue(MavenReplClasspathKey, ScalaSdkUtils.resolveReplClasspath(project, version))
+      }
 
       configuration.plugins.foreach(resolveJar)
     }
   }
-
-  // See IDEA-340501
-  override def onMavenProjectResolved(
-    project: Project,
-    mavenProject: MavenProject,
-    mavenEmbedderWrapper: MavenEmbedderWrapper,
-    continuation: Continuation[? >: kotlin.Unit]
-  ): AnyRef = JavaCoroutines.suspendJava[kotlin.Unit](
-    javaContinuation => {
-      resolve(mavenProject, mavenEmbedderWrapper)
-      javaContinuation.resume(kotlin.Unit.INSTANCE)
-    },
-    continuation
-  )
 
   /**
    * An implied scala-library dependency when there's no explicit scala-library dependency, but scalaVersion is given.<br>
@@ -272,22 +234,21 @@ private object ScalaMavenImporter {
   private val PluginArtifactId = "maven-scala-plugin"
   /**
    * Hack Key to keep info about full compiler classpath after it's resolved in [[ScalaMavenImporter.resolve]]
-   * to use it later in [[ScalaMavenImporter.beforeModelApplied]] when creating Scala SDK
+   * to use it later in [[ScalaMavenImporter.process]] when creating Scala SDK
    *
    * This key is used for each Maven project/module (not the IntelliJ IDEA project),
    * so in a multi-module project, each module can have a different compiler classpath.
    */
   private val MavenFullCompilerClasspathKey = Key.create[Seq[Path]]("MavenFullCompilerClasspathKey")
 
-  private case class ImplicitScalaLibraryInfo(libraryName: String, path: Path)
-  private val MavenImplicitScalaLibraryInfo = Key.create[ImplicitScalaLibraryInfo]("MavenImplicitScalaLibraryInfo")
+  private val MavenReplClasspathKey = Key.create[ReplClasspath]("MavenReplClasspathKey")
 
   private final val OrgScalaLang = "org.scala-lang"
 
   private def localPathTo(project: MavenProject, id: MavenId): Path = {
     val suffix = id.classifier.map("-" + _).getOrElse("")
     val jarName = s"${id.artifactId}-${id.version}$suffix.jar"
-    project.getLocalRepositoryPath
+    project.getLocalRepository.toPath
       .resolve(id.groupId.replaceAll("\\.", "/"))
       .resolve(id.artifactId)
       .resolve(id.version)
@@ -383,7 +344,7 @@ private object ScalaMavenImporter {
 
   /**
     * Represents a Maven artifact by group, artifact, version and optional classifier.
-    * Similar to [[org.jetbrains.idea.maven.model.MavenId]], but supports classifier.
+    * Similar to [[consulo.maven.rt.server.common.model.MavenId]], but supports classifier.
     */
   private case class MavenId(groupId: String, artifactId: String, version: String, classifier: Option[String] = None)
 

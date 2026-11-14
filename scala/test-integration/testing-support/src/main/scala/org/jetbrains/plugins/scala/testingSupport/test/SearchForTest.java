@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.test;
 
-import com.intellij.execution.testframework.TestSearchScope;
+import consulo.execution.test.TestSearchScope;
 import org.jetbrains.annotations.NonNls;
 
 public enum SearchForTest {

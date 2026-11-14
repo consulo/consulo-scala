@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import javax.swing.Icon
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
+import org.jetbrains.plugins.scala.api.LanguageFileTypeBase
 import org.jetbrains.plugins.scala.finder.FileTypeWithIsolatedDeclarations
-import org.jetbrains.plugins.scala.{LanguageFileTypeBase, ScalaFileType}
+import org.jetbrains.plugins.scala.icons.Icons
 
 object WorksheetFileType
   extends LanguageFileTypeBase(WorksheetLanguage.INSTANCE)
@@ -10,6 +12,8 @@ object WorksheetFileType
 
   override def getDefaultExtension = "sc"
 
-  // TODO worksheet logo
-  override def getIcon: Icon = ScalaFileType.INSTANCE.getIcon
+  override def getDescription: LocalizeValue = LocalizeValue.of(WorksheetBundle.message("worksheet.file.type.description"))
+
+  // upstream: TODO worksheet logo (the Scala file icon)
+  override def getIcon: Image = Icons.SCALA_FILE
 }

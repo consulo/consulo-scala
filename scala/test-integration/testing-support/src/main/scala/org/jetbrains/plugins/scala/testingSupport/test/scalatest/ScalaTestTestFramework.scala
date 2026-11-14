@@ -1,15 +1,18 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.scalatest
 
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.testIntegration.TestFramework
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.dataContext.DataManager
+import consulo.project.Project
+import com.intellij.java.language.testIntegration.TestFramework
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
 
 import scala.annotation.nowarn
 
+@ExtensionImpl
 final class ScalaTestTestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "ScalaTest"
@@ -22,7 +25,7 @@ final class ScalaTestTestFramework extends AbstractTestFramework with TestFramew
 
   override def getDefaultSuperClass: String = {
     @nowarn("cat=deprecation")
-    val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext())
+    val project = DataManager.getInstance().getDataContext().getData(Project.KEY)
     val scalaProjectSettings = ScalaProjectSettings.getInstance(project)
     scalaProjectSettings.getScalaTestDefaultSuperClass
   }

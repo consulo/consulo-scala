@@ -1,17 +1,16 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.{FileEditorManager, TextEditor}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.util.text.Strings
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.language.editor.scratch.ScratchUtil
+import consulo.codeEditor.Editor
+import consulo.fileEditor.{FileEditorManager, TextEditor}
+import consulo.project.Project
+import consulo.application.util.registry.Registry
+import consulo.util.lang.StringUtil
+import consulo.virtualFileSystem.VirtualFile
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.jps.incremental.scala.utils.ScalaJDKIncompatibilityDetector
-import org.jetbrains.plugins.scala.ScalaFileType
-import org.jetbrains.plugins.scala.compiler.CompileServerLauncher
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 object WorksheetUtils {
@@ -21,9 +20,9 @@ object WorksheetUtils {
   private val ShowReplErrorsInEditor = "scala.worksheet.show.repl.errors.in.editor"
   private val ShowReplErrorsInEditorInInteractiveMode = "scala.worksheet.show.repl.errors.in.editor.in.interactive.mode"
 
-  @TestOnly def continueWorksheetEvaluationOnExpressionFailure: Boolean = Registry.is(ContinueOnFirstFailure)
-  @TestOnly def showReplErrorsInEditor: Boolean = Registry.is(ShowReplErrorsInEditor)
-  @TestOnly def showReplErrorsInEditorInInteractiveMode: Boolean = Registry.is(ShowReplErrorsInEditorInInteractiveMode)
+  @TestOnly def continueWorksheetEvaluationOnExpressionFailure: Boolean = Registry.is(ContinueOnFirstFailure, false)
+  @TestOnly def showReplErrorsInEditor: Boolean = Registry.is(ShowReplErrorsInEditor, false)
+  @TestOnly def showReplErrorsInEditorInInteractiveMode: Boolean = Registry.is(ShowReplErrorsInEditorInInteractiveMode, false)
 
   def isWorksheetFile(project: Project, file: VirtualFile): Boolean = {
     WorksheetFileType.isMyFileType(file) ||
@@ -57,8 +56,9 @@ object WorksheetUtils {
    * @see [[org.jetbrains.jps.incremental.scala.utils.ScalaJDKIncompatibilityDetector.prependWithWarning]]
    */
   private[worksheet] def prependWithJdkCompatibilityWarning(text: String, project: Project): String = {
-    val jdkFeature = CompileServerLauncher.compileServerJdkFeatureVersion(project)
+    // upstream: the JDK of the compile server, here the compiler runs in the IDE process
+    val jdkFeature = Some(Runtime.version.feature)
     val prepended = ScalaJDKIncompatibilityDetector.prependWithWarning(text, jdkFeature)
-    Strings.convertLineSeparators(prepended)
+    StringUtil.convertLineSeparators(prepended)
   }
 }

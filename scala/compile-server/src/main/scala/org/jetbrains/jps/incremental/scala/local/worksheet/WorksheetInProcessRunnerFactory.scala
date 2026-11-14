@@ -1,6 +1,6 @@
 package org.jetbrains.jps.incremental.scala.local.worksheet
 
-import org.jetbrains.jps.incremental.scala.Client
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.jps.incremental.scala.local.worksheet.util.IOUtils
 import org.jetbrains.plugins.scala.compiler.data.worksheet.WorksheetArgs
 

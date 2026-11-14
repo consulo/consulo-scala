@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.testdata
 
-import com.intellij.execution.configurations.RuntimeConfigurationException
-import com.intellij.psi.search.GlobalSearchScopesCore
-import com.intellij.psi.search.searches.AllClassesSearch
+import consulo.execution.RuntimeConfigurationException
+import consulo.language.psi.scope.GlobalSearchScopesCore
+import com.intellij.java.indexing.search.searches.AllClassesSearch
 import org.jdom.Element
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition

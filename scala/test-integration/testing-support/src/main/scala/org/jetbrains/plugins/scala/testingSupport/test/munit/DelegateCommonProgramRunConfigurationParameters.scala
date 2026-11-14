@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.testingSupport.test.munit
 
-import com.intellij.execution.{CommonProgramRunConfigurationParameters, EnvFilesOptions}
+import consulo.execution.CommonProgramRunConfigurationParameters
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.TestConfigurationData
 
 import java.util
 
-trait DelegateCommonProgramRunConfigurationParameters extends EnvFilesOptions {
-  self: CommonProgramRunConfigurationParameters =>
+// upstream: also implements EnvFilesOptions (environment variables from .env files), not supported by Consulo
+trait DelegateCommonProgramRunConfigurationParameters extends CommonProgramRunConfigurationParameters {
 
   protected def delegateToTestData: TestConfigurationData
 
@@ -20,9 +20,6 @@ trait DelegateCommonProgramRunConfigurationParameters extends EnvFilesOptions {
 
   override def setEnvs(envs: util.Map[String, String]): Unit = data.setEnvs(envs)
   override def getEnvs: util.Map[String, String] = data.getEnvs
-
-  override def getEnvFilePaths: util.List[String] = data.envFilePaths
-  override def setEnvFilePaths(list: util.List[String]): Unit = data.setEnvFilePaths(list)
 
   override def setPassParentEnvs(passParentEnvs: Boolean): Unit = data.setPassParentEnvs(passParentEnvs)
   override def isPassParentEnvs: Boolean = data.isPassParentEnvs

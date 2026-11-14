@@ -1,17 +1,17 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import org.jetbrains.plugins.scala.worksheet.WorksheetBundle
 import org.jetbrains.plugins.scala.worksheet.settings.ui.WorksheetSettingsDialog
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 class ShowWorksheetSettingsAction extends AnAction with TopComponentAction {
 
   override def genericText: String = WorksheetBundle.message("worksheet.settings.button")
 
-  override def actionIcon: Icon = AllIcons.General.Settings
+  override def actionIcon: Image = PlatformIconGroup.generalSettings()
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     for {(_, psiFile) <- getCurrentScalaWorksheetEditorAndFile(e)} {

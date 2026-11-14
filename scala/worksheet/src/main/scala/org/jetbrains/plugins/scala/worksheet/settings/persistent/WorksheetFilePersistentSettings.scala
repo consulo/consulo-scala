@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.worksheet.settings.persistent
 
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.newvfs.FileAttribute
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.FileAttribute
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType
 import org.jetbrains.plugins.scala.worksheet.settings.persistent.WorksheetFilePersistentSettings.FileAttributes
 

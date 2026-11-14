@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.worksheet.settings.persistent
 
-import com.intellij.openapi.components._
-import com.intellij.openapi.project.Project
-import com.intellij.util.xmlb.XmlSerializerUtil
-import com.intellij.util.xmlb.annotations.OptionTag
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.component.persist.{PersistentStateComponent, State, Storage, StoragePathMacros}
+import jakarta.inject.Singleton
+import consulo.project.Project
+import consulo.util.xml.serializer.XmlSerializerUtil
+import consulo.util.xml.serializer.annotation.OptionTag
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType
 
 import scala.beans.{BeanProperty, BooleanBeanProperty}
@@ -13,10 +15,12 @@ import scala.beans.{BeanProperty, BooleanBeanProperty}
   storages = Array(
     new Storage(StoragePathMacros.WORKSPACE_FILE),
     new Storage("scala_settings.xml")
-  ),
-  reportStatistic = true
+  )
 )
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class WorksheetProjectDefaultPersistentSettings
   extends PersistentStateComponent[WorksheetProjectDefaultPersistentSettings.State]
     with WorksheetPersistentSettings {
@@ -41,11 +45,11 @@ final class WorksheetProjectDefaultPersistentSettings
 object WorksheetProjectDefaultPersistentSettings {
 
   def apply(project: Project): WorksheetProjectDefaultPersistentSettings =
-    project.getService(classOf[WorksheetProjectDefaultPersistentSettings])
+    project.getInstance(classOf[WorksheetProjectDefaultPersistentSettings])
 
   //noinspection ConvertNullInitializerToUnderscore
   class State {
-    @ReportValue
+    // upstream: @ReportValue
     @OptionTag(converter = classOf[WorksheetExternalRunTypeConverter])
     @BeanProperty
     var runType: WorksheetExternalRunType = WorksheetExternalRunType.getDefaultRunType

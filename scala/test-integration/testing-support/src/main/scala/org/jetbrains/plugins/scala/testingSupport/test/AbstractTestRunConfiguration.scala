@@ -1,21 +1,26 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.diagnostic.logging.LogConfigurationPanel
-import com.intellij.execution._
-import com.intellij.execution.configurations._
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.testframework.actions.ConsolePropertiesProvider
-import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.components.PathMacroManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.options.{SettingsEditor, SettingsEditorGroup}
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.xmlb.XmlSerializer
-import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.java.execution.CommonJavaRunConfigurationParameters
+import com.intellij.java.execution.impl.ConfigurationWithCommandLineShortener
+import com.intellij.java.execution.ShortenCommandLine
+import consulo.execution.executor.Executor
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
+import consulo.execution.configuration.{ConfigurationFactory, RunConfigurationBase, RunProfileState}
+import com.intellij.java.execution.configurations.JavaRunConfigurationModule
+import consulo.execution.RuntimeConfigurationException
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.execution.configuration.fragment.RunConfigurationFragment
+import consulo.execution.test.sm.runner.SMRunnerConsolePropertiesProvider
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties
+import consulo.application.ReadAction
+import consulo.project.`macro`.ProjectPathMacroManager
+import consulo.logging.Logger
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.util.xml.serializer.XmlSerializer
+import consulo.util.xml.serializer.annotation.Transient
 import org.jdom.Element
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{LoggerExt, ObjectExt}
@@ -50,7 +55,7 @@ abstract class AbstractTestRunConfiguration(
   new JavaRunConfigurationModule(project, true),
   configurationFactory
 ) with ConfigurationWithCommandLineShortener
-  with ConsolePropertiesProvider
+  with SMRunnerConsolePropertiesProvider
   with CommonJavaRunConfigurationParameters
   with DelegateCommonJavaRunConfigurationParameters //see scaladoc
   with exceptions {
@@ -91,7 +96,7 @@ abstract class AbstractTestRunConfiguration(
   final def getModule: Module =
     getConfigurationModule.getModule
 
-  override def getValidModules: java.util.List[Module] =
+  override def getValidModules: java.util.Collection[Module] =
     getProject.modulesWithScala.asJava
 
   override final def getModules: Array[Module] =
@@ -121,19 +126,19 @@ abstract class AbstractTestRunConfiguration(
     else
       super.getModules
 
-  override def getSearchScope: GlobalSearchScope = {
-    if (getModules.isEmpty) {
-      val superScope = Option(super.getSearchScope).getOrElse(GlobalSearchScope.EMPTY_SCOPE)
-      val allRegularModulesScope = notBuildModulesScope(getProject)
-      superScope.union(allRegularModulesScope)
-    }
-    else super.getSearchScope
+  /** upstream: overrides ModuleRunProfile.getSearchScope (ExecutionSearchScopes.executionScope of the modules) */
+  def getSearchScope: GlobalSearchScope = {
+    val modules = getModules
+    if (modules.isEmpty)
+      notBuildModulesScope(getProject)
+    else
+      GlobalSearchScope.union(modules.map(GlobalSearchScope.moduleRuntimeScope(_, true)))
   }
 
   private def notBuildModulesScope(project: Project): GlobalSearchScope = {
     val notBuildModules = project.modules.filterNot(_.isBuildModule)
     if (notBuildModules.nonEmpty)
-      GlobalSearchScope.union(notBuildModules.map(GlobalSearchScope.moduleWithDependenciesAndLibrariesScope).asJavaCollection)
+      GlobalSearchScope.union(notBuildModules.map(GlobalSearchScope.moduleWithDependenciesAndLibrariesScope).toArray)
     else
       GlobalSearchScope.EMPTY_SCOPE
   }
@@ -209,21 +214,20 @@ abstract class AbstractTestRunConfiguration(
     JavaRunConfigurationExtensionManager.checkConfigurationIsValid(thisConfiguration)
   }
 
-  override def getConfigurationEditor: SettingsEditor[? <: RunConfiguration] = {
-    val group: SettingsEditorGroup[AbstractTestRunConfiguration] = new SettingsEditorGroup
-    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new AbstractTestRunConfigurationEditor(project))
-    JavaRunConfigurationExtensionManager.getInstance.appendEditors(thisConfiguration, group)
-    group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel[AbstractTestRunConfiguration])
-    group
-  }
+  /**
+   * upstream: settings editor group with the test configuration form, the java run configuration extensions and the logs tab.
+   * In Consulo the common java options, the extensions and the logs are platform run configuration fragments.
+   */
+  override def createFragments(): ju.List[RunConfigurationFragment[?]] =
+    ju.List.of(new AbstractTestRunConfigurationFragment)
 
-  private def thisConfiguration: RunConfigurationBase[?] = this
+  private def thisConfiguration: RunConfigurationBase = this
 
   protected[test] final def isValidSuite(clazz: PsiClass): Boolean = {
     val suiteClass = getSuiteClass
     suiteClass.fold(
       exception => {
-        Log.traceSafe(s"isValidSuite: false (${exception.getMessageHtml.toString})")
+        Log.traceSafe(s"isValidSuite: false (${exception.getMessage})")
         false
       },
       validityChecker.isValidSuite(clazz, _)
@@ -246,18 +250,17 @@ abstract class AbstractTestRunConfiguration(
   def runStateProvider: RunStateProvider
 
   override def writeExternal(element: Element): Unit = {
+    // upstream: also writes the java run configuration extensions
     super.writeExternal(element)
-    JavaRunConfigurationExtensionManager.getInstance.writeExternal(thisConfiguration, element)
     XmlSerializer.serializeInto(this, element)
     testConfigurationData.writeExternal(element)
-    PathMacroManager.getInstance(getProject).collapsePathsRecursively(element)
+    ProjectPathMacroManager.getInstance(getProject).collapsePathsRecursively(element)
   }
 
   override def readExternal(element: Element): Unit = {
-    PathMacroManager.getInstance(getProject).expandPaths(element)
+    ProjectPathMacroManager.getInstance(getProject).expandPaths(element)
+    // upstream: also reads the java run configuration extensions
     super.readExternal(element)
-    JavaRunConfigurationExtensionManager.getInstance.readExternal(thisConfiguration, element)
-    readModule(element)
     XmlSerializer.deserializeInto(this, element)
     //TODO: since UserDataHolderBase extends AtomicReference in 2021.1 deserialization of it's value doesn't work and plain
     // Object instance is deserialized instead of KeyFMap

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.testingSupport.test.specs2
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.testingSupport.test.TestConfigurationUtil

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.testdata
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{JavaPsiFacade, PsiClass, PsiPackage}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
+import consulo.language.psi.PsiPackage
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jdom.Element
 import org.jetbrains.plugins.scala.extensions.{PsiClassExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.api.ScPackage
@@ -67,7 +68,7 @@ class AllInPackageTestData(config: AbstractTestRunConfiguration) extends TestCon
 
     if (pack == null) throw executionException(TestingSupportBundle.message("test.run.config.test.package.not.found", testPackagePath))
 
-    def collectClasses(pack: ScPackage, acc: ArrayBuffer[PsiClass] = ArrayBuffer.empty): collection.Seq[PsiClass] = {
+    def collectClasses(pack: ScPackageImpl, acc: ArrayBuffer[PsiClass] = ArrayBuffer.empty): collection.Seq[PsiClass] = {
       acc ++= pack.getClasses(scope)
       for (p <- pack.getSubPackages(scope))
         collectClasses(ScPackageImpl(p), acc)
@@ -98,7 +99,7 @@ class AllInPackageTestData(config: AbstractTestRunConfiguration) extends TestCon
 
   private def modulesScope(modules: Module*): GlobalSearchScope = {
     val moduleScopes = modules.map(GlobalSearchScope.moduleScope)
-    GlobalSearchScope.union(moduleScopes.asJavaCollection)
+    GlobalSearchScope.union(moduleScopes.toArray)
   }
 
   override def copyFieldsFromForm(form: TestRunConfigurationForm): Unit = {

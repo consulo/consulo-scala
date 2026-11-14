@@ -2,24 +2,33 @@ package org.jetbrains.plugins.scala
 package worksheet
 package actions
 
-import com.intellij.ide.fileTemplates.actions.AttributesDefaults
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent, CommonDataKeys, DataContext, PlatformCoreDataKeys}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiDirectory, PsiFile}
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
+import consulo.fileTemplate.AttributesDefaults
+import consulo.ui.ex.action.{AnActionEvent, AnActionWithSyncUpdate}
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import consulo.module.Module
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiDirectory, PsiFile}
 import org.jetbrains.plugins.scala.actions.LazyFileTemplateAction
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.worksheet.actions.NewScalaWorksheetAction._
 
+@ActionImpl(id = "Scala.NewScalaWorksheet", parents = Array(new ActionParentRef(value = new ActionRef(id = "NewGroup"), anchor = ActionRefAnchor.BEFORE, relatedToAction = new ActionRef(id = "NewFromTemplate"))))
 final class NewScalaWorksheetAction extends LazyFileTemplateAction(
   "Scala Worksheet",
   WorksheetBundle.message("new.scalaworksheet.menu.action.text"),
   WorksheetBundle.message("new.scalaworksheet.menu.action.description"),
   WorksheetFileType.getIcon
-) {
+) with AnActionWithSyncUpdate {
 
   override def getAttributesDefaults(dataContext: DataContext): AttributesDefaults = {
-    val selectedElement = CommonDataKeys.PSI_ELEMENT.getData(dataContext)
+    val selectedElement = dataContext.getData(CommonDataKeys.PSI_ELEMENT)
     val attributes = selectedElement match {
       case directory: PsiDirectory =>
         suggestIndex(directory.getVirtualFile).headOption
@@ -33,9 +42,7 @@ final class NewScalaWorksheetAction extends LazyFileTemplateAction(
   }
 
   override def update(event: AnActionEvent): Unit = {
-    super.update(event)
-
-    val isEnabled = event.getDataContext.getData(PlatformCoreDataKeys.MODULE).toOption.exists(_.hasScala)
+    val isEnabled = event.getDataContext.getData(Module.KEY).toOption.exists(_.hasScala)
 
     val presentation = event.getPresentation
     presentation.setEnabled(isEnabled)
@@ -43,7 +50,6 @@ final class NewScalaWorksheetAction extends LazyFileTemplateAction(
     presentation.setIcon(icon)
   }
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
 
 object NewScalaWorksheetAction {

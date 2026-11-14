@@ -59,6 +59,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-worksheet.repl.interface</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.scala-sbt</groupId>
             <artifactId>compiler-interface</artifactId>
             <version>1.12.1</version>

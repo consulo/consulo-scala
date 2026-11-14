@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.testingSupport.test.utest
 
-import com.intellij.java.library.JavaLibraryUtil
-import com.intellij.openapi.module.Module
-import com.intellij.psi.PsiElement
-import com.intellij.testIntegration.createTest.CreateTestAction
+import consulo.module.Module
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
-import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiElementExt, Version}
+import org.jetbrains.plugins.scala.project.{LibraryExt, ModuleExt, ProjectPsiElementExt}
+import org.jetbrains.plugins.scala.rt.project.Version
 
 private[testingSupport]
 object UTestVersionUtils {
@@ -21,7 +20,8 @@ object UTestVersionUtils {
    */
   def getUTestLibraryVersionForTestModuleOf(originalPsiElement: PsiElement): Option[Version] = {
     val originalActionModule = originalPsiElement.module
-    val correspondingModuleForTests = originalActionModule.map(m => CreateTestAction.suggestModuleForTests(m.getProject, m))
+    // upstream: CreateTestAction.suggestModuleForTests (separate production and test modules), a Consulo module has both
+    val correspondingModuleForTests = originalActionModule
     correspondingModuleForTests.flatMap(UTestVersionUtils.getUTestLibraryVersion)
   }
 
@@ -38,8 +38,13 @@ object UTestVersionUtils {
     if (module.isDisposed || module.getProject.isDefault) None
     else module.scalaMinorVersion.flatMap { scalaVersion =>
       val coordinatesWithSuffix = UTestMavenCoordinates + libraryCrossSuffix(scalaVersion)
-      val version = JavaLibraryUtil.getLibraryVersion(module, coordinatesWithSuffix)
-      Option(version).map(Version(_))
+      // upstream: JavaLibraryUtil.getLibraryVersion (maven coordinates of the library), here guessed from the library name
+      val version = module.libraries.iterator
+        .filter(_.getName != null)
+        .filter(_.getName.contains(coordinatesWithSuffix + ":"))
+        .flatMap(_.libraryVersion)
+        .nextOption()
+      version.map(Version(_))
     }
   }
 

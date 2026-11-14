@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.worksheet.settings
 
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.editor.{Editor, LogicalPosition}
-import com.intellij.psi.PsiErrorElement
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import consulo.application.ReadAction
+import consulo.codeEditor.{Editor, LogicalPosition}
+import consulo.language.psi.PsiErrorElement
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.worksheet.WorksheetBundle
@@ -54,7 +53,7 @@ object WorksheetExternalRunType {
 
     override def isReplRunType: Boolean = false
 
-    @RequiresBackgroundThread
+    // upstream: @RequiresBackgroundThread
     override def process(srcFile: ScalaFile, editor: Editor): Either[WorksheetPreprocessError, WorksheetCompileRunRequest] = {
       val computable: Callable[Either[PsiErrorElement, WorksheetDefaultSourcePreprocessor.PreprocessResult]] =
         () => WorksheetDefaultSourcePreprocessor.preprocess(srcFile, editor.getDocument)

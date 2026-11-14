@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.specs2
 
-import com.intellij.execution.configurations.{ConfigurationType, RunConfiguration}
-import com.intellij.openapi.project.Project
+import consulo.execution.configuration.ConfigurationType
+import consulo.execution.configuration.RunConfiguration
+import consulo.project.Project
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfigurationFactory
 
 class Specs2RunConfigurationFactory(override val typ: ConfigurationType)

@@ -1,37 +1,35 @@
 package org.jetbrains.plugins.scala
 package worksheet.processor
 
-import com.intellij.execution.CantRunException
-import com.intellij.execution.configurations.JavaParameters
-import com.intellij.execution.process.{OSProcessHandler, ProcessEvent, ProcessListener, ProcessTerminatedListener}
-import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.projectRoots.{JavaSdkType, JdkUtil}
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.io.BaseDataReader.SleepingPolicy
-import com.intellij.util.io.BaseOutputReader
+import com.intellij.java.execution.impl.util.JavaParametersUtil
+import consulo.execution.process.ProcessTerminatedListener
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.module.Module
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.process.{ProcessHandler, ProcessHandlerBuilder, ProcessOutputType}
+import consulo.util.dataholder.Key
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.project._
 import org.jetbrains.plugins.scala.worksheet.actions.WorksheetFileHook
 import org.jetbrains.plugins.scala.worksheet.processor.WorksheetCompiler.{EvaluationCallback, WorksheetCompilerResult}
+import org.jetbrains.plugins.scala.worksheet.server.RemoteServerConnector
 import org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinter
 
 import scala.util.control.NonFatal
 
 private object WorksheetCompilerLocalEvaluator {
 
-  private val RunnerClassName = "org.jetbrains.plugins.scala.worksheet.PlainWorksheetRunner"
+  private val RunnerClassName = "org.jetbrains.plugins.scala.runners.worksheet.PlainWorksheetRunner"
 
-  // this method is only used when run type is [[org.jetbrains.plugins.scala.worksheet.server.OutOfProcessServer]]
+  // this method is only used when run type is [[org.jetbrains.plugins.scala.worksheet.server.OutOfProcess]]
    def executeWorksheet(file: VirtualFile, mainClassName: String, addToCp: String)
                        (callback: EvaluationCallback, worksheetPrinter: WorksheetEditorPrinter)
                        (implicit module: Module): Unit =
     invokeLater {
       try {
         val params = createJavaParameters(file, mainClassName, addToCp)
-        val processHandler = createOSProcessHandler(params)
+        val processHandler = createProcessHandler(params)
 
         WorksheetFileHook.updateStoppableProcess(file, Some(() => processHandler.destroyProcess()))
         processHandler.addProcessListener(new ProcessListener {
@@ -50,15 +48,15 @@ private object WorksheetCompilerLocalEvaluator {
     }
 
   private def createJavaParameters(originalFile: VirtualFile, mainClassName: String, addToCp: String)
-                                  (implicit module: Module): JavaParameters =
+                                  (implicit module: Module): OwnJavaParameters =
     createDefaultParameters(originalFile.getCanonicalPath, mainClassName, addToCp)
 
   private def createDefaultParameters(originalFilePath: String, mainClassName: String, addToCp: String)
-                                     (implicit module: Module): JavaParameters =
+                                     (implicit module: Module): OwnJavaParameters =
     createParameters(
       module = module,
       mainClassName = mainClassName,
-      workingDirectory = Option(module.getProject.baseDir).fold("")(_.getPath),
+      workingDirectory = Option(module.getProject.getBaseDir).fold("")(_.getPath),
       additionalCp = addToCp,
       worksheetField = originalFilePath
     )
@@ -67,25 +65,19 @@ private object WorksheetCompilerLocalEvaluator {
                                mainClassName: String,
                                workingDirectory: String,
                                additionalCp: String,
-                               worksheetField: String): JavaParameters = {
-    val project = module.getProject
+                               worksheetField: String): OwnJavaParameters = {
+    // upstream: CantRunException.noJdkForModule if the module SDK is not a Java SDK
+    val jdk = JavaParametersUtil.createModuleJdk(module, false, null)
 
-    val rootManager = ModuleRootManager.getInstance(module)
-    val sdk = rootManager.getSdk
-    if (sdk == null || !sdk.getSdkType.isInstanceOf[JavaSdkType]) {
-      throw CantRunException.noJdkForModule(module)
-    }
-
-    val params = new JavaParameters()
+    val params = new OwnJavaParameters()
 
     params.getClassPath.addScalaCompilerClassPath(module): @scala.annotation.nowarn("cat=deprecation")
-    params.setUseDynamicClasspath(JdkUtil.useDynamicClasspath(project))
-    params.getClassPath.addRunners()
+    // upstream: params.getClassPath.addRunners() (lib/runners.jar)
+    params.getClassPath.add(RemoteServerConnector.RunnersJar.toString)
     params.setWorkingDirectory(workingDirectory)
     params.setMainClass(RunnerClassName)
-    params.configureByModule(module, JavaParameters.JDK_AND_CLASSES_AND_TESTS)
+    params.configureByModule(module, OwnJavaParameters.JDK_AND_CLASSES_AND_TESTS, jdk)
 
-    params.getClassPath.addRunners()
     params.getClassPath.add(additionalCp)
     params.getProgramParametersList.addParametersString(worksheetField)
     params.getProgramParametersList.prepend(mainClassName) //IMPORTANT! this must be first program argument
@@ -93,35 +85,43 @@ private object WorksheetCompilerLocalEvaluator {
     params
   }
 
-  // originally copied from com.intellij.execution.configurations.SimpleJavaParameters.createOSProcessHandler
-  private def createOSProcessHandler(params: JavaParameters): OSProcessHandler = {
-    val options = new BaseOutputReader.Options() {
-      // (SCL-17363) Currently we rely on that complete lines are passed to
-      // org.jetbrains.plugins.scala.worksheet.ui.printers.WorksheetEditorPrinterPlain.processLine
-      // Be cautious though, it leads to outbound buffer increase if someone prints long lines
-      // (see com.intellij.util.io.BaseOutputReader.myLineBuffer)
-      override def sendIncompleteLines = false
-      override def splitToLines = true
-      override def policy: SleepingPolicy = SleepingPolicy.NON_BLOCKING
-    }
-    val processHandler = new OSProcessHandler(params.toCommandLine) {
-      override def readerOptions(): BaseOutputReader.Options = options
-    }
+  private def createProcessHandler(params: OwnJavaParameters): ProcessHandler = {
+    val processHandler = ProcessHandlerBuilder.create(params.toCommandLine).killable().build()
     ProcessTerminatedListener.attach(processHandler)
     processHandler
   }
 
+  /**
+   * upstream: the process handler reads the output with BaseOutputReader options splitToLines = true and
+   * sendIncompleteLines = false (SCL-17363: WorksheetEditorPrinterPlain.processLine relies on complete lines),
+   * here the output is split to lines by the listener
+   */
   private def processListener(callback: EvaluationCallback, worksheetPrinter: WorksheetEditorPrinter): ProcessListener =
     new ProcessListener {
+      private val incompleteLine = new java.lang.StringBuilder
+
       override def onTextAvailable(event: ProcessEvent, outputType: Key[?]): Unit = {
-        val isStdOutput = ConsoleViewContentType.getConsoleViewType(outputType) == ConsoleViewContentType.NORMAL_OUTPUT
-        if (isStdOutput) {
-          val text = event.getText
-          worksheetPrinter.processLine(text)
+        if (outputType == ProcessOutputType.STDOUT) {
+          incompleteLine.synchronized {
+            incompleteLine.append(event.getText)
+            var lineEnd = incompleteLine.indexOf("\n")
+            while (lineEnd >= 0) {
+              val line = incompleteLine.substring(0, lineEnd + 1)
+              incompleteLine.delete(0, lineEnd + 1)
+              worksheetPrinter.processLine(line)
+              lineEnd = incompleteLine.indexOf("\n")
+            }
+          }
         }
       }
 
       override def processTerminated(event: ProcessEvent): Unit = {
+        incompleteLine.synchronized {
+          if (incompleteLine.length > 0) {
+            worksheetPrinter.processLine(incompleteLine.toString)
+            incompleteLine.setLength(0)
+          }
+        }
         worksheetPrinter.flushBuffer()
         val result = event.getExitCode match {
           case 0  => WorksheetCompilerResult.CompiledAndEvaluated

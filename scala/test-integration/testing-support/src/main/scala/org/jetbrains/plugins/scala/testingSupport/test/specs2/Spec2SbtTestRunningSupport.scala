@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.testingSupport.test.specs2
 
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.psi.impl.ScPackageImpl
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfiguration.SettingMap
 import org.jetbrains.plugins.scala.testingSupport.test.sbt.{SbtCommandsBuilder, SbtCommandsBuilderBase, SbtTestRunningSupportBase}
 import org.jetbrains.plugins.scala.testingSupport.test.specs2.Spec2SbtTestRunningSupport.Spec2SbtCommandsBuilder
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.{AllInPackageTestData, RegexpTestData, TestConfigurationData}
-import org.jetbrains.plugins.scala.util.ScalaPluginJars
+import org.jetbrains.plugins.scala.testingSupport.test.ScalaTestFrameworkCommandLineState
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import scala.concurrent.Future
@@ -16,14 +16,16 @@ private class Spec2SbtTestRunningSupport(testData: TestConfigurationData) extend
   override def allowsSbtUiRun: Boolean = false //TODO: disabled due to SCL-11640, SCL-11638
 
   override def modifySbtSettingsForUi(module: Module, comm: SbtShellCommunication): Future[SettingMap] = {
-    val value = "Attributed(new File(\"" + ScalaPluginJars.runnersJar.toAbsolutePath.toString.replace("\\", "\\\\") + "\"))(AttributeMap.empty)"
+    // upstream: ScalaPluginJars.runnersJar (runners, test-runners and test-runners-spec2_2x merged), here the test-runners jar
+    val runnersJar = ScalaTestFrameworkCommandLineState.runnersClassPath.head
+    val value = "Attributed(new File(\"" + runnersJar.toAbsolutePath.toString.replace("\\", "\\\\") + "\"))(AttributeMap.empty)"
     modifySbtSetting(
       comm = comm,
       module = module,
       settings = SettingMap(),
       setting = "fullClasspath",
       value = value,
-      modificationCondition = !_.contains(ScalaPluginJars.runnersJarName),
+      modificationCondition = !_.contains(runnersJar.getFileName.toString),
       shouldRevert = false
     )
   }

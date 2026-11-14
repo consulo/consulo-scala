@@ -1,20 +1,25 @@
-package org.jetbrains.sbt.language.completion
+package org.jetbrains.sbt.language.completion.properties
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.lang.Language
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.completion.lookup.LookupElementBuilder
+import consulo.language.Language
 import com.intellij.lang.properties.PropertiesLanguage
 import com.intellij.lang.properties.psi.impl.PropertyValueImpl
-import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.ElementPattern
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
+import consulo.application.dumb.DumbAware
+import consulo.language.pattern.ElementPattern
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.plugins.scala.lang.completion.CaptureExt
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
+import org.jetbrains.sbt.language.completion.SbtScalaVersionCompletionContributor
 import org.jetbrains.sbt.language.completion.SbtScalaVersionCompletionContributor.SbtScalaVersionCompletionProvider
-import org.jetbrains.sbt.language.completion.SbtVersionCompletionContributor.{SbtGroupId, SbtLaunchArtifactId}
+import org.jetbrains.sbt.language.completion.properties.SbtVersionCompletionContributor.{SbtGroupId, SbtLaunchArtifactId}
 
+@ExtensionImpl(id = "sbtVersionCompletionContributor", order = "first, after ml_context")
 private class SbtVersionCompletionContributor extends SbtScalaVersionCompletionContributor with DumbAware {
+  override def getLanguage: Language = PropertiesLanguage.INSTANCE
+
   override protected def pattern: ElementPattern[? <: PsiElement] =
     SbtPropertiesPsiElementPatterns.propertiesFilePattern && psiElement().inside(SbtPropertiesPsiElementPatterns.versionPropertyPattern)
 

@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.testingSupport.locationProvider
 
-import com.intellij.execution.testframework.sm.runner.SMTestLocator
-import com.intellij.execution.{Location, PsiLocation}
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.execution.test.sm.runner.SMTestLocator
+import consulo.execution.action.Location
+import consulo.execution.action.PsiLocation
+import consulo.document.Document
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.caches.ScalaShortNamesCacheManager
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ElementScope

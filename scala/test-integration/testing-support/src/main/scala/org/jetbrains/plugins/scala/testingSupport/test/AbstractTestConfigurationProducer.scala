@@ -1,16 +1,22 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test
 
-import com.intellij.execution.actions.{ConfigurationContext, ConfigurationFromContext, LazyRunConfigurationProducer}
-import com.intellij.execution.configurations.RunConfigurationBase
-import com.intellij.execution.testframework.AbstractJavaTestConfigurationProducer
-import com.intellij.execution.{JavaRunConfigurationExtensionManager, Location, RunManager, RunnerAndConfigurationSettings}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.util.{NlsSafe, Ref}
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.searches.ClassInheritorsSearch
+import consulo.execution.action.{ConfigurationContext, ConfigurationFromContext}
+import consulo.execution.action.RunConfigurationProducer
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.execution.configuration.RunConfigurationBase
+import com.intellij.java.execution.impl.junit.JavaRuntimeConfigurationProducerBase
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
+import consulo.execution.action.Location
+import consulo.execution.RunManager
+import consulo.execution.RunnerAndConfigurationSettings
+import consulo.logging.Logger
+import consulo.module.Module
+import consulo.util.lang.ref.SimpleReference
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiPackage}
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.plugins.scala.extensions.{LoggerExt, ObjectExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
@@ -22,8 +28,12 @@ import org.jetbrains.plugins.scala.testingSupport.test.testdata._
 
 import scala.jdk.CollectionConverters._
 
-abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfiguration]
-  extends LazyRunConfigurationProducer[T] {
+/**
+ * upstream: LazyRunConfigurationProducer with an abstract `getConfigurationFactory`, Consulo's producer takes the factory
+ * in the constructor
+ */
+abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfiguration](configurationFactory: ConfigurationFactory)
+  extends RunConfigurationProducer[T](configurationFactory) {
 
   final type PsiElementLocation = Location[? <: PsiElement]
 
@@ -36,10 +46,10 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
     exists
   }
 
-  override def setupConfigurationFromContext(
+  override protected def setupConfigurationFromContext(
     configuration: T,
     context: ConfigurationContext,
-    sourceElement: Ref[PsiElement]
+    sourceElement: SimpleReference[PsiElement]
   ): Boolean = {
     Log.traceSafe(
       s"setupConfigurationFromContext start:" +
@@ -74,7 +84,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
   private def ensure(bool: Boolean, errorMessage: => String): Either[String, Unit] =
     if (bool) Right(()) else Left(errorMessage)
 
-  private def extendCreatedConfiguration(configuration: RunConfigurationBase[?], location: PsiElementLocation): Unit = {
+  private def extendCreatedConfiguration(configuration: RunConfigurationBase, location: PsiElementLocation): Unit = {
     val instance = JavaRunConfigurationExtensionManager.getInstance
     instance.extendCreatedConfiguration(configuration, location)
   }
@@ -87,7 +97,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
     contextInfo: CreateFromContextInfo
   ): (PsiElement, RunnerAndConfigurationSettings) = {
     val displayName = configurationName(contextInfo)
-    val settings = RunManager.getInstance(location.getProject).createConfiguration(displayName, getConfigurationFactory)
+    val settings = RunManager.getInstance(location.getProject).createRunConfiguration(displayName, getConfigurationFactory)
 
     val configuration = settings.getConfiguration.asInstanceOf[T]
 
@@ -113,7 +123,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
     (element, settings)
   }
 
-  @NlsSafe
+  // upstream: @NlsSafe
   protected def configurationName(contextInfo: CreateFromContextInfo): String
 
   private def getContextInfo(location: PsiElementLocation): Option[CreateFromContextInfo] = {
@@ -127,7 +137,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
   private def getTestPackageWithPackageName(location: PsiElementLocation): Option[CreateFromContextInfo.AllInPackage] =
     location.getPsiElement match {
       case dir: PsiDirectory =>
-        Option(AbstractJavaTestConfigurationProducer.checkPackage(dir)).map(p => AllInPackage(p, dir.name))
+        Option(JavaRuntimeConfigurationProducerBase.checkPackage(dir)).map(p => AllInPackage(p, dir.name))
       case pack: PsiPackage  =>
         Some(AllInPackage(pack, pack.name))
       case _ =>

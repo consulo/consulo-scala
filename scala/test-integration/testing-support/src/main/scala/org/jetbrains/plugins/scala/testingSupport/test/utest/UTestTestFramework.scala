@@ -1,20 +1,25 @@
 package org.jetbrains.plugins.scala.testingSupport.test.utest
 
-import com.intellij.psi.PsiClass
-import com.intellij.testIntegration.TestFramework
-import com.intellij.testIntegration.createTest.CreateTestDialog
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.java.language.psi.PsiClass
+import com.intellij.java.language.testIntegration.TestFramework
+import com.intellij.java.impl.testIntegration.createTest.CreateTestDialog
+import org.jetbrains.plugins.scala.testingSupport.ScalaTestCreator
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTemplateDefinition}
-import org.jetbrains.plugins.scala.project.{ProjectPsiElementExt, Version}
+import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
 import org.jetbrains.plugins.scala.testingSupport.test.utest.UTestTestFramework._
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestFramework, TestFrameworkSetupSupportBase}
 
+@ExtensionImpl
 final class UTestTestFramework extends AbstractTestFramework with TestFrameworkSetupSupportBase {
 
   override def getName: String = "uTest"
 
   override def testFileTemplateName(dialog: CreateTestDialog): String = {
-    val uTestVersion = UTestVersionUtils.getUTestLibraryVersionForTestModuleOf(dialog.getTargetClass)
+    val uTestVersion = UTestVersionUtils.getUTestLibraryVersionForTestModuleOf(ScalaTestCreator.targetClassOf(dialog))
     if (uTestVersion.exists(_ < Version("0.9.0")))
       "uTest Object"
     else

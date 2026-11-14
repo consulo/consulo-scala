@@ -2,11 +2,13 @@ package org.jetbrains.plugins.scala
 package testingSupport
 package test.scalatest
 
-import com.intellij.execution._
-import com.intellij.execution.actions.RunConfigurationProducer
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.action.PsiLocation
+import consulo.execution.action.RunConfigurationProducer
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.util.lang.StringUtil
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
@@ -17,9 +19,9 @@ import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestConfiguration
 import org.jetbrains.plugins.scala.testingSupport.test.TestConfigurationUtil.isInheritor
 import org.scalatest.finders.{Selection => TestFindersSelection}
 
-final class ScalaTestConfigurationProducer extends AbstractTestConfigurationProducer[ScalaTestRunConfiguration] {
+@ExtensionImpl
+final class ScalaTestConfigurationProducer extends AbstractTestConfigurationProducer[ScalaTestRunConfiguration](ScalaTestConfigurationType().confFactory) {
 
-  override val getConfigurationFactory: ConfigurationFactory = ScalaTestConfigurationType().confFactory
 
   override val suitePaths: Seq[String] = ScalaTestTestFramework().baseSuitePaths
 
@@ -98,5 +100,5 @@ object ScalaTestConfigurationProducer {
   def instance: ScalaTestConfigurationProducer = apply()
 
   def apply(): ScalaTestConfigurationProducer =
-    RunConfigurationProducer.EP_NAME.findExtensionOrFail(classOf[ScalaTestConfigurationProducer])
+    RunConfigurationProducer.getInstance(classOf[ScalaTestConfigurationProducer])
 }

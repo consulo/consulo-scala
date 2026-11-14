@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.testingSupport.test.scalatest
 
-import com.intellij.execution.Location
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.execution.action.Location
+import consulo.logging.Logger
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotation
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

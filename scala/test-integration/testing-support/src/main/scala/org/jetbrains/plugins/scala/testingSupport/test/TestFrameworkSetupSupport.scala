@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.openapi.module.Module
-import com.intellij.testIntegration.TestFramework
-import org.jetbrains.concurrency.{Promise, Promises}
+import consulo.module.Module
+import com.intellij.java.language.testIntegration.TestFramework
+import consulo.util.concurrent.Promise
+import consulo.util.concurrent.Promises
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework.TestFrameworkSetupInfo
 import org.jetbrains.sbt.project.modifier.SimpleBuildFileModifier
 
@@ -27,6 +28,9 @@ trait TestFrameworkSetupSupportBase extends TestFrameworkSetupSupport {
    */
   def setupFramework(module: Module): Promise[Void] = {
     import org.jetbrains.plugins.scala.project._
+    import org.jetbrains.plugins.scala.api.project._
+    import org.jetbrains.plugins.scala.rt.project._
+    import org.jetbrains.plugins.scala.shared.project._
     module.scalaSdk match {
       case Some(sdk) =>
         val setupInfo = frameworkSetupInfo(sdk.libraryVersion)

@@ -1,12 +1,12 @@
-package org.jetbrains.sbt.language.completion
+package org.jetbrains.sbt.language.completion.properties
 
-import com.intellij.codeInsight.completion.CompletionInitializationContext
+import consulo.language.editor.completion.CompletionInitializationContext
 import com.intellij.lang.properties.PropertiesFileType
 import com.intellij.lang.properties.psi.Property
-import com.intellij.patterns.PlatformPatterns.{psiElement, psiFile}
-import com.intellij.patterns.PsiElementPattern.Capture
-import com.intellij.patterns.StandardPatterns.instanceOf
-import com.intellij.psi.PsiElement
+import consulo.language.pattern.PlatformPatterns.{psiElement, psiFile}
+import consulo.language.pattern.PsiElementPattern.Capture
+import consulo.language.pattern.StandardPatterns.instanceOf
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.completion.condition
 
 object SbtPropertiesPsiElementPatterns:

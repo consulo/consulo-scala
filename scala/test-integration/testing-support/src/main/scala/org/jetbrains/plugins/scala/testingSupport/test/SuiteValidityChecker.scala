@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.psi.{PsiClass, PsiMethod, PsiModifier, PsiModifierList}
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiModifier, PsiModifierList}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScModifierListOwner

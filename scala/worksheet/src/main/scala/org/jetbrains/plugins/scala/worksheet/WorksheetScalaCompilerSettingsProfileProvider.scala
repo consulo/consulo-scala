@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.psi.PsiFile
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.project.settings.{ScalaCompilerSettingsProfile, ScalaCompilerSettingsProfileProvider}
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetFileSettings
 
+@ExtensionImpl
 final class WorksheetScalaCompilerSettingsProfileProvider extends ScalaCompilerSettingsProfileProvider {
 
   override def provide(file: PsiFile): Option[ScalaCompilerSettingsProfile] =

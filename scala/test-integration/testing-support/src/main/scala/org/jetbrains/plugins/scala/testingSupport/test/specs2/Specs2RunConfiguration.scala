@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.specs2
 
-import com.intellij.execution.configurations._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject}
 import org.jetbrains.plugins.scala.testingSupport.test.CustomTestRunnerBasedStateProvider.TestFrameworkRunnerInfo
@@ -27,7 +27,7 @@ class Specs2RunConfiguration(
 
   override def runStateProvider: RunStateProvider = new CustomTestRunnerOrSbtShellStateProvider(
     this,
-    TestFrameworkRunnerInfo(classOf[org.jetbrains.plugins.scala.testingSupport.specs2.Specs2Runner]),
+    TestFrameworkRunnerInfo(classOf[org.jetbrains.plugins.scala.testrunners.testingSupport.specs2.Specs2Runner]),
     new Spec2SbtTestRunningSupport(testConfigurationData)
   )
 }

@@ -7,4 +7,5 @@ package org.jetbrains.plugins.scala.testingSupport.test.munit
  *
  * @see [[https://youtrack.jetbrains.com/issue/SCL-24859 SCL-24859]]
  */
-private[test] trait MUnitTestFrameworkMarker
+// upstream: private[test], also used by testing-support-munit (package org.jetbrains.plugins.scala.munit...)
+private[scala] trait MUnitTestFrameworkMarker

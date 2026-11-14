@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.structureView
 
-import com.intellij.execution.PsiLocation
-import com.intellij.icons.AllIcons
-import com.intellij.ide.util.FileStructureNodeProvider
-import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, TreeElement}
-import com.intellij.openapi.actionSystem.Shortcut
-import com.intellij.openapi.project.{IndexNotReadyException, Project}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.execution.action.PsiLocation
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.fileEditor.structureView.tree.FileStructureNodeProvider
+import consulo.fileEditor.structureView.tree.ActionPresentation
+import consulo.fileEditor.structureView.tree.ActionPresentationData
+import consulo.fileEditor.structureView.tree.{TreeElement}
+import consulo.ui.ex.action.Shortcut
+import consulo.application.dumb.IndexNotReadyException
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.parser.{ScCodeBlockElementType, ScalaElementType}
@@ -45,7 +48,7 @@ class TestNodeProvider extends FileStructureNodeProvider[TreeElement] {
 
   //TODO: what icon should be used here?
   override def getPresentation: ActionPresentation = new ActionPresentationData(
-    getCheckBoxText, null, AllIcons.Hierarchy.Supertypes)
+    getCheckBoxText, null, PlatformIconGroup.hierarchySupertypes())
 
   override def getName: String = "SCALA_SHOW_SCALATEST_TESTS"
 

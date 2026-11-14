@@ -1,7 +1,9 @@
 package org.jetbrains.jps.incremental.scala.local
 
-import org.jetbrains.jps.incremental.scala.shared.{Client, CompileEngine}
-import org.jetbrains.plugins.scala.compiler.data.{CompilationData, CompilerData, ExpressionEvaluationArguments, SbtData}
+import org.jetbrains.jps.incremental.scala.local.worksheet.WorksheetServer
+import org.jetbrains.jps.incremental.scala.shared.{Client, CompileEngine, DelegateClient, MessageKind}
+import org.jetbrains.plugins.scala.compiler.data.worksheet.WorksheetArgs
+import org.jetbrains.plugins.scala.compiler.data.{Arguments, CompilationData, CompilerData, ExpressionEvaluationArguments, SbtData}
 
 import java.net.URLClassLoader
 import java.nio.file.Path
@@ -14,10 +16,38 @@ final class CompileEngineImpl extends CompileEngine {
 
   private val server = new LocalServer
 
+  private lazy val worksheetServer = new WorksheetServer
+
   private val classLoaderCache: Cache[Seq[Path], ClassLoader] = new Cache(3)
 
   override def compile(sbtData: SbtData, compilerData: CompilerData, compilationData: CompilationData, client: Client): Unit =
     server.doCompile(sbtData, compilerData, compilationData, client)
+
+  // upstream: org.jetbrains.jps.incremental.scala.remote.Main.compileLogic
+  override def compileAndRunWorksheet(arguments: Arguments, client: Client): Unit = {
+    val errorTrackingClient = new ErrorTrackingClient(client)
+    val worksheetArgs = arguments.worksheetArgs
+    val needToCompile = !worksheetArgs.exists(_.isInstanceOf[WorksheetArgs.RunRepl])
+    if (needToCompile) {
+      server.doCompile(arguments.sbtData, arguments.compilerData, arguments.compilationData, errorTrackingClient)
+    }
+
+    worksheetArgs match {
+      case Some(wa) if !errorTrackingClient.hasErrors =>
+        worksheetServer.loadAndRun(wa, arguments, errorTrackingClient)
+      case _ =>
+    }
+  }
+
+  // upstream: org.jetbrains.jps.incremental.scala.remote.EncodingEventGeneratingClient.hasErrors
+  private final class ErrorTrackingClient(client: Client) extends DelegateClient(client) {
+    @volatile var hasErrors = false
+
+    override def message(msg: Client.ClientMsg): Unit = {
+      if (msg.kind == MessageKind.Error) hasErrors = true
+      super.message(msg)
+    }
+  }
 
   // upstream: org.jetbrains.jps.incremental.scala.remote.Main.evaluateExpressionLogic
   override def evaluateExpression(arguments: ExpressionEvaluationArguments, client: Client): Unit = {

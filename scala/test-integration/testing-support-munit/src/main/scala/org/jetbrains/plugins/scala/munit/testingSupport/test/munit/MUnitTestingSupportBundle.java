@@ -1,22 +1,22 @@
-package org.jetbrains.plugins.scala.testingSupport.test.munit;
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit;
 
-import com.intellij.DynamicBundle;
+import consulo.component.util.localize.AbstractBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.PropertyKey;
 
-public final class MUnitTestingSupportBundle {
+public final class MUnitTestingSupportBundle extends AbstractBundle {
     @NonNls
-    public static final String BUNDLE = "messages.MUnitTestingSupportBundle";
-    private static final DynamicBundle INSTANCE = new DynamicBundle(MUnitTestingSupportBundle.class, BUNDLE);
+    public static final String BUNDLE = "org.jetbrains.plugins.scala.munit.testingSupport.test.munit.MUnitTestingSupportBundle";
+    private static final MUnitTestingSupportBundle INSTANCE = new MUnitTestingSupportBundle();
 
     private MUnitTestingSupportBundle() {
+        super(BUNDLE);
     }
 
-    @NotNull
     @Nls
-    public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, @NotNull Object... params) {
-        return INSTANCE.getMessage(key, params);
+    public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
+        String message = INSTANCE.getMessage(key, params);
+        return message != null ? message : key;
     }
 }

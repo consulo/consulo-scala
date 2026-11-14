@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.utest
 
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.testingSupport.test.CustomTestRunnerBasedStateProvider.TestFrameworkRunnerInfo
 import org.jetbrains.plugins.scala.testingSupport.test._
 

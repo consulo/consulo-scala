@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.worksheet.settings.ui
 
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType
 
 private case class WorksheetSettingsData(

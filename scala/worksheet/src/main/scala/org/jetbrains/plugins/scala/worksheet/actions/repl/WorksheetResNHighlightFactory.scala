@@ -1,13 +1,16 @@
 package org.jetbrains.plugins.scala.worksheet.actions.repl
 
-import com.intellij.codeInsight.TargetElementUtil
-import com.intellij.codeInsight.highlighting.{HighlightUsagesHandlerBase, HighlightUsagesHandlerFactory}
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.TargetElementUtil
+import consulo.language.editor.highlight.usage.{HighlightUsagesHandlerBase, HighlightUsagesHandlerFactory}
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.worksheet.WorksheetFile
 
-final class WorksheetResNHighlightFactory extends HighlightUsagesHandlerFactory {
+@ExtensionImpl(order = "before ScalaHighlightUsagesHandlerFactory")
+final class WorksheetResNHighlightFactory extends HighlightUsagesHandlerFactory[PsiElement] {
 
   override def createHighlightUsagesHandler(editor: Editor, file: PsiFile): HighlightUsagesHandlerBase[PsiElement] =
     file match {

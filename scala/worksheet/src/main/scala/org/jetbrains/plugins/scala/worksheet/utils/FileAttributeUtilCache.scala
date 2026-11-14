@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.worksheet.utils
 
-import com.intellij.openapi.vfs.newvfs.FileAttribute
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileWithId}
+import consulo.virtualFileSystem.FileAttribute
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileWithId}
 
 import scala.collection.mutable
 

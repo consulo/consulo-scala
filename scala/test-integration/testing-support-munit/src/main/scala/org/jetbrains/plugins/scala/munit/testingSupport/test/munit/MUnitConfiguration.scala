@@ -1,11 +1,13 @@
-package org.jetbrains.plugins.scala.testingSupport.test.munit
-
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.execution.testframework.sm.runner.{SMRunnerConsolePropertiesProvider, SMTRunnerConsoleProperties}
-import com.intellij.execution.{CommonJavaRunConfigurationParameters, Executor}
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.munit.testingSupport.test.munit
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.execution.test.sm.runner.SMRunnerConsolePropertiesProvider
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties
+import com.intellij.java.execution.CommonJavaRunConfigurationParameters
+import consulo.execution.executor.Executor
+import consulo.project.Project
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.testingSupport.test._
+import org.jetbrains.plugins.scala.testingSupport.test.munit.DelegateCommonJavaRunConfigurationParameters
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.TestConfigurationData
 
 /**

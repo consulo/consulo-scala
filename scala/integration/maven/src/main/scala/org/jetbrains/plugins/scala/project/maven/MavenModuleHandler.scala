@@ -1,18 +1,22 @@
 package org.jetbrains.plugins.scala.project.maven
 
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
+import consulo.annotation.component.ExtensionImpl
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import org.jetbrains.idea.maven.project.MavenProjectsManager
 import org.jetbrains.idea.maven.utils.MavenUtil
 import org.jetbrains.sbt.project.BuildToolModuleHandler
 
 //noinspection ApiStatus
+@ExtensionImpl
 private final class MavenModuleHandler extends BuildToolModuleHandler {
   override def handles(module: Module): Boolean =
-    isNewMavenImporter(module) || isOldMavenImporter(module)
+    isMavenizedModule(module) || isExternalSystemModule(module)
 
-  private def isNewMavenImporter(module: Module): Boolean =
-    MavenUtil.isMavenModule(module)
+  // upstream: MavenUtil.isMavenModule (workspace model based importer)
+  private def isMavenizedModule(module: Module): Boolean =
+    MavenProjectsManager.getInstance(module.getProject).isMavenizedModule(module)
 
-  private def isOldMavenImporter(module: Module): Boolean =
+  private def isExternalSystemModule(module: Module): Boolean =
     ExternalSystemApiUtil.isExternalSystemAwareModule(MavenUtil.SYSTEM_ID, module)
 }

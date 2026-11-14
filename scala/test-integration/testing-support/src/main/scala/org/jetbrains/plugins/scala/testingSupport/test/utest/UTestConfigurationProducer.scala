@@ -2,9 +2,11 @@ package org.jetbrains.plugins.scala
 package testingSupport
 package test.utest
 
-import com.intellij.execution.actions.RunConfigurationProducer
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.openapi.util.text.StringUtil
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.action.RunConfigurationProducer
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.extensions.{&, IterableOnceExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScTuplePattern
@@ -19,9 +21,9 @@ import org.jetbrains.plugins.scala.testingSupport.test.structureView.TestNodePro
 
 // TODO: there are to many redundant TestNodeProvider.* method calls that actually check the same thing on same elements
 //  eliminate this
-final class UTestConfigurationProducer extends AbstractTestConfigurationProducer[UTestRunConfiguration] {
+@ExtensionImpl
+final class UTestConfigurationProducer extends AbstractTestConfigurationProducer[UTestRunConfiguration](UTestConfigurationType().confFactory) {
 
-  override val getConfigurationFactory: ConfigurationFactory = UTestConfigurationType().confFactory
 
   override val suitePaths: Seq[String] = UTestTestFramework().baseSuitePaths
 
@@ -134,5 +136,5 @@ object UTestConfigurationProducer {
   def instance: UTestConfigurationProducer = apply()
 
   def apply(): UTestConfigurationProducer =
-    RunConfigurationProducer.EP_NAME.findExtensionOrFail(classOf[UTestConfigurationProducer])
+    RunConfigurationProducer.getInstance(classOf[UTestConfigurationProducer])
 }

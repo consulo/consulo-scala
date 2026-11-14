@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test
 
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.JavaDirectoryService
+import consulo.language.psi.{PsiDirectory, PsiElement, PsiPackage}
 import org.jetbrains.plugins.scala.extensions.{OptionExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral

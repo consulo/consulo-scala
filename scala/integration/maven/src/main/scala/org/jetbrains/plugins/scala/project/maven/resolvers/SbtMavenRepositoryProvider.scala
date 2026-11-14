@@ -1,14 +1,16 @@
 package org.jetbrains.plugins.scala.project.maven.resolvers
 
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.project.Project
-import org.jetbrains.idea.maven.indices.{MavenIndexUtils, MavenRepositoryProvider}
-import org.jetbrains.idea.maven.model.MavenRemoteRepository
+import consulo.annotation.component.ExtensionImpl
+import consulo.maven.rt.server.common.model.MavenRemoteRepository
+import consulo.module.ModuleManager
+import consulo.project.Project
+import org.jetbrains.idea.maven.indices.{MavenIndex, MavenRepositoryProvider}
 import org.jetbrains.sbt.project.module.SbtModule
-import org.jetbrains.sbt.resolvers.{SbtMavenResolver, SbtResolver}
+import org.jetbrains.sbt.api.resolvers.{SbtMavenResolver, SbtResolver}
 
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl
 final class SbtMavenRepositoryProvider extends MavenRepositoryProvider:
   override def getRemoteRepositories(project: Project): java.util.Set[MavenRemoteRepository] =
     projectResolvers(project).collect:
@@ -16,7 +18,7 @@ final class SbtMavenRepositoryProvider extends MavenRepositoryProvider:
         MavenRemoteRepository(
           /*              id = */ r.name,
           /*            name = */ null,
-          /*             url = */ MavenIndexUtils.normalizePathOrUrl(r.root),
+          /*             url = */ MavenIndex.normalizePathOrUrl(r.root),
           /*          layout = */ null,
           /*  releasesPolicy = */ null,
           /* snapshotsPolicy = */ null

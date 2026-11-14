@@ -2,9 +2,11 @@ package org.jetbrains.plugins.scala
 package testingSupport
 package test.specs2
 
-import com.intellij.execution.actions.RunConfigurationProducer
-import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.action.RunConfigurationProducer
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScInfixExpr}
@@ -14,9 +16,9 @@ import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestConfiguration
 import org.jetbrains.plugins.scala.testingSupport.test.structureView.TestNodeProvider
 import org.jetbrains.plugins.scala.testingSupport.test.{AbstractTestConfigurationProducer, TestConfigurationUtil}
 
-final class Specs2ConfigurationProducer extends AbstractTestConfigurationProducer[Specs2RunConfiguration] {
+@ExtensionImpl
+final class Specs2ConfigurationProducer extends AbstractTestConfigurationProducer[Specs2RunConfiguration](Specs2ConfigurationType().confFactory) {
 
-  override val getConfigurationFactory: ConfigurationFactory = Specs2ConfigurationType().confFactory
 
   override val suitePaths = Specs2TestFramework().baseSuitePaths
 
@@ -75,5 +77,5 @@ object Specs2ConfigurationProducer {
   def instance: Specs2ConfigurationProducer = apply()
 
   def apply(): Specs2ConfigurationProducer =
-    RunConfigurationProducer.EP_NAME.findExtensionOrFail(classOf[Specs2ConfigurationProducer])
+    RunConfigurationProducer.getInstance(classOf[Specs2ConfigurationProducer])
 }

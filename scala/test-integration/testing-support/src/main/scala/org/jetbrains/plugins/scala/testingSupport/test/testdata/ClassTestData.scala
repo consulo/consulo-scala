@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.testingSupport
 package test.testdata
 
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.apache.commons.lang3.StringUtils
 import org.jdom.Element
 import org.jetbrains.annotations.Nullable

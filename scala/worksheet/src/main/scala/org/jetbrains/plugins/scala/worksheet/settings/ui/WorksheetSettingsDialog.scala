@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.worksheet.settings.ui
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.ui.ex.awt.DialogWrapper
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
 
 import javax.swing.JComponent
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -38,12 +39,13 @@ final class WorksheetSettingsDialog(worksheetFile: PsiFile)
     init()
   }
 
-  override def createCenterPanel(): JComponent = myPanel
+  // upstream: the Swing panel itself, here the unified UI panel converted at the dialog boundary
+  override def createCenterPanel(): JComponent = TargetAWT.to(myPanel.component).asInstanceOf[JComponent]
 
   override def doOKAction(): Unit = {
     applyFileSettings(myPanel.fileSettingsData)
     applyDefaultSettings(myPanel.defaultProjectSettingsData)
-    DaemonCodeAnalyzer.getInstance(project).restart(worksheetFile, "Restart after ok in worksheet settings dialog")
+    DaemonCodeAnalyzer.getInstance(project).restart(worksheetFile)
     super.doOKAction()
   }
 

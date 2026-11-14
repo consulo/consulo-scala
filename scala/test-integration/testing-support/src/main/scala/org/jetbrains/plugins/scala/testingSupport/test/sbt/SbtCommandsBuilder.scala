@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.testingSupport.test.sbt
 
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.testingSupport.test.utils.StringOps
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait SbtCommandsBuilder {
 
   /**
@@ -26,7 +25,7 @@ trait SbtCommandsBuilder {
 /**
  * Please, consider implementing [[SbtCommandsBuilder]] instead of inheriting this class
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 abstract class SbtCommandsBuilderBase extends SbtCommandsBuilder {
 
   protected def classKey: Option[String] = None

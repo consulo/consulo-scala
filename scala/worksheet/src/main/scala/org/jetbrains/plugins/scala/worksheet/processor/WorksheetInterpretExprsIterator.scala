@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.worksheet.processor
 
-import com.intellij.openapi.editor.Document
-import com.intellij.psi._
+import consulo.document.Document
+import consulo.language.psi.{PsiElement, PsiErrorElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

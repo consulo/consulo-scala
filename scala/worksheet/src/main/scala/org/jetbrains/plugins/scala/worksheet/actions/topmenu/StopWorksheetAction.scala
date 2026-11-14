@@ -1,18 +1,18 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.ui.ex.action.{AnAction, AnActionEvent}
 import org.jetbrains.plugins.scala.worksheet.WorksheetBundle
 import org.jetbrains.plugins.scala.worksheet.actions.topmenu.StopWorksheetAction.StoppableProcess
 import org.jetbrains.plugins.scala.worksheet.actions.{WorksheetActionUtil, WorksheetFileHook}
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 class StopWorksheetAction(private var process: Option[StoppableProcess]) extends AnAction with TopComponentAction {
 
   override def genericText: String = WorksheetBundle.message("worksheet.stop.button")
 
-  override def actionIcon: Icon = AllIcons.Actions.Suspend
+  override def actionIcon: Image = PlatformIconGroup.actionsSuspend()
 
   override def update(e: AnActionEvent): Unit = {
     val isEnabledAndVisible = WorksheetActionUtil.getWorksheetFileFrom(e)

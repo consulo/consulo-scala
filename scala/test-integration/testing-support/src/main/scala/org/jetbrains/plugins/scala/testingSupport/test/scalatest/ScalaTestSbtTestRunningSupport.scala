@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.test.scalatest
 
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfiguration.SettingMap
 import org.jetbrains.plugins.scala.testingSupport.test.sbt.{SbtCommandsBuilder, SbtCommandsBuilderBase, SbtTestRunningSupportBase}
 import org.jetbrains.sbt.shell.SbtShellCommunication

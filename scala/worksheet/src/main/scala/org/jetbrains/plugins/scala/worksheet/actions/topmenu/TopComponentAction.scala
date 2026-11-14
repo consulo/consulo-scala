@@ -1,19 +1,20 @@
 package org.jetbrains.plugins.scala.worksheet.actions.topmenu
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.keymap.{KeymapManager, KeymapUtil}
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
+import consulo.ui.ex.keymap.KeymapManager
+import consulo.ui.ex.keymap.util.KeymapUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.worksheet.actions.WorksheetAction
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
-trait TopComponentAction extends WorksheetAction {
+trait TopComponentAction extends AnActionWithSyncUpdate with WorksheetAction {
   this: AnAction =>
 
   @Nls
   def genericText: String
 
-  def actionIcon: Icon
+  def actionIcon: Image
 
   def shortcutId: Option[String] = None
 
@@ -27,8 +28,7 @@ trait TopComponentAction extends WorksheetAction {
     e.getPresentation.setText(displayText)
   }
 
-  // These actions rely on PSI file and module search that must be executed on BGT
-  override final def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+  // These actions rely on PSI file and module search that must be executed on BGT (AnActionWithSyncUpdate)
 
   private def displayText: String = {
     val shortcutHintText = for {

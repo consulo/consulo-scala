@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test.scalatest
 
-import com.intellij.execution.configurations._
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.ProjectScope
-import com.intellij.psi.{PsiClass, PsiModifier}
+import consulo.execution.configuration.ConfigurationFactory
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{PsiClass, PsiModifier}
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiMethodExt, PsiTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScModifierListOwner
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTypeDefinition}
@@ -75,7 +75,7 @@ object ScalaTestRunConfiguration {
             val params = con.parameters
             val firstParam = params.head
             val psiManager = ScalaPsiManager.instance
-            val mapPsiClass = psiManager.getCachedClass(ProjectScope.getAllScope(projectContext), "scala.collection.immutable.Map").orNull
+            val mapPsiClass = psiManager.getCachedClass(GlobalSearchScope.allScope(projectContext), "scala.collection.immutable.Map").orNull
             val mapClass = ScalaType.designator(mapPsiClass)
             val paramClass = firstParam.getType.toScType()
             val conformanceType = paramClass match {

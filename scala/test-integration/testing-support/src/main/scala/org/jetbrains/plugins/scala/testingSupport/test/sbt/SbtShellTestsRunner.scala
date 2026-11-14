@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.testingSupport.test.sbt
 
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
+import consulo.module.Module
 import org.jetbrains.plugins.scala.testingSupport.test.AbstractTestRunConfiguration.SettingMap
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.shell.{SbtShellCommunication, SettingQueryHandler}
@@ -9,7 +8,7 @@ import org.jetbrains.sbt.shell.communication.{SbtShellCommandEventProcessor, Sbt
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 object SbtShellTestsRunner {
 
   def runTestsInSbtShell(

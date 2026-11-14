@@ -1,23 +1,22 @@
 package org.jetbrains.plugins.scala.testingSupport.test
 
-import com.intellij.execution.configurations.{JavaParameters, ParametersList}
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
-import com.intellij.execution.testframework.ui.BaseTestsOutputConsoleView
-import com.intellij.execution.util.EnvFilesUtilKt.configureEnvsFromFiles
-import com.intellij.execution.{ExecutionResult, Executor, JavaRunConfigurationExtensionManager}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.projectRoots.{ProjectJdkTable, Sdk}
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.newvfs.ManagingFS
-import com.intellij.openapi.vfs.newvfs.persistent.PersistentFSImpl
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.util.ui.UIUtil
-import com.intellij.util.{EnvironmentUtil, PathsList}
+import com.intellij.java.execution.impl.RunConfigurationExtension
+import com.intellij.java.execution.impl.util.JavaParametersUtil
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.process.cmd.ParametersList
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
+import consulo.execution.test.sm.SMTestRunnerConnectionUtil
+import consulo.execution.test.ui.BaseTestsOutputConsoleView
+import consulo.execution.ExecutionResult
+import consulo.execution.executor.Executor
+import consulo.application.ApplicationManager
+import consulo.content.bundle.Sdk
+import consulo.disposer.Disposer
+import consulo.util.lang.StringUtil
+import consulo.ui.ex.awt.UIUtil
+import consulo.process.local.EnvironmentUtil
+import consulo.virtualFileSystem.util.PathsList
 import org.apache.commons.lang3.StringUtils
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
 import org.jetbrains.plugins.scala.runner.ScalaTargetAwareCommandLineState
@@ -26,7 +25,10 @@ import org.jetbrains.plugins.scala.testingSupport.test.ScalaTestFrameworkCommand
 import org.jetbrains.plugins.scala.testingSupport.test.exceptions.executionException
 import org.jetbrains.plugins.scala.testingSupport.test.testdata.TestConfigurationData
 import org.jetbrains.plugins.scala.testingSupport.test.utils.{JavaParametersModified, RawProcessOutputDebugLogger}
+import org.jetbrains.plugins.scala.testrunners.testingSupport.TestRunnerUtil
 import org.jetbrains.plugins.scala.util.ScalaPluginJars
+import org.jetbrains.plugins.scala.extensions.PathExt
+import consulo.util.io.ClassPathUtil
 
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -40,7 +42,7 @@ import scala.jdk.CollectionConverters._
  * @param failedTests if defined, the list of test classes and methods to run
  *                    is taken from it instead of from test data
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class ScalaTestFrameworkCommandLineState(
   override val configuration: AbstractTestRunConfiguration,
   env: ExecutionEnvironment,
@@ -49,7 +51,7 @@ class ScalaTestFrameworkCommandLineState(
 ) extends ScalaTargetAwareCommandLineState(env)
   with ScalaTestFrameworkCommandLineStateLike {
 
-  override def createJavaParameters(): JavaParameters = {
+  override def createJavaParameters(): OwnJavaParameters = {
     val params = new JavaParametersModified()
 
     params.setCharset(null)
@@ -61,8 +63,8 @@ class ScalaTestFrameworkCommandLineState(
     val vmParams: String = VariablesExpander.expandVmOptions(testConfigurationData.javaOptions, envs)
     params.getVMParametersList.addParametersString(vmParams)
 
-    // automatically fiters non-applicable extensions
-    JavaRunConfigurationExtensionManager.getInstance().updateJavaParameters(configuration, params, getRunnerSettings, env.getExecutor)
+    // upstream: JavaRunConfigurationExtensionManager.updateJavaParameters (filters non-applicable extensions)
+    RunConfigurationExtension.EP_NAME.getExtensionList.forEach(_.updateJavaParameters(configuration, params, getRunnerSettings))
 
     if (DebugOptions.attachDebugAgent) {
       val suspend = if(DebugOptions.waitUntilDebuggerAttached) "y" else "n"
@@ -75,28 +77,22 @@ class ScalaTestFrameworkCommandLineState(
     addRunnersJar(params.getClassPath)
     params.setMainClass(runnerInfo.runnerClass)
 
-    // hack fix for SCL-12564
-    ManagingFS.getInstance match {
-      case fs: PersistentFSImpl => fs.incStructuralModificationCount()
-      case _                    =>
-    }
+    // upstream: hack fix for SCL-12564 (increments the structural modification count of PersistentFSImpl)
 
-    val maybeCustomSdk = for {
-      path <- testConfigurationData.jrePath.toOption
-      jdk  <- ProjectJdkTable.getInstance().findJdk(path).toOption
-    } yield jdk
+    // upstream: ProjectJdkTable.findJdk(path), the Consulo JRE fragment stores an SDK name or a JRE home path
+    val maybeCustomSdk = testConfigurationData.jrePath.toOption.filter(_.nonEmpty).map(JavaParametersUtil.createProjectJdk(project, _))
 
     if (testConfigurationData.searchTestsInWholeProject) {
       def anyJdk: Option[Sdk] = {
         val modules = project.modules.iterator.filterNot(_.isBuildModule)
-        modules.map(JavaParameters.getValidJdkToRunModule(_, false)).nextOption()
+        modules.map(OwnJavaParameters.getValidJdkToRunModule(_, false)).nextOption()
       }
       val sdk = maybeCustomSdk.orElse(anyJdk)
       // TODO: handle case if  project contains multiple scala versions, runtime contains garbage with multiple versions
-      params.configureByProject(project, JavaParameters.JDK_AND_CLASSES_AND_TESTS, sdk.orNull)
+      params.configureByProject(project, OwnJavaParameters.JDK_AND_CLASSES_AND_TESTS, sdk.orNull)
     } else {
-      val sdk = maybeCustomSdk.getOrElse(JavaParameters.getValidJdkToRunModule(module, false))
-      params.configureByModule(module, JavaParameters.JDK_AND_CLASSES_AND_TESTS, sdk)
+      val sdk = maybeCustomSdk.getOrElse(OwnJavaParameters.getValidJdkToRunModule(module, false))
+      params.configureByModule(module, OwnJavaParameters.JDK_AND_CLASSES_AND_TESTS, sdk)
     }
 
     val suitesToTestsMap = buildSuitesToTestsMap
@@ -120,16 +116,13 @@ class ScalaTestFrameworkCommandLineState(
     params
   }
 
-  //noinspection ApiStatus,UnstableApiUsage
-  private def addRunnersJar(classPath: PathsList): Unit = {
-    val runnersJar = ScalaPluginJars.runnersJar
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-    val transferredRunnersJar = EelPathUtils.transferLocalContentToRemote(
-      runnersJar,
-      new EelPathUtils.TransferTarget.Temporary(eelDescriptor)
-    )
-    classPath.add(transferredRunnersJar.toString)
-  }
+  /**
+   * upstream: adds ScalaPluginJars.runnersJar (runners, test-runners and test-runners-spec2_2x merged into one jar),
+   * transferred to the remote eel environment if needed.
+   * In Consulo the test runners are separate jars of the plugin, see [[ScalaTestFrameworkCommandLineState.runnersClassPath]]
+   */
+  private def addRunnersJar(classPath: PathsList): Unit =
+    runnersClassPath.foreach(jar => classPath.add(jar.toString))
 
   /**
    * Process command line has length limitation (on windows it's max 32768 characters).
@@ -182,37 +175,17 @@ class ScalaTestFrameworkCommandLineState(
       consoleProperties.setIdBasedTestTree(true)
       UIUtil.invokeAndWaitIfNeeded(() => SMTestRunnerConnectionUtil.createConsole("Scala", consoleProperties))
     }
-    /**
-     * This, for example, can attach additional profiler window when the test is executed
-     * using "Profiler ... with IntelliJ Profiler". The window shows live process CPU & Memory usage.
-     *
-     * Copied from [[com.intellij.execution.JavaTestFrameworkRunnableState#execute]]
-     */
-    val consoleViewDecorated =
-      if (ApplicationManager.getApplication.isUnitTestMode) {
-        // Don't decorate teh console in tests - it can try to create some UI which will lead to runtime exceptions
-        // E.g. in JavaProfilerConsoleWidgetManager
-        testConsoleView
-      } else
-        JavaRunConfigurationExtensionManager.getInstance.decorateExecutionConsole(
-          configuration,
-          getRunnerSettings,
-          testConsoleView,
-          executor
-        )
-    Disposer.register(configuration.getProject, consoleViewDecorated)
+    // upstream: decorates the console with JavaRunConfigurationExtensionManager.decorateExecutionConsole (e.g. profiler
+    // widgets), Consulo has no console decorators
+    Disposer.register(configuration.getProject, testConsoleView)
 
     val processHandler = createHandler()
     attachExtensionsToProcess(configuration, processHandler)
     RawProcessOutputDebugLogger.maybeAddListenerTo(processHandler)
 
-    consoleViewDecorated.attachToProcess(processHandler)
+    testConsoleView.attachToProcess(processHandler)
 
-    // Using a decorated console view. We also need to pass the underlying test console view, in order to correctly
-    // create the restart actions.
-    val executionResult = createExecutionResult(consoleViewDecorated, testConsoleView, processHandler)
-
-    executionResult
+    createExecutionResult(testConsoleView, testConsoleView, processHandler)
   }
 
   /**
@@ -220,18 +193,18 @@ class ScalaTestFrameworkCommandLineState(
    * @see [[org.jetbrains.plugins.scala.testingSupport.test.ui.CommonScalaParametersPanel.initMacroSupport]]
    */
   protected object VariablesExpander {
-    import com.intellij.execution.util.ProgramParametersUtil
-
+    import consulo.execution.util.ProgramParametersUtil
     /** Expands all kinds of path variables/macro in working directory, examples: $PROJECT_DIR$, $MODULE_WORKING_DIR$, etc... */
     def getWorkingDirExpanded(configuration: AbstractTestRunConfiguration): String =
       ProgramParametersUtil.getWorkingDir(configuration.testConfigurationData, project, module)
 
     def expandProgramArgument(arg: String): String =
-      ProgramParametersUtil.expandPathAndMacros(arg, module, project)
+      // upstream: expandPathAndMacros (also IDE macros)
+      ProgramParametersUtil.expandPath(arg, module, project)
 
     /** expands path, macro and env variables */
     def expandVmOptions(vmOptions: String, envs: Map[String, String]): String = {
-      val expandedPaths = ProgramParametersUtil.expandPathAndMacros(vmOptions, module, project)
+      val expandedPaths = ProgramParametersUtil.expandPath(vmOptions, module, project)
       //injection of environment variables to VM options was added within SCL-4812
       // I am not sure why, because no one asked for that, and it doesn't work for any other Run Configuration ATM
       val expandedEnvs = expandEnvs(expandedPaths, envs)
@@ -245,7 +218,7 @@ class ScalaTestFrameworkCommandLineState(
      */
     def getEnvVariablesExpanded(configuration: TestConfigurationData): Map[String, String] = {
       val envs = new ju.HashMap[String, String](configuration.getEnvs)
-      envs.putAll(configureEnvsFromFiles(configuration, true))
+      // upstream: also reads environment variables from .env files
       if (configuration.isPassParentEnvs) {
         EnvironmentUtil.inlineParentOccurrences(envs)
       }
@@ -255,6 +228,16 @@ class ScalaTestFrameworkCommandLineState(
 }
 
 object ScalaTestFrameworkCommandLineState {
+
+  /**
+   * test-runners and test-runners-spec2_2x jars (lib/runners in the plugin directory), added to the classpath of the tests.
+   * test-runners is also a library of the plugin (the IDE uses TestRunnerUtil), test-runners-spec2_2x is not loaded by the IDE.
+   */
+  private[test] def runnersClassPath: Seq[Path] = {
+    val testRunnersJar = Path.of(ClassPathUtil.getJarPathForClass(classOf[TestRunnerUtil]))
+    val specs2xJar = ScalaPluginJars.libRoot / "runners" / "test-runners-spec2_2x.jar"
+    Seq(testRunnersJar, specs2xJar)
+  }
 
   private def expandEnvs(text: String, envs: collection.Map[String, String]): String =
     envs.foldLeft(text) { case (text, (key, value)) =>

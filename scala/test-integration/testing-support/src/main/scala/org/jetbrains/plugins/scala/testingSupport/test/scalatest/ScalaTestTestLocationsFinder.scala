@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.testingSupport.test.scalatest
 
-import com.intellij.psi.PsiElement
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.language.psi.PsiElement
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jetbrains.plugins.scala.caches.{CachesUtil, cachedInUserData}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.templates.ScTemplateBody
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition

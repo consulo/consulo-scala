@@ -1,17 +1,35 @@
 package org.jetbrains.plugins.scala.testingSupport
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import com.intellij.psi.{PsiClass, PsiFile, PsiPackage}
-import com.intellij.refactoring.util.classMembers.MemberInfo
-import com.intellij.testIntegration.createTest.{CreateTestAction, CreateTestDialog}
-import com.intellij.testIntegration.{JavaTestCreator, TestFramework}
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.annotations.{Nls, TestOnly}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.module.Module
+import consulo.project.Project
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{JavaDirectoryService, PsiClass, PsiClassOwner, PsiJavaPackage}
+import consulo.application.ApplicationPropertiesComponent
+import consulo.language.editor.FileModificationService
+import consulo.language.editor.localize.CodeInsightLocalize
+import com.intellij.java.impl.testIntegration.createTest.TestGenerator
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.util.ModuleUtilCore
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awt.{DialogWrapper, Messages, UIUtil}
+import consulo.undoRedo.CommandProcessor
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.impl.refactoring.util.classMembers.MemberInfo
+import com.intellij.java.impl.testIntegration.createTest.CreateTestAction
+import com.intellij.java.impl.testIntegration.createTest.CreateTestDialog
+import com.intellij.java.impl.testIntegration.JavaTestCreator
+import com.intellij.java.language.testIntegration.TestFramework
+import consulo.language.util.IncorrectOperationException
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 import org.jetbrains.plugins.scala.testingSupport.ScalaTestCreator._
 
@@ -22,7 +40,10 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
  * @see [[org.jetbrains.plugins.scala.testingSupport.ScalaTestGenerator]]
  * @note The class is tested in org.jetbrains.plugins.scala.testingSupport.ScalaTestCreatorInSbtProjectsTest
  */
+@ExtensionImpl
 class ScalaTestCreator extends JavaTestCreator {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def createTest(project: Project, editor: Editor, file: PsiFile): Unit = {
     try {
@@ -47,36 +68,76 @@ object ScalaTestCreator {
     element
   }
 
+  /**
+   * upstream: overrides `CreateTestAction.createTestDialog`, Consulo's CreateTestAction creates the dialog in `invoke`,
+   * so its flow is repeated here with [[ScalaCreateTestDialog]]
+   */
   private class ScalaCreateTestAction extends CreateTestAction {
-    override protected def createTestDialog(
-      project: Project,
-      srcModule: Module,
-      srcClass: PsiClass,
-      srcPackage: PsiPackage
-    ): CreateTestDialog =
-      new ScalaCreateTestDialog(
+    @RequiredUIAccess
+    override def invoke(project: Project, editor: Editor, element: PsiElement): Unit = {
+      if (!FileModificationService.getInstance.preparePsiElementForWrite(element)) return
+      val srcModule = ModuleUtilCore.findModuleForPsiElement(element)
+      val srcClass = getContainingClass(element)
+      if (srcClass == null) return
+
+      val srcDir = element.getContainingFile.getContainingDirectory
+      val srcPackage = JavaDirectoryService.getInstance.getPackage(srcDir)
+
+      val propertiesComponent = ApplicationPropertiesComponent.getInstance
+      val testFolders = new ju.HashSet[VirtualFile]
+      CreateTestAction.checkForTestRoots(srcModule, testFolders)
+      if (testFolders.isEmpty && !propertiesComponent.getBoolean(CreateTestInTheSameRoot, false)) {
+        if (Messages.showOkCancelDialog(project, "Create test in the same source root?", "No Test Roots Found", UIUtil.getQuestionIcon) != DialogWrapper.OK_EXIT_CODE)
+          return
+        propertiesComponent.setValue(CreateTestInTheSameRoot, String.valueOf(true))
+      }
+
+      val dialog = new ScalaCreateTestDialog(
         project = project,
         title = getText,
         targetClass = srcClass,
         targetPackage = srcPackage,
         targetModule = srcModule
       )
+      if (!dialog.showAndGet()) return
+
+      CommandProcessor.getInstance.executeCommand(
+        project,
+        () => {
+          val framework = dialog.getSelectedTestFrameworkDescriptor
+          val generator = TestGenerator.forLanguage(framework.getLanguage)
+          generator.generateTest(project, dialog)
+        },
+        CodeInsightLocalize.intentionCreateTest.get,
+        this
+      )
+    }
+
+    private def getContainingClass(element: PsiElement): PsiClass =
+      PsiTreeUtil.getParentOfType(element, classOf[PsiClass], false) match {
+        case null =>
+          element.getContainingFile match {
+            case owner: PsiClassOwner if owner.getClasses.length == 1 => owner.getClasses()(0)
+            case _                                                     => null
+          }
+        case psiClass => psiClass
+      }
   }
+
+  // see com.intellij.java.impl.testIntegration.createTest.CreateTestAction.CREATE_TEST_IN_THE_SAME_ROOT
+  private val CreateTestInTheSameRoot = "create.test.in.the.same.root"
 
   private class ScalaCreateTestDialog(
     project: Project,
-    @Nls title: String,
+    title: LocalizeValue,
     targetClass: PsiClass,
-    targetPackage: PsiPackage,
+    targetPackage: PsiJavaPackage,
     targetModule: Module,
   ) extends CreateTestDialog(project, title, targetClass, targetPackage, targetModule) {
 
-    override def suggestTestClassName(targetClass: PsiClass): String = targetClass match {
-      case obj: ScObject =>
-        obj.getName.stripSuffix("$") + "Test"
-      case _ =>
-        super.suggestTestClassName(targetClass)
-    }
+    def getTargetClass: PsiClass = targetClass
+
+    // upstream: also overrides suggestTestClassName (drops `$` of objects), Consulo's dialog has no such hook
 
     override def getSelectedTestFrameworkDescriptor: TestFramework = {
       val mock = getMockTestData(project)(_.selectedTestFramework).flatten
@@ -123,6 +184,12 @@ object ScalaTestCreator {
 
       super.showAndGet()
     }
+  }
+
+  /** upstream: CreateTestDialog.getTargetClass, not exposed by Consulo's dialog */
+  def targetClassOf(dialog: CreateTestDialog): PsiClass = dialog match {
+    case scalaDialog: ScalaCreateTestDialog => scalaDialog.getTargetClass
+    case _                                  => null
   }
 
   @TestOnly

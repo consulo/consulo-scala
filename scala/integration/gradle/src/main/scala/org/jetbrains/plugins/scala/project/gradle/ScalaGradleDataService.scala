@@ -1,177 +1,99 @@
 package org.jetbrains.plugins.scala
 package project.gradle
 
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.openapi.externalSystem.model.project.{ModuleData, ProjectData}
-import com.intellij.openapi.externalSystem.model.{DataNode, ProjectKeys}
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.Library
-import org.jetbrains.plugins.gradle.model.data.{GradleSourceSetData, ScalaModelData}
-import org.jetbrains.plugins.gradle.util.{GradleConstants, GradleUtil}
+import consulo.annotation.component.ExtensionImpl
+import consulo.content.library.Library
+import consulo.externalSystem.model.{DataNode, ProjectKeys}
+import consulo.externalSystem.util.{DisposeAwareProjectChange, ExternalSystemApiUtil}
+import consulo.gradle.GradleConstants
+import consulo.module.Module
+import consulo.module.content.ModuleRootManager
+import consulo.module.content.layer.ModifiableRootModel
+import consulo.module.extension.MutableModuleExtension
+import consulo.project.Project
+import consulo.project.content.library.ProjectLibraryTable
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.plugins.scala.project.external.{ReplClasspathCachedResolver, ScalaAbstractProjectDataService, ScalaSdkUtils}
+import org.jetbrains.plugins.scala.project.external.{ScalaAbstractProjectDataService, ScalaSdkUtils}
+import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
-import java.nio.file.Path
 import java.util
 import scala.jdk.CollectionConverters.*
 
-class ScalaGradleDataService extends ScalaAbstractProjectDataService[ScalaModelData, Library](ScalaModelData.KEY) {
+@ExtensionImpl
+class ScalaGradleDataService extends ScalaAbstractProjectDataService[ScalaModelData, Library](ScalaModelData.Key) {
 
-  private val GradleExternalSystemReadableName = GradleConstants.SYSTEM_ID.getReadableName
+  private val GradleExternalSystemReadableName = GradleConstants.SYSTEM_ID.getReadableName.get
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[ScalaModelData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[ScalaModelData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
+    synchronous: Boolean
   ): Unit = {
-    //TODO remove this in some feature release (probably 2026/2027)
-    ScalaSdkUtils.revertScalaSdkFromLibraries(modelsProvider, externalSystemName = GradleExternalSystemReadableName)
+    // upstream: ScalaSdkUtils.revertScalaSdkFromLibraries - migration of projects imported by older IntelliJ Scala plugin versions
 
-    //noinspection ApiStatus
-    val replClasspathResolver = ReplClasspathCachedResolver(project)
-
-    toImport.forEach { scalaNode =>
-      Option(scalaNode.getData(ProjectKeys.MODULE)).foreach { moduleData =>
-        val gradleSourceSetModules = findGradleSourceSetModules(moduleData, project, modelsProvider)
-
-        val modulesForScalaSDK =
-          if (gradleSourceSetModules.isEmpty) {
-            val moduleName = moduleData.getInternalName
-            modelsProvider.findIdeModuleOpt(moduleName).toSeq
-          } else {
-            gradleSourceSetModules
-          }
-
-        configureModules(scalaNode, replClasspathResolver.resolve, modulesForScalaSDK*)(using project, modelsProvider)
-      }
+    // upstream: the Scala SDK is configured for all Gradle source set modules, Consulo Gradle imports one module per Gradle project
+    val modules = toImport.asScala.toSeq.flatMap { scalaNode =>
+      Option(scalaNode.getData(ProjectKeys.MODULE))
+        .flatMap(project.findIdeModuleOpt)
+        .map(scalaNode.getData -> _)
     }
+    if (modules.isEmpty) return
+
+    ExternalSystemApiUtil.executeProjectChangeAction(synchronous, new DisposeAwareProjectChange(project) {
+      override def execute(): Unit =
+        modules.foreach { case (scalaData, module) => configureModule(scalaData, module)(using project) }
+    })
   }
 
-  /**
-   * Find all Gradle source set modules for the given parent (`moduleData`). <p>
-   * A Gradle source set module corresponds to modules like "main", "test", or custom source sets.
-   *
-   * @note In theory, you can create a custom source set in a Gradle project that uses the Scala plugin without including a Scala library
-   *       (e.g., by isolating that source set from the main/test configurations). Such a setup may be compilable and not report any import errors.
-   *       In such cases, attaching a Scala SDK to these custom source set modules may not be necessary (but it's not handled at this moment).
-   *       This is likely a rare edge case. It could potentially also be a Gradle issue that the missing Scala library in a custom source set module is not reported.
-   */
-  private def findGradleSourceSetModules(
-    moduleData: ModuleData,
-    project: Project,
-    modelsProvider: IdeModifiableModelsProvider
-  ): Seq[Module] = {
-    val moduleDataNode = GradleUtil.findGradleModuleData(project, moduleData.getLinkedExternalProjectPath)
+  private def configureModule(scalaData: ScalaModelData, module: Module)(implicit project: Project): Unit = {
+    module.configureScalaCompilerSettingsFrom(GradleExternalSystemReadableName, scalaData.compilerOptions.asScala.toSeq, project)
 
-    if (moduleDataNode != null) {
-      val gradleSourceSets = ExternalSystemApiUtil.getChildren(moduleDataNode, GradleSourceSetData.KEY).asScala
-      val gradleSourceSetNames = gradleSourceSets.map(_.getData.getInternalName)
-      gradleSourceSetNames.flatMap(modelsProvider.findIdeModuleOpt).toSeq
-    } else {
-      Nil
-    }
-  }
-
-  private def configureModules(
-    scalaNode: DataNode[ScalaModelData],
-    resolveReplClasspath: String => ReplClasspath,
-    modules: Module*
-  )(implicit project: Project, modelsProvider: IdeModifiableModelsProvider): Unit = {
-    val scalaData = scalaNode.getData
-    val compilerOptions = compilerOptionsFrom(scalaData)
-    // Gradle's ScalaModelData#getScalaClasspath only exposes java.io.File; there is no nio.Path-based alternative.
-    //noinspection SSBasedInspection
-    val classpath = scalaData.getScalaClasspath.asScala.toSeq.map(_.toPath)
-    modules.foreach { module =>
-      module.configureScalaCompilerSettingsFrom(GradleExternalSystemReadableName, compilerOptions, project)
-      configureScalaSdk(module, classpath, resolveReplClasspath)
-    }
-  }
-
-  private def configureScalaSdk(
-    module: Module,
-    compilerClasspath: Seq[Path],
-    resolveReplClasspath: String => ReplClasspath
-  )(implicit project: Project, modelsProvider: IdeModifiableModelsProvider): Unit = {
-    import LibraryExt.*
-    val scalaLibrariesInCompilerClasspath = compilerClasspath.map(_.getFileName.toString).filter(isRuntimeLibrary)
-    val compilerVersion = scalaLibrariesInCompilerClasspath.flatMap(runtimeVersion).headOption
-    compilerVersion match {
+    Option(scalaData.scalaVersion) match {
       case Some(version) =>
-        configureScalaSdk(project, module, version, compilerClasspath, resolveReplClasspath)
-      case None        =>
+        configureScalaSdk(module, version, scalaData)
+      case None =>
         showWarning(NlsString(ScalaGradleBundle.message("gradle.dataService.scalaVersionCantBeDetected", module.getName)))
     }
   }
 
-  private def configureScalaSdk(
-    project: Project,
-    module: Module,
-    compilerVersion: String,
-    compilerClasspath: Seq[Path],
-    resolveReplClasspath: String => ReplClasspath
-  )(implicit modelsProvider: IdeModifiableModelsProvider): Unit = {
-    // Only resolve the compiler bridge for Scala 3. Gradle reports a compiler classpath that doesn't work with
-    // the Scala 2.13.12+ compiler bridges, due to clashes.
-    val compilerBridgeBinaryJar =
-      if (compilerVersion.startsWith("3.")) {
-        ScalaSdkUtils.compilerBridgeJarName(compilerVersion).flatMap { bridgeJarName =>
-          compilerClasspath.find(_.getFileName.toString == bridgeJarName).orElse(ScalaSdkUtils.resolveCompilerBridgeJar(project, compilerVersion))
-        }
-      } else None
-
-    val replClasspath = resolveReplClasspath(compilerVersion)
-
-    ScalaSdkUtils.configureScalaSdk(
-      module,
-      compilerVersion,
-      compilerClasspath,
-      scaladocExtraClasspath = Nil,
-      compilerBridgeBinaryJar,
-      replClasspath,
-      sdkPrefix = GradleExternalSystemReadableName,
-      modelsProvider
-    )
+  private def configureScalaSdk(module: Module, compilerVersion: String, scalaData: ScalaModelData)(implicit project: Project): Unit = {
+    val rootModel = ModuleRootManager.getInstance(module).getModifiableModel
+    val projectLibrariesModel = ProjectLibraryTable.getInstance(project).getModifiableModel
+    try {
+      ScalaSdkUtils.configureScalaSdk(
+        module,
+        compilerVersion,
+        // Gradle's ScalaModel#getScalaClasspath only exposes java.io.File; there is no nio.Path-based alternative.
+        //noinspection SSBasedInspection
+        scalaData.scalaClasspath.asScala.toSeq.map(_.toPath),
+        scaladocExtraClasspath = Nil,
+        Option(scalaData.compilerBridgeBinaryJar).map(_.toPath),
+        ReplClasspath.fromPaths(scalaData.replClasspath.asScala.toSeq.map(_.toPath)),
+        sdkPrefix = GradleExternalSystemReadableName,
+        projectLibrariesModel,
+        rootModel
+      )
+      enableScala(rootModel)
+    } finally {
+      projectLibrariesModel.commit()
+      rootModel.commit()
+    }
   }
 
-  private def compilerOptionsFrom(data: ScalaModelData): Seq[String] =
-    Option(data.getScalaCompileOptions).toSeq.flatMap { options =>
-      val presentations = Seq(
-        options.isDeprecation -> "-deprecation",
-        options.isUnchecked -> "-unchecked",
-        options.isOptimize -> "-optimise",
-        !isEmpty(options.getDebugLevel) -> s"-g:${options.getDebugLevel}",
-        !isEmpty(options.getEncoding) -> s"-encoding",
-        // the encoding value needs to be a separate option, otherwise the -encoding flag and the value will be
-        // treated as a single flag
-        !isEmpty(options.getEncoding) -> options.getEncoding
-      )
-
-      // Gradle's ScalaModelData#getScalaCompilerPlugins only exposes java.io.File; there is no nio.Path-based alternative.
-      //noinspection SSBasedInspection
-      val scalaCompilerPlugins =
-        if (data.getScalaCompilerPlugins ne null)
-          data.getScalaCompilerPlugins.asScala.map(f => s"-Xplugin:${f.getPath}").toSeq
-        else
-          Seq.empty
-
-      val additionalOptions =
-        if (options.getAdditionalParameters != null) options.getAdditionalParameters.asScala else Seq.empty
-
-      presentations.flatMap(include.tupled) ++ scalaCompilerPlugins ++ additionalOptions
+  // Consulo: Scala is enabled in a module by the Scala module extension (which requires the Java extension)
+  private def enableScala(rootModel: ModifiableRootModel): Unit =
+    Seq("java", "scala").foreach { id =>
+      val extension: MutableModuleExtension[?] = rootModel.getExtensionWithoutCheck(id)
+      if (extension != null && !extension.isEnabled)
+        extension.setEnabled(true)
     }
 
-  private def isEmpty(s: String) = s == null || s.isEmpty
-
-  private def include(b: Boolean, s: String): Seq[String] = if (b) Seq(s) else Seq.empty
+  override def removeData(toRemove: util.Collection[? <: Library], project: Project, synchronous: Boolean): Unit = ()
 
   private val Title: NlsString = NlsString(ScalaGradleBundle.message("gradle.sync"))
-  private val BalloonGroupId = "Gradle"
-  private val BalloonGroup = NotificationGroupManager.getInstance.getNotificationGroup(BalloonGroupId)
+  // upstream: the "Gradle" notification group of the IntelliJ Gradle plugin
+  private val BalloonGroup = ScalaNotificationGroups.scalaGeneral
   private val SystemId = GradleConstants.SYSTEM_ID
 
   private def showWarning(message: NlsString)(implicit project: Project): Unit =

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.worksheet.actions.repl
 
-import com.intellij.codeInsight.highlighting.HighlightUsagesHandlerBase
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.util.Consumer
+import consulo.language.editor.highlight.usage.HighlightUsagesHandlerBase
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
+import java.util.function.Consumer
 
 import java.{util => ju}
 
@@ -15,10 +15,10 @@ private final class WorksheetResNHighlightHandler(
 ) extends HighlightUsagesHandlerBase[PsiElement](editor, file) {
 
   override def selectTargets(
-    targets: ju.List[? <: PsiElement],
-    selectionConsumer: Consumer[? >: ju.List[? <: PsiElement]]
+    targets: ju.List[PsiElement],
+    selectionConsumer: Consumer[ju.List[PsiElement]]
   ): Unit = {
-    selectionConsumer.consume(targets)
+    selectionConsumer.accept(targets)
   }
 
   override def getTargets: ju.List[PsiElement] = {
@@ -28,7 +28,7 @@ private final class WorksheetResNHighlightHandler(
     list
   }
 
-  override def computeUsages(targets: ju.List[? <: PsiElement]): Unit = {
+  override def computeUsages(targets: ju.List[PsiElement]): Unit = {
     if (targets.size >= 2) {
       myReadUsages.add(targets.get(0).getTextRange)
       targets.stream().skip(1).forEach { target =>

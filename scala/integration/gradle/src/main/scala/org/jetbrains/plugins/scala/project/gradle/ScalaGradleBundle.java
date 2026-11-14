@@ -1,21 +1,22 @@
 package org.jetbrains.plugins.scala.project.gradle;
 
-import com.intellij.DynamicBundle;
+import consulo.component.util.localize.AbstractBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.PropertyKey;
 
-public final class ScalaGradleBundle {
+public final class ScalaGradleBundle extends AbstractBundle {
     @NonNls
-    private static final String BUNDLE = "messages.ScalaGradleBundle";
-    private static final DynamicBundle INSTANCE = new DynamicBundle(ScalaGradleBundle.class, BUNDLE);
+    private static final String BUNDLE = "org.jetbrains.plugins.scala.project.gradle.ScalaGradleBundle";
+    private static final ScalaGradleBundle INSTANCE = new ScalaGradleBundle();
 
     private ScalaGradleBundle() {
+        super(BUNDLE);
     }
 
     @Nls
-    public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, @NotNull Object... params) {
-        return INSTANCE.getMessage(key, params);
+    public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
+        String message = INSTANCE.getMessage(key, params);
+        return message != null ? message : key;
     }
 }

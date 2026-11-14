@@ -1,14 +1,20 @@
 package org.jetbrains.plugins.scala.worksheet
 
-import com.intellij.ide.scratch.ScratchFileCreationHelper
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
+import consulo.language.scratch.ScratchFileCreationHelper
+import consulo.dataContext.DataContext
+import consulo.project.Project
 import org.apache.commons.lang3.StringUtils
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.worksheet.ScalaScratchFileCreationHelper.worksheetScratchFileType
 
+@ExtensionImpl
 final class ScalaScratchFileCreationHelper extends ScratchFileCreationHelper {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   override def prepareText(
     project: Project,

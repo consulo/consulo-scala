@@ -25,6 +25,10 @@
     <depends optional="true">consulo.markdown</depends>
     <depends optional="true">org.jetbrains.fernflower</depends>
     <depends optional="true">com.intellij.regexp</depends>
+    <depends optional="true">com.intellij.properties</depends>
+    <depends optional="true">org.jetbrains.idea.maven</depends>
+    <depends optional="true">org.jetbrains.plugins.gradle</depends>
+    <depends optional="true">com.intellij.junit</depends>
 
     <tags>
         <tag>custom.language</tag>
@@ -87,6 +91,13 @@
         <reference ref="ScalaConsole.Clean">
             <keyboard-shortcut keymap="$default" first-keystroke="control L" />
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L" />
+        </reference>
+        <reference ref="Scala.CreateLightWorksheetAction">
+            <keyboard-shortcut first-keystroke="control alt shift X" keymap="$default"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ctrl shift M"/>
+        </reference>
+        <reference ref="Scala.RunWorksheet">
+            <keyboard-shortcut first-keystroke="control alt W" keymap="$default"/>
         </reference>
     </actions>
 </consulo-plugin>
