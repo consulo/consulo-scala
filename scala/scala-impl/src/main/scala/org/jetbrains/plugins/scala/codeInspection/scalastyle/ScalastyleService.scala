@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.codeInspection.scalastyle
 
+import consulo.annotation.component.{ComponentScope, ServiceAPI}
 import consulo.language.editor.inspection.scheme.InspectionManager
 import consulo.language.editor.inspection.ProblemDescriptor
 import consulo.application.ApplicationManager
 import consulo.language.psi.PsiFile
 
+@ServiceAPI(ComponentScope.APPLICATION)
 trait ScalastyleService {
 
   def checkFile(file: PsiFile, manager: InspectionManager): Array[ProblemDescriptor]
