@@ -2,8 +2,7 @@ package org.jetbrains.plugins.scala.debugger.breakpoints
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.engine.{DebugProcessImpl, JavaBreakpointHandler, JavaBreakpointHandlerFactory}
-
+import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, JavaBreakpointHandler, JavaBreakpointHandlerFactory}
 @ExtensionImpl
 class ScalaBreakpointHandlerFactory extends JavaBreakpointHandlerFactory {
   override def createHandler(process: DebugProcessImpl): JavaBreakpointHandler = new ScalaBreakpointHandler(process)

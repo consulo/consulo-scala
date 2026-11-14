@@ -1,8 +1,7 @@
 package org.jetbrains.plugins.scala
 package debugger.evaluation
 
-import com.intellij.debugger.engine.evaluation.{AbsentInformationEvaluateException, EvaluateException, EvaluateExceptionUtil}
-import com.sun.jdi.AbsentInformationException
+import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluateExceptionUtil}
 import org.jetbrains.annotations.Nls
 
 import scala.annotation.tailrec
@@ -16,11 +15,8 @@ object EvaluationException {
   // if it is an EvaluateException with null cause
   private def createEvaluateException(@Nls msg: String, thr: Throwable): EvaluateException = {
     val message = EvaluateExceptionUtil.createEvaluateException(msg, thr).getMessage
-
-    getRootCause(thr) match {
-      case aie: AbsentInformationException => new AbsentInformationEvaluateException(message, aie)
-      case cause                           => new EvaluateException(message, cause)
-    }
+    // upstream: AbsentInformationException is wrapped into AbsentInformationEvaluateException, missing in consulo-java
+    new EvaluateException(message, getRootCause(thr))
   }
 
   @tailrec

@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.debugger
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.engine.SimplePropertyGetterProvider
+import com.intellij.java.debugger.engine.SimplePropertyGetterProvider
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.{PsiClass, PsiMethod}
 import consulo.language.psi.PsiElement

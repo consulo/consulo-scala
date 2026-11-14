@@ -1,17 +1,19 @@
 package org.jetbrains.plugins.scala.debugger.ui
 
-import com.intellij.debugger.DebuggerContext
-import com.intellij.debugger.engine.DebugProcessImpl
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContextImpl}
-import com.intellij.debugger.jdi.LocalVariableProxyImpl
-import com.intellij.debugger.ui.impl.watch.{ArrayElementDescriptorImpl, LocalVariableDescriptorImpl, ValueDescriptorImpl}
-import com.intellij.debugger.ui.tree.render.{NodeRenderer, OnDemandRenderer}
-import com.intellij.debugger.ui.tree.{DescriptorWithParentObject, NodeDescriptor}
+import com.intellij.java.debugger.DebuggerContext
+import com.intellij.java.debugger.impl.engine.DebugProcessImpl
+import com.intellij.java.debugger.engine.evaluation.EvaluateException
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.jdi.LocalVariableProxyImpl
+import com.intellij.java.debugger.impl.ui.impl.watch.{ArrayElementDescriptorImpl, LocalVariableDescriptorImpl, ValueDescriptorImpl}
+import com.intellij.java.debugger.impl.ui.tree.render.{NodeRenderer, OnDemandRenderer}
+import com.intellij.debugger.ui.tree.DescriptorWithParentObject
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import consulo.application.AllIcons
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiExpression
 import consulo.desktop.awt.ui.impl.image.LayeredIcon
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
@@ -171,7 +173,7 @@ private[debugger] class LocalLazyValDescriptor(project: Project, proxy: LocalVar
 
   override def calcValue(context: EvaluationContextImpl): Value = {
     val lazyRefValue = proxy.getFrame.getValue(proxy)
-    val thisObject = context.computeThisObject().asInstanceOf[ObjectReference]
+    val thisObject = context.getThisObject.asInstanceOf[ObjectReference]
     val refType = init.declaringType()
     val args = Collections.singletonList(lazyRefValue)
     refType match {

@@ -3,12 +3,14 @@ package debugger.ui
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
-import com.intellij.debugger.engine.{DebugProcess, DebugProcessImpl}
-import com.intellij.debugger.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
-import com.intellij.debugger.ui.tree.{NodeDescriptor, ValueDescriptor}
-import com.intellij.xdebugger.impl.ui.XDebuggerUIConstants
-import com.sun.jdi._
+import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
+import com.intellij.java.debugger.engine.DebugProcess
+import com.intellij.java.debugger.impl.engine.DebugProcessImpl
+import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
+import com.intellij.java.debugger.impl.ui.tree.ValueDescriptor
+import consulo.execution.debug.ui.XDebuggerUIConstants
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.debugger.filters.ScalaDebuggerSettings

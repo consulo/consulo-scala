@@ -2,9 +2,9 @@ package org.jetbrains.plugins.scala.debugger.ui
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.jdi.LocalVariableProxyImpl
-import com.intellij.debugger.ui.impl.watch.LocalVariableDescriptorImpl
-import com.intellij.debugger.ui.tree.{NodeDescriptor, NodeDescriptorNameAdjuster}
+import com.intellij.java.debugger.impl.jdi.LocalVariableProxyImpl
+import com.intellij.java.debugger.impl.ui.impl.watch.LocalVariableDescriptorImpl
+import com.intellij.java.debugger.ui.tree.{NodeDescriptor, NodeDescriptorNameAdjuster}
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 
 import scala.util.Try

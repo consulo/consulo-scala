@@ -2,10 +2,10 @@ package org.jetbrains.plugins.scala
 package debugger
 package evaluation
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation.CodeFragmentFactoryContextWrapper
-import com.intellij.debugger.engine.evaluation.expression.{AssignmentEvaluator, BlockStatementEvaluator, Evaluator, IdentityEvaluator, TypeEvaluator, UnBoxingEvaluator, WhileStatementEvaluator}
-import com.intellij.debugger.engine.{JVMName, JVMNameUtil}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.evaluation.CodeFragmentFactoryContextWrapper
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{AssignmentEvaluator, BlockStatementEvaluator, Evaluator, IdentityEvaluator, TypeEvaluator, UnBoxingEvaluator, WhileStatementEvaluator}
+import com.intellij.java.debugger.impl.engine.{JVMName, JVMNameUtil}
 import com.intellij.java.language.JavaLanguage
 import consulo.util.lang.function.Condition
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiParameter, PsiType}

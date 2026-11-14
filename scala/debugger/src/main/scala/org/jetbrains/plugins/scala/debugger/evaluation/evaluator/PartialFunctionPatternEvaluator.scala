@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.Evaluator
-import com.sun.jdi.{ClassType, Value}
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import consulo.internal.com.sun.jdi.{ClassType, Value}
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 

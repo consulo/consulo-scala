@@ -8,13 +8,13 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.Unit
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.Parameter
 import org.jetbrains.plugins.scala.util.HashBuilder._
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 class FakeAnonymousClassConstructor(templ: ScNewTemplateDefinition, interfaceName: String)
   extends FakePsiMethod(templ, Some(templ), interfaceName) {
   override def isConstructor: Boolean = true
 
-  override def getIcon(flags: Int): Icon = Icons.CLASS
+  override def getIcon(flags: Int): Image = Icons.CLASS
 
   override def equals(obj: scala.Any): Boolean = obj match {
     case fake: FakeAnonymousClassConstructor =>

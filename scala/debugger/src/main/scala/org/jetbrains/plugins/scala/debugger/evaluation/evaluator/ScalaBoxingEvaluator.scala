@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala
 package debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{BoxingEvaluator, Evaluator, IdentityEvaluator}
-import com.sun.jdi.Value
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{BoxingEvaluator, Evaluator, IdentityEvaluator}
+import consulo.internal.com.sun.jdi.Value
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil

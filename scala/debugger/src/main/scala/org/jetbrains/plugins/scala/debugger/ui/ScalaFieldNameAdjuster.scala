@@ -2,8 +2,10 @@ package org.jetbrains.plugins.scala.debugger.ui
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.ui.tree.{FieldDescriptor, NodeDescriptor, NodeDescriptorNameAdjuster}
-import com.sun.jdi.{ClassType, ReferenceType}
+import com.intellij.java.debugger.impl.ui.tree.FieldDescriptor
+
+import com.intellij.java.debugger.ui.tree.{NodeDescriptor, NodeDescriptorNameAdjuster}
+import consulo.internal.com.sun.jdi.{ClassType, ReferenceType}
 import org.jetbrains.plugins.scala.debugger.ScalaSyntheticProvider
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.debugger.ui.ScalaFieldNameAdjuster.objectSuffix

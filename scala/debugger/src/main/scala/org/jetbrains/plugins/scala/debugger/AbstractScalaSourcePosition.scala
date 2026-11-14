@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.debugger
 
-import com.intellij.debugger.SourcePosition
+import com.intellij.java.debugger.SourcePosition
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiFile}
 

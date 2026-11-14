@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.JVMName
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, IdentityEvaluator}
-import com.sun.jdi.ObjectReference
+import com.intellij.java.debugger.impl.engine.JVMName
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, IdentityEvaluator}
+import consulo.internal.com.sun.jdi.ObjectReference
 
 case class UnwrapValueClassEvaluator(instanceEvaluator: Evaluator,
                                      className: JVMName,

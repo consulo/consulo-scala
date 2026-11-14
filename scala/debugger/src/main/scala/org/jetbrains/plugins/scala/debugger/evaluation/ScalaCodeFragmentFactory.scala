@@ -2,10 +2,11 @@ package org.jetbrains.plugins.scala.debugger.evaluation
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.DebuggerManagerEx
-import com.intellij.debugger.engine.evaluation.{CodeFragmentFactory, CodeFragmentFactoryContextWrapper, CodeFragmentKind, DefaultCodeFragmentFactory, TextWithImports, TextWithImportsImpl}
-import com.intellij.debugger.engine.evaluation.expression.EvaluatorBuilder
-import com.intellij.debugger.impl.DebuggerContextImpl
+import com.intellij.java.debugger.impl.DebuggerManagerEx
+import com.intellij.java.debugger.engine.evaluation.{CodeFragmentFactory, CodeFragmentKind, TextWithImports}
+import com.intellij.java.debugger.impl.engine.evaluation.{CodeFragmentFactoryContextWrapper, DefaultCodeFragmentFactory, TextWithImportsImpl}
+import com.intellij.java.debugger.engine.evaluation.expression.EvaluatorBuilder
+import com.intellij.java.debugger.impl.DebuggerContextImpl
 import consulo.language.file.LanguageFileType
 import consulo.application.progress.{EmptyProgressIndicator, ProgressManager}
 import consulo.project.Project
@@ -14,9 +15,9 @@ import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass, PsiClassType,
 import consulo.language.psi.PsiElement
 import com.intellij.util.concurrency.Semaphore
 import com.intellij.xdebugger.impl.XDebugSessionImpl
-import com.intellij.xdebugger.impl.ui.tree.ValueMarkup
-import com.intellij.xdebugger.{XDebugSession, XDebuggerManager}
-import com.sun.jdi.{ObjectReference, Value}
+import consulo.execution.debug.ui.ValueMarkup
+import consulo.execution.debug.{XDebugSession, XDebuggerManager}
+import consulo.internal.com.sun.jdi.{ObjectReference, Value}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.completion.ScalaBasicCompletionProvider
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor

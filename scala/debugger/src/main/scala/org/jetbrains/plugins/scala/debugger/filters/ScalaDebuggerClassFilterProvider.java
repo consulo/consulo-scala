@@ -2,9 +2,8 @@ package org.jetbrains.plugins.scala.debugger.filters;
 
 import consulo.annotation.component.ExtensionImpl;
 
-import com.intellij.ui.classFilter.ClassFilter;
-import com.intellij.ui.classFilter.DebuggerClassFilterProvider;
-
+import com.intellij.java.debugger.ui.classFilter.ClassFilter;
+import com.intellij.java.debugger.ui.classFilter.DebuggerClassFilterProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

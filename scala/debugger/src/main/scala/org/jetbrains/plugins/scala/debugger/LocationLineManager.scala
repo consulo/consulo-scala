@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.debugger
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.{DebugProcess, SyntheticTypeComponentProvider}
-import com.intellij.debugger.jdi.GeneratedLocation
-import com.intellij.debugger.settings.DebuggerSettings
-import consulo.application.ReadAction
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.engine.{DebugProcess, SyntheticTypeComponentProvider}
+import com.intellij.java.debugger.impl.jdi.GeneratedLocation
+import com.intellij.java.debugger.impl.settings.DebuggerSettings
+import consulo.application.{Application, ReadAction}
 import consulo.application.progress.ProgressManager
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiDocumentManager, PsiElement}
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
-import com.sun.jdi.{AbsentInformationException, Location, Method, ReferenceType}
+import consulo.internal.com.sun.jdi.{AbsentInformationException, Location, Method, ReferenceType}
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScCaseClauses
@@ -26,7 +26,7 @@ trait LocationLineManager {
   import LocationLineManager._
   import self.caches._
 
-  private val syntheticProvider = SyntheticTypeComponentProvider.EP_NAME.findExtension(classOf[ScalaSyntheticProvider])
+  private val syntheticProvider = Application.get().getExtensionPoint(classOf[SyntheticTypeComponentProvider]).findExtension(classOf[ScalaSyntheticProvider])
 
   def exactLineNumber(location: Location): Int = location match {
     case gen: GeneratedLocation =>

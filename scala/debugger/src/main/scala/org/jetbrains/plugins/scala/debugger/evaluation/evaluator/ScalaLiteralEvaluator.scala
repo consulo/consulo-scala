@@ -3,8 +3,9 @@ package debugger
 package evaluation
 package evaluator
 
-import com.intellij.debugger.engine.evaluation.{EvaluationContextImpl, expression}
-import com.sun.jdi.Value
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression
+import consulo.internal.com.sun.jdi.Value
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.types.{ScLiteralType, ScType, ScTypeExt, api}
 

@@ -1,13 +1,17 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.DebuggerUtils
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ModifiableEvaluator, ModifiableValue, Modifier}
-import com.intellij.debugger.engine.evaluation.{EvaluateExceptionUtil, EvaluationContextImpl}
-import com.intellij.debugger.ui.impl.watch.ArrayElementDescriptorImpl
-import com.intellij.debugger.ui.tree.NodeDescriptor
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.engine.DebuggerUtils
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ModifiableEvaluator.evaluateModifiable
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.{ModifiableEvaluator, ModifiableValue}
+import com.intellij.java.debugger.engine.evaluation.expression.Modifier
+import com.intellij.java.debugger.engine.evaluation.EvaluateExceptionUtil
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.ui.impl.watch.ArrayElementDescriptorImpl
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import consulo.project.Project
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ScalaArrayAccessEvaluator.MyModifier
 
@@ -22,7 +26,7 @@ class ScalaArrayAccessEvaluator(arrayReferenceEvaluator: Evaluator, indexEvaluat
       case evaluatedArrayReference: ArrayReference =>
         val indexValue = indexEvaluator.evaluate(context).asInstanceOf[Value]
         if (!DebuggerUtils.isInteger(indexValue)) {
-          throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerBundle.message("evaluation.error.invalid.index.expression"))
+          throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerLocalize.evaluationErrorInvalidIndexExpression().get())
         }
         val evaluatedIndex = indexValue.asInstanceOf[PrimitiveValue].intValue()
 
@@ -35,7 +39,7 @@ class ScalaArrayAccessEvaluator(arrayReferenceEvaluator: Evaluator, indexEvaluat
         }
 
       case _ =>
-        throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerBundle.message("evaluation.error.array.reference.expected"))
+        throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerLocalize.evaluationErrorArrayReferenceExpected().get())
     }
   }
 }

@@ -2,9 +2,10 @@ package org.jetbrains.plugins.scala.debugger.breakpoints
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.ui.breakpoints.{BreakpointManager, ConditionalReturnJavaBreakpointVariant, JavaBreakpointVariant, JavaLineBreakpointType, LambdaJavaBreakpointVariant, LineBreakpoint, LineJavaBreakpointVariant, RunToCursorBreakpoint}
-import consulo.application.AllIcons
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.ui.breakpoints.{BreakpointManager, JavaLineBreakpointType, LineBreakpoint, RunToCursorBreakpoint}
+import consulo.execution.debug.icon.ExecutionDebugIconGroup
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.document.FileDocumentManager
 import consulo.project.{DumbService, Project}
 import consulo.document.util.TextRange
@@ -14,14 +15,12 @@ import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiManager, PsiWhi
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.application.util.function.Processor
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
-import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.intellij.xdebugger.impl.XSourcePositionImpl
-import com.intellij.xdebugger.impl.breakpoints.XBreakpointBase
-import com.intellij.xdebugger.{XDebuggerUtil, XSourcePosition}
+import consulo.execution.debug.breakpoint.XLineBreakpoint
+import consulo.execution.debug.{XDebuggerUtil, XSourcePosition}
 import org.jetbrains.annotations.{NotNull, Nullable}
-import org.jetbrains.java.debugger.breakpoints.properties.JavaLineBreakpointProperties
+import com.intellij.java.debugger.impl.breakpoints.properties.JavaLineBreakpointProperties
 import org.jetbrains.plugins.scala.api.ScalaLanguage
-import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaConditionalReturnSourcePosition, ScalaLambdaSourcePosition, ScalaPositionManager, ScalaSourcePositionWithWholeLineHighlighted, typeAware}
+import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaLambdaSourcePosition, ScalaPositionManager, ScalaSourcePositionWithWholeLineHighlighted, typeAware}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -33,8 +32,9 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScTyp
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScEarlyDefinitions, ScNamedElement}
 import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 
+import consulo.ui.image.Image
+
 import java.util.Collections
-import javax.swing.Icon
 
 @ExtensionImpl
 class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", DebuggerBundle.message("line.breakpoints.tab.title")) {
@@ -83,73 +83,25 @@ class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", Debug
 
     val positionsOnLine = ScalaPositionManager.positionsOnLine(file, line)
     val lambdas = ScalaPositionManager.filterLambdasOnLine(file, line, positionsOnLine)
-    val conditionalReturn = findConditionalReturn(file, line)
-
-    if (lambdas.isEmpty && conditionalReturn.isEmpty) return Collections.emptyList()
+    if (lambdas.isEmpty) return Collections.emptyList()
 
     val res = new java.util.LinkedList[JavaBPVariant]()
 
     val method = Option(SourcePosition.createFromLine(file, line).getElementAt)
       .flatMap(findContainingDefinition(_, lambdas))
 
-    val extraPriorityForLambdas = positionsOnLine.sizeCompare(lambdas) == 0
     for ((lambda, ordinal) <- lambdas.zipWithIndex) {
       val element = lambda match {
         case f: ScFunctionExpr => f.result.getOrElse(f)
         case e => e
       }
-      res.addLast(new LambdaScalaBreakpointVariant(XSourcePositionImpl.createByElement(element), element, ordinal, extraPriorityForLambdas))
+      res.addLast(new LambdaScalaBreakpointVariant(XDebuggerUtil.getInstance.createPositionByElement(element), element, ordinal))
     }
     res.addFirst(new LineScalaBreakpointVariant(position, method.orNull))
-    if (lambdas.nonEmpty) {
-      res.addFirst(new JavaBreakpointVariant(position, lambdas.size)) //adding all variants
-    }
-    // Must stay last: on a plain gutter click the platform picks `variants.maxBy(_.priority)`, which
-    // returns the first maximum, and this variant ties with the line variant. The line variant must win.
-    conditionalReturn.foreach { returnKeyword =>
-      res.addLast(new ConditionalReturnJavaBreakpointVariant(position, returnKeyword, JavaLineBreakpointProperties.NO_LAMBDA))
-    }
+    // upstream: conditional return breakpoint variant (SCL-21626) is not supported by consulo-java
+    res.addFirst(new JavaBreakpointVariant(position)) //adding all variants
     res
   }
-
-  /**
-   * The `return` keyword of a single conditional (early) return on this line, if any (SCL-21626).
-   *
-   * Only early returns from real methods are supported: scalac lowers a `return` from inside a lambda into
-   * `throw new NonLocalReturnControl(...)`, so no return instruction is emitted for it. The only return opcode
-   * on such a line belongs to the closure's normal exit, i.e. the breakpoint would suspend exactly when the
-   * early return does '''not''' happen.
-   */
-  private def findConditionalReturn(file: ScalaFile, line: Int): Option[PsiElement] =
-    Option(JavaLineBreakpointType.findSingleConditionalReturn(file, line))
-      // The platform matches any leaf whose text is "return", to cover many languages at once.
-      .filter(_.elementType == ScalaTokenTypes.kRETURN)
-      // Cheaper than the platform's order: this only walks facets for lines that do have such a return.
-      .filter(_ => JavaLineBreakpointType.canStopOnConditionalReturn(file))
-      .filter(isReturnFromMethod)
-
-  /**
-   * Whether the `return` returns from a method, rather than non-locally from an enclosing lambda, and whether
-   * a return instruction is actually emitted on its own line.
-   *
-   * Note that [[findContainingDefinition]] cannot be reused here: it deliberately skips the lambdas that are
-   * on the line, so it would report the enclosing method for the very case we need to reject.
-   */
-  private def isReturnFromMethod(returnKeyword: PsiElement): Boolean =
-    returnKeyword.withParentsInFile.collectFirst {
-      // `typeAware = true` on purpose: recognizing a by-name argument (`opt.getOrElse { return 1 }`) needs
-      // resolution, and treating one as a plain block would plant the breakpoint on the closure's own return.
-      case e if ScalaPositionManager.isLambda(e, typeAware = true) => false
-      // An early return out of a `try` with a `finally` only stores the result and jumps to the finally
-      // block; every return instruction is emitted there, attributed to the finally body's lines. There is
-      // nothing on this line to suspend on, so offering the variant would create a breakpoint that never hits.
-      // A `try` with only a `catch` is fine: the return instruction stays on this line.
-      case t: ScTry if t.finallyBlock.isDefined                    => false
-      // `<init>` is the one method whose line numbers LocationLineManager remaps to a different line.
-      case f: ScFunctionDefinition                                 => !f.isConstructor
-      // Stop at the class boundary, so that a `return` in a nested initializer is not taken for a method one.
-      case _: ScTemplateBody | _: ScEarlyDefinitions               => false
-    }.getOrElse(false) // no enclosing method at all
 
   private def findContainingDefinition(elem: PsiElement, lambdas: Seq[PsiElement]): Option[PsiElement] = {
     val project = elem.getProject
@@ -178,10 +130,7 @@ class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", Debug
         ScalaPositionManager.isLambda(element) && element.getTextRange == method.getTextRange
     } else {
       val element = position.getElementAt
-      //a conditional return position is a line position too: the position manager only remaps it onto the
-      //`return` keyword so that just the keyword is highlighted on suspend. Rejecting it here would leave
-      //a line whose very first instruction is a return without any request at all.
-      position.is[ScalaSourcePositionWithWholeLineHighlighted, ScalaConditionalReturnSourcePosition] &&
+      position.is[ScalaSourcePositionWithWholeLineHighlighted] &&
         element != null && position.getLine == element.getLineNumber
     }
   }
@@ -202,19 +151,12 @@ class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", Debug
 
   //noinspection ApiStatus,UnstableApiUsage
   override def getHighlightRange(breakpoint: XLineBreakpoint[JavaLineBreakpointProperties]): TextRange = {
-    // The platform highlights the `return` keyword itself, see JavaLineBreakpointType.findSingleConditionalReturn.
-    if (isConditionalReturn(breakpoint)) return super.getHighlightRange(breakpoint)
-
     BreakpointManager.getJavaBreakpoint(breakpoint) match {
       case lineBp: LineBreakpoint[_] if isLambda(lineBp) =>
         if (DumbService.getInstance(lineBp.getProject).isDumb) {
-          breakpoint match {
-            case base: XBreakpointBase[_, _, _] =>
-              // The lambda body range needs resolve; once indexes are ready, ask the
-              // platform to recompute the range and redraw the highlighter.
-              invokeWhenSmart(lineBp.getProject)(base.fireBreakpointChanged())
-            case _ =>
-          }
+          // The lambda body range needs resolve; once indexes are ready, ask the
+          // platform to recompute the range and redraw the highlighter.
+          invokeWhenSmart(lineBp.getProject)(breakpoint.fireBreakpointChanged())
           null
         }
         else Option(getContainingMethod(lineBp)).map {
@@ -243,20 +185,14 @@ class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", Debug
 
   private def isMatchAll(breakpoint: LineBreakpoint[?]): Boolean = lambdaOrdinal(breakpoint) == null
 
-  private def isConditionalReturn(breakpoint: XLineBreakpoint[JavaLineBreakpointProperties]): Boolean =
-    breakpoint.getProperties match {
-      case props: JavaLineBreakpointProperties => props.isConditionalReturn
-      case null => false //the properties are nullable in practice
-    }
-
   override def getPriority: Int = super.getPriority + 1
 
   private final class LineScalaBreakpointVariant(position: XSourcePosition, @Nullable method: PsiElement)
     extends LineJavaBreakpointVariant(position, method, -1) {
 
-    override def getIcon: Icon = method match {
-      case e @ (_: PsiMethod | _: PsiClass | _: PsiFile) => e.getIcon(0)
-      case _ => AllIcons.Debugger.Db_set_breakpoint
+    override def getIcon: Image = method match {
+      case e @ (_: PsiMethod | _: PsiClass | _: PsiFile) => IconDescriptorUpdaters.getIcon(e, 0)
+      case _ => ExecutionDebugIconGroup.breakpointBreakpoint()
     }
 
     override def getText: String = method match {
@@ -269,18 +205,9 @@ class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", Debug
       case _: ScalaFile => DebuggerBundle.message("breakpoint.location.line.in.containing.file")
       case _ => DebuggerBundle.message("breakpoint.location.line.in.containing.block")
     }
-
-    override def isLowPriority(firstLineElement: PsiElement): Boolean =
-      firstLineElement.elementType == ScalaTokenTypes.tDOT
   }
 
-  private final class LambdaScalaBreakpointVariant(position: XSourcePosition, @Nullable element: PsiElement, lambdaOrdinal: Int, hasExtraPriority: Boolean)
-    extends LambdaJavaBreakpointVariant(position, element, lambdaOrdinal) {
-
-    override def getPriority(project: Project): Int = {
-      val priority = super.getPriority(project)
-      val extraPriorty = if (hasExtraPriority) 50 else 0
-      priority + extraPriorty
-    }
-  }
+  // upstream: variant priorities are not supported by the Consulo platform
+  private final class LambdaScalaBreakpointVariant(position: XSourcePosition, @Nullable element: PsiElement, lambdaOrdinal: Int)
+    extends LambdaJavaBreakpointVariant(position, element, lambdaOrdinal)
 }

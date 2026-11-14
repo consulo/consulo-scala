@@ -2,17 +2,19 @@ package org.jetbrains.plugins.scala.debugger
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation.{EvaluationContext, TextWithImports, TextWithImportsImpl}
-import com.intellij.debugger.engine.{DebuggerUtils, FrameExtraVariablesProvider}
-import com.intellij.psi.impl.search.PsiSearchHelperImpl
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.engine.evaluation.{EvaluationContext, TextWithImports}
+import com.intellij.java.debugger.impl.engine.evaluation.TextWithImportsImpl
+import com.intellij.java.debugger.engine.DebuggerUtils
+import com.intellij.java.debugger.impl.engine.FrameExtraVariablesProvider
+import consulo.language.impl.internal.psi.search.PsiSearchHelperImpl
 import consulo.language.psi.scope.LocalSearchScope
 import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
 import consulo.language.psi.resolve.ResolveState
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
-import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
+import consulo.execution.debug.internal.breakpoint.XExpressionImpl
 import org.jetbrains.plugins.scala.codeInsight.template.util.VariablesCompletionProcessor
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction
 import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, ScalaCodeFragmentFactory, ScalaEvaluatorBuilderUtil, ScalaLazyResolveEvaluatorBuilder}

@@ -2,10 +2,11 @@ package org.jetbrains.plugins.scala.debugger
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.SourcePositionProvider
-import com.intellij.debugger.impl.{DebuggerContextImpl, DebuggerContextUtil, PositionUtil}
-import com.intellij.debugger.ui.tree.{FieldDescriptor, LocalVariableDescriptor, NodeDescriptor}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.SourcePositionProvider
+import com.intellij.java.debugger.impl.{DebuggerContextImpl, DebuggerContextUtil, PositionUtil}
+import com.intellij.java.debugger.impl.ui.tree.{FieldDescriptor, LocalVariableDescriptor}
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import consulo.application.dumb.IndexNotReadyException
 import consulo.project.Project
 import consulo.language.psi.PsiElement

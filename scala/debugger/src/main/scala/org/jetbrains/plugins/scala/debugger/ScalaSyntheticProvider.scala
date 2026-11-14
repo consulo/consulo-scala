@@ -2,13 +2,12 @@ package org.jetbrains.plugins.scala.debugger
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.engine.SyntheticTypeComponentProvider
+import com.intellij.java.debugger.engine.SyntheticTypeComponentProvider
 import consulo.util.collection.ContainerUtil
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager.isAnonfunType
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
-import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
-import org.jetbrains.plugins.scala.util.TopLevelMembers.isSyntheticClassForTopLevelMembers
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.{TopLevelDefinitionsSingletonClassNameSuffix, TraitImplementationClassSuffix_211}
 
 import java.util.concurrent.ConcurrentMap
 import scala.collection.mutable
@@ -81,7 +80,7 @@ object ScalaSyntheticProvider {
 
   private def isSyntheticConstructor(m: Method): Boolean =
     (m.isConstructor || m.isStaticInitializer) &&
-      (isAnonfunType(m.declaringType()) || isSyntheticClassForTopLevelMembers(m.declaringType()))
+      (isAnonfunType(m.declaringType()) || m.declaringType().name.endsWith(TopLevelDefinitionsSingletonClassNameSuffix))
 
   private val defaultArgPattern = """\$default\$\d+""".r
 

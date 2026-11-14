@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.Evaluator
-import com.sun.jdi.{ClassType, ObjectReference, Value}
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import consulo.internal.com.sun.jdi.{ClassType, ObjectReference, Value}
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 
@@ -17,7 +17,7 @@ private[debugger] final class NewValueClassInstanceEvaluator(typeEvaluator: Scal
     val ct = typeEvaluator.evaluate(context) match {
       case c: ClassType => c
       case _ =>
-        throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.cannot.evaluate.class.type"))
+        throw EvaluationException(JavaDebuggerLocalize.evaluationErrorCannotEvaluateClassType().get())
     }
 
     val ctor = Try(ct.methodsByName("<init>").get(0))

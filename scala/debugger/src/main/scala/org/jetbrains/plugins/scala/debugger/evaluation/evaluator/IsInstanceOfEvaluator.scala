@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, TypeEvaluator}
-import com.sun.jdi._
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, TypeEvaluator}
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.lang.psi.types.{ScCompoundType, ScLiteralType, ScType, ScTypeExt}
@@ -152,7 +152,7 @@ class IsInstanceOfEvaluator(operandEvaluator: Evaluator, rawType: ScType) extend
         try {
           val name = inReadAction(DebuggerUtil.getJVMQualifiedName(tpe))
           val typeEvaluator = new TypeEvaluator(name)
-          val refType = typeEvaluator.evaluate(context)
+          val refType = typeEvaluator.evaluate(context).asInstanceOf[ReferenceType]
           val classObject = refType.classObject()
           val classRefType = classObject.referenceType().asInstanceOf[ClassType]
           val method = classRefType.concreteMethodByName("isAssignableFrom", "(Ljava/lang/Class;)Z")

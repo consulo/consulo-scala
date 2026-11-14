@@ -1,19 +1,20 @@
 package org.jetbrains.plugins.scala
 package debugger.evaluation
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.codeinsight.RuntimeTypeEvaluator
-import com.intellij.debugger.engine.ContextUtil
-import com.intellij.debugger.engine.evaluation.expression.ExpressionEvaluator
-import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, EvaluationContextImpl, TextWithImportsImpl}
-import com.intellij.debugger.impl.DebuggerContextImpl
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.impl.codeinsight.RuntimeTypeEvaluator
+import com.intellij.java.debugger.impl.engine.ContextUtil
+import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
+import com.intellij.java.debugger.engine.evaluation.CodeFragmentKind
+import com.intellij.java.debugger.impl.engine.evaluation.{EvaluationContextImpl, TextWithImportsImpl}
+import com.intellij.java.debugger.impl.DebuggerContextImpl
 import consulo.codeEditor.Editor
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.{PsiSubstitutor, PsiType}
 import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType
-import com.sun.jdi.{ClassType, ReferenceType, Value}
+import consulo.internal.com.sun.jdi.{ClassType, ReferenceType, Value}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction
 import org.jetbrains.plugins.scala.debugger.evaluation.ScalaRuntimeTypeEvaluator._
@@ -42,7 +43,7 @@ abstract class ScalaRuntimeTypeEvaluator(@Nullable editor: Editor, expression: P
       ScalaEvaluatorBuilder.build(codeFragment, ContextUtil.getSourcePosition(evaluationContext))
     }
     val value: Value = evaluator.evaluate(evaluationContext)
-    if (value == null) throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.surrounded.expression.null"))
+    if (value == null) throw EvaluationException(JavaDebuggerLocalize.evaluationErrorSurroundedExpressionNull().get())
 
     // talk to the debuggee first, so that only the PSI lookup runs under the read lock
     val candidates = castableTypeCandidates(value)

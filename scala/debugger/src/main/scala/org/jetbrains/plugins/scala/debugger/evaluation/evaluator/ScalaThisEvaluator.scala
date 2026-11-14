@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.DebuggerUtils
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.Evaluator
-import com.intellij.debugger.jdi.{LocalVariableProxyImpl, StackFrameProxyImpl}
-import com.sun.jdi._
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.engine.DebuggerUtils
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import com.intellij.java.debugger.impl.jdi.{LocalVariableProxyImpl, StackFrameProxyImpl}
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 
@@ -28,7 +28,7 @@ class ScalaThisEvaluator(iterations: Int = 0) extends Evaluator {
 
   override def evaluate(context: EvaluationContextImpl): AnyRef = {
     lazy val frameProxy: StackFrameProxyImpl = context.getFrameProxy
-    var objRef: Value = context.computeThisObject() match {
+    var objRef: Value = context.getThisObject match {
       case null => //so we possibly in trait $class
         try {
           val variable: LocalVariableProxyImpl = frameProxy.visibleVariableByName("$this")
@@ -62,7 +62,7 @@ class ScalaThisEvaluator(iterations: Int = 0) extends Evaluator {
       }
     }
     if (objRef == null) {
-      throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.this.not.avalilable"))
+      throw EvaluationException(JavaDebuggerLocalize.evaluationErrorThisNotAvalilable().get())
     }
     objRef
   }

@@ -10,7 +10,7 @@ import jakarta.inject.Singleton
 
 
 import org.jetbrains.plugins.scala.api.NlsString
-import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
+import com.intellij.java.debugger.impl.{DebuggerManagerListener, DebuggerSession}
 import consulo.module.Module
 import consulo.project.Project
 import com.intellij.openapi.util.io.NioFiles

@@ -4,8 +4,9 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, TextWithImports, TextWithImportsImpl}
-import com.intellij.debugger.impl.EditorTextProvider
+import com.intellij.java.debugger.engine.evaluation.{CodeFragmentKind, TextWithImports}
+import com.intellij.java.debugger.impl.engine.evaluation.TextWithImportsImpl
+import com.intellij.java.debugger.impl.EditorTextProvider
 import consulo.util.lang.Pair
 import consulo.document.util.TextRange
 import consulo.language.psi.PsiElement

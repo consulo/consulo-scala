@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.evaluation.expression.{ModifiableEvaluator, ModifiableValue, Modifier}
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContextImpl}
-import com.intellij.debugger.jdi.{LocalVariableProxyImpl, StackFrameProxyImpl}
-import com.intellij.debugger.ui.impl.watch.LocalVariableDescriptorImpl
-import com.intellij.debugger.ui.tree.NodeDescriptor
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ModifiableEvaluator.evaluateModifiable
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.{ModifiableEvaluator, ModifiableValue}
+import com.intellij.java.debugger.engine.evaluation.expression.Modifier
+import com.intellij.java.debugger.engine.evaluation.EvaluateException
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.jdi.{LocalVariableProxyImpl, StackFrameProxyImpl}
+import com.intellij.java.debugger.impl.ui.impl.watch.LocalVariableDescriptorImpl
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import consulo.logging.Logger
 import consulo.project.Project
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ScalaLocalVariableEvaluator.{EvaluationResult, MyModifier}
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
@@ -119,7 +122,7 @@ class ScalaLocalVariableEvaluator(
     }
 
     if (context.getFrameProxy == null) {
-      throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.no.stackframe"))
+      throw EvaluationException(JavaDebuggerLocalize.evaluationErrorNoStackframe().get())
     }
 
     val result = evaluateWithFrames(withSimpleName)
@@ -133,7 +136,7 @@ class ScalaLocalVariableEvaluator(
       case Some(EvaluationResult(None, value)) =>
         new ModifiableValue(value, null)
       case None =>
-        throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.local.variable.missing", myName))
+        throw EvaluationException(JavaDebuggerLocalize.evaluationErrorLocalVariableMissing(myName).get())
     }
   }
 }

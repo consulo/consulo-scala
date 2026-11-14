@@ -5,10 +5,11 @@ import consulo.annotation.component.ExtensionImpl
 //import com.intellij.debugger.collections.visualizer.CollectionVisualizerEvaluator
 //import com.intellij.debugger.engine.FullValueEvaluatorProvider
 //import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.impl.DebuggerUtilsAsync
+import com.intellij.java.debugger.impl.DebuggerUtilsAsync
 //import com.intellij.debugger.ui.impl.watch.ValueDescriptorImpl
-import com.intellij.debugger.ui.tree.render.{ChildrenRenderer, CompoundRendererProvider, ValueLabelRenderer}
-import com.sun.jdi.Type
+import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenRenderer, ValueLabelRenderer}
+import com.intellij.debugger.ui.tree.render.CompoundRendererProvider
+import consulo.internal.com.sun.jdi.Type
 
 import java.util.concurrent.CompletableFuture
 

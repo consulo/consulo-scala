@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.Evaluator
-import com.intellij.debugger.impl.DebuggerUtilsImpl
-import com.sun.jdi._
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import com.intellij.java.debugger.engine.DebuggerUtils
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
@@ -69,7 +69,7 @@ class AsInstanceOfEvaluator(operandEvaluator: Evaluator, rawType: ScType) extend
     (value, tpe) match {
       case (_, _: ScCompoundType) => value
       case (null, _) if tpe.isPrimitive =>
-        throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.cannot.cast.null", tpe.canonicalText))
+        throw EvaluationException(JavaDebuggerLocalize.evaluationErrorCannotCastNull(tpe.canonicalText).get())
       case (null, _) => null
       case (b: BooleanValue, Boolean) => b
       case (b: ByteValue, NumericType(fn)) => fn(b)
@@ -84,7 +84,7 @@ class AsInstanceOfEvaluator(operandEvaluator: Evaluator, rawType: ScType) extend
       case (o: ObjectReference, _) =>
         val valueType = o.referenceType()
         val castType = new ClassOfEvaluator(tpe).evaluate(context).reflectedType()
-        if (DebuggerUtilsImpl.instanceOf(valueType, castType)) o
+        if (DebuggerUtils.instanceOf(valueType, castType.name())) o
         else throw EvaluationException(message)
       case x =>
         throw new MatchError(x)

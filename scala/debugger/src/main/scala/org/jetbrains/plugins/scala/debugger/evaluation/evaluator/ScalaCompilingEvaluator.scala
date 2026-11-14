@@ -2,14 +2,18 @@ package org.jetbrains.plugins.scala
 package debugger
 package evaluation.evaluator
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.{DebugProcess, Method, SuspendContextImpl}
-import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, EvaluationContext, EvaluationContextImpl, TextWithImportsImpl}
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator}
-import com.intellij.debugger.jdi.VirtualMachineProxyImpl
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.engine.DebugProcess
+import consulo.internal.com.sun.jdi.Method
+import com.intellij.java.debugger.impl.engine.SuspendContextImpl
+import com.intellij.java.debugger.engine.evaluation.{CodeFragmentKind, EvaluationContext}
+import com.intellij.java.debugger.impl.engine.evaluation.{EvaluationContextImpl, TextWithImportsImpl}
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
+import com.intellij.java.debugger.impl.jdi.VirtualMachineProxyImpl
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiElement
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.evaluation._
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.compiling._
 import org.jetbrains.plugins.scala.extensions._

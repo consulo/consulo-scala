@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.debugger.smartStepInto
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.{BreakpointStepMethodFilter, DebugProcessImpl, JVMNameUtil}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.{BreakpointStepMethodFilter, DebugProcessImpl, JVMNameUtil}
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.PsiMethod
-import com.intellij.util.Range
-import com.sun.jdi.{Location, Method}
+import consulo.util.lang.Range
+import consulo.internal.com.sun.jdi.{Location, Method}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil

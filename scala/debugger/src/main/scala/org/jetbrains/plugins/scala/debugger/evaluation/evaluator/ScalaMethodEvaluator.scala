@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{DisableGC, Evaluator}
-import com.intellij.debugger.engine.{DebugProcess, DebugProcessImpl, DebuggerUtils, JVMName}
-import com.intellij.debugger.{JavaDebuggerBundle, SourcePosition}
-import com.sun.jdi._
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{DisableGC, Evaluator}
+import com.intellij.java.debugger.engine.{DebugProcess, DebuggerUtils}
+import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, JVMName}
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.SourcePosition
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaPositionManager}
@@ -44,8 +46,10 @@ case class ScalaMethodEvaluator(objectEvaluator: Evaluator,
       initCache(debugProcess)
     }
     val requiresSuperObject: Boolean = objectEvaluator.isInstanceOf[ScSuperEvaluator] ||
-      (objectEvaluator.is[DisableGC] &&
-        DisableGC.unwrap(objectEvaluator).isInstanceOf[ScSuperEvaluator])
+      (objectEvaluator match {
+        case gc: DisableGC => gc.getDelegate.isInstanceOf[ScSuperEvaluator]
+        case _ => false
+      })
     val evaluated: AnyRef = {
       val res = objectEvaluator.evaluate(context)
       if (methodOnRuntimeRef) res else DebuggerUtil.unwrapScalaRuntimeRef(res)
@@ -211,7 +215,7 @@ case class ScalaMethodEvaluator(objectEvaluator: Evaluator,
         if (jdiMethod.isAbstract) throw EvaluationException(DebuggerBundle.message("cannot.invoke.abstract.interface.method.name", jdiMethod.name()))
 
         //see SCL-10132
-        if (!jdiMethod.isDefault && jdiMethod.isPrivate) {
+        if (!isDefault(jdiMethod) && jdiMethod.isPrivate) {
           togglePrivate(jdiMethod)
           val result = debugProcess.invokeInstanceMethod(context, objRef, jdiMethod, unwrappedArgs(args, jdiMethod).asJava, ObjectReference.INVOKE_NONVIRTUAL)
           togglePrivate(jdiMethod)
@@ -257,10 +261,10 @@ case class ScalaMethodEvaluator(objectEvaluator: Evaluator,
         case rt: ReferenceType =>
           classWithMethod(rt)
         case _ =>
-          throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.method", methodName))
+          throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingMethod(methodName).get())
       }
 
-      if (typeAndMethod.isEmpty) throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.method", methodName))
+      if (typeAndMethod.isEmpty) throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingMethod(methodName).get())
 
       typeAndMethod match {
         case Some((tp, m)) if m.isConstructor =>
@@ -274,15 +278,19 @@ case class ScalaMethodEvaluator(objectEvaluator: Evaluator,
             case objRef: ObjectReference =>
               invokeInstanceMethod(objRef, m)
             case _ =>
-              throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.method", methodName))
+              throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingMethod(methodName).get())
           }
-        case _ => throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.method", methodName))
+        case _ => throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingMethod(methodName).get())
       }
     }
     catch {
-      case e: Exception => throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.method", methodName), e)
+      case e: Exception => throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingMethod(methodName).get(), e)
     }
   }
+
+  // upstream: Method.isDefault, missing in the JDI bundled with consulo-java
+  private def isDefault(method: Method): Boolean =
+    method.declaringType().isInstanceOf[InterfaceType] && !method.isAbstract && !method.isStatic
 
   private def unwrappedArgs(args: Seq[AnyRef], jdiMethod: Method): Seq[Value] = {
     val argTypeNames = jdiMethod.argumentTypeNames()

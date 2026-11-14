@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.debugger.smartStepInto
 
-import com.intellij.debugger.engine.{DebugProcessImpl, DebuggerUtils, JVMNameUtil, MethodFilter}
+import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, JVMNameUtil, MethodFilter}
+
+import com.intellij.java.debugger.engine.DebuggerUtils
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.util.Range
-import com.sun.jdi.Location
+import consulo.util.lang.Range
+import consulo.internal.com.sun.jdi.Location
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScMethodLike, ScalaConstructor}

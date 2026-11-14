@@ -1,13 +1,16 @@
 package org.jetbrains.plugins.scala.debugger
 package ui
 
-import com.intellij.debugger.engine.evaluation.EvaluationContext
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator, ExpressionEvaluatorImpl, IdentityEvaluator}
-import com.intellij.debugger.engine.{DebuggerUtils, JVMNameUtil}
-import com.intellij.debugger.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
-import com.intellij.debugger.ui.tree.{NodeDescriptor, ValueDescriptor}
-import com.intellij.xdebugger.impl.ui.XDebuggerUIConstants
-import com.sun.jdi._
+import com.intellij.java.debugger.engine.evaluation.EvaluationContext
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, ExpressionEvaluatorImpl, IdentityEvaluator}
+import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
+import com.intellij.java.debugger.engine.DebuggerUtils
+import com.intellij.java.debugger.impl.engine.JVMNameUtil
+import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
+import com.intellij.java.debugger.impl.ui.tree.ValueDescriptor
+import consulo.execution.debug.ui.XDebuggerUIConstants
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator._
 import org.jetbrains.plugins.scala.debugger.filters.ScalaDebuggerSettings

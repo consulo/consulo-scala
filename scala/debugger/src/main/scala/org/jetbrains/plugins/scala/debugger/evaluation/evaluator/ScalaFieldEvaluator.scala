@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ModifiableEvaluator, ModifiableValue, Modifier}
-import com.intellij.debugger.ui.impl.watch.FieldDescriptorImpl
-import com.intellij.debugger.ui.tree.NodeDescriptor
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ModifiableEvaluator.evaluateModifiable
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.{ModifiableEvaluator, ModifiableValue}
+import com.intellij.java.debugger.engine.evaluation.expression.Modifier
+import com.intellij.java.debugger.impl.ui.impl.watch.FieldDescriptorImpl
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import consulo.project.Project
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ScalaFieldEvaluator.MyModifier
@@ -81,18 +84,18 @@ case class ScalaFieldEvaluator(objectEvaluator: Evaluator, _fieldName: String,
           field = fieldByName(refType, fieldName)
         }
         if (field == null || !field.isStatic) {
-          throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.no.static.field", fieldName))
+          throw EvaluationException(JavaDebuggerLocalize.evaluationErrorNoStaticField(fieldName).get())
         }
         val modifier = new MyModifier(refType, field)
         new ModifiableValue(refType.getValue(field), modifier)
       case objRef: ObjectReference =>
         val refType: ReferenceType = objRef.referenceType
         if (!(refType.isInstanceOf[ClassType] || refType.isInstanceOf[ArrayType])) {
-          throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.class.or.array.expected", fieldName))
+          throw EvaluationException(JavaDebuggerLocalize.evaluationErrorClassOrArrayExpected(fieldName).get())
         }
         objRef match {
           case arrayRef: ArrayReference if "length" == fieldName =>
-            val value = context.getVirtualMachineProxy.mirrorOf(arrayRef.length())
+            val value = context.getDebugProcess.getVirtualMachineProxy.mirrorOf(arrayRef.length())
             return new ModifiableValue(value, null)
           case _ =>
         }
@@ -101,7 +104,7 @@ case class ScalaFieldEvaluator(objectEvaluator: Evaluator, _fieldName: String,
           field = refType.fieldByName(fieldName)
         }
         if (field == null) {
-          throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.no.instance.field", fieldName))
+          throw EvaluationException(JavaDebuggerLocalize.evaluationErrorNoInstanceField(fieldName).get())
         }
         val qualifier = if (field.isStatic) refType else objRef
         val modifier = new MyModifier(qualifier, field)
@@ -109,7 +112,7 @@ case class ScalaFieldEvaluator(objectEvaluator: Evaluator, _fieldName: String,
         new ModifiableValue(value, modifier)
       case null => throw EvaluationException(new NullPointerException)
       case _ =>
-        throw EvaluationException(JavaDebuggerBundle.message("evaluation.error.evaluating.field", fieldName))
+        throw EvaluationException(JavaDebuggerLocalize.evaluationErrorEvaluatingField(fieldName).get())
     }
   }
 }

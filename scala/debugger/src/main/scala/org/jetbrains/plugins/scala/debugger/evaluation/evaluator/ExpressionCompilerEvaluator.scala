@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.JVMNameUtil
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator, IdentityEvaluator, Modifier, UnBoxingEvaluator}
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContext, EvaluationContextImpl}
-import com.intellij.debugger.impl.DebuggerUtilsEx
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.JVMNameUtil
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, IdentityEvaluator, UnBoxingEvaluator}
+import com.intellij.java.debugger.engine.evaluation.expression.{ExpressionEvaluator, Modifier}
+import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.DebuggerUtilsEx
 import consulo.language.util.ModuleUtilCore
 import consulo.project.Project
 import consulo.module.content.layer.OrderEnumerator
 import com.intellij.platform.eel.provider.utils.EelPathUtils
 import consulo.language.psi.PsiElement
-import com.sun.jdi.{ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
+import consulo.internal.com.sun.jdi.{ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
 import org.jetbrains.jps.incremental.scala.shared.remote.CommandIds
 import org.jetbrains.jps.incremental.scala.shared.{Client, DummyClient, MessageKind}
 import org.jetbrains.plugins.scala.api.NlsString

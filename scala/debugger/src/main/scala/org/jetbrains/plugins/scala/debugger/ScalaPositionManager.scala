@@ -4,14 +4,15 @@ package debugger
 
 import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.api.ScalaLanguage
-import com.intellij.concurrency.ConcurrentCollectionFactory
-import com.intellij.debugger.engine.{DebugProcess, DebugProcessListener, DebuggerManagerThreadImpl, JVMNameUtil, Method, PositionManagerEx, PositionManagerImpl}
-import com.intellij.debugger.engine.evaluation.EvaluationContext
-import com.intellij.debugger.impl.DebuggerUtilsEx
-import com.intellij.debugger.jdi.{StackFrameProxyImpl, VirtualMachineProxyImpl}
-import com.intellij.debugger.requests.ClassPrepareRequestor
-import com.intellij.debugger.ui.impl.watch.StackFrameDescriptorImpl
-import com.intellij.debugger.{MultiRequestPositionManager, NoDataException, SourcePosition}
+import consulo.util.collection.primitive.ints.IntMaps
+import com.intellij.java.debugger.engine.{DebugProcess, DebugProcessListener}
+import com.intellij.java.debugger.impl.engine.{DebuggerManagerThreadImpl, JVMNameUtil, PositionManagerEx, PositionManagerImpl}
+import com.intellij.java.debugger.engine.evaluation.EvaluationContext
+import com.intellij.java.debugger.impl.DebuggerUtilsEx
+import com.intellij.java.debugger.impl.jdi.{StackFrameProxyImpl, VirtualMachineProxyImpl}
+import com.intellij.java.debugger.requests.ClassPrepareRequestor
+import com.intellij.java.debugger.impl.ui.impl.watch.StackFrameDescriptorImpl
+import com.intellij.java.debugger.{MultiRequestPositionManager, NoDataException, SourcePosition}
 import consulo.application.ReadAction
 import consulo.util.lang.ControlFlowException
 import consulo.document.Document
@@ -23,14 +24,16 @@ import com.intellij.java.language.psi.PsiClass
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace, SmartPsiElementPointer}
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.application.util.CachedValueProvider.Result
-import consulo.application.util.{CachedValueProvider, CachedValuesManager}
+import consulo.application.util.CachedValueProvider
+import consulo.language.psi.util.LanguageCachedValueUtil
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.util.lang.ThreeState
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
-import com.intellij.util.containers.ConcurrentIntObjectMap
-import com.intellij.xdebugger.frame.XStackFrame
-import com.sun.jdi._
-import com.sun.jdi.request.ClassPrepareRequest
+import consulo.util.collection.primitive.ints.ConcurrentIntObjectMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction
+import consulo.execution.debug.frame.XStackFrame
+import consulo.internal.com.sun.jdi._
+import consulo.internal.com.sun.jdi.request.ClassPrepareRequest
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.caches.{ScalaShortNamesCacheManager, cachedInUserData}
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager._
@@ -87,29 +90,14 @@ class ScalaPositionManager(val debugProcess: DebugProcess) extends PositionManag
         lineNumber = exactLineNumber(location)
       } yield {
         val normalizedLineNumber = if (lineNumber < -1) -1 else lineNumber
-        val calculated = calcPosition(psiFile, location, normalizedLineNumber)
-        //a lambda position must survive: its own highlighting and matching depend on the exact type
-        val conditionalReturn =
-          if (calculated.exists(_.is[ScalaLambdaSourcePosition])) None
-          else conditionalReturnPosition(location, psiFile, normalizedLineNumber)
-
-        conditionalReturn.orElse(calculated).getOrElse {
+        // upstream: conditional return positions (SCL-21626) are not supported by consulo-java
+        calcPosition(psiFile, location, normalizedLineNumber).getOrElse {
           val position = SourcePosition.createFromLine(psiFile, normalizedLineNumber)
           new ScalaSourcePositionWithWholeLineHighlighted(position)
         }
       }
     position.getOrThrow(NoDataException.INSTANCE)
   }
-
-  /**
-   * A position on the `return` keyword itself, when this location is the return instruction of a conditional
-   * (early) return (SCL-21626). Reuses the platform's check, which inspects the actual opcode at the location
-   * and ignores a method's implicit trailing return.
-   */
-  //noinspection ApiStatus
-  private def conditionalReturnPosition(location: Location, psiFile: PsiFile, lineNumber: Int): Option[SourcePosition] =
-    Option(PositionManagerImpl.adjustPositionForConditionalReturn(location, psiFile, lineNumber))
-      .map(new ScalaConditionalReturnSourcePosition(_))
 
   @NotNull
   override def getAllClasses(@NotNull position: SourcePosition): ju.List[ReferenceType] = {
@@ -803,10 +791,10 @@ object ScalaPositionManager {
 
     //stored in `file`, invalidated on `file` change
     val map: ConcurrentIntObjectMap[Seq[PsiElement]] = cachedInUserData("positionsOnLine.map", file, file) {
-      ConcurrentCollectionFactory.createConcurrentIntObjectMap()
+      IntMaps.newConcurrentIntObjectHashMap()
     }
 
-    Option(map.get(lineNumber))
+    Option((map: Int2ObjectFunction[Seq[PsiElement]]).get(lineNumber))
       .getOrElse(map.cacheOrGet(lineNumber, positionsOnLineInner(scFile, lineNumber)))
   }
 
@@ -1114,7 +1102,7 @@ object ScalaPositionManager {
         override def compute(): Result[NamePattern] = Result.create(new NamePattern(elem), elem)
       }
 
-      CachedValuesManager.getCachedValue(elem, cacheProvider)
+      LanguageCachedValueUtil.getCachedValue(elem, cacheProvider)
     }
   }
 

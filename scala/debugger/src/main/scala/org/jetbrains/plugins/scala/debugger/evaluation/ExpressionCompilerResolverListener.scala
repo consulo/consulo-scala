@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
-import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
+import com.intellij.java.debugger.impl.{DebuggerManagerListener, DebuggerSession}
 import consulo.application.progress.{ProgressIndicator, Task}
 import consulo.project.Project
 import consulo.util.dataholder.Key

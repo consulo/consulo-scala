@@ -1,18 +1,18 @@
 package org.jetbrains.plugins.scala.debugger.smartStepInto
 
-import com.intellij.debugger.actions.SmartStepTarget
-import com.intellij.util.Range
+import com.intellij.java.debugger.impl.actions.SmartStepTarget
+import consulo.util.lang.Range
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.types.TypePresentationContext
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 class ScalaFunExprSmartStepTarget(val funExpr: ScExpression, val stmts: Seq[ScBlockStatement], label: String, expressionLines: Range[Integer])
         extends SmartStepTarget(label, funExpr, true, expressionLines) {
 
-  override def getIcon: Icon = Icons.LAMBDA
+  override def getIcon: Image = Icons.LAMBDA
 }
 
 object ScalaFunExprSmartStepTarget {

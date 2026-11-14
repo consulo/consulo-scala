@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala
 package debugger.evaluation.evaluator
 
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ModifiableEvaluator, ModifiableValue}
-import com.intellij.debugger.engine.evaluation.{EvaluateExceptionUtil, EvaluationContextImpl}
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ModifiableEvaluator.evaluateModifiable
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.{ModifiableEvaluator, ModifiableValue}
+import com.intellij.java.debugger.engine.evaluation.EvaluateExceptionUtil
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 
 /**
  * Tries to use first evaluator first. If gets exception or null, uses second one.

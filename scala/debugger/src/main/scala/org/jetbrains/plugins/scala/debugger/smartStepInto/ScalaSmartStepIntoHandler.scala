@@ -2,21 +2,17 @@ package org.jetbrains.plugins.scala.debugger.smartStepInto
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.actions.{JvmSmartStepIntoHandler, MethodSmartStepTarget, SmartStepTarget}
-import com.intellij.debugger.engine.events.DebuggerContextCommandImpl
-import com.intellij.debugger.engine.{MethodFilter, SuspendContextImpl}
-import com.intellij.debugger.impl.PrioritizedTask.Priority
-import com.intellij.debugger.impl.{DebuggerSession, PrioritizedTask}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.actions.{JvmSmartStepIntoHandler, MethodSmartStepTarget, SmartStepTarget}
+import com.intellij.java.debugger.impl.engine.MethodFilter
 import consulo.application.ReadAction
 import consulo.document.FileDocumentManager
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiElement, PsiFile}
 import com.intellij.java.language.psi.PsiMethod
 import consulo.language.psi.util.PsiTreeUtil
-import com.intellij.util.Range
+import consulo.util.lang.Range
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.concurrency.{AsyncPromise, Promise, Promises}
 import org.jetbrains.plugins.scala.codeInspection.collections.{MethodRepr, stripped}
 import org.jetbrains.plugins.scala.debugger.filters.ScalaDebuggerSettings
 import org.jetbrains.plugins.scala.extensions._
@@ -31,8 +27,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaRecursiveElemen
 import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 import org.jetbrains.plugins.scala.util.AnonymousFunction
 
-import java.util.concurrent.Callable
-import java.util.{Collections, Objects}
+import java.util.Collections
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
@@ -40,36 +35,9 @@ import scala.jdk.CollectionConverters._
 @ExtensionImpl
 class ScalaSmartStepIntoHandler extends JvmSmartStepIntoHandler {
 
-  override def findSmartStepTargets(position: SourcePosition): java.util.List[SmartStepTarget] = {
-    throw new IllegalStateException("Should not be used")
-  }
-
-  override def findStepIntoTargets(position: SourcePosition, session: DebuggerSession): Promise[java.util.List[SmartStepTarget]] = {
-    if (ScalaDebuggerSettings.getInstance().ALWAYS_SMART_STEP_INTO) {
-      findSmartStepTargetsAsync(position, session)
-    }
-    else {
-      Promises.rejectedPromise[java.util.List[SmartStepTarget]]()
-    }
-  }
-
-  override def findSmartStepTargetsAsync(position: SourcePosition, session: DebuggerSession): Promise[java.util.List[SmartStepTarget]] = {
-    val res = new AsyncPromise[java.util.List[SmartStepTarget]]()
-    val context = session.getContextManager.getContext
-    Objects.requireNonNull(context.getManagerThread).schedule(new DebuggerContextCommandImpl(context) {
-      override def threadAction(suspendContext: SuspendContextImpl): Unit = {
-        val callable: Callable[java.util.List[SmartStepTarget]] = () => doFindSmartStepTargets(position)
-        Promises.compute(res, () => ReadAction.nonBlocking(callable).executeSynchronously())
-      }
-
-      override def commandCancelled(): Unit = {
-        res.setError("Cancelled")
-      }
-
-      override def getPriority: PrioritizedTask.Priority = Priority.NORMAL
-    })
-    res
-  }
+  // upstream: async smart step into and the "always smart step into" setting are not supported by consulo-java
+  override def findSmartStepTargets(position: SourcePosition): java.util.List[SmartStepTarget] =
+    ReadAction.compute(() => doFindSmartStepTargets(position))
 
   @TestOnly
   private[smartStepInto] def findSmartStepTargetsInTests(position: SourcePosition): java.util.List[SmartStepTarget] =

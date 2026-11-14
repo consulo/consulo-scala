@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContextImpl}
-import com.intellij.debugger.engine.evaluation.expression.{BlockStatementEvaluator, Evaluator, ExpressionEvaluator, ExpressionEvaluatorImpl, SyntheticVariableEvaluator, ThisEvaluator}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.engine.evaluation.EvaluateException
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.{BlockStatementEvaluator, Evaluator, ExpressionEvaluatorImpl, SyntheticVariableEvaluator, ThisEvaluator}
+import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
 import consulo.util.lang.ControlFlowException
 import consulo.project.Project
 import consulo.language.psi.PsiElement
@@ -182,7 +184,7 @@ private[evaluation] trait SyntheticVariablesHelper {
   }
 
   protected def createSyntheticVariable(name: String): Unit = currentHolder.setInitialValue(name, null)
-  protected def syntheticVariableEvaluator(name: String) = new SyntheticVariableEvaluator(currentHolder, name, null)
+  protected def syntheticVariableEvaluator(name: String) = new SyntheticVariableEvaluator(currentHolder, name)
 }
 
 private object needsCompilation {

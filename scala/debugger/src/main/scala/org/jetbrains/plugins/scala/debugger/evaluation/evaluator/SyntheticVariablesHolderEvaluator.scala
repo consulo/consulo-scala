@@ -1,23 +1,24 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 
-import com.intellij.debugger.JavaDebuggerBundle
-import com.intellij.debugger.engine.evaluation.expression.CodeFragmentEvaluator
-import com.intellij.debugger.engine.evaluation.{EvaluateExceptionUtil, EvaluationContextImpl}
-import com.sun.jdi.{Type, Value, VirtualMachine}
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
+import com.intellij.java.debugger.impl.engine.evaluation.expression.CodeFragmentEvaluator
+import com.intellij.java.debugger.engine.evaluation.EvaluateExceptionUtil
+import com.intellij.java.debugger.impl.jdi.VirtualMachineProxyImpl
+import consulo.internal.com.sun.jdi.{Type, Value, VirtualMachine}
 
 import scala.collection.mutable
 
 class SyntheticVariablesHolderEvaluator(parentEvaluator: CodeFragmentEvaluator) extends CodeFragmentEvaluator(parentEvaluator) {
   private val mySyntheticLocals = mutable.HashMap[String, Value]()
 
-  override def getValue(localName: String, context: EvaluationContextImpl): Value = mySyntheticLocals.get(localName) match {
-    case None => parentEvaluator.getValue(localName, context)
+  override def getValue(localName: String, vm: VirtualMachineProxyImpl): Value = mySyntheticLocals.get(localName) match {
+    case None => parentEvaluator.getValue(localName, vm)
     case Some(v) => v
   }
 
   override def setInitialValue(localName: String, value: scala.Any): Unit = {
     if (mySyntheticLocals.contains(localName)) {
-      throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerBundle.message("evaluation.error.variable.already.declared", localName))
+      throw EvaluateExceptionUtil.createEvaluateException(JavaDebuggerLocalize.evaluationErrorVariableAlreadyDeclared(localName).get())
     }
     mySyntheticLocals.put(localName, NonInitializedValue)
   }

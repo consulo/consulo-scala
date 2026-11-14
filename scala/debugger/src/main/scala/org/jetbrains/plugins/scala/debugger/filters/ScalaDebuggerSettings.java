@@ -3,10 +3,10 @@ package org.jetbrains.plugins.scala.debugger.filters;
 import consulo.annotation.component.ExtensionImpl;
 
 import consulo.configurable.Configurable;
-import com.intellij.openapi.options.SimpleConfigurable;
+import consulo.configurable.SimpleConfigurable;
 import consulo.util.xml.serializer.XmlSerializerUtil;
-import com.intellij.xdebugger.settings.DebuggerSettingsCategory;
-import com.intellij.xdebugger.settings.XDebuggerSettings;
+import consulo.execution.debug.setting.DebuggerSettingsCategory;
+import consulo.execution.debug.setting.XDebuggerSettings;
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle;
 
 import java.util.Collection;

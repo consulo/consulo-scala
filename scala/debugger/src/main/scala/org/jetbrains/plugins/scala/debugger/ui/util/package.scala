@@ -1,9 +1,8 @@
 package org.jetbrains.plugins.scala.debugger.ui
 
-import com.intellij.debugger.engine.SuspendContext
-import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
-import com.intellij.debugger.engine.managerThread.SuspendContextCommand
-
+import com.intellij.java.debugger.engine.SuspendContext
+import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
+import com.intellij.java.debugger.engine.managerThread.SuspendContextCommand
 import java.util.concurrent.CompletableFuture
 import scala.jdk.FunctionConverters._
 import scala.util.control.NonFatal

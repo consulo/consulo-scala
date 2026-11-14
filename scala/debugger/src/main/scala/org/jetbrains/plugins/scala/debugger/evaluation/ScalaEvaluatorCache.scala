@@ -7,9 +7,9 @@ import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
 
 import consulo.language.editor.PsiEquivalenceUtil
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation.expression.Evaluator
-import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
+import com.intellij.java.debugger.impl.{DebuggerManagerListener, DebuggerSession}
 import consulo.disposer.Disposable
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiFile}

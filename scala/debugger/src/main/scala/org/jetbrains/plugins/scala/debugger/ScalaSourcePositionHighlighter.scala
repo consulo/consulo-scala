@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.debugger
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.SourcePositionHighlighter
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.engine.SourcePositionHighlighter
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
@@ -13,8 +13,6 @@ class ScalaSourcePositionHighlighter extends SourcePositionHighlighter {
     case _ if !isScalaLanguage(sourcePosition) => null
     case _: ScalaSourcePositionWithWholeLineHighlighted => null
     case l: ScalaLambdaSourcePosition => l.getElementAt.getTextRange
-    //highlight only the `return` keyword, like the Java debugger does
-    case r: ScalaConditionalReturnSourcePosition => r.getElementAt.getTextRange
     case _ => null
   }
 

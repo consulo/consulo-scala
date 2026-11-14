@@ -1,16 +1,18 @@
 package org.jetbrains.plugins.scala.debugger
 package ui
 
-import com.intellij.debugger.DebuggerContext
-import com.intellij.debugger.engine.DebuggerUtils
-import com.intellij.debugger.engine.evaluation.{EvaluationContext, EvaluationContextImpl}
-import com.intellij.debugger.impl.DebuggerUtilsAsync
-import com.intellij.debugger.settings.NodeRendererSettings
-import com.intellij.debugger.ui.impl.watch.FieldDescriptorImpl
-import com.intellij.debugger.ui.tree.render.{ChildrenBuilder, ClassRenderer, DescriptorLabelListener}
-import com.intellij.debugger.ui.tree.{DebuggerTreeNode, DescriptorWithParentObject, ValueDescriptor}
+import com.intellij.java.debugger.DebuggerContext
+import com.intellij.java.debugger.engine.DebuggerUtils
+import com.intellij.java.debugger.engine.evaluation.EvaluationContext
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.DebuggerUtilsAsync
+import com.intellij.java.debugger.impl.settings.NodeRendererSettings
+import com.intellij.java.debugger.impl.ui.impl.watch.FieldDescriptorImpl
+import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, ClassRenderer, DescriptorLabelListener}
+import com.intellij.java.debugger.impl.ui.tree.{DebuggerTreeNode, ValueDescriptor}
+import com.intellij.debugger.ui.tree.DescriptorWithParentObject
 import consulo.language.psi.PsiElement
-import com.sun.jdi._
+import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.ui.util._
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants

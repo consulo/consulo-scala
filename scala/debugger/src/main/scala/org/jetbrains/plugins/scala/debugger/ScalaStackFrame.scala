@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.debugger
 
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.IdentityEvaluator
-import com.intellij.debugger.engine.{DebugProcessImpl, JVMNameUtil, JavaStackFrame, JavaValue}
-import com.intellij.debugger.jdi.LocalVariableProxyImpl
-import com.intellij.debugger.ui.impl.watch.{NodeManagerImpl, StackFrameDescriptorImpl}
-import com.intellij.xdebugger.frame.XValueChildrenList
-import com.sun.jdi.{BooleanValue, ObjectReference}
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.impl.engine.evaluation.expression.IdentityEvaluator
+import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, JVMNameUtil, JavaStackFrame, JavaValue}
+import com.intellij.java.debugger.impl.jdi.LocalVariableProxyImpl
+import com.intellij.java.debugger.impl.ui.impl.watch.{NodeManagerImpl, StackFrameDescriptorImpl}
+import consulo.execution.debug.frame.XValueChildrenList
+import consulo.internal.com.sun.jdi.{BooleanValue, ObjectReference}
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ScalaMethodEvaluator
 import org.jetbrains.plugins.scala.debugger.ui.{LocalLazyValDescriptor, NotInitializedLocalLazyValDescriptor}
 
@@ -37,7 +37,7 @@ private final class ScalaStackFrame(descriptor: StackFrameDescriptorImpl, update
               .evaluate(evaluationContext).asInstanceOf[BooleanValue].value()
 
           val initName = s"${variableName.dropRight(4)}$$1"
-          val allMethods = evaluationContext.computeThisObject().asInstanceOf[ObjectReference].referenceType().allMethods().asScala
+          val allMethods = evaluationContext.getThisObject.asInstanceOf[ObjectReference].referenceType().allMethods().asScala
           val initMethod = allMethods.find(_.name() == initName).get
 
           val variableType = variable.getType

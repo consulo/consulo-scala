@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
-import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
-import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator, ModifiableValue}
+import com.intellij.java.debugger.SourcePosition
+import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
+import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
+import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.{ModifiableEvaluator, ModifiableValue}
 import consulo.language.psi.PsiModificationTracker
-import com.sun.jdi.Value
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 
@@ -12,15 +12,12 @@ private final class ScalaLazyResolveEvaluator(
   codeFragment: ScalaCodeFragment,
   position: SourcePosition,
   compileIfNeeded: Boolean = true
-) extends Evaluator {
+) extends ModifiableEvaluator {
   // The evaluator built from the code fragment together with the PSI modification count it was built at. The platform
   // evaluates the same instance repeatedly (every hit of a conditional breakpoint, retries), and resolving the fragment
   // again each time is the expensive part. Only used on the debugger manager thread, volatile so that a stray race
   // costs no more than an extra build.
   @volatile private var cached: Option[(modCount: Long, evaluator: ExpressionEvaluator)] = None
-
-  override def evaluate(context: EvaluationContextImpl): Value =
-    evaluatorFor(context).evaluate(context)
 
   override def evaluateModifiable(context: EvaluationContextImpl): ModifiableValue = {
     val evaluator = evaluatorFor(context)
