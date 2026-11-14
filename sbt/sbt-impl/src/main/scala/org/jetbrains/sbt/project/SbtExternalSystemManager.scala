@@ -108,7 +108,7 @@ object SbtExternalSystemManager {
     val jreHome = Option(vmExecutable.getParent).flatMap(p => Option(p.getParent))
     val separateProdTestSources = Registry.is(SbtProjectSettings.SeparateMainTestModulesRegistryKey, true)
     val vmOptions = getVmOptions(settingsState, jreHome, separateProdTestSources)
-    val parsedSbtOptions = SbtProcessOptionsResolver.parseSbtOptionsFromSettings(settings.sbtOptions)
+    val parsedSbtOptions = SbtProcessOptionsResolver.parseSbtOptionsFromSettings(Option(settings.sbtOptions).getOrElse(""))
 
     new SbtExecutionSettings(
       realProjectPath = realProjectPath,
@@ -278,7 +278,7 @@ object SbtExternalSystemManager {
     jreHome: Option[Path],
     separateProdAndTestSources: Boolean
   ): Seq[String] = {
-    @NonNls val userOptions = settings.vmParameters.split("\\s+").toSeq.filter(_.nonEmpty)
+    @NonNls val userOptions = Option(settings.vmParameters).getOrElse("").split("\\s+").toSeq.filter(_.nonEmpty)
 
     @NonNls val maxHeapSizeString = settings.maximumHeapSize
     @NonNls val maxHeapOptions =

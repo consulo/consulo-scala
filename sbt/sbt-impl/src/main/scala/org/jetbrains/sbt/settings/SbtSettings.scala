@@ -56,10 +56,10 @@ final class SbtSettings @Inject()(project: Project)
 
     state.customLauncherPath = customLauncherPath
     state.maximumHeapSize = maximumHeapSize
-    state.vmParameters = vmParameters
+    state.vmParameters = Option(vmParameters).getOrElse("")
     state.customVMPath = customVMPath
     state.customSbtStructurePath = customSbtStructurePath
-    state.sbtOptions = sbtOptions
+    state.sbtOptions = Option(sbtOptions).getOrElse("")
     state.sbtEnvironment = sbtEnvironment
     state.sbtPassParentEnvironment = sbtPassParentEnvironment
 
@@ -91,8 +91,8 @@ final class SbtSettings @Inject()(project: Project)
   override def copyExtraSettingsFrom(settings: SbtSettings): Unit = {
     customLauncherPath = settings.customLauncherPath
     maximumHeapSize = settings.maximumHeapSize
-    vmParameters = settings.vmParameters
-    sbtOptions = settings.sbtOptions
+    vmParameters = Option(settings.vmParameters).getOrElse("")
+    sbtOptions = Option(settings.sbtOptions).getOrElse("")
     customVMPath = settings.customVMPath
     customSbtStructurePath = settings.customSbtStructurePath
     sbtEnvironment = settings.sbtEnvironment
