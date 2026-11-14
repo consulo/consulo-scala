@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.project
 
 import consulo.externalSystem.rt.model.ExternalSystemSourceType
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.project.SbtProjectResolver.ImportContext.given
@@ -33,12 +33,14 @@ trait ContentRootsResolution { self: ExternalSourceRootResolution =>
     contentRootNode.storeNioPaths(ExternalSystemSourceType.SOURCE, unmanagedDirectories(productionSources))
     contentRootNode.storeNioPaths(ExternalSystemSourceType.SOURCE_GENERATED, managedDirectories(productionSources))
     contentRootNode.storeNioPaths(ExternalSystemSourceType.RESOURCE, unmanagedDirectories(productionResources))
-    contentRootNode.storeNioPaths(ExternalSystemSourceType.RESOURCE_GENERATED, managedDirectories(productionResources))
+    // upstream: RESOURCE_GENERATED - not in Consulo
+    contentRootNode.storeNioPaths(ExternalSystemSourceType.RESOURCE, managedDirectories(productionResources))
 
     contentRootNode.storeNioPaths(ExternalSystemSourceType.TEST, unmanagedDirectories(testSources))
     contentRootNode.storeNioPaths(ExternalSystemSourceType.TEST_GENERATED, managedDirectories(testSources))
     contentRootNode.storeNioPaths(ExternalSystemSourceType.TEST_RESOURCE, unmanagedDirectories(testResources))
-    contentRootNode.storeNioPaths(ExternalSystemSourceType.TEST_RESOURCE_GENERATED, managedDirectories(testResources))
+    // upstream: TEST_RESOURCE_GENERATED - not in Consulo
+    contentRootNode.storeNioPaths(ExternalSystemSourceType.TEST_RESOURCE, managedDirectories(testResources))
 
     contentRootNode
   }
@@ -79,7 +81,7 @@ trait ContentRootsResolution { self: ExternalSourceRootResolution =>
     projectsGrouped: Seq[BuildProjectsGroup],
     groupedSharedRoots: Seq[SharedSourcesGroup]
   )(implicit context: ImportContext): Map[sbtStructure.ProjectData, ProjectSourcesDetails] = {
-    given EelDescriptor = context.eelDescriptor
+    given Platform = context.platform
 
     val projects = projectsGrouped.flatMap(group => group.projects :+ group.rootProject)
 
@@ -188,13 +190,13 @@ trait ContentRootsResolution { self: ExternalSourceRootResolution =>
         ExternalSystemSourceType.SOURCE,
         ExternalSystemSourceType.SOURCE_GENERATED,
         ExternalSystemSourceType.RESOURCE,
-        ExternalSystemSourceType.RESOURCE_GENERATED
+        ExternalSystemSourceType.RESOURCE // upstream: RESOURCE_GENERATED - not in Consulo
       )
       else (
         ExternalSystemSourceType.TEST,
         ExternalSystemSourceType.TEST_GENERATED,
         ExternalSystemSourceType.TEST_RESOURCE,
-        ExternalSystemSourceType.TEST_RESOURCE_GENERATED
+        ExternalSystemSourceType.TEST_RESOURCE // upstream: TEST_RESOURCE_GENERATED - not in Consulo
       )
 
     val unmanagedDirs = unmanagedDirectories(sources).filterNot(sharedSourcesPaths.contains).map((_, sourceType))

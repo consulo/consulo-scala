@@ -2,7 +2,7 @@ package org.jetbrains.sbt.process
 
 import consulo.application.util.SystemInfo
 import consulo.application.util.registry.Registry
-import com.intellij.util.EnvironmentUtil
+import consulo.process.local.EnvironmentUtil
 import org.jetbrains.sbt.SbtBundle
 
 import scala.jdk.CollectionConverters.*
@@ -17,7 +17,6 @@ import scala.util.Try
  */
 object SbtProcessEnvironment {
   private[process] final val SbtTerminalProps = "SBT_TERMINAL_PROPS"
-  private val TerminalPropsSanitization = Registry.get("sbt.terminal.props.sanitization")
 
   /**
    * Environment and diagnostics prepared for an sbt process started by the Scala plugin.
@@ -42,7 +41,7 @@ object SbtProcessEnvironment {
     details: String
   )
 
-  private[sbt] def isTerminalPropsSanitizationEnabled: Boolean = TerminalPropsSanitization.asBoolean()
+  private[sbt] def isTerminalPropsSanitizationEnabled: Boolean = Registry.is("sbt.terminal.props.sanitization", true)
 
   private[sbt] def prepare(
     userSetEnvironment: Map[String, String],

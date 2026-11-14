@@ -3,9 +3,7 @@ package org.jetbrains.sbt.shell.process.utils
 import consulo.process.cmd.ParametersList
 import consulo.logging.Logger
 import consulo.project.Project
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.platform.eel.provider.utils.EelProjectUtils
+import consulo.platform.Platform
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.rt.project.Version
@@ -22,10 +20,10 @@ import java.nio.file.{Files, Path}
 private[shell] class SbtSettingsInjector(project: Project) {
 
   private val Log = Logger.getInstance(getClass)
-  private val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
+  private val platform: Platform = project.getPlatform
 
   @NonNls private def pluginResolverSetting: String = {
-    val repoPath: String = SbtUtil.getRepoDir(eelDescriptor).normalizedLocalPath
+    val repoPath: String = SbtUtil.getRepoDir(platform).normalizedLocalPath
     raw"""resolvers += MavenCache("Scala Plugin Bundled Repository", file(raw"$repoPath"))
          |""".stripMargin
   }
@@ -41,7 +39,7 @@ private[shell] class SbtSettingsInjector(project: Project) {
         addPluginCommandSupported,
         vmOptions,
         projectSbtVersion.binaryVersion,
-        eelDescriptor
+        platform
       )
 
     val settingsAll: Seq[String] = getSettingsToInject(projectSbtVersion)
@@ -91,18 +89,25 @@ private[shell] class SbtSettingsInjector(project: Project) {
     addPluginCommandSupported: Boolean,
     vmParametersList: ParametersList,
     sbtBinVersion: Version,
-    eelDescriptor: EelDescriptor
+    platform: Platform
   ): Path = {
-    val globalPluginsDir = globalPluginsDirectory(SbtVersion(sbtBinVersion), vmParametersList, eelDescriptor)
+    val globalPluginsDir = globalPluginsDirectory(SbtVersion(sbtBinVersion), vmParametersList, platform)
     // workaround: --addPluginSbtFile fails if global plugins dir does not exist. https://youtrack.jetbrains.com/issue/SCL-14415
     if (!globalPluginsDir.exists) {
       Files.createDirectories(globalPluginsDir)
     }
 
     if (addPluginCommandSupported)
-      EelProjectUtils.createTemporaryFile(project, "idea", Sbt.Extension, true).toRealPath()
+      // upstream: EelProjectUtils.createTemporaryFile(project, "idea", Sbt.Extension, deleteOnExit = true)
+      createTemporaryFileDeletedOnExit().toRealPath()
     else
       globalPluginsDir / "idea.sbt"
+  }
+
+  private def createTemporaryFileDeletedOnExit(): Path = {
+    val file = platform.fs().createTempFile("idea", Sbt.Extension)
+    Runtime.getRuntime.addShutdownHook(new Thread(() => Files.deleteIfExists(file): Unit))
+    file
   }
 
   /**

@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.build
 
-import com.intellij.build.FilePosition
-import com.intellij.build.events.EventResult
-import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputTypes}
+import consulo.build.ui.FilePosition
+import consulo.build.ui.event.EventResult
+import consulo.process.ProcessOutputTypes
+import consulo.process.util.AnsiEscapeDecoder
 import consulo.application.progress.ProgressIndicator
 import org.jetbrains.sbt.SbtBundle
 

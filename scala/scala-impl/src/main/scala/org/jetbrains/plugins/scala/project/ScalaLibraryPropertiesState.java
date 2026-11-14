@@ -4,6 +4,7 @@ package org.jetbrains.plugins.scala.project;
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel;
 import org.jetbrains.plugins.scala.shared.project.ScalaLibraryPropertiesStateSharedInIdeaAndJps;
 import consulo.util.collection.ArrayUtil;
+import consulo.util.xml.serializer.annotation.AbstractCollection;
 import consulo.util.xml.serializer.annotation.Tag;
 import org.jspecify.annotations.Nullable;
 
@@ -16,8 +17,8 @@ public final class ScalaLibraryPropertiesState extends ScalaLibraryPropertiesSta
     @Tag("language-level")
     private final ScalaLanguageLevel languageLevel;
 
-    // upstream: @XCollection(elementName = "root", valueAttributeName = "url")
     @Tag("scaladoc-extra-classpath")
+    @AbstractCollection(surroundWithTag = false, elementTag = "root", elementValueAttribute = "url")
     private final String[] scaladocExtraClasspath;
 
     public ScalaLibraryPropertiesState() {

@@ -1,11 +1,8 @@
 package org.jetbrains.sbt
 package project.data
 
-
-import org.jetbrains.sbt.api.file
-import consulo.externalSystem.model.project.{ContentRootData, ModuleData}
+import consulo.externalSystem.model.project.{ContentRootData, LibraryData, LibraryDependencyData, LibraryLevel, ModuleData, ModuleDependencyData}
 import consulo.externalSystem.rt.model.ExternalSystemSourceType
-import com.intellij.openapi.externalSystem.model.project.{LibraryData, LibraryDependencyData, LibraryLevel, LibraryPathType, ModuleDependencyData, ModuleSdkData}
 import consulo.externalSystem.service.project.ProjectData
 import consulo.externalSystem.model.{DataNode, Key, ProjectKeys}
 import org.jetbrains.plugins.scala.extensions.PathExt
@@ -26,8 +23,9 @@ class ProjectNode(override val data: ProjectData)
 
 class ModuleNode(override val data: ModuleData)
   extends Node[ModuleData] {
+  // upstream: typeId is the IntelliJ module type id, Consulo has no module types
   def this(typeId: String, projectId: String, name: String, moduleFileDirectoryPath: String, externalConfigPath: String) = {
-    this(new ModuleData(projectId, SbtProjectSystem.Id, typeId, name, moduleFileDirectoryPath, externalConfigPath))
+    this(new ModuleData(projectId, SbtProjectSystem.Id, name, moduleFileDirectoryPath, externalConfigPath))
   }
 
   override protected def key: Key[ModuleData] = ProjectKeys.MODULE
@@ -55,7 +53,8 @@ class NestedModuleNode(override val data: SbtNestedModuleData)
     this(SbtNestedModuleData(projectId, externalName, moduleFileDirectoryPath, externalConfigPath, typeId))
   }
 
-  override protected def key: Key[SbtNestedModuleData] = SbtNestedModuleData.Key
+  // upstream: SbtNestedModuleData.Key
+  override protected def key: Key[SbtNestedModuleData] = ProjectKeys.MODULE.asInstanceOf[Key[SbtNestedModuleData]]
 }
 
 class SbtSourceSetModuleNode(override val data: SbtSourceSetData, val sourceSetType: SourceSetType)
@@ -65,7 +64,8 @@ class SbtSourceSetModuleNode(override val data: SbtSourceSetData, val sourceSetT
     this(SbtSourceSetData(projectId, sourceSetType.toString, moduleFileDirectoryPath, externalConfigPath, typeId), sourceSetType)
   }
 
-  override protected def key: Key[SbtSourceSetData] = SbtSourceSetData.Key
+  // upstream: SbtSourceSetData.Key
+  override protected def key: Key[SbtSourceSetData] = ProjectKeys.MODULE.asInstanceOf[Key[SbtSourceSetData]]
 }
 
 class LibraryNode(override val data: LibraryData)
@@ -74,7 +74,7 @@ class LibraryNode(override val data: LibraryData)
     this(new LibraryData(SbtProjectSystem.Id, name, !resolved))
   }
 
-  def addPaths(pathType: LibraryPathType, paths: Seq[String]): Unit = {
+  def addPaths(pathType: String, paths: Seq[String]): Unit = {
     paths.foreach(data.addPath(pathType, _))
   }
 
@@ -85,16 +85,6 @@ class SharedSourcesOwnersNode(override val data: SharedSourcesOwnersData)
   extends Node[SharedSourcesOwnersData] {
 
   override protected def key: Key[SharedSourcesOwnersData] = SharedSourcesOwnersData.Key
-}
-
-class ModuleSdkNode(override val data: ModuleSdkData)
-  extends Node[ModuleSdkData] {
-
-  override protected def key: Key[ModuleSdkData] = ModuleSdkData.KEY
-}
-
-object ModuleSdkNode {
-  def inheritFromProject: ModuleSdkNode = new ModuleSdkNode(new ModuleSdkData(null))
 }
 
 class ContentRootNode(override val data: ContentRootData)
@@ -190,6 +180,11 @@ abstract class Node[T] {
   def toDataNode: DataNode[T] = toDataNode(None)
 
   private def toDataNode(parent: Option[DataNode[?]]): DataNode[T] = {
+    data match {
+      // upstream: the platform creates modules by their internal name, Consulo's ModuleDataService uses the external name
+      case moduleData: ModuleData => moduleData.setExternalName(moduleData.getInternalName)
+      case _ =>
+    }
     val node = new DataNode[T](key, data, parent.orNull)
     children.map(_.toDataNode(Some(node))).foreach(node.addChild)
     node

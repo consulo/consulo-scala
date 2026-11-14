@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.mock
 
-import com.intellij.execution.configurations.JavaParameters
+import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.project.Project
 import consulo.util.dataholder.Key
 
@@ -34,7 +34,7 @@ private[sbt] object MockSbtProcessForTests {
     private val slowShutdownReleaseFile: Option[Path] = None,
     private val slowShutdownStartedFile: Option[Path] = None,
   ) {
-    def configureJavaParameters(params: JavaParameters): Unit = {
+    def configureJavaParameters(params: OwnJavaParameters): Unit = {
       params.getClassPath.clear()
       params.getClassPath.add(classpath.toString)
       params.setMainClass(mainClass)
@@ -52,7 +52,7 @@ private[sbt] object MockSbtProcessForTests {
   def isEnabled(project: Project): Boolean =
     state(project).isDefined
 
-  def configureJavaParametersForNonSbtShell(project: Project, params: JavaParameters): Unit = {
+  def configureJavaParametersForNonSbtShell(project: Project, params: OwnJavaParameters): Unit = {
     state(project).foreach { mockState =>
       mockState.configureJavaParameters(params)
       params.getVMParametersList.add(mockModeVmOption(VmOptions.NoShellMode))

@@ -1,19 +1,20 @@
 package org.jetbrains.plugins.scala.build
 
-import com.intellij.build.events.{BuildEvent, BuildEvents, MessageEvent, Warning}
-import com.intellij.build.{FilePosition, events}
-import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputTypes}
+import consulo.application.Application
+import consulo.build.ui.event.{BuildEvent, BuildEventFactory, Failure, MessageEvent, Warning}
+import consulo.build.ui.{BuildNotificationsGroups, FilePosition}
+import consulo.localize.LocalizeValue
 import consulo.navigation.Navigatable
-import com.intellij.task.{ProjectTask, ProjectTaskContext, ProjectTaskManager, ProjectTaskRunner, ProjectTaskState}
+import consulo.process.ProcessOutputTypes
+import consulo.process.util.AnsiEscapeDecoder
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.build.BuildMessages.{BuildStatus, Canceled, Error}
 
 import java.util.UUID
-import java.util.function.BiPredicate
 
 case class BuildMessages(
-  warnings: Seq[events.Warning],
-  errors: Seq[events.Failure],
+  warnings: Seq[Warning],
+  errors: Seq[Failure],
   exceptions: Seq[Exception],
   messages: Seq[String],
   status: BuildStatus
@@ -36,7 +37,7 @@ case class BuildMessages(
     this.status.combine(other.status)
   )
 
-  def toTaskRunnerResult: ProjectTaskRunner.Result = {
+  def toTaskRunnerResult: TaskRunnerResult = {
     TaskRunnerResult(
       status == Canceled,
       status == Error || errors.nonEmpty
@@ -89,50 +90,37 @@ case object BuildMessages {
     @Nls @Nullable details: String = null,
     navigatable: Option[Navigatable] = None,
   ): BuildEvent = {
-    val kindGroup = kind.toString
+    // upstream: event time and message group (kind name) are not supported by Consulo's BuildEventFactory
+    val factory = Application.get().getInstance(classOf[BuildEventFactory])
+    val text = LocalizeValue.of(stripAnsiCodes(message))
+    val description = LocalizeValue.ofNullable(details)
 
     position match {
       case None =>
-        BuildEvents.getInstance()
-          .message(stripAnsiCodes(message), kind)
-          .withParentId(parentId)
-          .withTime(eventTime)
-          .withGroup(kindGroup)
-          .withDescription(details)
-          .withNavigatable(navigatable.orNull)
-          .build()
+        factory.createMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, navigatable.orNull)
       case Some(filePosition) =>
-        BuildEvents.getInstance()
-          .message(stripAnsiCodes(message), kind)
-          .withFilePosition(filePosition)
-          .withParentId(parentId)
-          .withTime(eventTime)
-          .withGroup(kindGroup)
-          .withDescription(details)
-          .build()
+        factory.createFileMessageEvent(parentId, kind, BuildNotificationsGroups.BUILD_ISSUES, text, description, filePosition)
     }
   }
 }
 
 case class TaskRunnerResult(
-  override val isAborted: Boolean,
-  override val hasErrors: Boolean
-) extends ProjectTaskRunner.Result
+  isAborted: Boolean,
+  hasErrors: Boolean
+)
 
 case class TaskManagerResult(
-  context: ProjectTaskContext,
-  override val isAborted: Boolean,
-  override val hasErrors: Boolean
-) extends ProjectTaskManager.Result {
+  isAborted: Boolean,
+  hasErrors: Boolean
+)
 
-  override def getContext: ProjectTaskContext = context
+case class BuildFailure(@Nls message: String) extends Failure {
+  override def getMessage: LocalizeValue = LocalizeValue.of(message)
 
-  //noinspection ApiStatus,UnstableApiUsage
-  override def anyTaskMatches(predicate: BiPredicate[? >: ProjectTask, ? >: ProjectTaskState]): Boolean =
-    false // TODO figure out what this is supposed to do?
+  override def getDescription: LocalizeValue = LocalizeValue.empty()
+
+  override def getCauses: java.util.List[? <: Failure] = java.util.Collections.emptyList()
 }
-
-case class BuildFailure(@Nls message: String) extends events.impl.FailureImpl(message, /*description*/ null: String)
 
 case class BuildWarning(@Nls message: String) extends Warning {
   override def getMessage: String = message

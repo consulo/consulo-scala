@@ -2,25 +2,24 @@
 package org.jetbrains.sbt.shell.grammar;
 
 import consulo.language.ast.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import consulo.language.parser.PsiBuilder;
 import consulo.language.parser.PsiBuilder.Marker;
 import consulo.language.parser.PsiParser;
 import consulo.language.ast.IElementType;
+import consulo.language.version.LanguageVersion;
 
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static consulo.language.impl.parser.GeneratedParserUtilBase.*;
 import static org.jetbrains.sbt.shell.grammar.SbtShellTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class SbtShellParser implements PsiParser, LightPsiParser {
+public class SbtShellParser implements PsiParser {
 
   @Override
-  public ASTNode parse(IElementType t, PsiBuilder b) {
+  public ASTNode parse(IElementType t, PsiBuilder b, LanguageVersion languageVersion) {
     parseLight(t, b);
     return b.getTreeBuilt();
   }
 
-  @Override
   public void parseLight(IElementType t, PsiBuilder b) {
     boolean r;
     b = adapt_builder_(t, b, this, null);

@@ -1,12 +1,9 @@
 package org.jetbrains.sbt.project.data.service
 
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.externalSystem.service.project.ProjectData
 import consulo.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
 import consulo.externalSystem.util.ExternalSystemApiUtil
-import consulo.module.Module
+import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
 import org.jetbrains.sbt.api.RichSeq
@@ -22,23 +19,24 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class SharedSourcesOwnersDataService extends ScalaAbstractProjectDataService[SharedSourcesOwnersData, Module](SharedSourcesOwnersData.Key){
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[SharedSourcesOwnersData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[SharedSourcesOwnersData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
-  ): Unit = {
-    val projectIdToModuleName = getProjectIdToActualModuleNameMap(modelsProvider)
-    clearOwnerModules(modelsProvider.getModules)
+    synchronous: Boolean
+  ): Unit = SbtModuleExtensions.executeProjectChangeAction(project, synchronous) {
+    val modules = ModuleManager.getInstance(project).getModules
+    val projectIdToModuleName = getProjectIdToActualModuleNameMap(modules)
+    clearOwnerModules(modules)
     toImport.asScala.foreach { sharedSourcesOwnersNode =>
       val ownersModuleNames = sharedSourcesOwnersNode.getData.ownerModuleIds
       val actualOwnerModuleNames = ownersModuleNames.asScala.map(projectIdToModuleName).toSeq
       if (actualOwnerModuleNames.nonEmpty) {
-        val parentModule = findModuleForParentOfDataNode(sharedSourcesOwnersNode)
+        val parentModule = findModuleForParentOfDataNode(sharedSourcesOwnersNode)(project)
         parentModule.foreach(updateSharedSourcesOwnerModules(_, actualOwnerModuleNames))
       }
     }
-    super.importData(toImport, projectData, project, modelsProvider)
   }
+
+  override def removeData(toRemove: util.Collection[? <: Module], project: Project, synchronous: Boolean): Unit = ()
 
   private def clearOwnerModules(modules: Array[Module]): Unit =
     modules.foreach { module =>
@@ -54,13 +52,11 @@ class SharedSourcesOwnersDataService extends ScalaAbstractProjectDataService[Sha
     sharedSourcesOwnerModules.getState.ownersModuleNames = ownerModuleNames.toJavaList
   }
 
-  private def getProjectIdToActualModuleNameMap(modelsProvider: IdeModifiableModelsProvider): Map[String, String] =
-    modelsProvider.getModules.flatMap { module =>
+  // upstream: uses the actual (possibly renamed in the uncommitted module model) module names
+  private def getProjectIdToActualModuleNameMap(modules: Array[Module]): Map[String, String] =
+    modules.flatMap { module =>
       val externalProjectId = ExternalSystemApiUtil.getExternalProjectId(module)
       if (externalProjectId == null) None
-      else {
-        val actualModuleName = modelsProvider.getModifiableModuleModel.getActualName(module)
-        Some(externalProjectId -> actualModuleName)
-      }
+      else Some(externalProjectId -> module.getName)
     }.toMap
 }

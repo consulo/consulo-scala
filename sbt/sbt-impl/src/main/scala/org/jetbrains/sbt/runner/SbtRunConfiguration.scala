@@ -1,48 +1,47 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configuration.EnvironmentVariablesComponent
-import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
-import com.intellij.execution.configurations.RunConfiguration
-import consulo.execution.runner.ExecutionEnvironment
-import com.intellij.execution.EnvFilesOptions
-import consulo.execution.executor.Executor
 import consulo.application.ApplicationManager.getApplication
+import consulo.disposer.Disposable
+import consulo.execution.configuration.{ConfigurationFactory, EnvironmentAware, LegacyRunConfigurationConverter, ModuleBasedConfiguration, RunConfigurationModule, RunConfigurationOptions, RunProfileState, WorkingDirectoryAware}
+import consulo.execution.configuration.fragment.{EnvironmentFragmentState, RunConfigurationFragment, RunConfigurationFragmentEditor, RunConfigurationFragmentLayout, TagRunConfigurationFragment, WorkingDirectoryFragmentState}
+import consulo.execution.executor.Executor
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.localize.LocalizeValue
 import consulo.module.Module
-import consulo.execution.configuration.ui.SettingsEditor
 import consulo.project.Project
-import consulo.util.lang.StringUtil
 import consulo.process.cmd.ParametersListUtil
-import consulo.util.xml.serializer.XmlSerializer
-import com.intellij.util.xmlb.annotations.XCollection
-import org.jdom.Element
+import consulo.ui.TextBox
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.util.lang.StringUtil
+import consulo.util.xml.serializer.annotation.Attribute
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.util.JdomExternalizerMigrationHelper
+import org.jetbrains.sbt.SbtBundle
 
 import java.util
-import scala.beans.BeanProperty
+import scala.jdk.CollectionConverters.*
 
 /**
  * Run configuration of sbt tasks.
+ *
+ * upstream: the settings are persisted by readExternal/writeExternal and edited by SbtRunConfigurationForm;
+ * in Consulo they are stored in [[SbtRunConfigurationOptions]] and edited by run configuration fragments
+ * (sbt commands, "use sbt shell", VM parameters + the platform working directory and environment fragments).
+ * The legacy `tasks` field is no longer written back for older IDE versions.
  */
 class SbtRunConfiguration(
   val project: Project,
   val configurationFactory: ConfigurationFactory,
   val name: String
-)  extends ModuleBasedConfiguration[RunConfigurationModule,Element](
+)  extends ModuleBasedConfiguration[RunConfigurationModule](
   name,
   new RunConfigurationModule(project),
   configurationFactory
-) with EnvFilesOptions {
+) with WorkingDirectoryAware with EnvironmentAware {
 
-  /**
-   * List of task to execute in format of sbt.
-   * Kept since 2026.2 only for compatibility with older IDEA versions.
-   *
-   * @see [[org.jetbrains.sbt.runner.SbtRunConfiguration.migrateTasksToCommands]]
-   * @see [[org.jetbrains.sbt.runner.SbtRunConfiguration.migrateCommandsToTasks]]
-   * @note It could be removed later (after a few years), but doing this would break backward compatibility.
-   */
-  @BeanProperty var tasks: String = ""
+  override protected def getOptionsClass: Class[? <: RunConfigurationOptions] = classOf[SbtRunConfigurationOptions]
+
+  override def getOptions: SbtRunConfigurationOptions = super.getOptions.asInstanceOf[SbtRunConfigurationOptions]
 
   /**
    * Sbt commands to execute. The `commands` field in the Run Configuration UI is bound to this.
@@ -50,27 +49,32 @@ class SbtRunConfiguration(
    * No transformations are made at runtime.
    *
    * @see [[org.jetbrains.sbt.runner.SbtRunConfiguration.migrateTasksToCommands]]
-   * @see [[org.jetbrains.sbt.runner.SbtRunConfiguration.migrateCommandsToTasks]]
    */
-  @BeanProperty var commands: String = ""
+  def commands: String = StringUtil.notNullize(getOptions.getCommands)
+
+  def commands_=(value: String): Unit = getOptions.setCommands(value)
 
   /**
    * Extra java options.
    */
-  @BeanProperty var vmparams: String = "-Xms512M -Xmx1024M -Xss1M"
+  def vmparams: String = StringUtil.notNullize(getOptions.getVmparams)
+
+  def vmparams_=(value: String): Unit = getOptions.setVmparams(value)
+
+  def useSbtShell: Boolean = getOptions.isUseSbtShell
+
+  def useSbtShell_=(value: Boolean): Unit = getOptions.setUseSbtShell(value)
 
   /**
    * Environment variables.
+   * upstream: also env files (EnvFilesOptions), no Consulo counterpart
    */
-  val environmentVariables: java.util.Map[String, String] = new java.util.HashMap[String, String]()
+  def environmentVariables: java.util.Map[String, String] = getEnvs
 
-  @XCollection
-  @BeanProperty
-  var envFilePaths: java.util.List[String] = new util.ArrayList[String]()
-
-  @BeanProperty var workingDir: String = defaultWorkingDirectory
-
-  @BeanProperty var useSbtShell: Boolean = true
+  def workingDir: String = {
+    val dir = getWorkingDirectory
+    if (StringUtil.isEmpty(dir)) defaultWorkingDirectory else dir
+  }
 
   private def defaultWorkingDirectory =
     if (getApplication == null || getApplication.isUnitTestMode) ""
@@ -78,64 +82,135 @@ class SbtRunConfiguration(
 
   override def getValidModules: util.Collection[Module] = new java.util.ArrayList
 
-  override def isBuildBeforeLaunchAddedByDefault: Boolean = false
+  // upstream: isBuildBeforeLaunchAddedByDefault = false
+  override def isCompileBeforeLaunchAddedByDefault: Boolean = false
 
   override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState =
     new SbtCommandLineState(commands, this, env)
 
-  override def getConfigurationEditor: SettingsEditor[? <: RunConfiguration] = new SbtRunConfigurationEditor(project, this)
+  override def createFragments(): util.List[RunConfigurationFragment[?]] =
+    util.List.of(new SbtRunConfigurationCommandsFragment, new SbtRunConfigurationUseSbtShellFragment, new SbtRunConfigurationVmParametersFragment)
 
-  override def writeExternal(element: Element): Unit = {
-    super.writeExternal(element)
-    workingDir = if (StringUtil.isEmpty(workingDir)) defaultWorkingDirectory else workingDir
+  override protected def convertLegacyState(converter: LegacyRunConfigurationConverter): Unit = {
+    super.convertLegacyState(converter)
+    val element = converter.getElement
 
-    /*
-    Only overwrite `tasks` if the current `tasks` value cannot be migrated to the current commands.
-    This means it is either a new Run Configuration or the user has modified the `commands` field.
-    This condition prevents unnecessary format changes in configurations migrated from older plugin versions
-    when no changes were made to the `commands` field.
+    def option(name: String): Option[String] =
+      element.getChildren("option").asScala
+        .find(o => name == o.getAttributeValue("name"))
+        .flatMap(o => Option(o.getAttributeValue("value")))
 
-    Without this condition, the following case would happen:
-    1. An older IDEA saves: tasks = "task1 task2"
-    2. The new IDEA loads: commands = "task1; task2" (migrated from tasks)
-    3. New IDEA saves: `tasks` field is generated from commands so it becomes "task1; task2" — the format changed even though the user made no real edits.
-    */
-    val commandsWereModified = SbtRunConfiguration.migrateTasksToCommands(tasks) != commands
-    if (commandsWereModified) {
-      tasks = SbtRunConfiguration.migrateCommandsToTasks(commands)
+    var tasks = option("tasks").getOrElse("")
+    var commands = option("commands").getOrElse("")
+    var vmparams = option("vmparams")
+    var workingDir = option("workingDir")
+    var useSbtShell = option("useSbtShell").map(_.toBoolean)
+
+    JdomExternalizerMigrationHelper(element) { helper =>
+      helper.migrateString("tasks")(tasks = _)
+      helper.migrateString("vmparams")(v => vmparams = Some(v))
+      helper.migrateString("workingDir")(v => workingDir = Some(v))
+      helper.migrateBool("useSbtShell")(v => useSbtShell = Some(v))
     }
-
-    XmlSerializer.serializeInto(this, element)
-    EnvironmentVariablesComponent.writeExternal(element, environmentVariables)
-  }
-
-  override def readExternal(element: Element): Unit = {
-    super.readExternal(element)
-    XmlSerializer.deserializeInto(this, element)
-    EnvironmentVariablesComponent.readExternal(element, environmentVariables)
 
     // If `commands` has not been persisted yet but the legacy `tasks` field is present, the migration is required.
     if (commands.isEmpty && tasks.nonEmpty) {
       commands = SbtRunConfiguration.migrateTasksToCommands(tasks)
     }
 
-    JdomExternalizerMigrationHelper(element) { helper =>
-      helper.migrateString("tasks")(tasks = _)
-      helper.migrateString("vmparams")(vmparams = _)
-      helper.migrateString("workingDir")(workingDir = _)
-      helper.migrateBool("useSbtShell")(useSbtShell = _)
+    val options = new SbtRunConfigurationOptions
+    options.setCommands(commands)
+    vmparams.foreach(options.setVmparams)
+    useSbtShell.foreach(options.setUseSbtShell)
+    converter.setOptions(options)
+
+    converter.addFragment(new WorkingDirectoryFragmentState(workingDir.orNull))
+    converter.addFragment(new EnvironmentFragmentState(converter.readEnvs(), true))
+  }
+}
+
+class SbtRunConfigurationOptions extends RunConfigurationOptions {
+  private var myCommands: String = ""
+  private var myVmparams: String = "-Xms512M -Xmx1024M -Xss1M"
+  private var myUseSbtShell: Boolean = true
+
+  @Attribute("commands")
+  def getCommands: String = myCommands
+
+  def setCommands(commands: String): Unit = myCommands = commands
+
+  @Attribute("vmparams")
+  def getVmparams: String = myVmparams
+
+  def setVmparams(vmparams: String): Unit = myVmparams = vmparams
+
+  @Attribute("useSbtShell")
+  def isUseSbtShell: Boolean = myUseSbtShell
+
+  def setUseSbtShell(useSbtShell: Boolean): Unit = myUseSbtShell = useSbtShell
+}
+
+private final class SbtRunConfigurationCommandsFragment extends RunConfigurationFragment[SbtRunConfiguration] {
+  override def getId: String = "sbt.commands"
+
+  override def getName: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.runner.form.tasks"))
+
+  override def isRemovable: Boolean = false
+
+  @RequiredUIAccess
+  override def createEditor(project: Project, parent: Disposable): RunConfigurationFragmentEditor[SbtRunConfiguration] = {
+    val commandsBox = TextBox.create()
+    commandsBox.setPlaceholder(LocalizeValue.of(SbtBundle.message("sbt.runner.form.tasks.comment").replaceAll("<[^>]+>", "")))
+
+    new RunConfigurationFragmentEditor[SbtRunConfiguration] {
+      @RequiredUIAccess
+      override def addRows(layout: RunConfigurationFragmentLayout): Unit =
+        layout.addLabeled(LocalizeValue.of(SbtBundle.message("sbt.runner.form.tasks")), commandsBox)
+
+      @RequiredUIAccess
+      override def reset(target: SbtRunConfiguration): Unit =
+        commandsBox.setValue(target.commands)
+
+      @RequiredUIAccess
+      override def apply(target: SbtRunConfiguration): Unit =
+        target.commands = StringUtil.notNullize(commandsBox.getValue)
     }
   }
+}
 
-  def apply(params: SbtRunConfigurationForm): Unit = {
-    commands = params.getTasks
-    vmparams = params.getJavaOptions
-    workingDir = params.getWorkingDir
-    environmentVariables.clear()
-    environmentVariables.putAll(params.getEnvironmentVariables)
-    envFilePaths.clear()
-    envFilePaths.addAll(params.getEnvFilePaths)
-    useSbtShell = params.isUseSbtShell
+private final class SbtRunConfigurationUseSbtShellFragment extends TagRunConfigurationFragment[SbtRunConfiguration] {
+  override def getId: String = "sbt.useSbtShell"
+
+  override def getName: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.runner.form.use.sbt.shell"))
+
+  override def isSet(target: SbtRunConfiguration): Boolean = target.useSbtShell
+
+  override def set(target: SbtRunConfiguration, value: Boolean): Unit = target.useSbtShell = value
+}
+
+// upstream: VM parameters, working directory and environment are disabled in the form when "Use sbt shell" is selected
+private final class SbtRunConfigurationVmParametersFragment extends RunConfigurationFragment[SbtRunConfiguration] {
+  override def getId: String = "sbt.vmparams"
+
+  override def getName: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.runner.form.vmParametersEditorTitle"))
+
+  @RequiredUIAccess
+  override def createEditor(project: Project, parent: Disposable): RunConfigurationFragmentEditor[SbtRunConfiguration] = {
+    val vmParametersBox = TextBox.create()
+
+    new RunConfigurationFragmentEditor[SbtRunConfiguration] {
+      @RequiredUIAccess
+      override def addRows(layout: RunConfigurationFragmentLayout): Unit =
+        layout.addLabeled(LocalizeValue.of(SbtBundle.message("sbt.runner.form.vmParameters")), vmParametersBox)
+
+      @RequiredUIAccess
+      override def reset(target: SbtRunConfiguration): Unit =
+        vmParametersBox.setValue(target.vmparams)
+
+      @RequiredUIAccess
+      override def apply(target: SbtRunConfiguration): Unit =
+        target.vmparams = StringUtil.notNullize(vmParametersBox.getValue)
+    }
   }
 }
 

@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.language.utils
 
-import com.intellij.buildsystem.model.unified.{UnifiedDependency, UnifiedDependencyRepository}
 import consulo.language.editor.WriteCommandAction
 import consulo.module.{ModuleManager, Module as OpenapiModule}
 import consulo.project.Project
@@ -169,47 +168,6 @@ object SbtDependencyUtils {
     }
   }
 
-  def findLibraryDependency(project: Project,
-                            module: OpenapiModule,
-                            dependency: UnifiedDependency,
-                            versionRequired: Boolean = true,
-                            configurationRequired: Boolean = true): (ScInfixExpr, String, ScInfixExpr) = {
-    val sbtFileOpt = getSbtFileOpt(module)
-    val targetCoordinates = dependency.getCoordinates
-    val targetDepText: String = generateArtifactTextVerbose(
-      targetCoordinates.getGroupId,
-      targetCoordinates.getArtifactId.replaceAll("_\\d+.*$", ""),
-      if (versionRequired) targetCoordinates.getVersion else "",
-      if (configurationRequired) dependency.getScope else SbtDependencyCommon.defaultLibScope
-    )
-    val libDeps = getLibraryDependenciesOrPlaces(sbtFileOpt, project, module, GetDep)
-    libDeps.find(
-        libDep => {
-          var processedDep: List[String] = List()
-          processedDep = processLibraryDependencyFromExprAndString(libDep.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
-            .map(_.asInstanceOf[String])
-          var processedDepText: String = ""
-          processedDep match {
-            case List(a, b, c) =>
-              processedDepText = generateArtifactTextVerbose(
-                a,
-                b,
-                if (versionRequired) c else "",
-                SbtDependencyCommon.defaultLibScope)
-            case List(a, b, c, d) =>
-              processedDepText = generateArtifactTextVerbose(
-                a,
-                b,
-                if (versionRequired) c else "",
-                if (configurationRequired) d else SbtDependencyCommon.defaultLibScope)
-            case _ =>
-          }
-
-          targetDepText.equals(processedDepText)
-        }
-      )
-      .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)]).orNull
-  }
 
 
   def getLibraryDependenciesOrPlacesUtil(module: OpenapiModule,
@@ -493,13 +451,6 @@ object SbtDependencyUtils {
     }
   }
 
-  def addRepository(expr: PsiElement, unifiedDependencyRepository: UnifiedDependencyRepository)(implicit project: Project): Option[PsiElement] = {
-    expr match {
-      case file: PsiFile =>
-        Option(addRepositoryToFile(file, unifiedDependencyRepository)(using project))
-      case _ => None
-    }
-  }
 
   def addDependencyToLibraryDependencies(infix: ScInfixExpr, info: SbtArtifactInfo)(implicit project: Project): Option[PsiElement] = {
 
@@ -580,14 +531,6 @@ object SbtDependencyUtils {
     addedExpr
   }
 
-  def addRepositoryToFile(file: PsiFile, unifiedDependencyRepository: UnifiedDependencyRepository)(implicit project: Project): PsiElement = {
-    var addedExpr: PsiElement = null
-    doInSbtWriteCommandAction({
-      file.addAfter(generateNewLine(using project), file.getLastChild)
-      addedExpr = file.addAfter(generateResolverPsiExpression(unifiedDependencyRepository, file), file.getLastChild)
-    }, file)
-    addedExpr
-  }
 
   def isAddableLibraryDependencies(libDeps: ScInfixExpr): Boolean =
     libDeps.operation.refName match {
@@ -633,12 +576,6 @@ object SbtDependencyUtils {
     }
     artifactText
   }
-
-  def generateResolverText(unifiedDependencyRepository: UnifiedDependencyRepository): String =
-    s"""resolvers += Resolver.url("${unifiedDependencyRepository.getId}", url("${unifiedDependencyRepository.getUrl}"))"""
-
-  def generateResolverPsiExpression(unifiedDependencyRepository: UnifiedDependencyRepository, ctx: PsiElement): ScExpression =
-    ScalaPsiElementFactory.createExpressionFromText(generateResolverText(unifiedDependencyRepository), ctx)(using ctx)
 
   def getRelativePath(elem: PsiElement)(implicit project: ProjectContext): Option[String] = {
     for {

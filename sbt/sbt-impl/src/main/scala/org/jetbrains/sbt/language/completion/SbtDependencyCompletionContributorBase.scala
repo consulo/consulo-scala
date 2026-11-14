@@ -5,7 +5,6 @@ import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
-import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.application.AllIcons
 import consulo.document.RangeMarker
@@ -43,15 +42,15 @@ abstract class SbtDependencyCompletionContributorBase extends CompletionContribu
   extend(CompletionType.BASIC, PATTERN, provider)
 }
 
-@ExtensionImpl(id = "sbtDependencyVersionCompletionContributor", order = "first")
+@ExtensionImpl(id = "sbtDependencyVersionCompletionContributor")
 final class SbtDependencyVersionCompletionContributor extends SbtDependencyCompletionContributorBase {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override protected def provider: SbtDependencyCompletionProviderBase = new SbtDependencyVersionCompletionProvider
 }
 
-abstract class SbtDependencyCompletionProviderBase extends CompletionProvider[CompletionParameters] {
-  final override protected def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
+abstract class SbtDependencyCompletionProviderBase extends CompletionProvider {
+  final override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
     val place = positionFromParameters(using parameters)
     resultSet.restartCompletionOnAnyPrefixChange()
     doAddCompletions(place)(using parameters, resultSet)
@@ -223,7 +222,7 @@ final class SbtDependencyVersionCompletionProvider extends SbtDependencyCompleti
         val lookupElements = versions.map { version =>
           val presentableText = s"\"$version\""
           LookupElementBuilder.create(DependencyVersion(version), version.toString)
-            .withIcon(AllIcons.Build.CompletionLocalCache)
+            .withIcon(AllIcons.Nodes.PpLib) // upstream: AllIcons.Build.CompletionLocalCache
             .withInsertHandler { (context, _) =>
               val marker = params.marker
               context.getDocument.replaceString(marker.getStartOffset, marker.getEndOffset, presentableText)

@@ -2,19 +2,19 @@ package org.jetbrains.sbt
 package shell
 
 
-import org.jetbrains.sbt.api.find
-import com.intellij.execution.actions.ClearConsoleAction
-import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.execution.console.LanguageConsoleImpl
-import com.intellij.execution.filters.UrlFilter.UrlFilterProvider
+import consulo.execution.internal.action.ClearConsoleAction
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.ide.impl.idea.execution.console.LanguageConsoleImpl
 import com.intellij.java.execution.filters.ExceptionFilter
-import com.intellij.execution.filters.{PatternBasedFileHyperlinkFilter, PatternBasedFileHyperlinkRawDataFinder, PatternHyperlinkFormat, PatternHyperlinkPart, RegexpFilter, UrlFilter}
+import consulo.execution.ui.console.PatternBasedFileHyperlinkFilter
+import consulo.execution.ui.console.PatternBasedFileHyperlinkRawDataFinder
+import consulo.execution.ui.console.PatternHyperlinkFormat
+import consulo.execution.ui.console.PatternHyperlinkPart
+import consulo.execution.ui.console.UrlFilter
 import consulo.ui.ex.action.{ActionGroup, AnAction, DefaultActionGroup}
-import consulo.application.ApplicationManager
-import com.intellij.openapi.application.WriteIntentReadAction
-import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
+import consulo.codeEditor.action.ToggleUseSoftWrapsToolbarAction
 import consulo.codeEditor.event.EditorMouseEvent
-import com.intellij.openapi.editor.event.EditorMouseListener
+import consulo.codeEditor.event.EditorMouseListener
 import consulo.codeEditor.EditorEx
 import consulo.codeEditor.Editor
 import consulo.project.Project
@@ -25,7 +25,7 @@ import org.jetbrains.sbt.shell.action.*
 import org.jetbrains.sbt.shell.optionsWarn.SbtShellOptionsWarningService
 
 import java.beans.{PropertyChangeEvent, PropertyChangeListener}
-import java.util.Collections
+import java.util.regex.Pattern
 import scala.annotation.nowarn
 
 final class SbtShellConsoleView private(project: Project, debugConnection: Option[RemoteConnection])
@@ -94,25 +94,15 @@ object SbtShellConsoleView {
       new SbtShellConsoleView(project, debugConnection)
     }
 
-    val setOneLineMode: Runnable = () => cv.getConsoleEditor.setOneLineMode(true)
-    if (ApplicationManager.getApplication.isUnitTestMode) {
-      // IJPL-27737
-      // `com.intellij.openapi.editor.impl.SettingsImpl.reinitDocumentIndentOptions` is not
-      // called within a read action in tests only.
-      // A write-intent read action _must_ be used here. A regular read action causes a deadlock in tests.
-      // TODO: remove this branch after a fix in the platform.
-      //noinspection ApiStatus,UnstableApiUsage
-      WriteIntentReadAction.run(setOneLineMode)
-    } else {
-      setOneLineMode.run()
-    }
+    // upstream: wrapped in WriteIntentReadAction in unit test mode (IJPL-27737)
+    cv.getConsoleEditor.setOneLineMode(true)
 
     // stack trace file links
     cv.addMessageFilter(new ExceptionFilter(GlobalSearchScope.allScope(project)))
     // other file links
     cv.addMessageFilter(filePatternFilters(project))
     // url links
-    new UrlFilterProvider().getDefaultFilters(project).foreach(cv.addMessageFilter)
+    cv.addMessageFilter(new UrlFilter(project))
 
     cv.getHistoryViewer.addEditorMouseListener(new HistoryMouseListener(cv))
     SbtShellOptionsWarningService.instance(project).installHistoryViewer(cv.getHistoryViewer)
@@ -129,18 +119,19 @@ object SbtShellConsoleView {
   private def filePatternFilters(project: Project) = {
     import PatternHyperlinkPart._
 
-    def pattern(patternMacro: String) = new RegexpFilter(project, patternMacro).getPattern
+    // upstream: the patterns are taken from `RegexpFilter.getPattern` with FILE_PATH_MACROS and LINE_MACROS,
+    // these are the same regular expressions (Consulo's RegexpFilter doesn't expose its pattern)
+    val filePathRegexp = "((?:\\p{Alpha}\\:)?[0-9 a-z_A-Z\\-\\\\./]+)"
+    val lineRegexp = "([0-9]+)"
+    def pattern(regexp: String) = Pattern.compile(regexp, Pattern.MULTILINE)
 
     // file with line number
-    val fileWithLinePattern = pattern(s"${RegexpFilter.FILE_PATH_MACROS}:${RegexpFilter.LINE_MACROS}")
-    // FILE_PATH_MACROS includes a capturing group at the beginning that the format only can handle if the first linkPart is null
-    val fileWithLineFormat = new PatternHyperlinkFormat(fileWithLinePattern, false, false, Collections.emptyList[String](),
-      /*linkParts*/null, PATH, LINE)
+    val fileWithLinePattern = pattern(s"$filePathRegexp:$lineRegexp")
+    val fileWithLineFormat = new PatternHyperlinkFormat(fileWithLinePattern, false, false, PATH, LINE)
 
     // file output without lines in messages
-    val fileOnlyPattern = pattern(RegexpFilter.FILE_PATH_MACROS)
-    val fileOnlyFormat = new PatternHyperlinkFormat(fileOnlyPattern, false, false, Collections.emptyList[String](),
-      /*linkParts*/ null, PATH)
+    val fileOnlyPattern = pattern(filePathRegexp)
+    val fileOnlyFormat = new PatternHyperlinkFormat(fileOnlyPattern, false, false, PATH)
 
     val dataFinder = new PatternBasedFileHyperlinkRawDataFinder(Array(fileWithLineFormat, fileOnlyFormat))
     new PatternBasedFileHyperlinkFilter(project, null, dataFinder)
@@ -163,7 +154,7 @@ object SbtShellConsoleView {
       val clickCount = e.getMouseEvent.getClickCount
       val historySelectionIsEmpty = !cv.getHistoryViewer.getSelectionModel.hasSelection //SCL-21593
       if (clickCount == 1 && historySelectionIsEmpty) {
-        val focusManager = IdeFocusManager.getInstance(cv.getProject)
+        val focusManager = IdeFocusManager.getGlobalInstance
         val focusComponent = cv.getConsoleEditor.getContentComponent
         focusManager.doWhenFocusSettlesDown { () =>
           focusManager.requestFocus(focusComponent, false): Unit
@@ -172,10 +163,10 @@ object SbtShellConsoleView {
     }
   }
 
-  private class ResetBorderListener(editor: Editor) extends PropertyChangeListener {
+  private class ResetBorderListener(editor: EditorEx) extends PropertyChangeListener {
     override def propertyChange(evt: PropertyChangeEvent): Unit = {
       if (evt.getPropertyName == "border" && evt.getNewValue != null) {
-        editor.setBorder(null)
+        editor.getScrollPane.setBorder(null)
       }
     }
   }

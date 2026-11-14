@@ -1,10 +1,11 @@
 package org.jetbrains.sbt.project.versionNotifications
 
+import consulo.annotation.component.{ComponentScope, ExtensionImpl, TopicImpl}
+import consulo.localize.LocalizeValue
 import consulo.webBrowser.BrowserUtil
-import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
-import com.intellij.notification.NotificationGroupManager
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationDisplayType, NotificationGroup, NotificationGroupContributor, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
-import consulo.project.DumbService.DumbModeListener
+import consulo.project.event.DumbModeListener
 import consulo.project.{Project, ProjectManager}
 import consulo.util.dataholder.Key
 import org.jetbrains.annotations.{Nls, TestOnly}
@@ -28,28 +29,15 @@ import java.nio.file.Path
  */
 private object LegacySbtVersionProjectNotification {
 
-  private def LegacySbtVersionGroup: NotificationGroup = NotificationGroupManager.getInstance().getNotificationGroup("sbt.legacy.version.detected")
+  // upstream: <notificationGroup id="sbt.legacy.version.detected"/> in sbt.xml
+  private[versionNotifications] val LegacySbtVersionGroup: NotificationGroup = new NotificationGroup(
+    "sbt.legacy.version.detected",
+    LocalizeValue.of(SbtBundle.message("sbt.notification.group.id.legacy.version.detected")),
+    NotificationDisplayType.STICKY_BALLOON,
+    true
+  )
 
-  // For IDEA-based projects
-  final class MyProjectActivity extends ProjectActivity {
-    override def execute(project: Project): Unit = {
-      onProjectLoaded(project)
-    }
-  }
-
-  // For external system (sbt) projects: when sbt imports a project, MyProjectActivity runs before the
-  // external system has populated the project root / sbt model, so SbtVersionDetector can't yet read
-  // `project/build.properties`. The dumb-mode-exit fires after that import finishes, giving the detector
-  // a second chance when the data is actually available.
-  class MyDumbModeListener extends DumbModeListener {
-    override def exitDumbMode(): Unit = {
-      executeOnPooledThread {
-        checkAllOpenProjects()
-      }
-    }
-  }
-
-  private def checkAllOpenProjects(): Unit = {
+  private[versionNotifications] def checkAllOpenProjects(): Unit = {
     // Note, `isDisposed` must be explicitly checked
     val openNonDisposedProjects = ProjectManager.getInstance().getOpenProjects.filterNot(_.isDisposed)
     openNonDisposedProjects.foreach(onProjectLoaded)
@@ -61,7 +49,7 @@ private object LegacySbtVersionProjectNotification {
   }
 
   // upstream: @RequiresBackgroundThread
-  private def onProjectLoaded(project: Project): Unit = {
+  private[versionNotifications] def onProjectLoaded(project: Project): Unit = {
     if (project.isDisposed)
       return
 
@@ -114,13 +102,13 @@ private object LegacySbtVersionProjectNotification {
       new OpenBuildPropertiesAction(project, projectRoot),
     )
 
-    val notification = LegacySbtVersionGroup.createNotification(title, content, NotificationType.WARNING)
+    val notification = LegacySbtVersionGroup.createNotification(title, content, NotificationType.WARNING, null)
     actions.foreach(notification.addAction)
     notification.notify(project)
   }
 
   private final class OpenMigrationGuideAction extends NotificationAction(
-    SbtBundle.message("sbt.legacy.version.project.notification.actions.open.migration.guide")
+    LocalizeValue.of(SbtBundle.message("sbt.legacy.version.project.notification.actions.open.migration.guide"))
   ) {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       BrowserUtil.browse(LegacySbtVersionUtils.MigrationGuideUrl)
@@ -128,10 +116,37 @@ private object LegacySbtVersionProjectNotification {
   }
 
   private final class OpenBuildPropertiesAction(project: Project, projectRoot: Path) extends NotificationAction(
-    SbtBundle.message("sbt.legacy.version.project.notification.actions.open.properties.file")
+    LocalizeValue.of(SbtBundle.message("sbt.legacy.version.project.notification.actions.open.properties.file"))
   ) {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       LegacySbtVersionUtils.createBuildPropertiesOpenFileDescriptor(project, projectRoot).foreach(_.navigate(true))
     }
   }
+}
+
+// For IDEA-based projects
+@ExtensionImpl
+final class LegacySbtVersionProjectNotificationMyProjectActivity extends ProjectActivity {
+  override def execute(project: Project): Unit = {
+    LegacySbtVersionProjectNotification.onProjectLoaded(project)
+  }
+}
+
+// For external system (sbt) projects: when sbt imports a project, MyProjectActivity runs before the
+// external system has populated the project root / sbt model, so SbtVersionDetector can't yet read
+// `project/build.properties`. The dumb-mode-exit fires after that import finishes, giving the detector
+// a second chance when the data is actually available.
+@TopicImpl(ComponentScope.PROJECT)
+final class LegacySbtVersionProjectNotificationMyDumbModeListener extends DumbModeListener {
+  override def exitDumbMode(): Unit = {
+    executeOnPooledThread {
+      LegacySbtVersionProjectNotification.checkAllOpenProjects()
+    }
+  }
+}
+
+@ExtensionImpl
+final class LegacySbtVersionNotificationGroupContributor extends NotificationGroupContributor {
+  override def contribute(consumer: java.util.function.Consumer[NotificationGroup]): Unit =
+    consumer.accept(LegacySbtVersionProjectNotification.LegacySbtVersionGroup)
 }

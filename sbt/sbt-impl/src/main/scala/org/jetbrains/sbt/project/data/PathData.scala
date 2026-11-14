@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.project.data
 
-import com.intellij.serialization.PropertyMapping
 import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.nio.file.Path
@@ -11,7 +10,7 @@ import java.util.Objects
  * This class exists to avoid having to deal with raw Strings as paths (which other External System implementations
  * use, like Gradle).
  */
-final class PathData @PropertyMapping(Array("pathAsString")) private (private val pathAsString: String) extends Serializable:
+final class PathData private (private val pathAsString: String) extends Serializable:
 
   def toPath: Path = Path.of(pathAsString)
 

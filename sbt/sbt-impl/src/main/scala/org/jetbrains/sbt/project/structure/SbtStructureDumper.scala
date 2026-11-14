@@ -1,11 +1,11 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.sbt.project.structure
 
-import com.intellij.execution.configuration.EnvironmentVariablesData
+import consulo.execution.configuration.EnvironmentVariablesData
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
 import consulo.application.util.registry.Registry
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
@@ -70,7 +70,7 @@ object SbtStructureDumper:
         val isMinimumSbt = currentSbtVersion >= SbtVersion("1.3.0")
 
         // The registry is added as a safety fallback. If nothing goes wrong over 1-2 releases, it could be removed.
-        if (Registry.is("sbt.shell.import.old") || !isMinimumSbt) {
+        if (Registry.is("sbt.shell.import.old", false) || !isMinimumSbt) {
           val SeqFqn = SbtVersionCapabilities.collectionsSeqClassFqn(currentSbtVersion)
           val setCommands = Seq(
             s"""${scopedSbtSetting("_root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions", "_root_.sbt.Global", currentSbtVersion)} := $optString""",
@@ -187,7 +187,7 @@ object SbtStructureDumper:
 
       val (sbtCommandsString, launcherArgs) =
         dumpProcessArgsMethod(
-          context.eelDescriptor,
+          context.platform,
           optString,
           sbtStructureJar,
           maybePreferScala2Command,
@@ -219,7 +219,7 @@ object SbtStructureDumper:
      * Builds config for dumping the project structure in the new import way (without state transformations).
      */
     private def getDumpProcessArgsForNewImport(
-      eelDescriptor: EelDescriptor,
+      platform: Platform,
       @unused optString: String,
       sbtStructureJar: Path,
       maybePreferScala2Command: String,
@@ -245,7 +245,7 @@ object SbtStructureDumper:
              |}
              |$taskTimingsPlugin
              |""".stripMargin,
-        eelDescriptor,
+        platform,
         project
       )
 
@@ -254,7 +254,7 @@ object SbtStructureDumper:
     }
 
     private def getDumpProcessArgsForLegacySbt(
-      eelDescriptor: EelDescriptor,
+      platform: Platform,
       optString: String,
       sbtStructureJar: Path,
       maybePreferScala2Command: String,
@@ -285,7 +285,7 @@ object SbtStructureDumper:
         if (injectTaskTimings) {
           val tmpPluginsSbtFile = SbtUtil.createTemporarySbtFile(
             SbtUtil.sbtTaskTimingsPluginDeclaration,
-            eelDescriptor,
+            platform,
             project
           )
           Seq(s"-addPluginSbtFile=${tmpPluginsSbtFile.normalizedLocalPath}")

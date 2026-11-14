@@ -1,6 +1,8 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputType, ProcessOutputTypes}
+import consulo.process.util.AnsiEscapeDecoder
+import consulo.process.ProcessOutputType
+import consulo.process.ProcessOutputTypes
 import consulo.process.event.{ProcessEvent, ProcessListener}
 import consulo.logging.Logger
 import consulo.project.Project

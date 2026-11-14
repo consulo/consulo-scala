@@ -2,7 +2,6 @@ package org.jetbrains.sbt.project.data
 
 import consulo.externalSystem.service.project.AbstractExternalEntityData
 import consulo.externalSystem.model.{Key, ProjectKeys}
-import com.intellij.serialization.PropertyMapping
 import org.jetbrains.annotations.{Nls, NotNull, Nullable}
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
 import org.jetbrains.plugins.scala.project.ReplClasspath
@@ -52,7 +51,7 @@ object SbtEntityData {
   * @param resolvers resolvers for this build project
   * @param buildFor id of the project that this module describes the build for
   */
-case class SbtBuildModuleData @PropertyMapping(Array("imports", "resolvers", "buildFor"))(
+case class SbtBuildModuleData(
   imports: JList[String],
   resolvers: JSet[SbtResolver],
   buildFor: MyURI
@@ -137,7 +136,7 @@ object SbtModuleData:
 
 end SbtModuleData
 
-case class SbtProjectData @PropertyMapping(Array("jdk", /*"javacOptions",*/ "sbtVersion", "projectPath", "projectTransitiveDependenciesUsed"))(
+case class SbtProjectData(
   @Nullable jdk: SdkReference,
   //javacOptions: JList[String], // see the commit message, why we don't need javacOptions at the project level
   sbtVersion: String,
@@ -176,7 +175,7 @@ sealed trait SbtRankedKey {
   val rank: Int
 }
 
-case class SbtSettingData @PropertyMapping(Array("name", "description", "rank", "value"))(
+case class SbtSettingData(
   override val name: String,
   @Nls description: String,
   override val rank: Int,
@@ -192,7 +191,7 @@ object SbtSettingData {
  *             In practice, it will be the name or id of the sbt project - depending on whether the name is unique within a single build.
  *             If separate modules for production and test are enabled, the main/test suffix will also be present in the name.
  */
-case class DisplayModuleNameData @PropertyMapping(Array("name"))(
+case class DisplayModuleNameData(
   name: String
 ) extends SbtEntityData
 
@@ -200,7 +199,7 @@ object DisplayModuleNameData {
   val Key: Key[DisplayModuleNameData] = datakey(classOf[DisplayModuleNameData])
 }
 
-case class SbtTaskData @PropertyMapping(Array("name", "description", "rank")) (
+case class SbtTaskData(
   override val name: String,
   @Nls description: String,
   override val rank: Int
@@ -210,7 +209,7 @@ object SbtTaskData {
   val Key: Key[SbtTaskData] = datakey(classOf[SbtTaskData])
 }
 
-case class SbtCommandData @PropertyMapping(Array("name", "help")) (
+case class SbtCommandData(
   override val name: String,
   help: JMap[String, String]
 ) extends SbtEntityData with SbtNamedKey
@@ -222,7 +221,7 @@ object SbtCommandData {
     SbtCommandData(name, toJavaMap(help.toMap))
 }
 
-case class SbtModuleExtData @PropertyMapping(Array("scalacOptions", "sdk", "javacOptions", "kotlincOptions", "packagePrefix", "basePackage", "compileOrder")) (
+case class SbtModuleExtData(
   scalacOptions: JList[String],
   @Nullable sdk: SdkReference,
   javacOptions: JList[String],
@@ -356,7 +355,7 @@ object SbtScalaSdkData:
 
 end SbtScalaSdkData
 
-case class SbtPlay2ProjectData @PropertyMapping(Array("stringValues", "seqStringsValues")) (
+case class SbtPlay2ProjectData (
   stringValues: JMap[String, JMap[String, StringParsedValue]],
   seqStringsValues: JMap[String, JMap[String, SeqStringParsedValue]]
 ) extends SbtEntityData {
@@ -401,12 +400,13 @@ object SbtPlay2ProjectData {
  *
  * @todo remove when IDEA-221074 is fixed
  */
-final class MyURI @PropertyMapping(Array("string"))(
+final class MyURI(
   private val string: String
 ) extends Serializable {
   assert(string != null)
 
-  @transient val uri: URI = new URI(string)
+  // upstream: @transient val, Consulo data nodes are restored by java serialization which does not run the constructor
+  def uri: URI = new URI(string)
 
   def this(uri: URI) = {
     this(uri.toString)

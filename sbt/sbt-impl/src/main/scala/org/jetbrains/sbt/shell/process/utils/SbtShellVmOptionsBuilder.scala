@@ -1,10 +1,10 @@
 package org.jetbrains.sbt.shell.process.utils
 
-import com.intellij.debugger.engine.DebuggerUtils
-import com.intellij.execution.configuration.EnvironmentVariablesData
+import com.intellij.java.debugger.engine.DebuggerUtils
+import consulo.execution.configuration.EnvironmentVariablesData
 import consulo.process.cmd.ParametersList
-import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.util.system.OS
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.platform.Platform
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.sbt.api.JvmMemorySize
 import org.jetbrains.sbt.process.options.SbtProcessOptionsResolver
@@ -19,7 +19,7 @@ private[shell] final class SbtShellVmOptionsBuilder @TestOnly private[utils](
   isWindows: Boolean
 ) {
 
-  def this() = this(OS.CURRENT == OS.Windows)
+  def this() = this(Platform.current.os.isWindows)
 
   def createVmOptions(
     sbtSettings: SbtExecutionSettings,

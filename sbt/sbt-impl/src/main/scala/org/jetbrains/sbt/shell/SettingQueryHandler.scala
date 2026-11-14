@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.task.{ProjectTaskContext, ProjectTaskManager}
 import org.jetbrains.plugins.scala.build.{BuildMessages, TaskManagerResult}
 import org.jetbrains.sbt.SbtUtil.SbtProjectUriAndId
 import org.jetbrains.sbt.api.SbtVersionCapabilities
@@ -37,7 +36,7 @@ class SettingQueryHandler private[jetbrains] (
     val command = s"show $settingColon"
 
     val listener = new BufferedListener(this)
-    comm.run(SbtShellCommandRequest[ProjectTaskManager.Result](command, listener)).map {
+    comm.run(SbtShellCommandRequest[TaskManagerResult](command, listener)).map {
       _ => filterSettingValue(listener.getBufferedOutput)
     }
   }
@@ -57,10 +56,10 @@ class SettingQueryHandler private[jetbrains] (
     resultFuture.map(isSuccessResult)
   }
 
-  private def isSuccessResult(p: ProjectTaskManager.Result): Boolean =
+  private def isSuccessResult(p: TaskManagerResult): Boolean =
     !isFailureResult(p)
 
-  private def isFailureResult(p: ProjectTaskManager.Result): Boolean =
+  private def isFailureResult(p: TaskManagerResult): Boolean =
     p.isAborted || p.hasErrors
 
   private val settingPathForSetCommand: String = {
@@ -124,15 +123,15 @@ class SettingQueryHandler private[jetbrains] (
 object SettingQueryHandler {
 
   private def DefaultResult: TaskManagerResult =
-    TaskManagerResult(new ProjectTaskContext(), isAborted = false, hasErrors = false)
+    TaskManagerResult(isAborted = false, hasErrors = false)
 
-  private class BufferedListener(handler: SettingQueryHandler) extends SbtShellCommandEventProcessor[ProjectTaskManager.Result] {
+  private class BufferedListener(handler: SettingQueryHandler) extends SbtShellCommandEventProcessor[TaskManagerResult] {
     private val filterPrefix = "[info] "
     private val successPrefix = "[success] "
     private var strings = ListBuffer[String]()
     private var collectInfo = true
 
-    override def initialResult: ProjectTaskManager.Result =
+    override def initialResult: TaskManagerResult =
       DefaultResult
 
     def getBufferedOutput: String = {
@@ -152,7 +151,7 @@ object SettingQueryHandler {
       }
     }
 
-    override def process(res: ProjectTaskManager.Result, se: ShellEvent): ProjectTaskManager.Result = {
+    override def process(res: TaskManagerResult, se: ShellEvent): TaskManagerResult = {
       se match {
         case TaskComplete =>
           collectInfo = false

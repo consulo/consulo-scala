@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.options.collecting
 
-import com.intellij.execution.configuration.EnvironmentVariablesData
+import consulo.execution.configuration.EnvironmentVariablesData
 import org.jetbrains.sbt.process.options.parsing.model.SbtOptionsDiagnostic
 import org.jetbrains.sbt.process.options.parsing.model.SbtOptionsDiagnostic.{Malformed, Unrecognized}
 import org.jetbrains.sbt.process.options.parsing.model.{MalformedSbtOption, ParsedSbtOption, SbtOptionsParseResult, SbtOptionsSource}

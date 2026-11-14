@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.options
 
-import com.intellij.execution.configuration.EnvironmentVariablesData
+import consulo.execution.configuration.EnvironmentVariablesData
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.extensions.PathExt

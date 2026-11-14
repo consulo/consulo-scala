@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.build
 
-import com.intellij.build.FilePosition
-import com.intellij.build.events.EventResult
-import com.intellij.build.issue.BuildIssue
+import consulo.build.ui.FilePosition
+import consulo.build.ui.event.EventResult
+import consulo.build.ui.issue.BuildIssue
 import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId

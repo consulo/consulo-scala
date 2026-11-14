@@ -3,13 +3,11 @@ package org.jetbrains.sbt.shell.optionsWarn
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-import consulo.disposer.Disposable
+import jakarta.inject.{Inject, Singleton}
 import consulo.codeEditor.EditorEx
+import consulo.ide.impl.idea.ui.EditorNotificationPanel
 import consulo.project.Project
-import consulo.disposer.Disposer
-import com.intellij.terminal.ui.TerminalWidget
-import com.intellij.ui.EditorNotificationPanel
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildToolWindowReporter}
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.sbt.SbtBundle
@@ -27,7 +25,7 @@ import scala.concurrent.Promise
  * [[com.intellij.openapi.vfs.VirtualFile]].
  * The sbt shell history is an editor inside [[com.intellij.execution.console.LanguageConsoleImpl]],
  * not a file editor, so the service attaches the banner directly to the history viewer via [[EditorEx.setPermanentHeaderComponent]].
- * For the terminal-based sbt shell, the service uses [[TerminalWidget.addNotification]].
+ * upstream: for the terminal-based sbt shell, the service uses TerminalWidget.addNotification (no terminal shell in Consulo).
  *
  * IMPLEMENTATION NOTE:<br>
  * Warning data can arrive before the shell UI is created. For that reason the service stores the latest warning state
@@ -42,7 +40,7 @@ import scala.concurrent.Promise
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-private[shell] final class SbtShellOptionsWarningService(project: Project) {
+private[shell] final class SbtShellOptionsWarningService @Inject()(project: Project) {
 
   import SbtShellOptionsWarningService.*
 
@@ -56,16 +54,9 @@ private[shell] final class SbtShellOptionsWarningService(project: Project) {
   def uninstallHistoryViewer(editor: EditorEx): Unit =
     uninstallHost(_.isForHistoryViewer(editor))
 
-  def installTerminalWidget(widget: TerminalWidget): Unit =
-    installHost(new TerminalWidgetWarningsHost(project, widget))
-
-  def uninstallTerminalWidget(widget: TerminalWidget): Unit =
-    uninstallHost(_.isForTerminalWidget(widget))
-
   private def installHost(host: SbtShellWarningsHost): Unit =
     invokeLater {
       if (!project.isDisposed) {
-        // The legacy and terminal shells are mutually exclusive for one running sbt process.
         warningsHost.foreach(_.clear())
         warningsHost = Some(host)
         refresh()
@@ -109,9 +100,9 @@ private[shell] final class SbtShellOptionsWarningService(project: Project) {
     warningsHost.foreach(_.update(warningState.get().map(createPanel)))
 
   private def createPanel(warning: OptionsWarning): EditorNotificationPanel = {
-    val panel = new EditorNotificationPanel(EditorNotificationPanel.Status.Warning)
+    // upstream: warning status panel with a close action
+    val panel = new EditorNotificationPanel()
     panel.setText(NotificationText)
-    panel.setCloseAction(() => hide())
     panel.createActionLabel(
       SbtBundle.message("sbt.options.shell.notification.show.details"),
       (() => showDetails(warning)): Runnable,
@@ -151,7 +142,6 @@ private[shell] object SbtShellOptionsWarningService {
     def clear(): Unit = update(None)
 
     def isForHistoryViewer(editor: EditorEx): Boolean = false
-    def isForTerminalWidget(widget: TerminalWidget): Boolean = false
   }
 
   // Legacy sbt shell: LanguageConsoleImpl exposes the console output as an EditorEx history viewer.
@@ -159,7 +149,7 @@ private[shell] object SbtShellOptionsWarningService {
     override def update(component: Option[JComponent]): Unit =
       if (!editor.isDisposed) {
         val hasHeader = editor.hasHeaderComponent
-        editor.setPermanentHeaderComponent(component.orNull)
+        editor.setPermanentHeaderComponent(component.map(TargetAWT.wrap).orNull)
         if (!hasHeader) {
           editor.setHeaderComponent(null)
         }
@@ -167,29 +157,6 @@ private[shell] object SbtShellOptionsWarningService {
 
     override def isForHistoryViewer(other: EditorEx): Boolean =
       editor == other
-  }
-
-  // New sbt shell: TerminalExecutionConsole exposes a TerminalWidget, not an EditorEx history viewer.
-  private final class TerminalWidgetWarningsHost(project: Project, widget: TerminalWidget) extends SbtShellWarningsHost {
-    private var notificationDisposable: Option[Disposable] = None
-
-    override def update(component: Option[JComponent]): Unit = {
-      clear()
-      component.foreach { notificationComponent =>
-        val disposable = Disposer.newDisposable("sbt shell options warning notification")
-        notificationDisposable = Some(disposable)
-        Disposer.register(project, disposable)
-        widget.addNotification(notificationComponent, disposable)
-      }
-    }
-
-    override def clear(): Unit = {
-      notificationDisposable.foreach(Disposer.dispose)
-      notificationDisposable = None
-    }
-
-    override def isForTerminalWidget(other: TerminalWidget): Boolean =
-      widget == other
   }
 
   private val NotificationText: String =

@@ -3,11 +3,12 @@ package org.jetbrains.sbt
 import consulo.annotation.component.ExtensionImpl
 
 
-import org.jetbrains.sbt.api.asScala
-import com.intellij.ide.actions.runAnything.RunAnythingUtil.*
-import com.intellij.ide.actions.runAnything.activity.RunAnythingProviderBase
 import consulo.dataContext.DataContext
+import consulo.execution.runAnything.{RunAnythingCompletionGroup, RunAnythingGroup, RunAnythingProviderBase}
+import consulo.localize.LocalizeValue
 import consulo.module.ModuleManager
+import consulo.project.Project
+import consulo.ui.image.Image
 import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.sbt.SbtRunAnythingProvider.*
@@ -18,7 +19,6 @@ import org.jetbrains.sbt.shell.action.SbtNodeAction
 import org.jetbrains.sbt.shell.communication.SbtShellCommandSubmitter
 
 import java.util
-import javax.swing.Icon
 import scala.jdk.CollectionConverters.*
 
 //TODO: consider extending com.intellij.ide.actions.runAnything.activity.RunAnythingCommandLineProvider
@@ -101,9 +101,13 @@ class SbtRunAnythingProvider extends RunAnythingProviderBase[SbtRunItem] {
     else null
   }
 
-  override def getIcon(value: SbtRunItem): Icon = Icons.SBT_SHELL
+  override def getIcon(value: SbtRunItem): Image = Icons.SBT_SHELL
 
-  override def getCompletionGroupTitle: String = "sbt"
+  override def getCompletionGroup: RunAnythingGroup =
+    new RunAnythingCompletionGroup[SbtRunItem, SbtRunAnythingProvider](this, LocalizeValue.of("sbt"))
+
+  private def fetchProject(dataContext: DataContext): Project =
+    dataContext.getData(Project.KEY)
 
   private def canRunSbt(dataContext: DataContext, pattern: String): Boolean = {
     if (pattern.startsWith("sbt")) {

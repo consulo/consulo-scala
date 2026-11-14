@@ -1,40 +1,38 @@
 package org.jetbrains.sbt.project
 
-import consulo.disposer.Disposable
-import consulo.application.ApplicationManager
-import consulo.logging.Logger
-import consulo.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.model.internal.InternalExternalProjectInfo
-import consulo.externalSystem.service.project.ProjectData
-import consulo.externalSystem.model.{DataNode, ProjectSystemId}
-import consulo.externalSystem.model.task.ProgressExecutionMode
-import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
-import com.intellij.openapi.externalSystem.service.project.ExternalProjectRefreshCallback
-import consulo.externalSystem.service.project.manage.ProjectDataManager
-import com.intellij.openapi.externalSystem.service.ui.ExternalProjectDataSelectorDialog
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import consulo.project.Project
-import consulo.disposer.Disposer
 import consulo.application.util.registry.Registry
-import consulo.virtualFileSystem.VirtualFile
+import consulo.externalSystem.model.DataNode
+import consulo.externalSystem.model.task.ProgressExecutionMode
+import consulo.externalSystem.service.project.manage.ProjectDataManager
+import consulo.externalSystem.service.project.{ExternalProjectRefreshCallback, ExternalSystemProjectRefresher, ProjectData}
+import consulo.externalSystem.util.{DisposeAwareProjectChange, ExternalSystemApiUtil}
+import consulo.logging.Logger
+import consulo.module.content.ProjectRootManager
+import consulo.project.Project
+import consulo.ui.annotation.RequiredUIAccess
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.project.SbtOpenProjectProvider.Log
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
-import org.jetbrains.sbt.settings.SbtSettings
 
-//noinspection UnstableApiUsage
-class SbtOpenProjectProvider extends AbstractBuildToolOpenProjectProvider {
+import java.util.Collections
 
-  override def getSystemId: ProjectSystemId = SbtProjectSystem.Id
+/**
+ * Links an sbt project to an existing IDE project and loads it.
+ */
+// upstream: AbstractBuildToolOpenProjectProvider (sbt-kotlin-utils, not ported) - opening a directory as a new project is
+// done by the import provider in Consulo (SbtProjectImportProvider); the selective import dialog
+// (ExternalProjectDataSelectorDialog) shown on the initial import is not ported
+class SbtOpenProjectProvider {
 
-  override def isProjectFile(file: VirtualFile): Boolean =
+  def isProjectFile(file: consulo.virtualFileSystem.VirtualFile): Boolean =
     SbtProjectImportProvider.canImport(file)
 
-  override protected def doLinkProject(projectDirectory: VirtualFile, project: Project): Unit = {
-    Log.debug(s"Link SBT project '$projectDirectory' to existing project ${project.getName}")
+  def linkToExistingProject(externalProjectPath: String, project: Project): Unit = {
+    Log.debug(s"Link SBT project '$externalProjectPath' to existing project ${project.getName}")
 
     val sbtProjectSettings = SbtProjectSettings.forProject(project).getOrElse(SbtProjectSettings.default)
-    sbtProjectSettings.setExternalProjectPath(projectDirectory.toNioPath.toString)
+    sbtProjectSettings.setExternalProjectPath(externalProjectPath)
     attachSbtProjectAndRefresh(sbtProjectSettings, project)
   }
 
@@ -42,60 +40,34 @@ class SbtOpenProjectProvider extends AbstractBuildToolOpenProjectProvider {
     val externalProjectPath = settings.getExternalProjectPath
     SbtUtil.sbtSettings(project).linkProject(settings)
 
-    if (!Registry.is("external.system.auto.import.disabled")) {
-      ExternalSystemUtil.refreshProject(
+    if (!Registry.is("external.system.auto.import.disabled", false)) {
+      ExternalSystemProjectRefresher.getInstance().refreshProject(
+        project,
+        SbtProjectSystem.Id,
         externalProjectPath,
-        new ImportSpecBuilder(project, SbtProjectSystem.Id)
-          .usePreviewMode()
-          .use(ProgressExecutionMode.MODAL_SYNC)
+        new FinalImportCallback(project),
+        false,
+        ProgressExecutionMode.IN_BACKGROUND_ASYNC
       )
-      ExternalProjectsManagerImpl.getInstance(project).runWhenInitialized { () =>
-        ExternalSystemUtil.refreshProject(
-          externalProjectPath,
-          new ImportSpecBuilder(project, SbtProjectSystem.Id)
-            .withCallback(new FinalImportCallback(project, settings))
-            .withImportProjectData(false)
-        )
-      }
     }
   }
 
+  private class FinalImportCallback(project: Project) extends ExternalProjectRefreshCallback {
 
-  // TODO duplicated with org.jetbrains.bsp.project.BspOpenProjectProvider.FinalImportCallback
-  private class FinalImportCallback(project: Project, projectSettings: SbtProjectSettings)
-    extends ExternalProjectRefreshCallback {
-
-    override def onSuccess(externalProject: DataNode[ProjectData]): Unit = {
-
+    override def onSuccess(@Nullable externalProject: DataNode[ProjectData]): Unit = {
       if (externalProject == null) return
 
-      def selectDataTask = {
-        val projectInfo =
-          new InternalExternalProjectInfo(SbtProjectSystem.Id, projectSettings.getExternalProjectPath, externalProject)
-        val dialog = new ExternalProjectDataSelectorDialog(project, projectInfo)
-        if (dialog.hasMultipleDataToSelect)
-          dialog.showAndGet()
-        else
-          Disposer.dispose(dialog.getDisposable: Disposable)
-      }
-
-      def importTask(): Unit = {
-        ProjectDataManager.getInstance().importData(externalProject, project)
-      }
-
-      val showSelectiveImportDialog = SbtSettings.getInstance(project).showSelectiveImportDialogOnInitialImport()
-      val application = ApplicationManager.getApplication
-
-      if (showSelectiveImportDialog && !application.isHeadlessEnvironment) {
-        application.invokeLater { () =>
-          selectDataTask
-          application.executeOnPooledThread { (() => importTask()): Runnable }
-        }
-      }
-      else {
-        importTask()
-      }
+      ExternalSystemApiUtil.executeProjectChangeAction(true, new DisposeAwareProjectChange(project) {
+        @RequiredUIAccess
+        override def execute(): Unit =
+          ProjectRootManager.getInstance(project).mergeRootsChangesDuring { () =>
+            project.getApplication.getInstance(classOf[ProjectDataManager])
+              .importData(externalProject.getKey, Collections.singleton(externalProject), project, true)
+          }
+      })
     }
+
+    override def onFailure(errorMessage: String, @Nullable errorDetails: String): Unit = {}
   }
 }
 

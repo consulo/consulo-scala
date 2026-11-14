@@ -1,34 +1,25 @@
 package org.jetbrains.sbt
 
 
-import org.jetbrains.sbt.api.SbtVersion
-import org.jetbrains.sbt.api.SbtVersionCapabilities
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.file
-import org.jetbrains.sbt.api.find
-import org.jetbrains.sbt.api.jarWith
-import consulo.process.cmd.ParametersList
 import consulo.application.ApplicationManager
-import consulo.logging.Logger
+import consulo.application.platform.PlatformTransfer
 import consulo.externalSystem.model.project.ModuleData
-import consulo.externalSystem.model.{DataNode, Key}
-import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{DataNode, Key, ProjectKeys, ProjectSystemId}
+import consulo.externalSystem.service.project.manage.ExternalProjectsManager
+import consulo.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemConstants}
+import consulo.http.HttpProxyManager
+import consulo.logging.Logger
 import consulo.module.{Module, ModuleManager}
+import consulo.platform.Platform
+import consulo.process.cmd.ParametersList
 import consulo.project.Project
-import consulo.project.util.ProjectUtil
-import com.intellij.openapi.util.io.NioFiles
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.LocalEelDescriptor
-import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
-import com.intellij.platform.eel.provider.utils.{EelPathUtils, EelProjectUtils}
-import com.intellij.platform.workspace.storage.{EntityStorage, SymbolicEntityId, WorkspaceEntityWithSymbolicId}
-import consulo.util.lang.SystemProperties
-import com.intellij.util.net.ProxyUtils
+import consulo.util.io.FileUtil
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
-import org.jetbrains.plugins.scala.util.ExternalSystemUtil
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.sbt.Sbt.SbtModuleChildKeyInstance
+import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities, jarWith}
 import org.jetbrains.sbt.buildinfo.BuildInfo
 import org.jetbrains.sbt.project.data.{SbtBuildModuleData, SbtModuleData, SbtProjectData}
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
@@ -37,7 +28,7 @@ import org.jetbrains.sbt.settings.SbtSettings
 
 import java.net.URI
 import java.nio.file.{Files, Path}
-import scala.jdk.CollectionConverters.MapHasAsScala
+import scala.jdk.CollectionConverters.*
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 //noinspection ApiStatus,UnstableApiUsage
@@ -49,6 +40,13 @@ object SbtUtil {
     val globalPlugins = "sbt.global.plugins"
     val globalBase = "sbt.global.base"
   }
+
+  /**
+   * The root path of the linked external project the module belongs to
+   */
+  // upstream: getExternalRootProjectPath
+  def getExternalRootProjectPath(module: Module): String =
+    ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalSystemConstants.ROOT_PROJECT_PATH_KEY)
 
   def isSbtModule(module: Module): Boolean =
     ExternalSystemApiUtil.isExternalSystemAwareModule(SbtProjectSystem.Id, module)
@@ -64,19 +62,19 @@ object SbtUtil {
 
   /** Directory for global sbt plugins given sbt version */
   // upstream: @VisibleForTesting
-  def globalPluginsDirectory(sbtVersion: SbtVersion, eelDescriptor: EelDescriptor): Path =
+  def globalPluginsDirectory(sbtVersion: SbtVersion, platform: Platform): Path =
     getFileProperty(CommandLineOptions.globalPlugins).getOrElse {
-      val base = globalBase(sbtVersion, eelDescriptor)
+      val base = globalBase(sbtVersion, platform)
       base / "plugins"
     }
 
   /** Directory for global sbt plugins from parameters if it is explicitly set,
    * otherwise calculate from sbt version.
    */
-  def globalPluginsDirectory(sbtVersion: SbtVersion, parameters: ParametersList, eelDescriptor: EelDescriptor): Path = {
+  def globalPluginsDirectory(sbtVersion: SbtVersion, parameters: ParametersList, platform: Platform): Path = {
     val maybeCustomDir = customGlobalPluginsDirectory(parameters)
     maybeCustomDir.getOrElse {
-      globalPluginsDirectory(sbtVersion, eelDescriptor)
+      globalPluginsDirectory(sbtVersion, platform)
     }
   }
 
@@ -88,22 +86,20 @@ object SbtUtil {
   }
 
   /** Base directory for global sbt settings. */
-  def globalBase(sbtVersion: SbtVersion, eelDescriptor: EelDescriptor): Path = {
+  def globalBase(sbtVersion: SbtVersion, platform: Platform): Path = {
     val global = getFileProperty(CommandLineOptions.globalBase)
-    global.getOrElse(defaultVersionedGlobalBase(sbtVersion, eelDescriptor))
+    global.getOrElse(defaultVersionedGlobalBase(sbtVersion, platform))
   }
 
   private def getFileProperty(name: String): Option[Path] = Option(System.getProperty(name)).flatMap { path =>
     if (path.isEmpty) None else Some(Path.of(path))
   }
 
-  private[sbt] def defaultGlobalBase(eelDescriptor: EelDescriptor): Path =
-    eelDescriptor match
-      case LocalEelDescriptor.INSTANCE => Path.of(SystemProperties.getUserHome) / Sbt.Extension
-      case remote => EelPathUtils.getHomePath(remote) / Sbt.Extension
+  private[sbt] def defaultGlobalBase(platform: Platform): Path =
+    platform.user().homePath() / Sbt.Extension
 
-  private def defaultVersionedGlobalBase(sbtVersion: SbtVersion, eelDescriptor: EelDescriptor): Path = {
-    defaultGlobalBase(eelDescriptor) / sbtVersion.binaryVersion.presentation
+  private def defaultVersionedGlobalBase(sbtVersion: SbtVersion, platform: Platform): Path = {
+    defaultGlobalBase(platform) / sbtVersion.binaryVersion.presentation
   }
 
   def isBuiltWithSeparateModulesForProdTest(project: Project, projectPath: Option[String] = None): Boolean = {
@@ -140,8 +136,8 @@ object SbtUtil {
     val moduleId = Option(ExternalSystemApiUtil.getExternalProjectId(module))
     moduleId.flatMap { id =>
       val project = module.getProject
-      val rootProjectPath = Option(ExternalSystemApiUtil.getExternalRootProjectPath(module))
-      ExternalSystemUtil.getModuleDataNode(SbtProjectSystem.Id, project, id, rootProjectPath, Some(SbtModuleChildKeyInstance))
+      val rootProjectPath = Option(getExternalRootProjectPath(module))
+      ExternalSystemUtil.getModuleDataNode(SbtProjectSystem.Id, project, id, rootProjectPath, Some(SbtModuleChildKeyInstance)).toOption
     }
   }
 
@@ -222,11 +218,12 @@ object SbtUtil {
 
   def getSbtModuleData[K](project: Project, module: Module, key: Key[K]): Iterable[K] = {
     val moduleId = ExternalSystemApiUtil.getExternalProjectId(module)
-    val rootProjectPath = Option(ExternalSystemApiUtil.getExternalRootProjectPath(module))
+    val rootProjectPath = Option(getExternalRootProjectPath(module))
     getSbtModuleData(project, moduleId, rootProjectPath, key)
   }
 
   def getSbtModuleData[K](project: Project, moduleId: String, rootProjectPath: Option[String], key: Key[K]): Iterable[K] = {
+    if (moduleId == null) return Nil
     val dataEither = ExternalSystemUtil.getModuleData(SbtProjectSystem.Id, project, moduleId, key, rootProjectPath, Some(SbtModuleChildKeyInstance))
     //TODO: do we need to report the warning to user
     // However there is some code which doesn't expect the data to be present and just checks if it exists
@@ -264,10 +261,8 @@ object SbtUtil {
    * The returned path is not local in the context of the remote environment and may contain the "remote label".
    * If necessary, normalize the path before usage.
    */
-  def getRepoDir(eelDescriptor: EelDescriptor): Path = EelPathUtils.transferLocalContentToRemote(
-    getDirInPlugin("repo"),
-    TransferTarget.Temporary(eelDescriptor)
-  )
+  def getRepoDir(platform: Platform): Path =
+    PlatformTransfer.getInstance().transfer(getDirInPlugin("repo"), platform)
 
   def getSbtStructureJar(sbtVersion: SbtVersion, repoDir: Path): Option[Path] = {
     val binVersion = structurePluginBinaryVersion(sbtVersion)
@@ -328,12 +323,8 @@ object SbtUtil {
   def sbtVersionParam(sbtVersion: SbtVersion): String =
     s"-Dsbt.version=$sbtVersion"
 
-  implicit class EntityStorageOps(storage: EntityStorage) {
-    def resolveOpt[T <: WorkspaceEntityWithSymbolicId](id: SymbolicEntityId[T]): Option[T] = Option(storage.resolve(id))
-  }
-
   def getStaticProxyConfigurationJvmOptions: Map[String, String] =
-    ProxyUtils.getCurrentSettingsAsJvmProperties().asScala.toMap
+    HttpProxyManager.getInstance().getJvmProperties(false, null).asScala.map(p => p.getFirst -> p.getSecond).toMap
 
   def getWorkingDirPath(project: Project): String =
     getWorkingDirPathOpt(project)
@@ -351,7 +342,7 @@ object SbtUtil {
     // TODO - think about some possibility to allow the user to choose in which project the shell should be fired
     val externalRootProjectPath: Option[String] = {
       val modules = ModuleManager.getInstance(project).getModules.toSeq
-      modules.iterator.map(ExternalSystemApiUtil.getExternalRootProjectPath).find(_ != null)
+      modules.iterator.map(getExternalRootProjectPath).find(_ != null)
     }
     externalRootProjectPath
       .orElse {
@@ -360,10 +351,10 @@ object SbtUtil {
         // sbt project on disk can be opened in IDEA before the Scala plugin is even installed and enabled.
         // After the Scala plugin is installed, the project will initially have an empty `externalRootProjectPath` until
         // it is imported as an sbt project using the external system machinery.
-        val message = s"Can't calculate external root project path for project `${project.getName}`, fallback to `ProjectUtil.guessProjectDir`"
+        val message = s"Can't calculate external root project path for project `${project.getName}`, fallback to project base dir"
         if (!isInTest)
           log.warn(message)
-        val guessedDir = ProjectUtil.guessProjectDir(project)
+        val guessedDir = project.getBaseDir
         Option(guessedDir).map(_.getCanonicalPath)
       }
   }
@@ -382,24 +373,115 @@ object SbtUtil {
       s"*/*:$command"
 
   /**
-   * Creates a temporary `.sbt` file with EEL awareness and the given content.
-   *
-   * When `project` is provided, it uses a built-in EEL utility for creating temporary files; otherwise, it creates a local temporary file
-   * and transfers it to the remote target.
-   *
-   * @todo Ideally, there should be a platform utility to create a temporary file using only the [[EelDescriptor]] ( https://youtrack.jetbrains.com/issue/IJPL-23919).
+   * Creates a temporary `.sbt` file with the given content on the given platform.
    */
   // upstream: @RequiresBackgroundThread
-  def createTemporarySbtFile(content: String, eelDescriptor: EelDescriptor, projectOpt: Option[Project]): Path = {
-    val tmpPluginsSbtFile = projectOpt match
-      case Some(project) =>
-        EelProjectUtils.createTemporaryFile(project, "idea", Sbt.Extension, true).toRealPath()
-      case None =>
-        val tmpPluginsSbtFile = Files.createTempFile("idea", Sbt.Extension).toRealPath()
-        EelPathUtils.transferLocalContentToRemote(tmpPluginsSbtFile, TransferTarget.Temporary(eelDescriptor))
+  def createTemporarySbtFile(content: String, platform: Platform, projectOpt: Option[Project]): Path = {
+    // upstream: EelProjectUtils.createTemporaryFile(project, ...) when the project is given
+    val tmpPluginsSbtFile = platform.fs().createTempFile("idea", Sbt.Extension)
 
     Files.writeString(tmpPluginsSbtFile, content)
-    Runtime.getRuntime.addShutdownHook(Thread(() => NioFiles.deleteQuietly(tmpPluginsSbtFile)))
+    Runtime.getRuntime.addShutdownHook(Thread(() => FileUtil.delete(tmpPluginsSbtFile): Unit))
     tmpPluginsSbtFile
+  }
+
+  /**
+   * Class that holds keys corresponding to the types of child modules added to the ModuleData during the SBT import process.
+   */
+  case class SbtModuleChildKey(sbtNestedModuleKey: Key[? <: ModuleData], sbtSourceSetModuleKey: Key[? <: ModuleData])
+
+  // upstream: org.jetbrains.plugins.scala.util.ExternalSystemUtil (scala-api); the data comes from the project data
+  // cached by ExternalProjectsManager (there is no ProjectDataManager.getExternalProjectData in Consulo)
+  private object ExternalSystemUtil {
+
+    def getProjectData[K](
+      projectSystemId: ProjectSystemId,
+      project: Project,
+      key: Key[K],
+      rootProjectPath: Option[String]
+    ): Either[String, Iterable[K]] =
+      getProjectDataNode(projectSystemId, project, rootProjectPath.orElse(Option(project.getBasePath)))
+        .map(ExternalSystemApiUtil.findAll(_, key).asScala.map(_.getData))
+
+    def getModuleData[K](
+      projectSystemId: ProjectSystemId,
+      project: Project,
+      moduleId: String,
+      key: Key[K],
+      rootProjectPath: Option[String],
+      sbtModuleChildKey: Option[SbtModuleChildKey]
+    ): Either[String, Iterable[K]] =
+      getModuleDataNode(projectSystemId, project, moduleId, rootProjectPath, sbtModuleChildKey)
+        .map(ExternalSystemApiUtil.findAll(_, key).asScala.map(_.getData))
+
+    def getModuleDataNode(
+      projectSystemId: ProjectSystemId,
+      project: Project,
+      moduleId: String,
+      rootProjectPath: Option[String],
+      sbtModuleChildKey: Option[SbtModuleChildKey]
+    ): Either[String, DataNode[? <: ModuleData]] = {
+      val projectDataNode = getProjectDataNode(projectSystemId, project, rootProjectPath) match {
+        case Right(value) => value
+        case Left(error) =>
+          return Left(error)
+      }
+
+      val moduleDataNode = sbtModuleChildKey match {
+        case Some(x) => processSbtModuleDataChildNodes(projectDataNode, moduleId, x)
+        case _ => findModuleDataInChildren(moduleId, ProjectKeys.MODULE, Seq(projectDataNode)).toOption
+      }
+      moduleDataNode.toRight(s"can't find module data node with id `$moduleId` for project $project")
+    }
+
+    private def findModuleDataInChildren(
+      moduleId: String,
+      key: Key[? <: ModuleData],
+      parents: Seq[DataNode[?]]
+    ): Either[Seq[DataNode[? <: ModuleData]], DataNode[? <: ModuleData]] = {
+      val children: Seq[DataNode[? <: ModuleData]] = parents.flatMap(ExternalSystemApiUtil.findAll(_, key).asScala.toSeq)
+      children.find(_.getData.getId == moduleId).toRight(children)
+    }
+
+    private def processSbtModuleDataChildNodes(
+      projectDataNode: DataNode[ProjectData],
+      moduleId: String,
+      moduleChildKey: SbtModuleChildKey
+    ): Option[DataNode[? <: ModuleData]] = {
+      val moduleDataChildren = findModuleDataInChildren(moduleId, ProjectKeys.MODULE, Seq(projectDataNode)) match {
+        case Right(r) => return Some(r)
+        case Left(children) => children
+      }
+
+      val sbtNestedModuleDataChildren = findModuleDataInChildren(moduleId, moduleChildKey.sbtNestedModuleKey, moduleDataChildren) match {
+        case Right(r) => return Some(r)
+        // it is required to add moduleDataChildren to sbtNestedModuleChildren, because sbt source set modules may be found in both
+        case Left(children) => children ++ moduleDataChildren
+      }
+
+      findModuleDataInChildren(moduleId, moduleChildKey.sbtSourceSetModuleKey, sbtNestedModuleDataChildren).toOption
+    }
+
+    private def getProjectDataNode(
+      projectSystemId: ProjectSystemId,
+      project: Project,
+      rootProjectPath: Option[String]
+    ): Either[String, DataNode[ProjectData]] = {
+      val projectPath = rootProjectPath.getOrElse(project.getBasePath)
+      val projectsData = ExternalProjectsManager.getInstance(project).getProjectData(projectSystemId).asScala
+      val normalizedPath = ExternalSystemApiUtil.normalizePath(projectPath)
+      projectsData
+        .find { node =>
+          val linkedPath = node.getData.getLinkedExternalProjectPath
+          linkedPath == projectPath || ExternalSystemApiUtil.normalizePath(linkedPath) == normalizedPath
+        }
+        .orElse {
+          // in tests `project.getBasePath` doesn't equal to actual external project data
+          if (ApplicationManager.getApplication.isUnitTestMode)
+            projectsData.find(_.getData.getInternalName == project.getName)
+          else None
+        }
+        .toRight(s"can't find $projectSystemId external project data for project $project")
+    }
   }
 }

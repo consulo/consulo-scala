@@ -1,11 +1,10 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityData
-import com.intellij.openapi.externalSystem.model.{Key, ProjectKeys}
-import com.intellij.serialization.PropertyMapping
-import org.jetbrains.sbt.RichSeq
+import consulo.externalSystem.model.{Key, ProjectKeys}
+import consulo.externalSystem.service.project.AbstractExternalEntityData
+import org.jetbrains.sbt.api.RichSeq
 
-import java.util.{List => JList}
+import java.util.List as JList
 
 /**
  * Data storing external modules ids that own the given shared sources module.
@@ -13,7 +12,8 @@ import java.util.{List => JList}
  *
  * @param ownerModuleIds id of the modules that own shared sources module
  */
-case class SharedSourcesOwnersData @PropertyMapping(Array("ownerModuleIds"))(
+// upstream: lives in sbt-api
+case class SharedSourcesOwnersData(
   ownerModuleIds: JList[String],
 ) extends AbstractExternalEntityData(SbtProjectSystem.Id) with Product
 

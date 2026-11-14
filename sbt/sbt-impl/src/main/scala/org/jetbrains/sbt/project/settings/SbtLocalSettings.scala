@@ -1,23 +1,27 @@
 package org.jetbrains.sbt
 package project.settings
 
-import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemLocalSettings
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.component.persist.{PersistentStateComponent, State, Storage, StoragePathMacros}
+import consulo.externalSystem.setting.AbstractExternalSystemLocalSettings
 import consulo.project.Project
+import jakarta.inject.{Inject, Singleton}
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 @State(
   name = "SbtLocalSettings",
-  storages = Array(new Storage(StoragePathMacros.WORKSPACE_FILE))
+  storages = Array[Storage](new Storage(StoragePathMacros.WORKSPACE_FILE))
 )
-@Service(Array(Service.Level.PROJECT))
-final class SbtLocalSettings(project: Project)
-  extends AbstractExternalSystemLocalSettings[SbtLocalSettingsState](SbtProjectSystem.Id, project)
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
+final class SbtLocalSettings @Inject()(project: Project)
+  extends AbstractExternalSystemLocalSettings(SbtProjectSystem.Id, project)
   with PersistentStateComponent[SbtLocalSettingsState] {
 
   override def getState: SbtLocalSettingsState = {
     val state = new SbtLocalSettingsState
+    fillState(state)
     state
   }
 

@@ -1,60 +1,17 @@
 package org.jetbrains.sbt.project.template
 
-import consulo.module.Module
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
-import org.jetbrains.plugins.scala.project.Versions
 import org.jetbrains.plugins.scala.project.template.DefaultModuleContentEntryFolders
 import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.api.SbtVersion
 
 import java.nio.file.{FileAlreadyExistsException, Files, Path}
-import javax.swing.*
 
 /**
- * Do not extend, it will be made final in the future.<br>
- * Consider using [[SbtModuleBuilderBase]] instead
- *
- * @param _selections initial selections value<br>
- *                    The parameter value is copied, changes to the original object do not affect the builder
+ * Generates the files of a new sbt project.
  */
-// upstream: @ApiStatus.Internal
-class SbtModuleBuilder(
-  _selections: SbtModuleBuilderSelections
-) extends SbtModuleBuilderBase {
-
-  private val selections = _selections.copy() // Selections are mutable data structure
-  def this() = this(SbtModuleBuilderSelections.default)
-
-  override def getNodeIcon: Icon = Sbt.Icon
-
-  override def setupModule(module: Module): Unit = {
-    val settings = getExternalProjectSettings
-    settings.resolveClassifiers = selections.downloadScalaSdkSources
-    settings.resolveSbtClassifiers = selections.downloadSbtSources
-
-    super.setupModule(module)
-  }
-
-  override protected def createProjectTemplateIn(root: Path): Option[DefaultModuleContentEntryFolders] = {
-    val name = getName
-    val sbtVersion = selections.sbtVersion.getOrElse(SbtVersion(Versions.SBT.LatestSbtVersion))
-    val scalaVersion = selections.scalaVersion.getOrElse(ScalaVersion.Latest.Scala_2_13.minor)
-    val packagePrefix = selections.packagePrefix
-
-    SbtModuleBuilder.createProjectTemplateIn(
-      root = root,
-      name = name,
-      scalaVersion = scalaVersion,
-      sbtVersion = sbtVersion,
-      packagePrefix = packagePrefix,
-      // TODO: add library dependencies example for all sbt versions? What about the versions inside?
-      addLibraryDependenciesExample = sbtVersion.isSbt2
-    )
-  }
-}
-
+// upstream: SbtModuleBuilder (IntelliJ ModuleBuilder); the project creation is done by SbtNewModuleBuilder
 object SbtModuleBuilder {
 
   @NonNls val IdeSettingsPluginVersion = "1.1.4"
@@ -65,7 +22,7 @@ object SbtModuleBuilder {
     `plugins.sbt`: Option[String]
   )
 
-  private def createProjectTemplateIn(
+  def createProjectTemplateIn(
     root: Path,
     @NonNls name: String,
     @NonNls scalaVersion: String,

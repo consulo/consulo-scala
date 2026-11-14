@@ -4,24 +4,23 @@ package project
 import consulo.annotation.component.ExtensionImpl
 
 
-import org.jetbrains.sbt.api.option
-import com.intellij.execution.process.ProcessOutputType
-import com.intellij.notification.Bus
-import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener, ExternalSystemTaskType}
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListenerAdapter, ExternalSystemTaskType}
+import consulo.project.ui.notification.NotificationType
 import org.jetbrains.plugins.scala.project.ScalaProjectConfigurationUtil
+import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
+import org.jetbrains.sbt.api.RichBoolean
 
 // TODO Rely on the immediate UI interaction API when IDEA-123007 will be implemented
 @ExtensionImpl
-class SbtNotificationListener extends ExternalSystemTaskNotificationListener {
-  override def onTaskOutput(id: ExternalSystemTaskId, text: String, outputType: ProcessOutputType): Unit = {
+class SbtNotificationListener extends ExternalSystemTaskNotificationListenerAdapter {
+  override def onTaskOutput(id: ExternalSystemTaskId, text: String, stdOut: Boolean): Unit = {
     // TODO this check must be performed in the External System itself (see SCL-7405)
     if (isSbtProject(id)) {
       processOutput(text)
     }
   }
 
-  override def onStart(projectPath: String, id: ExternalSystemTaskId): Unit = {
+  override def onStart(id: ExternalSystemTaskId): Unit = {
     if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) return
     val project = id.findProject()
     if (project == null) return
@@ -29,7 +28,7 @@ class SbtNotificationListener extends ExternalSystemTaskNotificationListener {
     ScalaProjectConfigurationUtil.refreshEditorNotifications(project)
   }
 
-  override def onEnd(projectPath: String, id: ExternalSystemTaskId): Unit = {
+  override def onEnd(id: ExternalSystemTaskId): Unit = {
     if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) return
     val project = id.findProject()
     if (project == null) return
@@ -43,7 +42,7 @@ class SbtNotificationListener extends ExternalSystemTaskNotificationListener {
       case WarningMessage(message) =>
         val title = SbtBundle.message("sbt.project.import")
         //noinspection ReferencePassedToNls
-        Notifications.Bus.notify(new Notification(title, title, message, NotificationType.WARNING))
+        ScalaNotificationGroups.sbtProjectImport.createNotification(title, message, NotificationType.WARNING, null).notify(null)
       case _ => // do nothing
     }
   }

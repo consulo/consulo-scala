@@ -1,27 +1,48 @@
 package org.jetbrains.sbt.project.module
 
-import com.intellij.openapi.components._
-import com.intellij.openapi.module.Module
+import consulo.application.WriteAction
+import consulo.externalSystem.service.module.extension.ExternalSystemMutableModuleExtension
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import consulo.module.content.ModuleRootManager
 import org.jetbrains.sbt.Sbt
-import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
+import org.jetbrains.sbt.api.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
+import org.jetbrains.sbt.project.SbtProjectSystem
 
 import java.net.URI
 import java.util.regex.Pattern
-import scala.beans.BeanProperty
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
+// upstream: lives in sbt-api
 object SbtModule {
 
-  private def getState(module: Module): SbtModuleState =
-    module.getService(classOf[SbtModule]).getState
+  // upstream: a module-level PersistentStateComponent (SbtModuleState) - Consulo has no module-level persistent services,
+  // the values are stored as options of the sbt external system module extension
+  private val BuildForUriKey = "sbt.build.for.uri"
+  private val ImportsKey = "sbt.imports"
+  private val ResolversKey = "sbt.resolvers"
+
+  private def getOption(module: Module, key: String): String =
+    ExternalSystemApiUtil.getExtensionSystemOption(SbtProjectSystem.Id, module, key)
+
+  private def setOption(module: Module, key: String, value: String): Unit = {
+    val model = ModuleRootManager.getInstance(module).getModifiableModel
+    val extension: ExternalSystemMutableModuleExtension[?] = model.getExtensionWithoutCheck(SbtProjectSystem.Id.getId)
+    if (extension == null) {
+      model.dispose()
+      return
+    }
+    extension.setOption(key, value)
+    WriteAction.run(() => model.commit())
+  }
 
   object Build {
 
     def apply(module: Module): URI =
-      new URI(getState(module).buildForURI)
+      new URI(Option(getOption(module, BuildForUriKey)).getOrElse(""))
 
     def update(module: Module, uri: URI): Unit =
-      getState(module).buildForURI = uri.toString
+      setOption(module, BuildForUriKey, uri.toString)
   }
 
   object Imports {
@@ -45,14 +66,13 @@ object SbtModule {
         .replace(SubstitutePrefix + SubstituteDollar, "$")
 
     def apply(module: Module): Seq[String] = {
-      val state = getState(module)
-      val importsStrOpt = Option(state.imports).filter(_.nonEmpty)
+      val importsStrOpt = Option(getOption(module, ImportsKey)).filter(_.nonEmpty)
       importsStrOpt.fold(Sbt.DefaultImplicitImports)(deserializeSeq)
     }
 
     def update(module: Module, imports: java.util.List[String]): Unit = {
       val newImports = serializeSeq(imports.asScala.toSeq)
-      getState(module).imports = newImports
+      setOption(module, ImportsKey, newImports)
     }
 
     private def serializeSeq(imports: Seq[String]): String = {
@@ -71,14 +91,13 @@ object SbtModule {
   object Resolvers {
 
     def apply(module: Module): Set[SbtResolver] = {
-      val state = getState(module)
-      val resolversStrOpt = Option(state.resolvers).filter(_.nonEmpty)
+      val resolversStrOpt = Option(getOption(module, ResolversKey)).filter(_.nonEmpty)
       resolversStrOpt.toSet.flatMap(deserializeSet)
     }
 
     def update(module: Module, resolvers: Set[SbtResolver]): Unit = {
       val serialized = serializeSet(resolvers)
-      getState(module).resolvers = serialized
+      setOption(module, ResolversKey, serialized)
     }
 
     private val ResolversDelimiter = ", "
@@ -116,29 +135,4 @@ object SbtModule {
       resolvers.flatMap(deserialize).toSet
     }
   }
-}
-
-@State(
-  name = "SbtModule",
-  storages = Array(new Storage(value = StoragePathMacros.MODULE_FILE, roamingType = RoamingType.DISABLED))
-)
-final class SbtModule extends PersistentStateComponent[SbtModuleState] {
-
-  @BeanProperty
-  var myState: SbtModuleState = new SbtModuleState()
-
-  override def getState: SbtModuleState = myState
-
-  override def loadState(state: SbtModuleState): Unit = {
-    myState = state
-  }
-}
-
-class SbtModuleState {
-  @BeanProperty
-  var imports: String = ""
-  @BeanProperty
-  var resolvers: String = ""
-  @BeanProperty
-  var buildForURI: String = ""
 }

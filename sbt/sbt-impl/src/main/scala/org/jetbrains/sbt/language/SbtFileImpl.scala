@@ -2,8 +2,6 @@ package org.jetbrains.sbt
 package language
 
 
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.file
 import org.jetbrains.sbt.api.language.SbtFile
 import org.jetbrains.sbt.api.language.SbtFileType
 import consulo.module.Module
@@ -13,7 +11,8 @@ import consulo.language.file.FileViewProvider
 import consulo.language.psi.PsiElement
 import consulo.language.psi.resolve.ResolveState
 import consulo.language.psi.scope.GlobalSearchScope
-import com.intellij.psi.search.searches
+import com.intellij.java.indexing.search.searches.ClassInheritorsSearch
+import consulo.language.psi.resolve.PsiScopeProcessor
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.PsiClassExt
@@ -36,7 +35,7 @@ final class SbtFileImpl private[language](provider: FileViewProvider)
 
   override val allowsForwardReferences: Boolean = true
 
-  override def processDeclarations(processor: scope.PsiScopeProcessor,
+  override def processDeclarations(processor: PsiScopeProcessor,
                                    state: ResolveState,
                                    lastParent: PsiElement,
                                    place: PsiElement): Boolean =
@@ -86,7 +85,7 @@ final class SbtFileImpl private[language](provider: FileViewProvider)
         val buildModule = findBuildModule(module)
         buildModule match {
           case Some(buildModule) =>
-            val moduleWithDepsAndLibsScope = buildModule.getModuleWithDependenciesAndLibrariesScope(false)
+            val moduleWithDepsAndLibsScope = GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(buildModule, false)
             SbtModuleWithScope(buildModule, moduleWithDepsAndLibsScope)
           case None =>
             DefinitionModule(module)
@@ -118,12 +117,12 @@ object SbtFileImpl {
     case ModuleLess => Seq.empty
     case DefinitionModule(module) => Imports(module)
     case SbtModuleWithScope(module, moduleWithDependenciesAndLibrariesScope) =>
-      val moduleScope = module.getModuleScope
+      val moduleScope = GlobalSearchScope.moduleScope(module)
       val localObjectsWithDefinitions = for {
         fqn <- Sbt.DefinitionHolderClasses
         aClass <- manager.getCachedClasses(moduleWithDependenciesAndLibrariesScope, fqn)
 
-        inheritor <- searches.ClassInheritorsSearch
+        inheritor <- ClassInheritorsSearch
           .search(aClass, moduleScope, true)
           .findAll
           .asScala

@@ -1,41 +1,49 @@
 package org.jetbrains.sbt.shell.action
 
-import com.intellij.debugger.DebuggerManagerEx
-import com.intellij.debugger.engine.RemoteDebugProcessHandler
-import com.intellij.debugger.impl.DebuggerSession
-import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.impl.ExecutionManagerImpl
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.remote.{RemoteConfiguration, RemoteConfigurationType}
+import com.intellij.java.debugger.impl.DebuggerManagerEx
+import com.intellij.java.debugger.impl.engine.RemoteDebugProcessHandler
+import com.intellij.java.debugger.impl.DebuggerSession
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.execution.debug.DefaultDebugExecutor
+import consulo.execution.debug.icon.ExecutionDebugIconGroup
+import consulo.process.{ProcessHandler, ProcessHandlerStopper}
+import com.intellij.java.execution.impl.remote.RemoteConfiguration
+import com.intellij.java.execution.impl.remote.RemoteConfigurationType
 import consulo.execution.runner.ExecutionEnvironmentBuilder
-import com.intellij.execution.ui.{RunContentDescriptor, RunContentManager}
-import com.intellij.execution.{ProgramRunnerUtil, RunManager, RunnerAndConfigurationSettings}
-import com.intellij.find.{EditorSearchSession, FindModel, FindUtil}
+import consulo.execution.ui.RunContentDescriptor
+import consulo.execution.ExecutionManager
+import consulo.execution.ProgramRunnerUtil
+import consulo.execution.RunManager
+import consulo.execution.RunnerAndConfigurationSettings
+import consulo.ide.impl.idea.find.EditorSearchSession
+import consulo.find.FindModel
+import consulo.ide.impl.idea.find.FindUtil
 import consulo.find.FindManager
 import consulo.application.AllIcons
-import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, CustomShortcutSet, IdeActions}
-import consulo.language.editor.CommonDataKeys
-import com.intellij.openapi.actionSystem.{CommonShortcuts, Presentation, ToggleAction}
-import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, AnActionWithSyncUpdate, CustomShortcutSet, IdeActions}
+import consulo.ui.event.details.{KeyCode, KeyStroke}
+import consulo.ui.event.details.ModifiedInputDetails.Modifier
+import consulo.ui.ex.action.CommonShortcuts
+import consulo.ui.ex.action.Presentation
+import consulo.ui.ex.action.ToggleAction
+import consulo.execution.action.ScrollToTheEndToolbarAction
 import consulo.codeEditor.{Editor, SelectionModel}
-import com.intellij.openapi.project.DumbAwareAction
+import consulo.ui.ex.action.DumbAwareAction
 import consulo.project.Project
 import consulo.application.ui.wm.IdeFocusManager
+import consulo.ui.UIAccess
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, executeOnPooledThread}
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.shell.action.SbtShellActionUtil.shellAlive
 import org.jetbrains.sbt.shell.{SbtProcessManager, SbtShellCommunication, SbtShellConsoleView, SbtShellToolWindowFactory}
 
-import java.awt.event.{InputEvent, KeyEvent}
-import javax.swing.KeyStroke
 import scala.jdk.CollectionConverters.*
 
 //TODO: Split this file into multiple files
 
 final class SbtShellScrollToTheEndToolbarAction(editor: Editor) extends ScrollToTheEndToolbarAction(editor) {
 
-  private val end = KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_DOWN_MASK)
+  private val end = KeyStroke.pressed(KeyCode.END, Modifier.CTRL)
   private val shortcuts = new CustomShortcutSet(end)
   setShortcutSet(shortcuts)
 }
@@ -43,7 +51,9 @@ final class SbtShellScrollToTheEndToolbarAction(editor: Editor) extends ScrollTo
 /**
   * Starts or restarts sbt shell depending on running state.
   */
-final class StartAction(project: Project) extends DumbAwareAction {
+final class StartAction(project: Project) extends DumbAwareAction with AnActionWithSyncUpdate {
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+
   copyShortcutFrom(ActionManager.getInstance.getAction(IdeActions.ACTION_DEFAULT_RUNNER))
   private val templatePresentation: Presentation = getTemplatePresentation
   templatePresentation.setIcon(AllIcons.Actions.Execute)
@@ -54,7 +64,7 @@ final class StartAction(project: Project) extends DumbAwareAction {
       toolWindow.getContentManager.removeAllContents(true)
 
       executeOnPooledThread {
-        SbtProcessManager.forProject(e.getProject).restartProcess()
+        SbtProcessManager.forProject(project).restartProcess()
       }
     }
 
@@ -69,10 +79,11 @@ final class StartAction(project: Project) extends DumbAwareAction {
     }
   }
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
 
-final class StopAction(project: Project) extends DumbAwareAction {
+final class StopAction(project: Project) extends DumbAwareAction with AnActionWithSyncUpdate {
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+
   copyFrom(ActionManager.getInstance.getAction(IdeActions.ACTION_STOP_PROGRAM))
   private val templatePresentation: Presentation = getTemplatePresentation
   templatePresentation.setIcon(AllIcons.Actions.Suspend)
@@ -82,14 +93,13 @@ final class StopAction(project: Project) extends DumbAwareAction {
   override def actionPerformed(e: AnActionEvent): Unit =
     if (isEnabled) {
       executeOnPooledThread {
-        SbtProcessManager.forProject(e.getProject).destroyProcess()
+        SbtProcessManager.forProject(project).destroyProcess()
       }
     }
 
   override def update(e: AnActionEvent): Unit =
     e.getPresentation.setEnabled(isEnabled)
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   private def isEnabled: Boolean = shellAlive(project)
 }
@@ -102,7 +112,7 @@ final class EOFAction(project: Project) extends DumbAwareAction {
   //noinspection ScalaExtractStringToBundle
   templatePresentation.setDescription("")
 
-  private val ctrlD = KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK)
+  private val ctrlD = KeyStroke.pressed(KeyCode.D, Modifier.CTRL)
   private val shortcuts = new CustomShortcutSet(ctrlD)
   setShortcutSet(shortcuts)
 
@@ -112,14 +122,15 @@ final class EOFAction(project: Project) extends DumbAwareAction {
     }
 }
 
-final class CopyFromHistoryViewerAction(view: SbtShellConsoleView) extends DumbAwareAction {
+final class CopyFromHistoryViewerAction(view: SbtShellConsoleView) extends DumbAwareAction with AnActionWithSyncUpdate {
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
+
 
   setShortcutSet(CommonShortcuts.getCopy)
 
   override def update(e: AnActionEvent): Unit =
     e.getPresentation.setEnabled(CopyFromHistoryViewerAction.isEnabled(e, view))
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override def actionPerformed(e: AnActionEvent): Unit =
     CopyFromHistoryViewerAction.copyFromHistoryToClipboard(e, view)
@@ -129,7 +140,7 @@ private object CopyFromHistoryViewerAction {
   def selectionModel(e: AnActionEvent, view: SbtShellConsoleView): SelectionModel = {
     //we have two editors in sbt-shell: console and history viewer
     //we try to use selection from the focused editor, if we have any
-    val editorInFocus = e.getDataContext.getData(CommonDataKeys.EDITOR)
+    val editorInFocus = e.getData(Editor.KEY)
     val editor = if (editorInFocus != null) editorInFocus else view.getHistoryViewer
     editor.getSelectionModel
   }
@@ -152,7 +163,7 @@ final class FindAction(view: SbtShellConsoleView) extends DumbAwareAction {
     val project = view.getProject
     val historyViewer = view.getHistoryViewer
 
-    val editorInContext = e.getDataContext.getData(CommonDataKeys.EDITOR)
+    val editorInContext = e.getData(Editor.KEY)
     val editorInFocus = if (editorInContext != null) editorInContext else view.getHistoryViewer
 
     //we don't need "replace" feature for history viewer because it's not modifiable
@@ -170,10 +181,12 @@ final class FindAction(view: SbtShellConsoleView) extends DumbAwareAction {
       val model = new FindModel
       model.copyFrom(findManager.getFindInFileModel)
 
-      val search = EditorSearchSession.start(historyViewer, model, project)
-
       FindUtil.configureFindModel(replace, editorInFocus, model, true)
-      search.getComponent.requestFocusInTheSearchFieldAndSelectContent(project)
+
+      EditorSearchSession.start(historyViewer, model, project).whenCompleteAsync(
+        (search, _) => if (search != null) search.getComponent.requestFocusInTheSearchFieldAndSelectContent(project),
+        UIAccess.current()
+      )
     }
   }
 }
@@ -183,17 +196,18 @@ final class FindAction(view: SbtShellConsoleView) extends DumbAwareAction {
  * In a usual situation, history viewer should do that automatically.
  * However if we manually change focus to the console editor, it won't work so we need custom action for that.
  */
-final class EscapeAction(view: SbtShellConsoleView) extends DumbAwareAction {
+final class EscapeAction(view: SbtShellConsoleView) extends DumbAwareAction with AnActionWithSyncUpdate {
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
+
   setShortcutSet(CommonShortcuts.ESCAPE)
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
 
   //We want this action to only active when there is an active search in history viewer otherwise we want the default
   // behaviour for the ESC button (e.g. loose focus from the tool window and set focus to the code editor)
   override def update(e: AnActionEvent): Unit = {
     val historyViewer = view.getHistoryViewer
     val historyViewerHasSearchSession = EditorSearchSession.get(historyViewer) != null
-    val historyViewerIsFocused = IdeFocusManager.getInstance(view.getProject).getFocusedDescendantFor(historyViewer.getComponent) != null
+    val historyViewerIsFocused = IdeFocusManager.getGlobalInstance.getFocusedDescendantFor(historyViewer.getComponent) != null
     val enabled = historyViewerHasSearchSession || historyViewerIsFocused
     e.getPresentation.setEnabled(enabled)
   }
@@ -207,14 +221,14 @@ final class EscapeAction(view: SbtShellConsoleView) extends DumbAwareAction {
     //Ensure that focus is set on console editor, without this call even if the console editor is focused,
     // the focus will jump to the history viewer due to implementation of EditorSearchSession.close
     view.getHistoryViewer.getSelectionModel.removeSelection()
-    IdeFocusManager.getInstance(view.getProject).requestFocus(view.getConsoleEditor.getContentComponent, false)
+    IdeFocusManager.getGlobalInstance.requestFocus(view.getConsoleEditor.getContentComponent, false)
   }
 }
 
 final class DebugShellAction(project: Project, remoteConnection: Option[RemoteConnection]) extends ToggleAction {
   copyShortcutFrom(ActionManager.getInstance.getAction(IdeActions.ACTION_DEFAULT_DEBUGGER))
   private val templatePresentation: Presentation = getTemplatePresentation
-  templatePresentation.setIcon(AllIcons.Actions.StartDebugger)
+  templatePresentation.setIcon(ExecutionDebugIconGroup.actionStartdebugger())
   if (remoteConnection.isDefined) {
     templatePresentation.setText(SbtBundle.message("sbt.shell.attach.debugger"))
   } else {
@@ -238,34 +252,33 @@ final class DebugShellAction(project: Project, remoteConnection: Option[RemoteCo
 
     val runManager = RunManager.getInstance(project)
 
+    // upstream: the temporary configuration also doesn't activate the tool window before run and is not allowed to run in parallel
     val runConfig =
       findRunConfig
         .getOrElse {
-          val rc = runManager.createConfiguration(configName, configType)
+          val rc = runManager.createRunConfiguration(configName, configType.getConfigurationFactories()(0))
           rc.setTemporary(true)
-          rc.setActivateToolWindowBeforeRun(false)
-          rc.getConfiguration.setAllowRunningInParallel(false)
-          runManager.setTemporaryConfiguration(rc)
+          runManager.addConfiguration(rc)
           rc
         }
 
-    val settings = runConfig.getConfiguration.asInstanceOf[RemoteConfiguration]
-    settings.PORT = remote.getDebuggerAddress
-    settings.HOST = remote.getDebuggerHostName
-    settings.SERVER_MODE = remote.isServerMode
-    settings.USE_SOCKET_TRANSPORT = remote.isUseSockets
+    val options = runConfig.getConfiguration.asInstanceOf[RemoteConfiguration].getOptions
+    options.setPort(remote.getAddress)
+    options.setHost(remote.getHostName)
+    options.setServerMode(remote.isServerMode)
+    options.setUseSocketTransport(remote.isUseSockets)
 
     val environmentBuilder = ExecutionEnvironmentBuilder.create(DefaultDebugExecutor.getDebugExecutorInstance, runConfig)
     ProgramRunnerUtil.executeConfiguration(environmentBuilder.build(), false, false)
   }
 
   private def detach(): Unit = {
-    val descriptors = RunContentManager.getInstance(project).getAllDescriptors
+    val descriptors = ExecutionManager.getInstance(project).getContentManager.getAllDescriptors
 
     // This is pretty hacky, is there a cleaner way to handle the detaching?
     for {
       proc <- findProcessHandlerByNameAndType(descriptors.asScala)
-    } ExecutionManagerImpl.stopProcess(proc)
+    } ProcessHandlerStopper.stop(proc)
   }
 
   private def findProcessHandlerByNameAndType(descriptors: Iterable[RunContentDescriptor]): Option[ProcessHandler] =
@@ -289,7 +302,6 @@ final class DebugShellAction(project: Project, remoteConnection: Option[RemoteCo
   override def update(e: AnActionEvent): Unit =
     e.getPresentation.setEnabled(isEnabled)
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   private def isEnabled: Boolean = remoteConnection.isDefined && shellAlive(project)
 }

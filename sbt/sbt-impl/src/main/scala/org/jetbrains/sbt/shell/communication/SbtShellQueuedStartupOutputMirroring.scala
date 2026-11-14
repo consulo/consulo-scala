@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.execution.process.OSProcessHandler
+import consulo.process.ProcessHandler
 import consulo.logging.Logger
 import consulo.project.Project
 import org.jetbrains.sbt.shell.communication.SbtShellQueuedStartupOutputMirroring.{Owner, Registration}
@@ -15,7 +15,7 @@ private[shell] final class SbtShellQueuedStartupOutputMirroring(project: Project
   private val log = Logger.getInstance(classOf[SbtShellQueuedStartupOutputMirroring])
   private val registrationRef = new AtomicReference[Registration](null)
 
-  def registerIfNeeded(handler: OSProcessHandler, owner: Option[Owner]): Unit = {
+  def registerIfNeeded(handler: ProcessHandler, owner: Option[Owner]): Unit = {
     remove()
 
     owner.foreach { owner =>
@@ -51,7 +51,7 @@ private[shell] object SbtShellQueuedStartupOutputMirroring {
 
   private final case class Registration(
     requestId: SbtShellCommandRequestId,
-    handler: OSProcessHandler,
+    handler: ProcessHandler,
     listener: SbtShellQueuedStartupOutputListener,
   )
 }

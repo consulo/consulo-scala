@@ -7,7 +7,6 @@ import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 
-import org.jetbrains.sbt.api.v
 import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
 import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiModifier}
 import consulo.language.util.ProcessingContext
@@ -34,7 +33,7 @@ final class SbtCompletionContributor extends ScalaCompletionContributor {
 
   private val afterInfixOperator = sbtFilePattern && infixExpressionChildPattern
 
-  extend(CompletionType.BASIC, afterInfixOperator, new CompletionProvider[CompletionParameters] {
+  extend(CompletionType.BASIC, afterInfixOperator, new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {
       implicit val projectContext: ProjectContext = parameters.getPosition.getProject
       implicit val context: Context = Context(parameters.getPosition)

@@ -7,6 +7,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.sbt.SbtBundle
+import org.jetbrains.sbt.api.language.SbtFileType
 
 import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
 import consulo.application.dumb.DumbAware
@@ -32,7 +33,7 @@ final class SbtReplaceProjectWithProjectInInspection extends LocalInspectionTool
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
-    case defn: ScPatternDefinition if defn.getContainingFile.getFileType.getName == Sbt.Name =>
+    case defn: ScPatternDefinition if defn.getContainingFile.getFileType == SbtFileType =>
       (defn.expr, defn.bindings) match {
         case (Some(call: ScMethodCall), Seq(projectNamePattern: ScReferencePattern)) =>
           findPlaceToFix(call, projectNamePattern.getText).foreach { place =>

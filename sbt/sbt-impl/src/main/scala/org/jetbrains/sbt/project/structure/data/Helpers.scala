@@ -1,9 +1,6 @@
 package org.jetbrains.sbt.project.structure.data
 
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.path.EelPath
-import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, LocalEelDescriptor}
-import com.intellij.platform.eel.provider.utils.EelPathUtils
+import consulo.platform.Platform
 import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.net.URI
@@ -19,20 +16,15 @@ private object Helpers:
       case _ => throw new RuntimeException("Multiple " + name + " nodes are found in " + node)
 
   extension (str: String)
-    def uri(using descriptor: EelDescriptor): URI = canonUri(new URI(str.replace("\\", "/"))) // handle windows separators
+    def uri(using platform: Platform): URI = canonUri(new URI(str.replace("\\", "/"))) // handle windows separators
 
-  private def canonUri(uri: URI)(using descriptor: EelDescriptor): URI =
+  private def canonUri(uri: URI)(using platform: Platform): URI =
     val uri1 =
       if (uri.getScheme == "file") {
-        val path =
-          if descriptor == LocalEelDescriptor.INSTANCE then
-            Paths.get(uri).toCanonicalPath
-          else
-            // I am not 100% sure if this conversion is required, maybe we could just use uri.getPath within eel.
-            // From what I have checked, it is not harmful.
-            val eelPath = EelPath.parse(uri.getPath, descriptor).normalize()
-            EelNioBridgeServiceKt.asNioPath(eelPath)
-
-        EelPathUtils.getUriLocalToEel(path)
+        if platform == Platform.current() then
+          Paths.get(uri).toCanonicalPath.toUri
+        else
+          // upstream: eel path translation; the uri path is already local to the remote machine
+          new URI("file", null, platform.fs().getPath(uri.getPath).normalize().toString.replace("\\", "/"), null)
       } else uri
     uri1.normalize()

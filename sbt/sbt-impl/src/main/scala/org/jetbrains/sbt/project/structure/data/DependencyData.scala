@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.structure.data
 
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.sbt.project.structure.data.XmlDeserializer.deserializeOne
 
 case class DependencyData(projects: Dependencies[ProjectDependencyData],
@@ -8,7 +8,7 @@ case class DependencyData(projects: Dependencies[ProjectDependencyData],
                           jars: Dependencies[JarDependencyData])
 
 object DependencyData:
-  given (PathConstructor[String], EelDescriptor) => XmlDeserializer[DependencyData] = what =>
+  given (PathConstructor[String], Platform) => XmlDeserializer[DependencyData] = what =>
     for
       projects <- (what \ "projects").deserializeOne[Dependencies[ProjectDependencyData]]
       modules <- (what \ "modules").deserializeOne[Dependencies[ModuleDependencyData]]

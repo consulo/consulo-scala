@@ -1,27 +1,25 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.build.issue.{BuildIssue, BuildIssueQuickFix}
+import consulo.build.ui.issue.{BuildIssue, BuildIssueQuickFix}
 import consulo.project.ui.notification.NotificationType
-import consulo.dataContext.DataContext
+import consulo.dataContext.DataProvider
+import consulo.localize.LocalizeValue
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.model.project.LibraryData
-import com.intellij.openapi.externalSystem.model.task.event.{Failure as ESFailure, *}
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
+import consulo.externalSystem.model.project.LibraryData
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationEvent, ExternalSystemTaskNotificationListener}
 import consulo.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.{ExternalSystemException, project as esProjectData}
-import com.intellij.openapi.externalSystem.service.project.ExternalSystemProjectResolver
-import com.intellij.openapi.module.JavaModuleType
+import consulo.externalSystem.model.project as esProjectData
+import consulo.externalSystem.rt.model.{ExternalSystemException, ExternalSystemSourceType}
+import consulo.externalSystem.service.project.ProjectData as ESProjectData
+import consulo.externalSystem.service.project.ExternalSystemProjectResolver
 import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import consulo.project.{Project, ProjectManager}
-import com.intellij.openapi.roots.DependencyScope
+import consulo.module.content.layer.orderEntry.DependencyScope
 import consulo.util.io.FileUtil
 import consulo.application.util.registry.Registry
-import com.intellij.openapi.util.registry.RegistryManager
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
+import consulo.application.platform.PlatformTransfer
+import consulo.platform.Platform
 import consulo.navigation.Navigatable
 import consulo.util.lang.SystemProperties
 import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
@@ -48,7 +46,7 @@ import org.jetbrains.sbt.project.structure.{Play2OldStructureAdapter, SbtStructu
 import org.jetbrains.sbt.project.versionNotifications.LegacySbtVersionBuildToolWindowWarning
 import org.jetbrains.sbt.api.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
 import org.jetbrains.sbt.api.{RichBoolean, SbtVersion, SbtVersionCapabilities, usingTempFile}
-import org.jetbrains.sbt.{Sbt, SbtBundle, SbtUtil}
+import org.jetbrains.sbt.{Sbt, SbtBundle, SbtUtil, platform}
 
 import java.io.FileNotFoundException
 import java.net.URI
@@ -78,7 +76,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     isPreview: Boolean,
     settings: SbtExecutionSettings,
     listener: ExternalSystemTaskNotificationListener
-  ): DataNode[esProjectData.ProjectData] = {
+  ): DataNode[ESProjectData] = {
     val projectRoot = {
       val file = Path.of(settings.realProjectPath)
       if (file.isDirectory) file else file.getParent
@@ -89,8 +87,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     @Nullable val ideaProject: Project = taskId.findProject()
     val useShellImport = settings.useShellForImport && ideaProject != null
 
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(projectRoot)
-    implicit val context: ImportContext = ImportContext(settings, eelDescriptor, useShellImport)
+    implicit val context: ImportContext = ImportContext(settings, projectRoot.platform, useShellImport)
 
     if (isPreview) dummyProject(projectRoot, settings).toDataNode
     else {
@@ -112,29 +109,23 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     notifications: ExternalSystemTaskNotificationListener,
     indicator: ProgressIndicator,
     @Nullable ideaProject: Project
-  )(implicit context: ImportContext): DataNode[esProjectData.ProjectData] = {
+  )(implicit context: ImportContext): DataNode[ESProjectData] = {
 
-    @NonNls val importTaskId = s"import:${UUID.randomUUID()}"
-    val importTaskDescriptor =
-      new TaskOperationDescriptor(SbtBundle.message("sbt.import.to.intellij.project.model"), System.currentTimeMillis(), "project-model-import")
-
+    // upstream: build progress events (ExternalSystemTaskExecutionEvent, TaskOperationDescriptor) - Consulo reports a status text
     val esReporter = new ExternalSystemNotificationReporter(projectRoot.toCanonicalPath.toString, taskId, notifications)
     implicit val reporter: BuildReporter = if (isUnitTestMode) {
       val logReporter = new LogReporter
       new CompositeReporter(esReporter, logReporter)
     } else esReporter
 
-    val startTime = System.currentTimeMillis()
     val structureDump = dumpStructure(projectRoot, sbtLauncher, context.sbtVersion, settings, ideaProject, indicator)
 
     // side-effecty status reporting
     structureDump.foreach { _ =>
-      val convertStartEvent = new ExternalSystemStartEvent(importTaskId, null, importTaskDescriptor)
-      val event = new ExternalSystemTaskExecutionEvent(taskId, convertStartEvent)
-      notifications.onStatusChange(event)
+      notifications.onStatusChange(new ExternalSystemTaskNotificationEvent(taskId, SbtBundle.message("sbt.import.to.intellij.project.model")))
     }
 
-    val conversionResult: Try[DataNode[esProjectData.ProjectData]] = structureDump
+    val conversionResult: Try[DataNode[ESProjectData]] = structureDump
       .map { case (elem, _) =>
         val data = elem.deserialize[sbtStructure.StructureData]
           .fold(
@@ -162,20 +153,6 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
           Failure(new ExternalSystemException(x))
       }
 
-    // more side-effecty reporting
-    val endTime = System.currentTimeMillis()
-    val resultNode = conversionResult match {
-      case Success(_) =>
-        new SuccessResult(startTime, endTime, true)
-      case Failure(_) =>
-        new FailureResult(startTime, endTime, Collections.emptyList[ESFailure]) // TODO error list
-    }
-    val convertFinishedEvent = new ExternalSystemFinishEvent[TaskOperationDescriptor](
-      importTaskId, null, importTaskDescriptor, resultNode
-    )
-    val event = new ExternalSystemTaskExecutionEvent(taskId, convertFinishedEvent)
-    notifications.onStatusChange(event)
-
     conversionResult.get // ok to throw here, that's the way ExternalSystem likes it
   }
 
@@ -201,7 +178,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
       activeProcessDumper = Option(dumper)
 
       val transferredStructureFile =
-        EelPathUtils.transferLocalContentToRemote(structureFile, TransferTarget.Temporary(context.eelDescriptor))
+        PlatformTransfer.getInstance().transfer(structureFile, context.platform)
 
       val messageResult: Try[BuildMessages] = {
         dumper match {
@@ -347,15 +324,15 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     val quickFix: BuildIssueQuickFix = new BuildIssueQuickFix {
       override def getId: String = quickFixId
 
-      override def runQuickFix(project: Project, dataContext: DataContext): CompletableFuture[?] = {
+      override def runQuickFix(project: Project, dataProvider: DataProvider): CompletableFuture[?] = {
         Registry.get(ImportTimeMeasurementRegistryKey).setValue(false)
         CompletableFuture.completedFuture(null)
       }
     }
 
     val buildIssue: BuildIssue = new BuildIssue {
-      override def getTitle: String = SbtBundle.message("sbt.import.timing.title")
-      override def getDescription: String = SbtBundle.message("sbt.import.timing.details", quickFixId)
+      override def getTitle: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.import.timing.title"))
+      override def getDescription: LocalizeValue = LocalizeValue.of(SbtBundle.message("sbt.import.timing.details", quickFixId))
       override def getQuickFixes: JList[BuildIssueQuickFix] = JList.of(quickFix)
       override def getNavigatable(project: Project): Navigatable = null
     }
@@ -372,7 +349,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
 
   //noinspection NameBooleanParameters
   private def getStructureFileReuseMode: StructureFileReuseMode =
-    if (RegistryManager.getInstance().is("sbt.project.import.reuse.previous.structure.file"))
+    if (Registry.is("sbt.project.import.reuse.previous.structure.file", false))
       StructureFileReuseMode(true, true)
     else if (java.lang.Boolean.parseBoolean(System.getProperty("sbt.project.structure.readWrite")))
       StructureFileReuseMode(true, true)
@@ -406,7 +383,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
   private def dummyProject(
     projectRoot: Path,
     settings: SbtExecutionSettings,
-  )(implicit context: ImportContext): Node[esProjectData.ProjectData] = {
+  )(implicit context: ImportContext): Node[ESProjectData] = {
 
     // TODO add default scala sdk and sbt libs (newest versions or so)
 
@@ -498,7 +475,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     settings: SbtExecutionSettings,
     optIdeaProject: Option[Project],
     useShellImport: Boolean
-  )(implicit context: ImportContext): Node[esProjectData.ProjectData] = {
+  )(implicit context: ImportContext): Node[ESProjectData] = {
 
     /**
      * A copy of [[FileUtil.filesEqual]] but without using `java.io.File`.
@@ -621,14 +598,13 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     // See https://youtrack.jetbrains.com/issue/SCL-24902/Unify-the-Scala-Ultimate-and-Scala-Community-sbt-builds.
     // This is an extremely specific workaround for the Scala Plugin for IntelliJ IDEA Ultimate repository.
     // We set the <root>/community/project directory as a source directory for the "scalaUltimate-build" build module.
-    case Seq(buildModule) if buildModule.moduleNode.getModuleName == "scalaUltimate-build" =>
+    case Seq(buildModule) if buildModule.moduleNode.getExternalName == "scalaUltimate-build" =>
       val buildBaseDir = buildModule.buildBaseDir
       val communityProjectDir = buildBaseDir / "community" / Sbt.ProjectDirectory
       if (communityProjectDir.exists) { // The community directory exists
         val buildSbtSourcesPatchFile = buildBaseDir / Sbt.ProjectDirectory / "build.sbt"
         if (buildSbtSourcesPatchFile.exists) { // <root>/project/build.sbt exists
-          //noinspection ApiStatus,UnstableApiUsage
-          val contents = com.intellij.platform.eel.fs.EelFiles.readString(buildSbtSourcesPatchFile, StandardCharsets.UTF_8)
+          val contents = Files.readString(buildSbtSourcesPatchFile, StandardCharsets.UTF_8)
           val containsPatch = contents.contains("""Compile / unmanagedSourceDirectories += baseDirectory.value.getParentFile / "community" / "project"""")
           if (containsPatch) {
             buildModule.moduleNode.add(createBuildContentRootForScalaPluginUltimateWorkaround(communityProjectDir))
@@ -898,9 +874,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     result.addPaths(esProjectData.LibraryPathType.SOURCE, module.sources.map(_.toPath.toCanonicalPath.toString).toSeq)
     result.addPaths(esProjectData.LibraryPathType.DOC, module.docs.map(_.toPath.toCanonicalPath.toString).toSeq)
 
-    result.data.setGroup(sbtModuleId.organization)
-    result.data.setArtifactId(sbtModuleId.name)
-    result.data.setVersion(sbtModuleId.revision)
+    // upstream: also sets group/artifactId/version of the library data - not in Consulo
 
     result
   }
@@ -934,7 +908,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     val moduleFilesDirectory = createModuleFilesDirectory(projectRoot, project.base.toPath)
 
     val result = createModuleNode(
-      JavaModuleType.getModuleType.getId,
+      JavaModuleTypeId,
       projectId,
       moduleName,
       moduleFilesDirectory,
@@ -1000,7 +974,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     val projectId = ModuleNode.combinedId(project.id, Option(project.buildURI))
     val moduleFilesDirectory = createModuleFilesDirectory(projectRoot, project.base.toPath)
     val parentModule = createModuleNode(
-      JavaModuleType.getModuleType.getId,
+      JavaModuleTypeId,
       projectId,
       moduleName,
       moduleFilesDirectory,
@@ -1021,7 +995,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     // For example, it's used when invoking "Create New Test" to understand which test target location to use
     // (see com.intellij.testIntegration.createTest.CreateTestAction.suggestModuleForTests)
     // Note that module internal name is considered a module id
-    testModule.setProductionModuleId(prodModule.getInternalName)
+    // upstream: testModule.setProductionModuleId(prodModule.getInternalName) - not in Consulo
 
     def createDisplayName(module: ModuleDataNodeType): String =
       s"$moduleName.${module.getExternalName}"
@@ -1060,7 +1034,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     setCompileOutputPaths(
       prodModule,
       project.configurations,
-      esProjectData.ExternalSystemSourceType.SOURCE,
+      ExternalSystemSourceType.SOURCE,
       CompileScope,
     )
 
@@ -1077,7 +1051,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     setCompileOutputPaths(
       testModule,
       project.configurations,
-      esProjectData.ExternalSystemSourceType.TEST,
+      ExternalSystemSourceType.TEST,
       TestScope,
     )
 
@@ -1100,7 +1074,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     def sbtSourceSetModule(sourceSetName: SourceSetType): SbtSourceSetModuleNode = {
       val moduleId = ModuleNode.combinedId(s"${project.id}:$sourceSetName", Option(project.buildURI))
       val moduleNode = new SbtSourceSetModuleNode(
-        JavaModuleType.getModuleType.getId,
+        JavaModuleTypeId,
         moduleId,
         sourceSetName,
         moduleFilesDirectoryPath,
@@ -1118,8 +1092,8 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     configurations: Seq[ConfigurationData],
   )(implicit context: ImportContext): Unit =
     Seq(
-      (CompileScope, esProjectData.ExternalSystemSourceType.SOURCE),
-      (TestScope, esProjectData.ExternalSystemSourceType.TEST)
+      (CompileScope, ExternalSystemSourceType.SOURCE),
+      (TestScope, ExternalSystemSourceType.TEST)
     ).foreach { case (scope, sourceType) =>
       setCompileOutputPaths(moduleNode, configurations, sourceType, scope)
     }
@@ -1127,7 +1101,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
   private def setCompileOutputPaths(
     moduleNode: ModuleDataNodeType,
     configurations: Seq[ConfigurationData],
-    sourceType: esProjectData.ExternalSystemSourceType,
+    sourceType: ExternalSystemSourceType,
     scope: String,
   )(implicit context: ImportContext): Unit = {
     def sbtOutputPath(scope: String): Option[String] =
@@ -1192,7 +1166,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     unmanagedSourcesAndDocsLibrary.foreach { lib =>
       val dependency = new LibraryDependencyNode(moduleNode, lib, esProjectData.LibraryLevel.MODULE)
       // Place the unmanagedSourcesAndDocsLibrary below project dependencies and unmanaged dependencies (but before library dependencies)
-      dependency.setOrder(projectDependencies.size + unmanagedDependencies.size + 1)
+      // upstream: dependency.setOrder(projectDependencies.size + unmanagedDependencies.size + 1) - not in Consulo
       dependency.setScope(DependencyScope.COMPILE)
       moduleNode.add(dependency)
     }
@@ -1202,7 +1176,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     projectData: ProjectData,
     moduleNode: ModuleDataNodeType,
   )(using context: ImportContext): Unit = {
-    moduleNode.add(new SbtDisplayModuleNameNode(moduleNode.getModuleName))
+    moduleNode.add(new SbtDisplayModuleNameNode(moduleNode.getExternalName))
     moduleNode.add(new SbtModuleNode(SbtModuleData(projectData.id, projectData.buildURI, projectData.base.toPath)))
     addSbtRelatedData(projectData, moduleNode)
 
@@ -1251,7 +1225,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     }
 
     val buildId = buildBaseProject.flatMap(projectToParentModule.get)
-      .map(_.getModuleName + Sbt.BuildModuleSuffix)
+      .map(_.getExternalName + Sbt.BuildModuleSuffix)
       .getOrElse(build.uri.toString)
 
     val buildBaseDir: Path = buildBaseProject
@@ -1264,19 +1238,19 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     val buildProjectDirRoot = buildBaseDir / Sbt.ProjectDirectory
 
     val rootNode = buildBaseProject.flatMap(projectToParentModule.get)
-    val moduleFilesDirectory = rootNode.map(_.getModuleFileDirectoryPath).getOrElse(defaultModuleFilesDirectory)
+    val moduleFilesDirectory = rootNode.map(_.getModuleDirPath).getOrElse(defaultModuleFilesDirectory)
     // TODO explicit canonical path is needed until IDEA-126011 is fixed
     val result = createModuleNode(
-      SbtModuleType.instance.getId, buildId, buildId, moduleFilesDirectory, buildProjectDirRoot.toCanonicalPath.toString, shouldCreateNestedModule = true
+      SbtModuleType.Id, buildId, buildId, moduleFilesDirectory, buildProjectDirRoot.toCanonicalPath.toString, shouldCreateNestedModule = true
     )
 
     result.add(new SbtDisplayModuleNameNode(buildId))
     //todo: probably it should depend on sbt version?
-    result.add(ModuleSdkNode.inheritFromProject)
+    // upstream: ModuleSdkNode.inheritFromProject - Consulo has no project SDK
 
     result.setInheritProjectCompileOutputPath(false)
-    result.setCompileOutputPath(esProjectData.ExternalSystemSourceType.SOURCE, (buildProjectDirRoot / Sbt.TargetDirectory / "idea-classes").toCanonicalPath.toString)
-    result.setCompileOutputPath(esProjectData.ExternalSystemSourceType.TEST, (buildProjectDirRoot / Sbt.TargetDirectory / "idea-test-classes").toCanonicalPath.toString)
+    result.setCompileOutputPath(ExternalSystemSourceType.SOURCE, (buildProjectDirRoot / Sbt.TargetDirectory / "idea-classes").toCanonicalPath.toString)
+    result.setCompileOutputPath(ExternalSystemSourceType.TEST, (buildProjectDirRoot / Sbt.TargetDirectory / "idea-test-classes").toCanonicalPath.toString)
     result.add(createBuildContentRoot(buildProjectDirRoot, isPreview))
 
     val library = {
@@ -1348,8 +1322,8 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
       buildProjectDirRoot / Sbt.ProjectDirectory / Sbt.TargetDirectory,
     )
 
-    result.storeNioPaths(esProjectData.ExternalSystemSourceType.SOURCE, sourceDirs)
-    result.storeNioPaths(esProjectData.ExternalSystemSourceType.EXCLUDED, excludedDirs)
+    result.storeNioPaths(ExternalSystemSourceType.SOURCE, sourceDirs)
+    result.storeNioPaths(ExternalSystemSourceType.EXCLUDED, excludedDirs)
 
     result
   }
@@ -1357,7 +1331,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
   private def createBuildContentRootForScalaPluginUltimateWorkaround(communityProjectDir: Path): ContentRootNode = {
     val result = new ContentRootNode(communityProjectDir)
     val sourceDirs = Seq(communityProjectDir)
-    result.storeNioPaths(esProjectData.ExternalSystemSourceType.SOURCE, sourceDirs)
+    result.storeNioPaths(ExternalSystemSourceType.SOURCE, sourceDirs)
     result
   }
 
@@ -1402,7 +1376,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
         throw new ExternalSystemException("Library not found: " + name))
       val data = new LibraryDependencyNode(moduleData, library, esProjectData.LibraryLevel.PROJECT)
       val order = index + offset
-      data.setOrder(order)
+      // upstream: data.setOrder(order) - not in Consulo
       data.setScope(scopeFor(dependency.configurations))
       data
     }
@@ -1446,7 +1420,7 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     libraryNode.addPaths(esProjectData.LibraryPathType.SOURCE, sources)
 
     val result = new LibraryDependencyNode(moduleData, libraryNode, esProjectData.LibraryLevel.MODULE)
-    result.setOrder(order)
+    // upstream: result.setOrder(order) - not in Consulo
     result.setScope(scope)
     result
   }
@@ -1477,6 +1451,9 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
 }
 
 object SbtProjectResolver {
+
+  // upstream: JavaModuleType.getModuleType.getId - Consulo has no module types
+  private val JavaModuleTypeId = "JAVA_MODULE"
 
   val CompileScope = "compile"
   val TestScope = "test"
@@ -1624,13 +1601,13 @@ object SbtProjectResolver {
    */
   private[project] class ImportContext(
     executionSettings: SbtExecutionSettings,
-    val eelDescriptor: EelDescriptor,
+    val platform: Platform,
     val useShellImport: Boolean
   ) {
     /**
      * @see [[SbtUtil#getRepoDir]]
      */
-    val repoDir: Path = SbtUtil.getRepoDir(eelDescriptor)
+    val repoDir: Path = SbtUtil.getRepoDir(platform)
 
     /**
      * The sbt version used for the project import.
@@ -1653,19 +1630,19 @@ object SbtProjectResolver {
      */
     val isImportTimeMeasurementEnabled: Boolean =
       !useShellImport &&
-        Registry.is(ImportTimeMeasurementRegistryKey) &&
+        Registry.is(ImportTimeMeasurementRegistryKey, false) &&
         SbtVersionCapabilities.isTaskTimingsPluginSupported(sbtVersion)
 
     def useSeparateProdTestSources: Boolean = executionSettings.separateProdTestSources
     def useSeparateCompilerOutputPaths: Boolean = executionSettings.useSeparateCompilerOutputPaths
 
     //noinspection ApiStatus
-    private val replClasspathCachedResolver: ReplClasspathCachedResolver = ReplClasspathCachedResolver(eelDescriptor)
+    private val replClasspathCachedResolver: ReplClasspathCachedResolver = new ReplClasspathCachedResolver(platform)
 
     def resolveReplClasspath(scalaVersion: String): ReplClasspath =
       replClasspathCachedResolver.resolve(scalaVersion)
   }
 
   private[project] object ImportContext:
-    given (context: ImportContext) => EelDescriptor = context.eelDescriptor
+    given (context: ImportContext) => Platform = context.platform
 }

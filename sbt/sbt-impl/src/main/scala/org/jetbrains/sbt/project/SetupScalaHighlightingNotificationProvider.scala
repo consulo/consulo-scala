@@ -1,52 +1,47 @@
 package org.jetbrains.sbt.project
 
+import consulo.annotation.access.RequiredReadAction
 import consulo.annotation.component.ExtensionImpl
-
-import com.intellij.framework.FrameworkTypeEx
-import com.intellij.framework.addSupport.impl.AddSupportForSingleFrameworkDialog
-import consulo.codeEditor.Editor
-import consulo.fileEditor.FileEditor
-import com.intellij.openapi.module.{JavaModuleType, ModuleType}
-import consulo.module.Module
+import consulo.fileEditor.{EditorNotificationBuilder, EditorNotificationProvider, FileEditor}
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.java.language.module.extension.JavaModuleExtension
+import consulo.language.psi.PsiManager
 import consulo.language.util.ModuleUtilCore
+import consulo.localize.LocalizeValue
+import consulo.module.Module
+import consulo.module.content.ModuleRootManager
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
-import com.intellij.psi.impl.IncompleteModelUtil
-import consulo.language.psi.{PsiFile, PsiManager}
-import com.intellij.ui.{EditorNotificationPanel, EditorNotificationProvider}
-import consulo.ui.annotation.RequiredUIAccess
-import consulo.annotation.access.RequiredReadAction
+import jakarta.inject.Inject
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.notification.isScalaSourceFile
-import org.jetbrains.plugins.scala.project.template.ScalaFrameworkType
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.codeInsight.daemon.SbtProjectImportStateProblemHighlightFilter
 
-import javax.swing.JComponent
-import javax.swing.event.HyperlinkEvent
+import java.util.function.Supplier
 
 /**
  * For other examples see:
- *  - [[com.intellij.codeInsight.daemon.impl.SdkSetupNotificationProvider]]
- *  - [[com.intellij.codeInsight.daemon.ProjectSdkSetupValidator]]
- *  - [[com.intellij.codeInsight.daemon.impl.JavaProjectSdkSetupValidator]]
+ *  - `com.intellij.codeInsight.daemon.impl.SdkSetupNotificationProvider`
+ *  - `com.intellij.codeInsight.daemon.ProjectSdkSetupValidator`
+ *  - `com.intellij.codeInsight.daemon.impl.JavaProjectSdkSetupValidator`
  */
+// upstream: no notifications while the project sync is in progress (IncompleteModelUtil.isIncompleteModel) - not in Consulo
 @ExtensionImpl
-private final class SetupScalaHighlightingNotificationProvider extends EditorNotificationProvider {
+private final class SetupScalaHighlightingNotificationProvider @Inject()(project: Project) extends EditorNotificationProvider {
 
-  @RequiresReadLock
+  override def getId: String = "sbt-setup-scala-highlighting"
+
+  @RequiredReadAction
   @Nullable
-  override def collectNotificationData(project: Project, file: VirtualFile): java.util.function.Function[? >: FileEditor, ? <: JComponent] = {
+  override def buildNotification(file: VirtualFile, fileEditor: FileEditor, supplier: Supplier[EditorNotificationBuilder]): EditorNotificationBuilder = {
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile eq null) return null
 
     if (SbtProjectUtil.isInSbtProject(psiFile)) {
       // We do not track the file type of this source file, do not show any notifications.
       if (!SbtProjectImportStateProblemHighlightFilter.isTrackedFileType(file.getFileType)) return null
-      // Project reload is already in progress, do not show any notifications.
-      //noinspection ApiStatus,UnstableApiUsage
-      if (IncompleteModelUtil.isIncompleteModel(psiFile)) return null
 
       // The currently open file is not a writable project source, do not show any notifications.
       // This check filters out files created from reconstructed VCS history,
@@ -61,57 +56,36 @@ private final class SetupScalaHighlightingNotificationProvider extends EditorNot
       // The project is fully imported, do not show any notifications.
       if (SbtProjectImportStateService.instance(project).isImported(psiFile)) return null
 
-      (fileEditor: FileEditor) => SbtProjectImportStateNotificationPanel.createNotificationPanel(project, fileEditor)
+      SbtProjectImportStateNotificationPanel.fillNotification(project, supplier.get())
     } else {
       val isScalaSource = isScalaSourceFile(file, project)
-      if (isScalaSource && !hasDeveloperKit(file, project)) {
-        // No notification while project sync is in progress
-        //noinspection ApiStatus,UnstableApiUsage
-        if (IncompleteModelUtil.isIncompleteModel(psiFile)) {
-          null
-        } else {
-          (fileEditor: FileEditor) => createPanel(project, fileEditor)
-        }
-      } else
-        null
+      if (isScalaSource && !hasDeveloperKit(file)) createPanel(file, supplier.get())
+      else null
     }
   }
 
-  @RequiresEdt
-  private def createPanel(project: Project, fileEditor: FileEditor): EditorNotificationPanel = {
-    val panel = new EditorNotificationPanel(fileEditor, EditorNotificationPanel.Status.Warning)
-    panel.setText(SbtBundle.message("sdk.notification.provider.no.scala.sdk.in.module"))
-    val fixHandler = getFixHandler(project, fileEditor.getFile)
-    panel.createActionLabel(SbtBundle.message("sdk.notification.provider.setup.scala.sdk"), fixHandler, true)
-    panel
+  private def createPanel(file: VirtualFile, builder: EditorNotificationBuilder): EditorNotificationBuilder = {
+    builder.asWarning()
+    builder.withText(LocalizeValue.of(SbtBundle.message("sdk.notification.provider.no.scala.sdk.in.module")))
+    builder.withAction(LocalizeValue.of(SbtBundle.message("sdk.notification.provider.setup.scala.sdk")), _ => setDeveloperKit(file))
+    builder
   }
 
-  private def getFixHandler(project: Project, file: VirtualFile): EditorNotificationPanel.ActionHandler =
-    new EditorNotificationPanel.ActionHandler() {
-      override def handlePanelActionClick(panel: EditorNotificationPanel, e: HyperlinkEvent): Unit = {
-        setDeveloperKit(file, project)
-      }
-
-      override def handleQuickFixClick(editor: Editor, psiFile: PsiFile): Unit = {
-        setDeveloperKit(file, project)
-      }
-    }
-
-  private def hasDeveloperKit(file: VirtualFile, project: Project): Boolean =
-    findModule(file, project).forall { module =>
-      ModuleType.get(module) != JavaModuleType.getModuleType ||
+  // upstream: checks for JavaModuleType - Consulo has no module types, modules with the Java module extension are checked
+  private def hasDeveloperKit(file: VirtualFile): Boolean =
+    findModule(file).forall { module =>
+      ModuleRootManager.getInstance(module).getExtension(classOf[JavaModuleExtension[?]]) == null ||
         module.isBuildModule || // gen-idea doesn't use the sbt module type
         module.hasScala
     }
 
-  private def setDeveloperKit(file: VirtualFile, project: Project): Unit = {
-    findModule(file, project).foreach { module =>
-      val scalaFrameworkType = FrameworkTypeEx.EP_NAME.findExtension(classOf[ScalaFrameworkType])
-      val dialog = AddSupportForSingleFrameworkDialog.createDialog(module, scalaFrameworkType.createProvider)
-      dialog.showAndGet()
+  // upstream: AddSupportForSingleFrameworkDialog for ScalaFrameworkType - Scala is enabled by the Scala module extension
+  // in Consulo, so the module is selected in the project structure
+  private def setDeveloperKit(file: VirtualFile): Unit =
+    findModule(file).foreach { module =>
+      ShowSettingsUtil.getInstance.showProjectStructureDialog(project, selector => { selector.select(module, true); () })
     }
-  }
 
-  private def findModule(file: VirtualFile, project: Project): Option[Module] =
+  private def findModule(file: VirtualFile): Option[Module] =
     Option(ModuleUtilCore.findModuleForFile(file, project))
 }

@@ -1,17 +1,16 @@
 package org.jetbrains.sbt.process
 
-import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
-import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.configurations.GeneralCommandLine.ParentEnvironmentType
-import com.intellij.execution.process.OSProcessHandler
-import consulo.application.ApplicationManager
+import consulo.application.{Application, ApplicationManager}
+import consulo.application.platform.PlatformTransfer
+import consulo.build.ui.event.BuildEventFactory
+import consulo.execution.configuration.EnvironmentVariablesData
+import consulo.process.{ProcessHandler, ProcessHandlerBuilder}
+import consulo.process.cmd.GeneralCommandLine
+import consulo.process.cmd.GeneralCommandLine.ParentEnvironmentType
 import consulo.logging.Logger
 import consulo.application.progress.ProgressIndicator
 import consulo.project.Project
 import consulo.application.util.SystemInfo
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
@@ -22,7 +21,7 @@ import org.jetbrains.sbt.process.options.{SbtProcessOptions, SbtProcessOptionsRe
 import org.jetbrains.sbt.project.SbtProjectResolver.ImportCancelledException
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
 import org.jetbrains.sbt.project.structure.{ListenerAdapter, OutputType}
-import org.jetbrains.sbt.{SbtBundle, asLocalPath, eelDescriptor}
+import org.jetbrains.sbt.{SbtBundle, asLocalPath, platform}
 
 import java.io.{BufferedWriter, OutputStreamWriter, PrintWriter}
 import java.nio.charset.StandardCharsets
@@ -34,7 +33,7 @@ import scala.concurrent.duration.{FiniteDuration, given}
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try, Using}
 
-final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnosticsCollector] = None):
+final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnosticsCollector] = None) {
   import SbtRunner.*
 
   private val cancellationFlag: AtomicBoolean = new AtomicBoolean(false)
@@ -152,9 +151,8 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
           val mockProcessCommandLineTail = project.toSeq.flatMap(MockSbtProcessForTests.mockMainClassCommandLineTailForNonShellFromStdin)
           mockProcessCommandLineTail ++ sbtProcessOptions.sbtLauncherArgs
         } else {
-          //noinspection ApiStatus,UnstableApiUsage
-          val transferredSbtLauncher = EelPathUtils.transferLocalContentToRemote(sbtLauncher, TransferTarget.Temporary(directory.eelDescriptor))
-          validateAllPathsHaveTheSameEelDescriptor(directory, vmExecutable, transferredSbtLauncher)
+          val transferredSbtLauncher = PlatformTransfer.getInstance().transfer(sbtLauncher, directory.platform)
+          validateAllPathsHaveTheSamePlatform(directory, vmExecutable, transferredSbtLauncher)
           List("-jar", transferredSbtLauncher.asLocalPath) ++ sbtProcessOptions.sbtLauncherArgs
         }
 
@@ -187,6 +185,7 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
           .withParentEnvironmentType(parentEnvironmentType)
           .withWorkingDirectory(directory)
           .withEnvironment(preparedEnvironment.variables.asJava)
+          .withCharset(StandardCharsets.UTF_8)
       val procString = commandLine.getCommandLineString
       reporter.log(procString)
 
@@ -194,16 +193,16 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
         s"""processBuilder.start()
            |  command line: $procString""".stripMargin
       )
-      commandLine.createProcess()
+      ProcessHandlerBuilder.create(commandLine).shouldDestroyProcessRecursively(false).build()
     }
-      .flatMap { process =>
-        Using.resource(new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream, StandardCharsets.UTF_8)))) { writer =>
+      .flatMap { handler =>
+        Using.resource(new PrintWriter(new BufferedWriter(new OutputStreamWriter(handler.getProcessInput, StandardCharsets.UTF_8)))) { writer =>
 
           writer.println(ignoreInShellHistory(sbtCommands))
           // exit needs to be in a separate command, otherwise it will never execute when a previous command in the chain errors
           writer.println(ignoreInShellHistory("exit"))
           writer.flush()
-          handle(process, dumpTaskId, reporter, indicator)
+          handle(handler, dumpTaskId, reporter, indicator)
         }
       }
       .recoverWith {
@@ -213,19 +212,20 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
           Failure(ImportCancelledException(fail))
       }
 
+    val eventFactory = Application.get().getInstance(classOf[BuildEventFactory])
     val eventResult = resultMessages match {
       case Success(messages) =>
         messages.status match {
           case BuildMessages.OK =>
-            new SuccessResultImpl(true)
+            eventFactory.createSuccessResult(true)
           case BuildMessages.Canceled =>
-            new SkippedResultImpl()
+            eventFactory.createSkippedResult()
           case BuildMessages.Error | BuildMessages.Indeterminate =>
-            new FailureResultImpl()
+            eventFactory.createFailureResult()
         }
 
       case Failure(x) =>
-        new FailureResultImpl(x)
+        eventFactory.createFailureResult(x)
     }
 
     reporter.finishTask(dumpTaskId, reportMessage, eventResult)
@@ -233,7 +233,7 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
     resultMessages
   }
 
-  private def handle(process: Process,
+  private def handle(handler: ProcessHandler,
                      dumpTaskId: EventId,
                      reporter: BuildReporter,
                      indicator: ProgressIndicator
@@ -280,7 +280,7 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
         case (typ@OutputType.StdOut, text) =>
           outputDumpRecorder.onProcessOutput(typ, text)
           if (text.contains("(q)uit")) {
-            val writer = new PrintWriter(process.getOutputStream)
+            val writer = new PrintWriter(handler.getProcessInput)
             writer.println("q")
             writer.close()
           } else {
@@ -293,7 +293,6 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
       }
     }
 
-    val handler = new OSProcessHandler(process, "sbt import", StandardCharsets.UTF_8)
     // TODO: rewrite this code, do not use try, throw
     val result = Try {
       SbtProcessOutputDiagnosticsCollector.collectProcessOutputFrom(handler, processTitle = "SBT separate process output")
@@ -335,7 +334,6 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
     }
     if (!handler.isProcessTerminated) {
       Log.debug(s"sbt process has not terminated, destroying the process...")
-      handler.setShouldDestroyProcessRecursively(false) // TODO: why not `true`?
       handler.destroyProcess()
     }
     result
@@ -368,10 +366,10 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
 
   private def isUnitTestMode: Boolean = ApplicationManager.getApplication.isUnitTestMode
 
-  private def validateAllPathsHaveTheSameEelDescriptor(paths: Path*): Unit =
+  private def validateAllPathsHaveTheSamePlatform(paths: Path*): Unit =
     if paths.isEmpty then return
-    val descriptor = paths.head.eelDescriptor
-    val allEqual = paths.forall(_.eelDescriptor == descriptor)
+    val platform = paths.head.platform
+    val allEqual = paths.forall(_.platform == platform)
     if !allEqual then
       throw IllegalStateException(
         s"""The paths:
@@ -380,10 +378,9 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
            |Please check your project configuration, sbt settings and project JDK settings.
            |""".stripMargin
       )
+}
 
-end SbtRunner
-
-object SbtRunner:
+object SbtRunner {
   private val Log: Logger = Logger.getInstance(classOf[SbtRunner])
 
   private val SBT_PROCESS_CHECK_TIMEOUT_MS = 100
@@ -408,7 +405,7 @@ object SbtRunner:
    * @see [[https://github.com/dirs-dev/directories-jvm/issues/49]]
    * @see [[https://github.com/ScoopInstaller/Main/pull/878/files]]
    */
-  private[jetbrains] def defaultCoursierDirectoriesAsEnvVariables(): Map[String, String] =
+  private[jetbrains] def defaultCoursierDirectoriesAsEnvVariables(): Map[String, String] = {
     val LocalAppData = System.getenv("LOCALAPPDATA")
     val AppData = System.getenv("APPDATA")
 
@@ -423,4 +420,5 @@ object SbtRunner:
       ("COURSIER_DATA_DIR", CoursierLocalAppDataHome / "data"),
       ("SCALA_CLI_CONFIG", CoursierAppDataHome / "config" / "secrets" / "config.json")
     ).map((env, path) => (env, path.toCanonicalPath.toString))
-  end defaultCoursierDirectoriesAsEnvVariables
+  }
+}

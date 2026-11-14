@@ -10,7 +10,8 @@ import consulo.language.pattern.PlatformPatterns
 import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.NonNls
 
-@ExtensionImpl(order = "first")
+// upstream: order = "first"
+@ExtensionImpl
 final class SbtShellCompletionContributor extends CompletionContributor with DumbAware {
   override def getLanguage: Language = SbtShellLanguage
 
@@ -20,7 +21,7 @@ final class SbtShellCompletionContributor extends CompletionContributor with Dum
     SbtShellCompletionProvider)
 }
 
-object SbtShellCompletionProvider extends CompletionProvider[CompletionParameters] {
+object SbtShellCompletionProvider extends CompletionProvider {
 
   // TODO just some commonly used builtins for now. later, load all the tasks, settings, commands, projects etc from sbt server and give more complete suggestions based on that!
   @NonNls private val tasks = Seq(

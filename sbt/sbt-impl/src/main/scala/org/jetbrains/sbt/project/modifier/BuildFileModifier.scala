@@ -2,12 +2,12 @@ package org.jetbrains.sbt.project.modifier
 
 import consulo.undoRedo.CommandProcessor
 import consulo.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
+import consulo.externalSystem.service.project.ExternalSystemProjectRefresher
 import consulo.document.FileDocumentManager
 import consulo.module.{Module => IJModule}
 import consulo.project.{Project => IJProject}
-import com.intellij.openapi.vcs.changes.{CurrentContentRevision, SimpleContentRevision}
-import consulo.virtualFileSystem.util.{VirtualFileUtil, VirtualFileUtil}
+import consulo.versionControlSystem.change.{CurrentContentRevision, SimpleContentRevision}
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.file.light.LightVirtualFile
 import consulo.versionControlSystem.util.VcsUtil
@@ -61,7 +61,7 @@ trait BuildFileModifier {
       }
     }, SbtBundle.message("sbt.build.file.modification"), this)
     if (res)
-      ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, SbtProjectSystem.Id))
+      ExternalSystemProjectRefresher.getInstance().refreshProjects(new ImportSpecBuilder(project, SbtProjectSystem.Id))
     res
   }
 
@@ -74,7 +74,7 @@ trait BuildFileModifier {
     val fileStatusMap = mutable.Map[VirtualFile, (BuildFileModifiedStatus, Long)]()
     val documentManager = FileDocumentManager.getInstance()
     val vcsChanges = filesToWorkingCopies.toSeq.map{case (original, copy) =>
-      val originalRevision = new SimpleContentRevision(VfsUtilCore.loadText(original), VcsUtil.getFilePath(original), "original")
+      val originalRevision = new SimpleContentRevision(VirtualFileUtil.loadText(original), VcsUtil.getFilePath(original), "original")
       val copyRevision: CurrentContentRevision = new CurrentContentRevision(VcsUtil.getFilePath(copy)) {
         override def getVirtualFile: LightVirtualFile = copy
       }
@@ -107,7 +107,7 @@ trait BuildFileModifier {
         //we only want to rewrite files that actually changed
         val changedDocument = manager.getDocument(changedFile)
         inWriteAction {
-          VfsUtil.saveText(originalFile, changedDocument.getText)
+          VirtualFileUtil.saveText(originalFile, changedDocument.getText)
         }
       }
     }

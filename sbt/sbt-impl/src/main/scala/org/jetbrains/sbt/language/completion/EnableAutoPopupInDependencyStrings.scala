@@ -12,11 +12,11 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScInfixExpr}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class EnableAutoPopupInDependencyStrings extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-  override def shouldSkipAutopopup(editor: Editor, contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = {
+  override def shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = {
     contextElement.getParent match {
       case str: ScStringLiteral =>
         str.getParent match {

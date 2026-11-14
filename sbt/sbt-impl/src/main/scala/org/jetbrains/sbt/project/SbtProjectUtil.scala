@@ -3,7 +3,6 @@ package org.jetbrains.sbt.project
 import consulo.module.Module
 import consulo.language.util.ModuleUtilCore
 import consulo.project.Project
-import consulo.project.util.ProjectUtil
 import consulo.module.content.ProjectRootManager
 import consulo.virtualFileSystem.VirtualFileManager
 import consulo.language.psi.PsiFile
@@ -41,7 +40,7 @@ object SbtProjectUtil {
    * or a `build.sbt` file in the root project directory.
    */
   private def couldBeImportedAsSbtProject(project: Project): Boolean =
-    Option(ProjectUtil.guessProjectDir(project))
+    Option(project.getBaseDir)
       .flatMap(vf => Option(vf.getCanonicalPath))
       .map(Path.of(_))
       .flatMap(p => Option(VirtualFileManager.getInstance().findFileByNioPath(p)))

@@ -1,9 +1,12 @@
 package org.jetbrains.sbt.project.modifier.ui
 
+import consulo.disposer.Disposable
 import consulo.ui.ex.action.{ActionManager, IdeActions}
 import consulo.project.{Project => IJProject}
 import consulo.ui.ex.awt.DialogWrapper
-import com.intellij.openapi.vcs.changes.Change
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.versionControlSystem.change.Change
+import consulo.versionControlSystem.ui.{VcsChangesBrowser, VcsChangesDialogFactory}
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.sbt.SbtBundle
 
@@ -19,38 +22,35 @@ import scala.jdk.CollectionConverters._
  * 'before/'after' revisions switch places so that in tree view path to 'before' is used while in diff view revisions
  * are in default places.
  */
-class ChangesConfirmationDialog private (val project: IJProject, private val changes: List[BuildFileChange], var myChangesBrowser: BuildFileChangeBrowser,
+// upstream: BuildFileChangeBrowser (a SimpleAsyncChangesBrowser) - Consulo's VcsChangesBrowser is used; the statuses of
+// manually modified build files are not refreshed (fileStatusMap is not updated)
+class ChangesConfirmationDialog private (val project: IJProject, private val changes: List[BuildFileChange],
                                          val fileStatusMap: mutable.Map[VirtualFile, (BuildFileModifiedStatus, Long)]) extends DialogWrapper(project) {
+
+  private var myChangesBrowser: VcsChangesBrowser = scala.compiletime.uninitialized
 
   setTitle(SbtBundle.message("sbt.build.file.changes"))
   init()
 
   def buildFileChanges: Seq[BuildFileChange] = {
-    val changes = myChangesBrowser.getAllChanges.asScala.map(_.asInstanceOf[BuildFileChange])
+    val changes = myChangesBrowser.getChanges.asScala.map(_.asInstanceOf[BuildFileChange])
     changes.map(BuildFileChange.swap).toSeq
   }
 
   override def createCenterPanel(): JComponent = {
-    val rootPane: JPanel = new JPanel(new BorderLayout)
-
-    val swappedChanges: java.util.ArrayList[Change] = new java.util.ArrayList[Change]()
+    val swappedChanges: java.util.List[Change] = new java.util.ArrayList[Change]()
     swappedChanges.addAll(changes.map(BuildFileChange.swap).asJavaCollection)
 
-    val changesBrowser = new BuildFileChangeBrowser(project, fileStatusMap)
-    changesBrowser.setChangesToDisplay(swappedChanges)
-    changesBrowser.addToolbarAction(ActionManager.getInstance.getAction(IdeActions.ACTION_EDIT_SOURCE))
+    val changesBrowser = project.getApplication.getInstance(classOf[VcsChangesDialogFactory])
+      .changesBrowser(project)
+      .toolbarAction(ActionManager.getInstance.getAction(IdeActions.ACTION_EDIT_SOURCE))
+      .build(getDisposable: Disposable)
+    changesBrowser.setChanges(swappedChanges)
 
     myChangesBrowser = changesBrowser
-    rootPane.add(changesBrowser)
 
-    /*todo val diffDetails = new ShortDiffDetails(project, new Getter[Array[Change]] {
-      def get: Array[Change] = {
-        val selectedChanges = changesBrowser.getViewer.getSelectedChanges
-        selectedChanges.toArray(new Array[Change](selectedChanges.size))
-      }
-    }, VcsChangeDetailsManager.getInstance(project))
-    diffDetails.setParent(changesBrowser)*/
-
+    val rootPane: JPanel = new JPanel(new BorderLayout)
+    rootPane.add(TargetAWT.to(changesBrowser.getComponent))
     rootPane
   }
 
@@ -58,5 +58,5 @@ class ChangesConfirmationDialog private (val project: IJProject, private val cha
 
 object ChangesConfirmationDialog {
   def apply(project: IJProject, changes: List[BuildFileChange], fileChangesMap: mutable.Map[VirtualFile, (BuildFileModifiedStatus, Long)]): ChangesConfirmationDialog =
-    new ChangesConfirmationDialog(project, changes, null, fileChangesMap)
+    new ChangesConfirmationDialog(project, changes, fileChangesMap)
 }

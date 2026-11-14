@@ -2,12 +2,11 @@ package org.jetbrains.sbt.runner
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.execution.configurations.RunProfile
+import consulo.execution.configuration.RunProfile
 import consulo.execution.configuration.{RunProfileState, RunnerSettings}
 import consulo.execution.runner.ExecutionEnvironment
-import com.intellij.execution.runners.GenericProgramRunner
-import com.intellij.execution.ui.RunContentDescriptor
-
+import consulo.execution.runner.GenericProgramRunner
+import consulo.execution.ui.RunContentDescriptor
 /**
  * Handles SBT task run configurations only when they are delegated to the SBT shell.
  *
@@ -18,7 +17,8 @@ import com.intellij.execution.ui.RunContentDescriptor
  *
  * @see [[org.jetbrains.sbt.runner.SbtDebugProgramRunner]]
  */
-@ExtensionImpl(order = "first")
+// upstream: order = "first"
+@ExtensionImpl
 class SbtProgramRunner extends GenericProgramRunner[RunnerSettings] with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtProgramRunner"

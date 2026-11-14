@@ -1,10 +1,8 @@
 package org.jetbrains.sbt.project.module
 
-import com.intellij.openapi.externalSystem.model.{Key, ProjectKeys}
-import com.intellij.openapi.externalSystem.model.project.{ModuleData, ModuleNameDeduplicationStrategy}
-import com.intellij.serialization.PropertyMapping
+import consulo.externalSystem.model.{Key, ProjectKeys}
+import consulo.externalSystem.model.project.ModuleData
 import org.jetbrains.sbt.project.SbtProjectSystem
-
 
 /**
  * All subprojects of individual builds (except root projects) should be encapsulated in this data class.
@@ -20,13 +18,9 @@ import org.jetbrains.sbt.project.SbtProjectSystem
  * @param externalConfigPath module path
  * @param moduleTypeId module type id
  */
-final case class SbtNestedModuleData @PropertyMapping(Array(
-  "id",
-  "externalName",
-  "moduleFileDirectoryPath",
-  "externalConfigPath",
-  "moduleTypeId"
-))(
+// upstream: lives in sbt-api; Consulo has no module types (moduleTypeId is kept for the callers only)
+// and no ModuleNameDeduplicationStrategy
+final case class SbtNestedModuleData(
   id: String,
   externalName: String,
   moduleFileDirectoryPath: String,
@@ -35,25 +29,12 @@ final case class SbtNestedModuleData @PropertyMapping(Array(
 ) extends ModuleData(
   id,
   SbtProjectSystem.Id,
-  moduleTypeId,
   externalName,
   moduleFileDirectoryPath,
   externalConfigPath
 )
 
 object SbtNestedModuleData {
-  def apply(
-    id: String,
-    externalName: String,
-    moduleFileDirectoryPath: String,
-    externalConfigPath: String,
-    moduleTypeId: String
-  ): SbtNestedModuleData = {
-    val sbtNestedModuleData = new SbtNestedModuleData(id, externalName, moduleFileDirectoryPath, externalConfigPath, moduleTypeId)
-    sbtNestedModuleData.setModuleNameDeduplicationStrategy(ModuleNameDeduplicationStrategy.NUMBER_SUFFIX)
-    sbtNestedModuleData
-  }
-
   val Key: Key[SbtNestedModuleData] =
     new Key(classOf[SbtNestedModuleData].getName, ProjectKeys.MODULE.getProcessingWeight + 1)
 }

@@ -1,11 +1,11 @@
 package org.jetbrains.sbt.actions
 
-import com.intellij.build.FilePosition
-import com.intellij.build.events.{BuildEvents, EventResult, MessageEvent}
-import com.intellij.build.issue.BuildIssue
-import com.intellij.build.{BuildContentManager, SyncViewManager}
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId
-import com.intellij.openapi.wm.ToolWindowManager
+import consulo.application.Application
+import consulo.build.ui.event.{BuildEventFactory, EventResult, MessageEvent}
+import consulo.build.ui.issue.BuildIssue
+import consulo.build.ui.{BuildContentManager, FilePosition, SyncViewManager}
+import consulo.externalSystem.model.task.ExternalSystemTaskId
+import consulo.project.ui.wm.ToolWindowManager
 import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
@@ -39,10 +39,8 @@ private[sbt] final class GenerateManagedSourcesReporter(
 
   override def warning(issue: BuildIssue): Unit = {
     activateToolWindowOnWarning()
-    val event = BuildEvents.getInstance()
-      .buildIssue(issue, MessageEvent.Kind.WARNING)
-      .withParentId(taskId)
-      .build()
+    val event = Application.get().getInstance(classOf[BuildEventFactory])
+      .createBuildIssueEvent(taskId, issue, MessageEvent.Kind.WARNING)
     viewManager.onEvent(taskId, event)
   }
 

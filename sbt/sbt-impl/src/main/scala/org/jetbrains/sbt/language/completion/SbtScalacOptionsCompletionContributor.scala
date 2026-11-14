@@ -8,7 +8,7 @@ import consulo.language.editor.completion.{CompletionContributor, CompletionInit
 import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
 import consulo.language.editor.template.TemplateBuilderFactory
-import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.ConstantNode
 import consulo.project.Project
 import consulo.document.util.TextRange
@@ -42,7 +42,7 @@ object SbtScalacOptionsCompletionContributor {
     (psiElement.inside(SbtPsiElementPatterns.scalacOptionsReferencePattern).notAfterLeafSkippingWhitespaceComment(ScalaTokenTypes.tDOT) ||
       psiElement.inside(SbtPsiElementPatterns.scalacOptionsStringLiteralPattern))
 
-  private val completionProvider = new CompletionProvider[CompletionParameters] {
+  private val completionProvider = new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
       val place = positionFromParameters(using parameters)
       implicit val project: Project = place.getProject
@@ -164,7 +164,7 @@ object SbtScalacOptionsCompletionContributor {
         )
       }
 
-    private def runOptionArgumentsTemplate(offset: Int)(replaceRange: (TemplateBuilderImpl, Int) => Unit)(implicit context: InsertionContext): Unit = {
+    private def runOptionArgumentsTemplate(offset: Int)(replaceRange: (TemplateBuilder, Int) => Unit)(implicit context: InsertionContext): Unit = {
       context.commitDocument()
 
       val offsetBeforeClosingQuote = offset + option.getText.length - 1
@@ -172,7 +172,6 @@ object SbtScalacOptionsCompletionContributor {
 
       val builder = TemplateBuilderFactory.getInstance()
         .createTemplateBuilder(templateContainerElement)
-        .asInstanceOf[TemplateBuilderImpl]
 
       replaceRange(builder, offsetBeforeClosingQuote)
 

@@ -1,69 +1,59 @@
 package org.jetbrains.sbt.project.data.service
 
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.externalSystem.service.project.ProjectData
-import consulo.externalSystem.model.{DataNode, Key}
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
+import consulo.externalSystem.model.project.ModuleData
+import consulo.externalSystem.model.{DataNode, ProjectKeys}
+import consulo.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemConstants, Order}
 import consulo.module.Module
 import consulo.project.Project
-import org.jetbrains.plugins.scala.shared.util.SbtModuleType.sbtNestedModuleType
-import org.jetbrains.sbt.SbtUtil
+import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
 import org.jetbrains.sbt.project.module.SbtNestedModuleData
 import org.jetbrains.sbt.settings.SbtSettings
 
 import java.util
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, SetHasAsJava}
 
+/**
+ * upstream: creates the modules of [[SbtNestedModuleData]] (and of SbtSourceSetData in SbtSourceSetDataService) and prefixes
+ * their names with the actual name of the parent module. Consulo's external system creates modules only for
+ * [[ProjectKeys.MODULE]] nodes, so the nested and source set module nodes use that key and the built-in ModuleDataService creates them
+ * (with the names computed by the resolver).
+ *
+ * The service runs before the built-in ModuleDataService, so that the module data nodes are deserialized with the class loader
+ * of this plugin (they may contain [[SbtNestedModuleData]] and SbtSourceSetData).
+ */
 @ExtensionImpl
-class SbtNestedModuleDataService extends AbstractSbtModuleDataService[SbtNestedModuleData]{
-
-  override def getTargetDataKey: Key[SbtNestedModuleData] = SbtNestedModuleData.Key
-
-  override protected def moduleType: String =
-    sbtNestedModuleType
+@Order(41) // ExternalSystemConstants.BUILTIN_SERVICE_ORDER - 1
+class SbtNestedModuleDataService extends ScalaAbstractProjectDataService[ModuleData, Module](ProjectKeys.MODULE) {
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[SbtNestedModuleData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[ModuleData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
+    synchronous: Boolean
   ): Unit = {
-    setModulesInExternalSystemSettings(project, projectData.getLinkedExternalProjectPath, toImport.asScala.toList)
-    super.importData(toImport, projectData, project, modelsProvider)
-  }
-
-  override protected def generateNewName(
-    parentModule: Module,
-    data: SbtNestedModuleData,
-    parentModuleActualName: String
-  ): Option[String] = {
-    val parentModuleOriginalNameOpt = findParentModuleOriginalName(parentModule)
-    parentModuleOriginalNameOpt.map { parentModuleOriginalName =>
-      val moduleNameWithGroup = data.getInternalName.stripPrefix(s"$parentModuleOriginalName.")
-      s"$parentModuleActualName.$moduleNameWithGroup"
+    val sbtNestedModules = toImport.asScala.toList.filter(_.getData.isInstanceOf[SbtNestedModuleData])
+    if (sbtNestedModules.nonEmpty) {
+      val rootProjectPath = Option(ExternalSystemApiUtil.findParent(sbtNestedModules.head, ProjectKeys.PROJECT))
+        .map(_.getData.getLinkedExternalProjectPath)
+      rootProjectPath.foreach(setModulesInExternalSystemSettings(project, _, sbtNestedModules))
     }
   }
 
-  //note: before introducing SbtNestedModuleData setting modules in com.intellij.openapi.externalSystem.service.internal.ExternalSystemResolveProjectTask.doExecute was enough, but because
+  override def removeData(toRemove: util.Collection[? <: Module], project: Project, synchronous: Boolean): Unit = ()
+
+  //note: before introducing SbtNestedModuleData setting modules in ExternalSystemResolveProjectTask.doExecute was enough, but because
   // the logic there does not take into account modules with keys different than ProjectKeys.MODULE it was needed to implement it on our own for SbtNestedModuleData.
-  // It is needed for com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl.suggestModuleNameCandidates method to choose the proper delimiter for ModuleNameGenerator.
   private def setModulesInExternalSystemSettings(
     project: Project,
     rootProjectPath: String,
-    sbtNestedModules: List[? <: DataNode[SbtNestedModuleData]]
+    sbtNestedModules: List[DataNode[ModuleData]]
   ): Unit = {
     val linkedProjectSettings = SbtSettings.getInstance(project).getLinkedProjectSettings(rootProjectPath)
     if (linkedProjectSettings != null) {
-      val sbtNestedModulePaths = sbtNestedModules.map(_.getData).map(_.externalConfigPath)
+      val sbtNestedModulePaths = sbtNestedModules.map(_.getData).map(_.getLinkedExternalProjectPath)
 
       val externalModulePaths = (sbtNestedModulePaths ++ linkedProjectSettings.getModules.asScala.toSeq).toSet
       linkedProjectSettings.setModules(externalModulePaths.asJava)
     }
-  }
-
-  private def findParentModuleOriginalName(module: Module): Option[String] = {
-    val moduleDataNode = SbtUtil.getSbtModuleDataNode(module)
-    moduleDataNode.map(_.getData.getModuleName)
   }
 }

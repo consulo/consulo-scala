@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.structure.data
 
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.sbt.project.structure.data.XmlDeserializer.deserializeNodeSeq
 
 case class Dependencies[T](forProduction: Seq[T], forTest: Seq[T])
@@ -17,6 +17,6 @@ object Dependencies:
   given moduleDependenciesSerializer: XmlDeserializer[Dependencies[ModuleDependencyData]] =
     dependenciesSerializer("module")
 
-  given (EelDescriptor) => XmlDeserializer[Dependencies[ProjectDependencyData]] =
+  given (Platform) => XmlDeserializer[Dependencies[ProjectDependencyData]] =
     dependenciesSerializer("project")
 

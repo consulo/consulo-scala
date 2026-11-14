@@ -2,7 +2,7 @@ package org.jetbrains.sbt.project
 
 import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.sbt.*
+import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.api.*
 
 import java.nio.file.Path

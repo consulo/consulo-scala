@@ -4,7 +4,7 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import com.intellij.lang.documentation.AbstractDocumentationProvider
+import consulo.language.editor.documentation.LanguageDocumentationProvider
 import consulo.language.editor.documentation.DocumentationMarkup
 import consulo.language.psi.PsiElement
 import consulo.language.psi.util.PsiTreeUtil
@@ -44,7 +44,7 @@ import scala.jdk.CollectionConverters._
  * }}}
  */
 @ExtensionImpl(order = "before ScalaDocumentationProvider")
-class SbtDocumentationProvider extends AbstractDocumentationProvider {
+class SbtDocumentationProvider extends LanguageDocumentationProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
 

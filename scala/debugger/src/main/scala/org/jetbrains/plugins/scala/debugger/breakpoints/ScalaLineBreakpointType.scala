@@ -36,7 +36,8 @@ import consulo.ui.image.Image
 
 import java.util.Collections
 
-@ExtensionImpl(order = "last")
+// upstream: order = "last" (not allowed on consulo-java extension points)
+@ExtensionImpl
 class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", DebuggerBundle.message("line.breakpoints.tab.title")) {
 
   override def getDisplayName: String = DebuggerBundle.message("line.breakpoints.tab.title")

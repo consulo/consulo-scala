@@ -5,7 +5,7 @@ import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.AutoPopupController
-import consulo.language.editor.completion.CompletionConfidence
+import consulo.language.editor.completion.{CompletionConfidence, CompletionType}
 import consulo.language.editor.action.TypedHandlerDelegate
 import consulo.language.editor.action.TypedHandlerDelegate.Result
 import consulo.codeEditor.Editor
@@ -18,15 +18,15 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.sbt.language.SbtFileImpl
 import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.withScalacOption
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class EnableAutoPopupInScalacOptionsStrings extends CompletionConfidence {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-  override def shouldSkipAutopopup(editor: Editor, contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState =
+  override def shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState =
     withScalacOption(contextElement)(onMismatch = ThreeState.UNSURE, onMatch = _ => ThreeState.NO)
 }
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 final class ScalacOptionsAutoPopupCompletionHandler extends TypedHandlerDelegate {
 
   import ScalacOptionsAutoPopupCompletionHandler._
@@ -35,7 +35,7 @@ final class ScalacOptionsAutoPopupCompletionHandler extends TypedHandlerDelegate
     if (!file.is[ScalaFile, SbtFileImpl] || !(charTyped == '"' || charTyped == '-')) super.checkAutoPopup(charTyped, project, editor, file)
     else {
       val offset = editor.getCaretModel.getOffset
-      AutoPopupController.getInstance(project).scheduleAutoPopup(editor, condition(offset)(_))
+      AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC, (file: PsiFile) => condition(offset)(file))
       Result.STOP
     }
 }

@@ -3,8 +3,10 @@ package org.jetbrains.sbt.shell.optionsWarn
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-import com.intellij.build.AbstractViewManager
+import jakarta.inject.{Inject, Singleton}
+import consulo.build.ui.BuildContentManager
+import consulo.ide.impl.idea.build.AbstractViewManager
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import org.jetbrains.sbt.SbtBundle
 
@@ -30,9 +32,13 @@ import org.jetbrains.sbt.SbtBundle
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-private[shell] final class SbtShellBuildViewManager(project: Project) extends AbstractViewManager(project) {
-  override protected def getViewName: String =
-    SbtBundle.message("sbt.shell.title")
+private[shell] final class SbtShellBuildViewManager @Inject()(project: Project, buildContentManager: BuildContentManager)
+  extends AbstractViewManager(project, buildContentManager) {
+
+  override def getViewId: String = "sbt.shell.build.view"
+
+  override protected def getViewName: LocalizeValue =
+    LocalizeValue.of(SbtBundle.message("sbt.shell.title"))
 }
 
 private[shell] object SbtShellBuildViewManager {

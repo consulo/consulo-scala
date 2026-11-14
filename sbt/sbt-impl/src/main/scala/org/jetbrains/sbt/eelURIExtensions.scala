@@ -1,25 +1,20 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.sbt
 
-
-import org.jetbrains.sbt.api.file
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.utils.EelPathUtilsKt
-import com.intellij.platform.eel.provider.LocalEelDescriptor
+import consulo.platform.Platform
 
 import java.net.URI
 import java.nio.file.Path
 
-extension (uri: URI)
+extension (uri: URI) {
 
   /**
-   * Convert [[URI]] to [[Path]] in the environment described by the [[EelDescriptor]].
+   * Convert [[URI]] to [[Path]] on the given [[Platform]].
    *
-   * For local descriptors, returns a local path.
-   * For remote descriptors, returns a path with the remote prefix (e.g., `\\wsl.localhost\Ubuntu\...`).
+   * For the local platform, returns a local path.
+   * For remote platforms, returns a path of the platform file system.
    */
-  def asPath(using eelDescriptor: EelDescriptor): Path =
-    if eelDescriptor == LocalEelDescriptor.INSTANCE then
-      Path.of(uri)
-    else
-      EelPathUtilsKt.Path(uri.getPath, eelDescriptor)
+  def asPath(using platform: Platform): Path =
+    if (isLocalPlatform(platform)) Path.of(uri)
+    else platform.fs().getPath(uri.getPath)
+}

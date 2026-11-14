@@ -12,6 +12,7 @@ opaque type SbtShellRunId = String
 object SbtShellRunId {
   def apply(id: String): SbtShellRunId = id
 
-  extension (id: SbtShellRunId)
+  extension (id: SbtShellRunId) {
     def value: String = id
+  }
 }

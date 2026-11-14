@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.runner.debugger
 
-import com.intellij.debugger.engine.RemoteDebugProcessHandler
+import com.intellij.java.debugger.impl.engine.RemoteDebugProcessHandler
 import consulo.project.Project
 
 import scala.concurrent.duration.FiniteDuration

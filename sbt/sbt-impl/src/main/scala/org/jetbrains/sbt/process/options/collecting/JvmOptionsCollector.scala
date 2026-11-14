@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.options.collecting
 
-import com.intellij.execution.configuration.EnvironmentVariablesData
+import consulo.execution.configuration.EnvironmentVariablesData
 import consulo.process.cmd.ParametersListUtil
 import org.jetbrains.sbt.process.options.parsing.CommentsAndQuotesPreprocessor
 

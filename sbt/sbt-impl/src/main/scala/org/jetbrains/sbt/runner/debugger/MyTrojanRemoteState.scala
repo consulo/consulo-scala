@@ -1,17 +1,16 @@
 package org.jetbrains.sbt.runner.debugger
 
 import com.intellij.java.debugger.DebuggerManager
-import com.intellij.debugger.engine.{DebugProcessImpl, RemoteStateState}
-import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.ProcessHandler
+import com.intellij.java.debugger.impl.engine.DebugProcessImpl
+import com.intellij.java.debugger.impl.engine.RemoteStateState
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.process.ProcessHandler
 import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.execution.{DefaultExecutionResult, ExecutionResult}
+import consulo.execution.ui.console.{ConsoleView, TextConsoleBuilderFactory}
+import consulo.execution.DefaultExecutionResult
+import consulo.execution.ExecutionResult
 import consulo.process.ExecutionException
 import consulo.execution.executor.Executor
-import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
-import com.intellij.xdebugger.DapMode
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.runner.SbtRunConfiguration
@@ -51,29 +50,13 @@ private[runner] final class MyTrojanRemoteState(
 
   private def executeImpl(executor: Executor): DefaultExecutionResult = {
     val processHandler = new SbtRemoteDebugProcessHandler(environment.getProject)
-    if (DapMode.isDap)
-      new DefaultExecutionResult(null, processHandler)
-    else {
-      val consoleView = new ConsoleViewImpl(environment.getProject, false)
+    // upstream: no console in DAP mode; the console is decorated by Java run configuration extensions
+    // (JavaRunConfigurationExtensionManager.decorateExecutionConsole, no counterpart in consulo-java)
+    val consoleView = TextConsoleBuilderFactory.getInstance.createBuilder(environment.getProject).getConsole
+    consoleView.attachToProcess(processHandler)
 
-      // ATTENTION: the most important difference with `super.execute`.
-      // Platform `RemoteStateState.execute` attaches a plain `ConsoleViewImpl` before it returns.
-      // SBT shell debug needs Java console decorators installed before `attachToProcess`,
-      // otherwise wrappers such as LogCapture can observe debugger session creation before their own `attachToProcess` call.
-      val decoratedConsoleView = decorateExecutionConsole(consoleView, executor)
-      decoratedConsoleView.attachToProcess(processHandler)
-
-      new DefaultExecutionResult(decoratedConsoleView, processHandler)
-    }
+    new DefaultExecutionResult(consoleView, processHandler)
   }
-
-  private def decorateExecutionConsole(consoleView: ConsoleView, executor: Executor): ConsoleView =
-    JavaRunConfigurationExtensionManager.getInstance.decorateExecutionConsole(
-      configuration,
-      environment.getRunnerSettings,
-      consoleView,
-      executor
-    )
 
   def detach(): Unit = {
     val processHandler = execResult.flatMap(r => Option(r.getProcessHandler))

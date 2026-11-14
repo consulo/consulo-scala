@@ -10,7 +10,8 @@ import java.nio.file.Path
 object SimpleModuleBuildFileProvider extends BuildFileProvider {
 
   override def findIoFile(module: Module, elementType: BuildFileElementType): Option[BuildFileEntry[Path]] = {
-    val buildFile = Path.of(module.getModuleFilePath).getParent / Sbt.BuildFile
+    // upstream: the directory of the module file
+    val buildFile = Path.of(module.getModuleDirPath) / Sbt.BuildFile
     if (buildFile.exists) Some(BuildFileEntry(buildFile, isModuleLocal = true)) else None
   }
 }

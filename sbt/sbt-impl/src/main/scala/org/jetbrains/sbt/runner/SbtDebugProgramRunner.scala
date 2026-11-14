@@ -2,20 +2,22 @@ package org.jetbrains.sbt.runner
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.debugger.DebugEnvironment
-import com.intellij.debugger.engine.{DelayedRemoteConnection, DelayedRemoteConnectionImpl}
-import com.intellij.debugger.impl.GenericDebuggerRunner
+import com.intellij.java.debugger.impl.DebugEnvironment
+import com.intellij.java.debugger.impl.GenericDebuggerRunner
 import consulo.process.ExecutionException
-import com.intellij.execution.configurations.{RemoteConnection, RunProfile}
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.execution.configuration.RunProfile
 import consulo.execution.configuration.RunProfileState
-import com.intellij.execution.runToolbar.RunToolbarProcessData
 import consulo.execution.runner.ExecutionEnvironment
-import com.intellij.execution.runners.ExecutionUtil
-import com.intellij.execution.ui.RunContentDescriptor
+import consulo.execution.ExecutionUtil
+import consulo.execution.ui.RunContentDescriptor
+import consulo.application.progress.ProgressManager
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import com.intellij.openapi.wm.ToolWindowId
+import consulo.util.lang.function.ThrowableSupplier
+import consulo.project.ui.wm.ToolWindowId
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, executionContext, invokeAndWait, invokeLater}
+import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, executionContext, invokeLater}
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
 import org.jetbrains.sbt.runner.console.SbtShellWaitingForReadyHint
 import org.jetbrains.sbt.runner.debugger.MyTrojanRemoteState
@@ -41,7 +43,8 @@ import scala.util.control.NonFatal
  *
  * @see [[org.jetbrains.sbt.runner.SbtProgramRunner]]
  */
-@ExtensionImpl(order = "first")
+// upstream: order = "first"
+@ExtensionImpl
 class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtDebugProgramRunner"
@@ -94,17 +97,16 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
     environment: ExecutionEnvironment,
     sbtState: SbtCommandLineState,
   ): RunContentDescriptor = {
-    // Use a delayed connection because the sbt shell debug port is known only after the shell process is acquired off EDT.
-    //noinspection ApiStatus,UnstableApiUsage
-    val connection: DelayedRemoteConnectionImpl =
-      new DelayedRemoteConnectionImpl(true, "localhost", "", false)
+    // upstream: the shell is acquired off EDT and the debugger attaches through a DelayedRemoteConnection,
+    // which consulo-java doesn't have, so the shell process is acquired before the debugger is attached
+    val connection = acquireSbtShellDebugConnection(environment)
 
     val state = new MyTrojanRemoteState(environment, sbtState.configuration, connection)
     val attach: RunContentDescriptor = attachVirtualMachine(state, environment, connection, true)
 
     if (attach != null) {
       executeOnPooledThread {
-        startSbtShellDebugCommandAsync(environment, sbtState, connection, state)
+        startSbtShellDebugCommandAsync(environment, sbtState, state)
       }
     }
 
@@ -133,7 +135,7 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
    *
    * The caller schedules this method on a pooled thread because it may wait for the shell process and debug connection.
    * Once running, it:
-   *  1. prepares the delayed debugger connection from the SBT shell process,
+   *  1. waits until the debugger is attached to the SBT shell process,
    *  2. prints the run-console waiting hint when the shell cannot accept the command immediately,
    *  3. submits the SBT command to the shell, and
    *  4. detaches the lightweight debug process when command execution finishes.
@@ -142,7 +144,6 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
   private def startSbtShellDebugCommandAsync(
     environment: ExecutionEnvironment,
     sbtState: SbtCommandLineState,
-    connection: DelayedRemoteConnectionImpl,
     state: MyTrojanRemoteState
   ): Unit = {
     try {
@@ -152,7 +153,9 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
         waitingPrinter.printSbtShellWaitingHintOnce()
       }
 
-      ensureSbtShellStartedAndPrepareDelayedConnection(environment, state, connection)
+      // The remote connection returns after the connector obtains a VM, but before DebugProcessImpl finishes commitVM.
+      // If a lightweight sbt command finishes in that gap, detaching can race the debugger attach lifecycle.
+      state.awaitDebuggerAttached(DebugEnvironment.LOCAL_START_TIMEOUT.millis)
 
       val commandFuture = submitCommandsToShell(
         environment,
@@ -171,41 +174,20 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
     }
   }
 
-  //noinspection ApiStatus,UnstableApiUsage
-  private def ensureSbtShellStartedAndPrepareDelayedConnection(
-    environment: ExecutionEnvironment,
-    state: MyTrojanRemoteState,
-    delayedConnection: DelayedRemoteConnection & RemoteConnection
-  ): Unit = {
+  // the shell process is acquired on a background thread behind a modal progress, because this method is called on EDT
+  private def acquireSbtShellDebugConnection(environment: ExecutionEnvironment): RemoteConnection = {
     val processManager = SbtProcessManager.forProject(environment.getProject)
-    processManager.acquireShellProcessHandler(activateSbtShellToolWindowOnStartup = false)
+    val acquireShell: ThrowableSupplier[Unit, RuntimeException] =
+      () => processManager.acquireShellProcessHandler(activateSbtShellToolWindowOnStartup = false): Unit
+    ProgressManager.getInstance.runProcessWithProgressSynchronously(
+      acquireShell,
+      LocalizeValue.of(SbtBundle.message("initializing.sbt.shell.message")),
+      false,
+      environment.getProject
+    )
 
-    val shellDebugConnection = processManager.debugConnection.getOrElse {
+    processManager.debugConnection.getOrElse {
       throw new ExecutionException(SbtBundle.message("debugging.for.sbt.shell.is.disabled.in.sbt.settings"))
-    }
-    copyRemoteConnection(shellDebugConnection, delayedConnection)
-    runDelayedAttach(delayedConnection)
-    // DelayedRemoteConnection returns after the connector obtains a VM, but before DebugProcessImpl finishes commitVM.
-    // If a lightweight sbt command finishes in that gap, detaching can race the debugger attach lifecycle.
-    state.awaitDebuggerAttached(DebugEnvironment.LOCAL_START_TIMEOUT.millis)
-  }
-
-  private def copyRemoteConnection(from: RemoteConnection, to: RemoteConnection): Unit = {
-    to.setUseSockets(from.isUseSockets)
-    to.setServerMode(from.isServerMode)
-    to.setApplicationHostName(from.getApplicationHostName)
-    to.setApplicationAddress(from.getApplicationAddress)
-    to.setDebuggerHostName(from.getDebuggerHostName)
-    to.setDebuggerAddress(from.getDebuggerAddress)
-  }
-
-  //noinspection ApiStatus,UnstableApiUsage
-  private def runDelayedAttach(connection: DelayedRemoteConnection): Unit = {
-    val attachRunnable = Option(connection.getAttachRunnable).getOrElse {
-      throw new IllegalStateException("Debugger attach was not initialized")
-    }
-    invokeAndWait {
-      attachRunnable.run()
     }
   }
 
@@ -258,20 +240,15 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
   }
 
   //See SCL-24434
-  //noinspection UnstableApiUsage,ApiStatus
-  private def isRunConfigurationExecutedAsPartOfBeforeLaunchStep(environment: ExecutionEnvironment): Boolean = {
-    val config = environment.getRunnerAndConfigurationSettings
-    val mainConfigurationId = environment.getUserData(RunToolbarProcessData.RW_MAIN_CONFIGURATION_ID)
-    if (config == null || mainConfigurationId == null)
-      false
-    else
-      config.getUniqueID != mainConfigurationId
-  }
+  // upstream: compares the configuration with RunToolbarProcessData.RW_MAIN_CONFIGURATION_ID of the environment,
+  // Consulo doesn't track the main configuration of a "Before launch" run
+  private def isRunConfigurationExecutedAsPartOfBeforeLaunchStep(environment: ExecutionEnvironment): Boolean =
+    false
 
   private def isDebuggingInSbtShellInstanceOrSettingsEnabled(environment: ExecutionEnvironment): Boolean = {
     val project = environment.getProject
     val manager = SbtProcessManager.forProject(project)
-    val isShellInitialized = manager.shellRunner.isDefined || manager.terminalConsole.isDefined
+    val isShellInitialized = manager.shellRunner.isDefined
     val isDebuggingEnabled =
       if (isShellInitialized)
         manager.debugConnection.isDefined

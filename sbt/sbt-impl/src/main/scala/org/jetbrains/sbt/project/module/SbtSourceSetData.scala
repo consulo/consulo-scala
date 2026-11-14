@@ -1,8 +1,7 @@
 package org.jetbrains.sbt.project.module
 
-import com.intellij.openapi.externalSystem.model.{Key, ProjectKeys}
-import com.intellij.openapi.externalSystem.model.project.{ModuleData, ModuleNameDeduplicationStrategy}
-import com.intellij.serialization.PropertyMapping
+import consulo.externalSystem.model.{Key, ProjectKeys}
+import consulo.externalSystem.model.project.ModuleData
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 /**
@@ -18,13 +17,9 @@ import org.jetbrains.sbt.project.SbtProjectSystem
  * @param externalConfigPath module path
  * @param moduleTypeId module type id
  */
-final case class SbtSourceSetData @PropertyMapping(Array(
-  "id",
-  "externalName",
-  "moduleFileDirectoryPath",
-  "externalConfigPath",
-  "moduleTypeId"
-))(
+// upstream: lives in sbt-api; Consulo has no module types (moduleTypeId is kept for the callers only)
+// and no ModuleNameDeduplicationStrategy
+final case class SbtSourceSetData(
   id: String,
   externalName: String,
   moduleFileDirectoryPath: String,
@@ -33,25 +28,12 @@ final case class SbtSourceSetData @PropertyMapping(Array(
 ) extends ModuleData(
   id,
   SbtProjectSystem.Id,
-  moduleTypeId,
   externalName,
   moduleFileDirectoryPath,
   externalConfigPath
 )
 
 object SbtSourceSetData {
-  def apply(
-    id: String,
-    externalName: String,
-    moduleFileDirectoryPath: String,
-    externalConfigPath: String,
-    moduleTypeId: String
-  ): SbtSourceSetData = {
-    val sbtSourceSetData = new SbtSourceSetData(id, externalName, moduleFileDirectoryPath, externalConfigPath, moduleTypeId)
-    sbtSourceSetData.setModuleNameDeduplicationStrategy(ModuleNameDeduplicationStrategy.NUMBER_SUFFIX)
-    sbtSourceSetData
-  }
-
   val Key: Key[SbtSourceSetData] =
     new Key(classOf[SbtSourceSetData].getName, ProjectKeys.MODULE.getProcessingWeight + 2)
 }

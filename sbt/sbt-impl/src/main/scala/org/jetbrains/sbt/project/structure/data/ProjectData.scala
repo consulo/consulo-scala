@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.structure.data
 
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.sbt.project.structure.data.Helpers.uri
 import org.jetbrains.sbt.project.structure.data.XmlDeserializer.{deserializeNodeSeq, deserializeOne}
 
@@ -34,7 +34,7 @@ case class ProjectData(
 )
 
 object ProjectData:
-  given (PathConstructor[String], EelDescriptor) => XmlDeserializer[ProjectData] = what =>
+  given (PathConstructor[String], Platform) => XmlDeserializer[ProjectData] = what =>
     val id = (what \ "id").text
     val buildURI = (what \ "buildURI").text.uri
     val name = (what \ "name").text

@@ -35,7 +35,7 @@ object SbtScalacOptionArgumentsCompletionContributor {
     .withParent(scalacOptionsStringLiteralPattern
       .`with`(scalacOptionsWithNonEmptyChoicesPatternCondition))
 
-  private val completionProvider = new CompletionProvider[CompletionParameters] {
+  private val completionProvider = new CompletionProvider {
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet): Unit = {
       implicit val params: CompletionParameters = parameters
       implicit val ctx: ProcessingContext = context

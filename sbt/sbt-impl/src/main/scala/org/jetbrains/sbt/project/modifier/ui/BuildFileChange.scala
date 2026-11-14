@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.project.modifier.ui
 
 import consulo.project.Project
-import com.intellij.openapi.vcs.changes.{Change, ContentRevision}
+import consulo.versionControlSystem.change.{Change, ContentRevision}
 
 class BuildFileChange (val beforeRevision: ContentRevision, val afterRevision: ContentRevision,
                       val buildFileStatus: BuildFileModifiedStatus) extends Change(beforeRevision, afterRevision, buildFileStatus.getChangeStatus) {

@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.options.parsing
 
-import com.intellij.util.text.EditDistance
+import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.sbt.process.options.knownOptions.KnownSbtOption.Form.{InlineValue, NoValue, SeparateValue}
 import org.jetbrains.sbt.process.options.knownOptions.KnownSbtOption.Spelling
 import org.jetbrains.sbt.process.options.knownOptions.{KnownSbtOption, KnownSbtOptions}
@@ -114,7 +114,8 @@ private[options] final class SbtOptionsParser(source: SbtOptionsSource) {
             case InlineValue => userOpt.split("=")(0)
             case NoValue => userOpt
           }
-        val distance = EditDistance.optimalAlignment(optionKey, truncatedOptFromArg.trim, false, 2)
+        // upstream: EditDistance.optimalAlignment (case-insensitive, with transpositions)
+        val distance: Int = LevenshteinDistance.getDefaultInstance.apply(optionKey.toLowerCase, truncatedOptFromArg.trim.toLowerCase)
         optionKey -> distance
       }
       .filter(_._2 <= 2)

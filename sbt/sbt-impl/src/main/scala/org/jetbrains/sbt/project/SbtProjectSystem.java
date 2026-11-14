@@ -1,9 +1,10 @@
 package org.jetbrains.sbt.project;
 
-import com.intellij.openapi.externalSystem.model.ProjectSystemId;
-import org.jetbrains.plugins.scala.NlsString;
+import consulo.externalSystem.model.ProjectSystemId;
+import consulo.localize.LocalizeValue;
 import org.jetbrains.sbt.Sbt;
 
+// upstream: lives in sbt-api
 public final class SbtProjectSystem {
-    public static final ProjectSystemId Id = new ProjectSystemId("SBT", NlsString.force(Sbt.Name()));
+    public static final ProjectSystemId Id = new ProjectSystemId("SBT", LocalizeValue.of(Sbt.Name()), Sbt.Icon(), Sbt.FolderIcon());
 }

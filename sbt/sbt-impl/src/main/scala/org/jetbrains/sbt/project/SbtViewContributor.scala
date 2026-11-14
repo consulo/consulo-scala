@@ -4,9 +4,9 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.ui.ex.tree.PresentationData
 import consulo.externalSystem.model.project.ModuleData
-import com.intellij.openapi.externalSystem.model.project.ModuleDependencyData
+import consulo.externalSystem.model.project.ModuleDependencyData
 import consulo.externalSystem.model.{DataNode, Key, ProjectSystemId}
-import com.intellij.openapi.externalSystem.view.{ExternalProjectsView, ExternalSystemNode, ExternalSystemViewContributor, ModuleNode}
+import consulo.externalSystem.view.{ExternalProjectsView, ExternalSystemNode, ExternalSystemViewContributor, ModuleNode}
 import consulo.util.collection.SmartList
 import consulo.util.collection.MultiMap
 import org.jetbrains.sbt.SbtBundle

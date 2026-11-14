@@ -1,12 +1,11 @@
 package org.jetbrains.sbt
 
+import consulo.ui.image.Image
 import org.jetbrains.annotations.NonNls
-import org.jetbrains.plugins.scala.util.ExternalSystemUtil.SbtModuleChildKey
-import org.jetbrains.sbt.icons.Icons
+import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.project.module.{SbtNestedModuleData, SbtSourceSetData}
 
-import javax.swing.Icon
-
+// upstream: lives in sbt-api
 object Sbt {
   @NonNls val Name = "sbt"
   @NonNls val Extension = ".sbt"
@@ -25,23 +24,8 @@ object Sbt {
   // this should be in sync with sbt.BuildUtil.baseImports
   @NonNls val DefaultImplicitImports: Seq[String] = Seq("sbt._", "Process._", "Keys._", "dsl._")
 
-  val SbtModuleChildKeyInstance: SbtModuleChildKey = SbtModuleChildKey(SbtNestedModuleData.Key, SbtSourceSetData.Key)
+  val SbtModuleChildKeyInstance: SbtUtil.SbtModuleChildKey = SbtUtil.SbtModuleChildKey(SbtNestedModuleData.Key, SbtSourceSetData.Key)
 
-  /**
-   * '''ATTENTION!'''<br>
-   * Don't do these icons `val`. They are initialized  in test suites fields (e.g. via Sbt.LatestVersion)
-   * This can lead to initialization of [[com.github.benmanes.caffeine.cache.Caffeine]] which under the hood
-   * initializes ForkJoinPool via `getExecutor` method call. This initialization is done before test initialization
-   * which leads to ignoring of [[com.intellij.concurrency.IdeaForkJoinWorkerThreadFactory]].
-   *
-   * '''Note!''' <br>
-   * When tests are run using sbt with filtering of category (using `--exclude-categories=`), all the filtered
-   * tests are actually initialized (only constrictor). So if some ignored test contains a field with a reference
-   * to Icon, it will lead to corrupted ForkJoinPool in non-ignored tests.
-   *
-   * @see [[com.intellij.concurrency.IdeaForkJoinWorkerThreadFactory]]
-   * @see `com.intellij.concurrency.PoisonFactory`
-   */
-  def Icon: Icon = Icons.SBT
-  def FolderIcon: Icon = Icons.SBT_FOLDER
+  def Icon: Image = Icons.SBT
+  def FolderIcon: Image = Icons.SBT_FOLDER
 }

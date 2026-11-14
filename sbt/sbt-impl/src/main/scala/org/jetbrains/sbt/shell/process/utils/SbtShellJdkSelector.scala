@@ -3,14 +3,15 @@ package org.jetbrains.sbt.shell.process.utils
 import consulo.execution.CantRunException
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
-import com.intellij.openapi.options.ex.SingleConfigurableEditor
-import com.intellij.openapi.options.newEditor.SettingsDialog
+import consulo.application.util.SystemInfo
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.java.language.module.extension.JavaModuleExtension
+import consulo.language.util.ModuleUtilCore
+import consulo.localize.LocalizeValue
+import consulo.module.ModuleManager
 import consulo.project.Project
-import com.intellij.openapi.projectRoots.JavaSdkType
+import com.intellij.java.language.projectRoots.JavaSdkType
 import consulo.content.bundle.Sdk
-import consulo.module.content.ProjectRootManager
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
-import consulo.ui.ex.awt.DialogWrapper.DialogStyle
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.project.external.{JdkByName, SdkUtils}
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
@@ -35,11 +36,12 @@ final class SbtShellJdkSelector(project: Project) {
   private def getJdkVmExecutablePathPath(sdk: Sdk): Path = {
     sdk.getSdkType match {
       case sdkType: JavaSdkType =>
-        Path.of(sdkType.getVMExecutablePath(sdk))
+        // upstream: JavaSdkType.getVMExecutablePath
+        Path.of(sdkType.getBinPath(sdk)).resolve(if (SystemInfo.isWindows) "java.exe" else "java")
       case _ =>
         // The exception looks scary, but in the previous implementation, it was also thrown if the JDK was not of the JavaSdkType
         // (see com.intellij.openapi.projectRoots.JdkCommandLineSetup.setupJavaExePath)
-        throw CantRunException.jdkMisconfigured(sdk)
+        throw CantRunException.jdkMisconfigured(sdk, null)
     }
   }
 
@@ -59,8 +61,11 @@ final class SbtShellJdkSelector(project: Project) {
     jdkByName.flatMap(SdkUtils.findProjectSdk(_, project))
   }
 
+  // upstream: the project JDK (ProjectRootManager.getProjectSdk), Consulo modules have own JDKs - the JDK of the first module having one
   private def getProjectJdk: Option[Sdk] =
-    Option(ProjectRootManager.getInstance(project).getProjectSdk)
+    ModuleManager.getInstance(project).getModules.iterator
+      .flatMap(module => Option(ModuleUtilCore.getSdk(module, classOf[JavaModuleExtension[?]])))
+      .nextOption()
 
   private def showNoProjectJdkNotification(@Nls message: String): Unit = {
     val notification = ScalaNotificationGroups.sbtShell.createNotification(message, NotificationType.ERROR)
@@ -73,20 +78,11 @@ object SbtShellJdkSelector {
 
   private class ConfigureProjectJdkAction(
     project: Project
-  ) extends NotificationAction(SbtBundle.message("sbt.shell.configure.project.jdk")) {
+  ) extends NotificationAction(LocalizeValue.of(SbtBundle.message("sbt.shell.configure.project.jdk"))) {
 
-    /** copied from [[com.intellij.ide.actions.ShowStructureSettingsAction]] */
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-      new ShowProjectStructureDialog(project).show()
+      ShowSettingsUtil.getInstance.showProjectStructureDialog(project)
       notification.expire()
     }
-  }
-
-  private class ShowProjectStructureDialog(project: Project) extends SingleConfigurableEditor(
-    project,
-    ProjectStructureConfigurable.getInstance(project),
-    SettingsDialog.DIMENSION_KEY
-  ) {
-    override protected def getStyle = DialogStyle.COMPACT
   }
 }

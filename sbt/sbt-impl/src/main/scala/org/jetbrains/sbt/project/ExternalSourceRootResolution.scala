@@ -2,16 +2,10 @@ package org.jetbrains.sbt
 package project
 
 
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.distinctBy
-import org.jetbrains.sbt.api.file
-import org.jetbrains.sbt.api.find
-import org.jetbrains.sbt.api.v
-import com.intellij.openapi.externalSystem.model.ExternalSystemException
-import consulo.externalSystem.rt.model.ExternalSystemSourceType
-import com.intellij.openapi.externalSystem.model.project.LibraryData
+import consulo.externalSystem.rt.model.{ExternalSystemException, ExternalSystemSourceType}
+import consulo.externalSystem.model.project.LibraryData
 import consulo.externalSystem.model.project.{ModuleData as ESModuleData}
-import com.intellij.openapi.roots.DependencyScope
+import consulo.module.content.layer.orderEntry.DependencyScope
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.SbtProjectResolver.ImportContext
 import org.jetbrains.sbt.project.SbtProjectResolver.ImportContext.given
@@ -112,10 +106,10 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
       val representativeProject = representativeProjectIn(projects)
       val representativeProjectModule = projectToModuleNode.get(representativeProject)
 
-      val moduleFilesDirectory = representativeProjectModule.map(_.parent.getModuleFileDirectoryPath).getOrElse(defaultModuleFilesDirectory)
+      val moduleFilesDirectory = representativeProjectModule.map(_.parent.getModuleDirPath).getOrElse(defaultModuleFilesDirectory)
       val (moduleNode, contentRootNode) = createSharedSourceModuleSimple(rootGroup, moduleFilesDirectory, ownerProjectsIds)
       //todo: get jdk from a corresponding jvm module ?
-      moduleNode.add(ModuleSdkNode.inheritFromProject)
+      // upstream: moduleNode.add(ModuleSdkNode.inheritFromProject) - Consulo has no project SDK
 
       moduleNode.add(createScalaSdkData(representativeProject.scala))
 
@@ -209,7 +203,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
 
       val allSourceModules = collectSourceModules(projectToSourceSet)
       val representativeProjectModule = projectToSourceSet.get(representativeProject)
-      val moduleFilesDirectory = representativeProjectModule.map(_.parent.getModuleFileDirectoryPath).getOrElse(defaultModuleFilesDirectory)
+      val moduleFilesDirectory = representativeProjectModule.map(_.parent.getModuleDirPath).getOrElse(defaultModuleFilesDirectory)
 
       val sharedSourcesMainModule = createSharedSourceSetModule(
         rootGroup,
@@ -313,13 +307,8 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
   ): Unit = {
     val node = new ModuleDependencyNode(ownerModule, module)
     node.setScope(dependencyScope)
-    module match {
-      case sourceSetNode: SbtSourceSetModuleNode if sourceSetNode.sourceSetType == SourceSetType.Test =>
-        node.data.setProductionOnTestDependency(true)
-      case _ =>
-    }
+    // upstream: setProductionOnTestDependency for test source set dependencies, setOrder - not in Consulo
     node.setExported(exported)
-    order.foreach(node.setOrder)
     ownerModule.add(node)
   }
 
@@ -327,7 +316,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
     reprProjectModule: ModuleDataNodeType,
     moduleNodes: Option[ModuleDataNodeType]*
   ): Unit = {
-    val reprProjectModulePrefix = reprProjectModule.getInternalName.stripSuffix(reprProjectModule.getModuleName)
+    val reprProjectModulePrefix = reprProjectModule.getInternalName.stripSuffix(reprProjectModule.getExternalName)
     // note: if reprProjectModulePrefix is blank, then it's a root module in the project,
     // and simply the internal module should be used instead
     val group =
@@ -450,7 +439,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
   ): (ModuleDataNodeType, ContentRootNode) = {
     val groupBase = group.base
     val moduleNode = createModuleNode(
-      SharedSourcesModuleType.instance.getId,
+      SharedSourcesModuleType.Id,
       group.name,
       group.name,
       moduleFilesDirectory,
@@ -480,7 +469,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
 
   private def createParentSharedSourcesModule(group: SharedSourcesGroup, moduleFilesDirectory: String, parentModulesBases: Seq[String]): ModuleDataNodeType = {
     val moduleNode = new NestedModuleNode(
-      SharedSourcesModuleType.instance.getId,
+      SharedSourcesModuleType.Id,
       group.name,
       group.name,
       moduleFilesDirectory,
@@ -495,7 +484,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
 
     moduleNode.add(new SbtDisplayModuleNameNode(group.name))
 
-    moduleNode.add(ModuleSdkNode.inheritFromProject)
+    // upstream: moduleNode.add(ModuleSdkNode.inheritFromProject) - Consulo has no project SDK
 
     moduleNode
   }
@@ -514,7 +503,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
 
     val internalModuleName = s"${group.name}.$sourceSetName"
     val moduleNode = new SbtSourceSetModuleNode(
-      SharedSourcesModuleType.instance.getId,
+      SharedSourcesModuleType.Id,
       internalModuleName,
       sourceSetName,
       moduleFilesDirectory,
@@ -549,7 +538,7 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
     setupOutputDirectories(moduleNode, groupPath, Some(esSourceType))
 
     val scalaSdk = createScalaSdkData(representativeProject.scala)
-    moduleNode.add(ModuleSdkNode.inheritFromProject)
+    // upstream: moduleNode.add(ModuleSdkNode.inheritFromProject) - Consulo has no project SDK
     moduleNode.add(scalaSdk)
 
     val representativeProjectDependencies = representativeProject.dependencies
@@ -664,12 +653,15 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
   }
 
   private def calculateEsSourceType(root: SourceRoot): ExternalSystemSourceType =
-    ExternalSystemSourceType.from(
-      root.scope == SourceRoot.Scope.Test,
-      root.managed,
-      root.kind == SourceRoot.Kind.Resources,
-      false
-    )
+    // upstream: ExternalSystemSourceType.from - not in Consulo
+    (root.scope == SourceRoot.Scope.Test, root.managed, root.kind == SourceRoot.Kind.Resources) match {
+      case (false, false, false) => ExternalSystemSourceType.SOURCE
+      case (false, true, false) => ExternalSystemSourceType.SOURCE_GENERATED
+      case (false, _, true) => ExternalSystemSourceType.RESOURCE
+      case (true, false, false) => ExternalSystemSourceType.TEST
+      case (true, true, false) => ExternalSystemSourceType.TEST_GENERATED
+      case (true, _, true) => ExternalSystemSourceType.TEST_RESOURCE
+    }
 
   /**
    * @return list of shared source roots which meet these criteria:

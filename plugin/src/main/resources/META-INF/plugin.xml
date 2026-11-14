@@ -88,5 +88,9 @@
             <keyboard-shortcut keymap="$default" first-keystroke="control L" />
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L" />
         </reference>
+        <!-- sbt shell tool window (upstream adds it to the default keymap from code) -->
+        <reference ref="Activatesbt-shell-toolwindowToolWindow">
+            <keyboard-shortcut first-keystroke="control shift S" keymap="$default" />
+        </reference>
     </actions>
 </consulo-plugin>

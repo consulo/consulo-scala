@@ -1,26 +1,38 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.sbt
 
-
-import org.jetbrains.sbt.api.file
+import consulo.application.Application
+import consulo.application.platform.PlatformTargetManager
+import consulo.platform.Platform
 import consulo.util.io.FileUtil
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor}
+import org.jetbrains.plugins.scala.compiler.EelPathTranslator
 
-import java.nio.file.Path
+import java.nio.file.{FileSystems, Path}
 
-extension (path: Path)
-  def eelDescriptor: EelDescriptor = EelProviderUtil.getEelDescriptor(path)
+// upstream: EEL API (EelDescriptor) - Consulo Platform API is used instead
+extension (path: Path) {
+  /**
+   * The platform (machine) the path belongs to.
+   */
+  def platform: Platform =
+    if (path.getFileSystem == FileSystems.getDefault) Platform.current()
+    else
+      Option(Application.get().getInstance(classOf[PlatformTargetManager]).findTargetOf(path))
+        .flatMap(target => Option(target.getPlatform))
+        .getOrElse(Platform.current())
 
   def normalizedLocalPath: String =
     FileUtil.toSystemIndependentName(path.asLocalPath)
 
   /**
-   * A machine-specific local path translated via the eel API.
+   * A machine-specific local path.
    */
   def asLocalPath: String =
-    val eelPath = EelNioBridgeServiceKt.asEelPath(path)
-    if eelPath.getDescriptor == LocalEelDescriptor.INSTANCE then
-      path.toString
-    else
-      eelPath.toString
+    EelPathTranslator.translate(path)
+}
+
+/**
+ * @return true if the platform is the machine where the IDE is running
+ */
+def isLocalPlatform(platform: Platform): Boolean =
+  platform == Platform.current()

@@ -1,33 +1,18 @@
 package org.jetbrains.sbt.project
 
-import consulo.codeEditor.Editor
-import consulo.fileEditor.FileEditor
+import consulo.fileEditor.EditorNotificationBuilder
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import consulo.language.psi.PsiFile
-import com.intellij.ui.EditorNotificationPanel
 import org.jetbrains.sbt.SbtBundle
 
-import javax.swing.JComponent
-import javax.swing.event.HyperlinkEvent
-
+// upstream: builds an EditorNotificationPanel
 private object SbtProjectImportStateNotificationPanel {
-  def createNotificationPanel(project: Project, fileEditor: FileEditor): JComponent = {
-    val panel = new EditorNotificationPanel(fileEditor, EditorNotificationPanel.Status.Warning)
-    panel.setText(SbtBundle.message("sbt.project.not.loaded.notification.panel.text"))
-    val fixHandler = new EditorNotificationPanel.ActionHandler {
-      override def handlePanelActionClick(panel: EditorNotificationPanel, event: HyperlinkEvent): Unit = {
-        loadSbtProject()
-      }
-
-      override def handleQuickFixClick(editor: Editor, psiFile: PsiFile): Unit = {
-        loadSbtProject()
-      }
-
-      private def loadSbtProject(): Unit = {
-        SbtExternalSystemUtil.loadSbtProject(project)
-      }
-    }
-    panel.createActionLabel(SbtBundle.message("sbt.project.not.loaded.notification.panel.action.label"), fixHandler, true)
-    panel
+  def fillNotification(project: Project, builder: EditorNotificationBuilder): EditorNotificationBuilder = {
+    builder.asWarning()
+    builder.withText(LocalizeValue.of(SbtBundle.message("sbt.project.not.loaded.notification.panel.text")))
+    builder.withAction(LocalizeValue.of(SbtBundle.message("sbt.project.not.loaded.notification.panel.action.label")), _ =>
+      SbtExternalSystemUtil.loadSbtProject(project)
+    )
+    builder
   }
 }

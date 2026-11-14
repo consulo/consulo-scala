@@ -1,8 +1,8 @@
 package org.jetbrains.sbt
 package project
 
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
-import com.intellij.openapi.externalSystem.task.ExternalSystemTaskManager
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
+import consulo.externalSystem.task.ExternalSystemTaskManager
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
 
 import java.util

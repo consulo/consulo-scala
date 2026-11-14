@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process.options.reporting
 
-import com.intellij.build.issue.BuildIssueQuickFix
-import consulo.dataContext.DataContext
+import consulo.build.ui.issue.BuildIssueQuickFix
+import consulo.dataContext.DataProvider
 import consulo.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildReporter
@@ -226,7 +226,7 @@ private object OpenSbtSettingsQuickFix {
   val quickFix: BuildIssueQuickFix = new BuildIssueQuickFix {
     override def getId: String = ID
 
-    override def runQuickFix(project: Project, dataContext: DataContext): CompletableFuture[?] = {
+    override def runQuickFix(project: Project, dataProvider: DataProvider): CompletableFuture[?] = {
       // TODO: Open the concrete source-specific settings in the future, e.g. an sbt run configuration when options come from there.
       //NOTE: trimming as "Sbt options" UI value has leading `&` mnemonic marker.
       // It's automatically replaces with space. It's not a big issue, but visually it looks a little strange why the search text has a leading space

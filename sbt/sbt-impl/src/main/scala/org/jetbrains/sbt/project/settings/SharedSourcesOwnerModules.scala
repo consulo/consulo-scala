@@ -1,48 +1,33 @@
 package org.jetbrains.sbt.project.settings
 
-import consulo.annotation.component.ComponentScope
-import consulo.annotation.component.ServiceAPI
-import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-
-import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
 import consulo.module.Module
-import consulo.util.xml.serializer.XmlSerializerUtil
+import consulo.util.dataholder.Key
 
 import java.util.List as JList
 import scala.beans.BeanProperty
 import scala.compiletime.uninitialized
 
 /**
- * Persistent state component with a module file storage.
- * In shared sources module files, it stores the module names of their owner modules.
- *
- * It is read by [[org.jetbrains.jps.incremental.scala.sources.SharedSourcesModuleSerializer]] on the JPS side.
- *
- * ATTENTION:
- *  - The class name must stay in sync with the one used by `SharedSourcesModuleSerializer`.
- *  - If you rename or change the type of [[ownersModuleNames]], verify that
- *   `SharedSourcesModuleSerializer` still reads it correctly.
+ * In shared sources modules, it stores the module names of their owner modules.
  */
-@State(
-  name = "SharedSourcesOwnerModules",
-  storages = Array(new Storage(StoragePathMacros.MODULE_FILE))
-)
-@Singleton
-@ServiceAPI(ComponentScope.MODULE)
-@ServiceImpl
-class SharedSourcesOwnerModules extends PersistentStateComponent[SharedSourcesOwnerModules] {
+// upstream: a module-level PersistentStateComponent (module file storage), read by the JPS SharedSourcesModuleSerializer.
+// Consulo has no module-level persistent services and no JPS - the value is kept in memory (module user data)
+class SharedSourcesOwnerModules {
 
   @BeanProperty
   var ownersModuleNames: JList[String] = uninitialized
 
-  override def getState: SharedSourcesOwnerModules = this
-
-  override def loadState(s: SharedSourcesOwnerModules): Unit = XmlSerializerUtil.copyBean(s, this)
+  def getState: SharedSourcesOwnerModules = this
 }
 
 object SharedSourcesOwnerModules {
-  def getInstance(module: Module): SharedSourcesOwnerModules = {
-    module.getInstance(classOf[SharedSourcesOwnerModules])
+  private val InstanceKey: Key[SharedSourcesOwnerModules] = Key.create("sbt.shared.sources.owner.modules")
+
+  def getInstance(module: Module): SharedSourcesOwnerModules = synchronized {
+    Option(module.getUserData(InstanceKey)).getOrElse {
+      val instance = new SharedSourcesOwnerModules
+      module.putUserData(InstanceKey, instance)
+      instance
+    }
   }
 }

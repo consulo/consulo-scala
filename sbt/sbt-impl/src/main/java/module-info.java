@@ -77,6 +77,7 @@ open module org.intellij.scala.sbt.impl {
     requires typesafe.config;
     requires maven.artifact;
     requires consulo.module.api;
+    requires consulo.module.creation.api;
     requires consulo.module.content.api;
     requires consulo.module.ui.api;
     requires consulo.navigation.api;
@@ -112,6 +113,10 @@ open module org.intellij.scala.sbt.impl {
     requires org.intellij.scala.compiler.settings.definition;
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
+    requires consulo.java.debugger.impl;
+    requires consulo.execution.debug.api;
+    requires consulo.ide.impl;
+    requires consulo.build.ui.api;
 
 
 
@@ -120,10 +125,10 @@ open module org.intellij.scala.sbt.impl {
     exports org.jetbrains.sbt.actions;
     exports org.jetbrains.sbt.annotator;
     exports org.jetbrains.sbt.codeInsight.daemon;
+    exports org.jetbrains.sbt.buildinfo;
     exports org.jetbrains.sbt.codeInsight.template;
     exports org.jetbrains.sbt.codeInspection;
     exports org.jetbrains.sbt.editor.documentationProvider;
-    exports org.jetbrains.sbt.execution;
     exports org.jetbrains.sbt.language;
     exports org.jetbrains.sbt.language.completion;
     exports org.jetbrains.sbt.language.psi;
@@ -139,10 +144,8 @@ open module org.intellij.scala.sbt.impl {
     exports org.jetbrains.sbt.process.options.parsing.model;
     exports org.jetbrains.sbt.process.options.reporting;
     exports org.jetbrains.sbt.project;
-    exports org.jetbrains.sbt.project.autolink;
     exports org.jetbrains.sbt.project.data;
     exports org.jetbrains.sbt.project.data.service;
-    exports org.jetbrains.sbt.project.execution;
     exports org.jetbrains.sbt.project.modifier;
     exports org.jetbrains.sbt.project.modifier.location;
     exports org.jetbrains.sbt.project.modifier.ui;
@@ -153,12 +156,9 @@ open module org.intellij.scala.sbt.impl {
     exports org.jetbrains.sbt.project.structure.data;
     exports org.jetbrains.sbt.project.template;
     exports org.jetbrains.sbt.project.template.wizard;
-    exports org.jetbrains.sbt.project.template.wizard.buildSystem;
-    exports org.jetbrains.sbt.project.template.wizard.kotlin_interop;
     exports org.jetbrains.sbt.project.versionNotifications;
     exports org.jetbrains.sbt.runner;
     exports org.jetbrains.sbt.runner.console;
-    exports org.jetbrains.sbt.runner.console.inlayHint;
     exports org.jetbrains.sbt.runner.debugger;
     exports org.jetbrains.sbt.settings;
     exports org.jetbrains.sbt.shell;

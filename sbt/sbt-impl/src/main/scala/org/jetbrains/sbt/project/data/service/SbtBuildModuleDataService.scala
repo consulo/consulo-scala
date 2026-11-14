@@ -1,10 +1,7 @@
 package org.jetbrains.sbt.project.data.service
 
 import consulo.annotation.component.ExtensionImpl
-
 import consulo.externalSystem.model.DataNode
-import consulo.externalSystem.service.project.ProjectData
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
 import consulo.module.Module
 import consulo.project.Project
 import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
@@ -18,15 +15,26 @@ import scala.jdk.CollectionConverters._
 final class SbtBuildModuleDataService extends ScalaAbstractProjectDataService[SbtBuildModuleData, Module](SbtBuildModuleData.Key) {
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[SbtBuildModuleData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[SbtBuildModuleData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
-  ): Unit =
+    synchronous: Boolean
+  ): Unit = SbtModuleExtensions.executeProjectChangeAction(project, synchronous) {
+    val projectJdks = new SbtModuleExtensions.ProjectJdkCache(project)
     for {
       moduleNode <- toImport.asScala
-      module     <- modelsProvider.getIdeModuleByNode(moduleNode)
-    } importData(module, moduleNode.getData)
+      module     <- project.getIdeModuleByNode(moduleNode)
+    } {
+      importData(module, moduleNode.getData)
+      // upstream: the build module inherits the project JDK (ModuleSdkData) and its Scala support comes from the sbt module type.
+      // Consulo: the build module gets the Java extension with the JDK of the sbt project and the Scala extension
+      SbtModuleExtensions.modifyModel(module) { model =>
+        SbtModuleExtensions.configureJava(model, projectJdks.jdkFor(moduleNode), languageLevel = None)
+        SbtModuleExtensions.enableScala(model)
+      }
+    }
+  }
+
+  override def removeData(toRemove: util.Collection[? <: Module], project: Project, synchronous: Boolean): Unit = ()
 
   private def importData(sbtModule: Module,
                          data: SbtBuildModuleData): Unit = {

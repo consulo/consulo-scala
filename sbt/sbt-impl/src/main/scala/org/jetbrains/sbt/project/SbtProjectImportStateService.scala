@@ -4,12 +4,13 @@ import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Singleton
-import consulo.externalSystem.util.ExternalSystemApiUtil
+import org.jetbrains.sbt.SbtUtil
+import jakarta.inject.Inject
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import consulo.module.content.layer.orderEntry.LibraryOrderEntry
 import consulo.module.content.ModuleRootManager
-import consulo.content.OrderRootType
+import consulo.content.base.BinariesOrderRootType
 import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectUtil.{cachedModuleForPsiFile, isInSbtProject}
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-private[sbt] final class SbtProjectImportStateService(project: Project) {
+private[sbt] final class SbtProjectImportStateService @Inject()(project: Project) {
   import SbtProjectImportStateService.State
 
   private val state: ConcurrentHashMap[String, State] = new ConcurrentHashMap()
@@ -37,7 +38,7 @@ private[sbt] final class SbtProjectImportStateService(project: Project) {
   def isImported(file: PsiFile): Boolean = {
     cachedModuleForPsiFile(file) match {
       case Some(m) if isInSbtProject(m) =>
-        val relevantPath = Option(ExternalSystemApiUtil.getExternalRootProjectPath(m))
+        val relevantPath = Option(SbtUtil.getExternalRootProjectPath(m))
         relevantPath match {
           case Some(path) =>
             val s = state.computeIfAbsent(path, computeImportState)
@@ -63,7 +64,7 @@ private[sbt] final class SbtProjectImportStateService(project: Project) {
   private def computeImportState(relevantProjectPath: String): State = {
     val allBuildModules = ModuleManager.getInstance(project).getModules.filter(_.hasBuildModuleType)
     val relevantBuildModules = allBuildModules.filter { module =>
-      val projectRootPath = Option(ExternalSystemApiUtil.getExternalRootProjectPath(module))
+      val projectRootPath = Option(SbtUtil.getExternalRootProjectPath(module))
       projectRootPath.contains(relevantProjectPath)
     }
     val imported = relevantBuildModules.nonEmpty && relevantBuildModules.forall(hasSbtLibrary)
@@ -81,7 +82,7 @@ private[sbt] final class SbtProjectImportStateService(project: Project) {
 
   private def isSbtLibrary(library: LibraryOrderEntry): Boolean = {
     def expectedName = Option(library.getLibraryName).exists(_.startsWith(s"sbt: sbt-"))
-    def expectedJars = library.getRootFiles(OrderRootType.CLASSES).nonEmpty
+    def expectedJars = library.getFiles(BinariesOrderRootType.ID).nonEmpty
     expectedName && expectedJars
   }
 }

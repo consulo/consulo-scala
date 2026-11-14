@@ -3,7 +3,6 @@ package org.jetbrains.sbt.language.completion
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
-import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
 import consulo.language.editor.completion.lookup.LookupElementBuilder
 import consulo.language.Language
 import consulo.application.dumb.DumbAware
@@ -32,7 +31,7 @@ private abstract class SbtScalaVersionCompletionContributor extends CompletionCo
 }
 
 private object SbtScalaVersionCompletionContributor {
-  abstract class SbtScalaVersionCompletionProvider extends CompletionProvider[CompletionParameters] {
+  abstract class SbtScalaVersionCompletionProvider extends CompletionProvider {
     protected def getVersionsByLang(lang: Language, onlyStableVersions: Boolean): Seq[ComparableVersion]
 
     override def addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet): Unit = {

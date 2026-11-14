@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.structure
 
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.api.RichSeq
 import org.jetbrains.sbt.project.data.SbtPlay2ProjectData
@@ -15,7 +15,7 @@ import scala.collection.immutable.HashMap
 object Play2OldStructureAdapter {
   type ProjectId = String
 
-  def apply(newData: Seq[(ProjectId, Path, Play2Data)])(using EelDescriptor): SbtPlay2ProjectData = {
+  def apply(newData: Seq[(ProjectId, Path, Play2Data)])(using Platform): SbtPlay2ProjectData = {
     val projectKeyValueTriples = newData.flatMap {
       case (id, baseDir, data) => extractProjectKeyValue(id, baseDir, data)
     }
@@ -26,7 +26,7 @@ object Play2OldStructureAdapter {
     SbtPlay2ProjectData(avoidSL7005Bug[String, ProjectId, ParsedValue[?]](oldData))
   }
 
-  private def extractProjectKeyValue(id: ProjectId, baseDir: Path, data: Play2Data)(using EelDescriptor): Seq[(ProjectId, String, ParsedValue[?])] =  {
+  private def extractProjectKeyValue(id: ProjectId, baseDir: Path, data: Play2Data)(using Platform): Seq[(ProjectId, String, ParsedValue[?])] =  {
     val playVersion = data.playVersion.map(v => (PLAY_VERSION, StringParsedValue(v))).toSeq
     val confDirectory = data.confDirectory.map(d => (PLAY_CONF_DIR, StringParsedValue(d.toPath.toCanonicalPath.toString))).toSeq
 

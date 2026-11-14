@@ -24,6 +24,7 @@ object SbtShellCommandRequestId {
   def random(): SbtShellCommandRequestId =
     SbtShellCommandRequestId(UUID.randomUUID().toString)
 
-  extension (requestId: SbtShellCommandRequestId)
+  extension (requestId: SbtShellCommandRequestId) {
     def value: String = requestId
+  }
 }

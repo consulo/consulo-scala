@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process.options.collecting
 
-import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.configurations.GeneralCommandLine
+import consulo.execution.configuration.EnvironmentVariablesData
+import consulo.process.cmd.GeneralCommandLine
 import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.nio.charset.Charset

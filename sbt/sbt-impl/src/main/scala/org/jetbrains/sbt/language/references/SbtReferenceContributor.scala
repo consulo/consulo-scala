@@ -9,7 +9,7 @@ import consulo.language.pattern.PlatformPatterns
 import consulo.language.psi.{PsiReferenceContributor, PsiReferenceRegistrar}
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 
-@ExtensionImpl(order = "first")
+@ExtensionImpl
 class SbtReferenceContributor extends PsiReferenceContributor {
   override def getLanguage: Language = SbtLanguage.INSTANCE
 

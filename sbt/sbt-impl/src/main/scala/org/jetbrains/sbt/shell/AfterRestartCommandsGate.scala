@@ -23,9 +23,10 @@ private[shell] class AfterRestartCommandsGate[T] {
    * @return `true` if the item was accepted, `false` if the gate is already closed.
    */
   def enqueue(item: T): Boolean = lock.synchronized {
-    if !closed then
+    if (!closed) {
       queue.put(item)
       true
+    }
     else
       false
   }

@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.project.settings
 
-import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.setting.ExternalProjectSettings
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.project.Project
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.sbt.project.settings.SbtProjectSettings.canonical
 import org.jetbrains.sbt.settings.SbtSettings
@@ -24,6 +24,7 @@ import scala.beans.BeanProperty
  * @see [[org.jetbrains.sbt.settings.SbtSettings]]
  */
 //noinspection ConvertNullInitializerToUnderscore
+// upstream: lives in sbt-api
 class SbtProjectSettings extends ExternalProjectSettings {
 
   /**
@@ -77,7 +78,7 @@ class SbtProjectSettings extends ExternalProjectSettings {
   //Other project-level values imported from SBT
   /**
    * This setting is displayed in `Project Structure | Modules` in `*-build` modules in `sbt` tab<br>
-   * (see [[org.jetbrains.sbt.project.module.SbtModuleSettingsEditor]]))
+   * (upstream: see `SbtModuleSettingsEditor`)
    */
   @Nullable
   @BeanProperty var sbtVersion: String = scala.compiletime.uninitialized

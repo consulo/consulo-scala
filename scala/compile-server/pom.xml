@@ -47,7 +47,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>zinc_2.13,zinc-core_2.13,zinc-apiinfo_2.13,zinc-classpath_2.13,compiler-interface,util-interface,zinc-persist-core-assembly,scala-parallel-collections_2.13,io_2.13,file-tree-views,util-logging_2.13,collections_2.13,util-position_2.13,core-macros_2.13,sjson-new-core_2.13,jline,jansi,jline-terminal,jline-terminal-jni,jline-native,sjson-new-scalajson_2.13,shaded-scalajson_2.13,shaded-jawn-parser_2.13,util-relation_2.13,zinc-persist_2.13,sbinary_2.13,zinc-compile-core_2.13,launcher-interface,zero-allocation-hashing,util-control_2.13,zinc-classfile_2.13</includeArtifactIds>
+                            <includeArtifactIds>zinc_2.13,zinc-core_2.13,zinc-apiinfo_2.13,zinc-classpath_2.13,compiler-interface,util-interface,zinc-persist-core-assembly,io_2.13,file-tree-views,util-logging_2.13,collections_2.13,util-position_2.13,core-macros_2.13,sjson-new-core_2.13,jline,jansi,jline-terminal,jline-terminal-jni,jline-native,sjson-new-scalajson_2.13,shaded-scalajson_2.13,shaded-jawn-parser_2.13,util-relation_2.13,zinc-persist_2.13,sbinary_2.13,zinc-compile-core_2.13,launcher-interface,zero-allocation-hashing,util-control_2.13,zinc-classfile_2.13</includeArtifactIds>
                             <excludes>META-INF/**,module-info.class</excludes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
@@ -134,18 +134,6 @@
             <groupId>org.scala-sbt</groupId>
             <artifactId>zinc-persist-core-assembly</artifactId>
             <version>1.12.1</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-parallel-collections_2.13</artifactId>
-            <version>0.2.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

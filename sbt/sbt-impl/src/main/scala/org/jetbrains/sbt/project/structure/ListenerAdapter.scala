@@ -2,7 +2,7 @@ package org.jetbrains.sbt
 package project.structure
 
 import consulo.process.event.{ProcessEvent, ProcessListener}
-import com.intellij.execution.process.ProcessOutputTypes
+import consulo.process.ProcessOutputTypes
 import consulo.util.dataholder.Key
 
 class ListenerAdapter(listener: (OutputType, String) => Unit) extends ProcessListener {

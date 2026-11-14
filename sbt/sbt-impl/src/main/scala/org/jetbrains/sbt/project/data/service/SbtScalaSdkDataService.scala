@@ -1,12 +1,11 @@
 package org.jetbrains.sbt.project.data.service
 
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.externalSystem.model.DataNode
-import consulo.externalSystem.service.project.ProjectData
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import consulo.project.Project
 import consulo.content.library.Library
+import consulo.externalSystem.model.DataNode
+import consulo.module.content.ModuleRootManager
+import consulo.project.Project
+import consulo.project.content.library.ProjectLibraryTable
 import org.jetbrains.plugins.scala.project.ReplClasspath
 import org.jetbrains.plugins.scala.project.external.{ScalaAbstractProjectDataService, ScalaSdkUtils}
 import org.jetbrains.sbt.project.SbtProjectSystem
@@ -19,14 +18,14 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class SbtScalaSdkDataService extends ScalaAbstractProjectDataService[SbtScalaSdkData, Library](SbtScalaSdkData.Key){
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[SbtScalaSdkData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[SbtScalaSdkData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider): Unit = {
+    synchronous: Boolean
+  ): Unit = SbtModuleExtensions.executeProjectChangeAction(project, synchronous) {
     val dataToImport = toImport.asScala
     for {
       dataNode <- dataToImport
-      module <- modelsProvider.getIdeModuleByNode(dataNode)
+      module <- project.getIdeModuleByNode(dataNode)
       SbtScalaSdkData(scalaVersion, scalacClasspath, scaladocExtraClasspath, compilerBridgeBinaryJar, replClasspath) = dataNode.getData
     } {
       /*
@@ -38,16 +37,30 @@ class SbtScalaSdkDataService extends ScalaAbstractProjectDataService[SbtScalaSdk
        * because all modules already depend on scala3-module in the Scala3 project itself
        * So scalaInstance is reported for modules only as compiler which should be used to compile sources
        */
-      scalaVersion.foreach(ScalaSdkUtils.configureScalaSdk(
-        module,
-        _,
-        scalacClasspath.map(_.toPath),
-        scaladocExtraClasspath.map(_.toPath),
-        compilerBridgeBinaryJar.map(_.toPath),
-        ReplClasspath.fromPaths(replClasspath.map(_.toPath)),
-        sdkPrefix = SbtProjectSystem.Id.getReadableName,
-        modelsProvider
-      ))
+      scalaVersion.foreach { version =>
+        val rootModel = ModuleRootManager.getInstance(module).getModifiableModel
+        val projectLibrariesModel = ProjectLibraryTable.getInstance(project).getModifiableModel
+        try {
+          ScalaSdkUtils.configureScalaSdk(
+            module,
+            version,
+            scalacClasspath.map(_.toPath),
+            scaladocExtraClasspath.map(_.toPath),
+            compilerBridgeBinaryJar.map(_.toPath),
+            ReplClasspath.fromPaths(replClasspath.map(_.toPath)),
+            sdkPrefix = SbtProjectSystem.Id.getReadableName.get,
+            projectLibrariesModel,
+            rootModel
+          )
+          // Consulo: Scala is enabled in a module by the Scala module extension
+          SbtModuleExtensions.enableScala(rootModel)
+        } finally {
+          projectLibrariesModel.commit()
+          rootModel.commit()
+        }
+      }
     }
   }
+
+  override def removeData(toRemove: util.Collection[? <: Library], project: Project, synchronous: Boolean): Unit = ()
 }

@@ -1,18 +1,18 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configurations.RunProfile
-import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.ProcessHandler
+import consulo.execution.configuration.RunProfile
+import consulo.execution.debug.DefaultDebugExecutor
+import consulo.process.{BaseProcessHandler, ProcessHandler}
 import consulo.execution.runner.ExecutionEnvironment
-import com.intellij.execution.runners.RunContentBuilder
-import com.intellij.execution.ui.{ConsoleView, RunContentDescriptor}
-import com.intellij.execution.DefaultExecutionResult
+import consulo.execution.runner.RunContentBuilder
+import consulo.execution.ui.console.{ConsoleView, TextConsoleBuilderFactory}
+import consulo.execution.ui.RunContentDescriptor
+import consulo.execution.DefaultExecutionResult
 import consulo.application.ApplicationManager
 import consulo.document.FileDocumentManager
 import consulo.component.ProcessCanceledException
 import consulo.project.Project
-import com.intellij.openapi.wm.ToolWindowManager
+import consulo.project.ui.wm.ToolWindowManager
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, invokeAndWait, invokeLater}
 import org.jetbrains.sbt.runner.SbtProgramRunnerBase.{DummyProcessHandler, commandFinishedSuccessfully}
@@ -149,7 +149,7 @@ trait SbtProgramRunnerBase {
     environment: ExecutionEnvironment,
     processHandler: ProcessHandler,
   ): (RunContentDescriptor, ConsoleView) = {
-    val consoleView = new ConsoleViewImpl(environment.getProject, false)
+    val consoleView = TextConsoleBuilderFactory.getInstance.createBuilder(environment.getProject).getConsole
     consoleView.attachToProcess(processHandler)
 
     val executionResult = new DefaultExecutionResult(consoleView, processHandler)
@@ -175,7 +175,7 @@ object SbtProgramRunnerBase {
   private class DummyProcessHandler(
     sbtCommandSubmitter: SbtShellCommandSubmitter,
     requestId: SbtShellCommandRequestId,
-  ) extends ProcessHandler {
+  ) extends BaseProcessHandler {
     private var submitted: Boolean = false
     private var cancellationRequested: Boolean = false
     private var cancellationSent: Boolean = false

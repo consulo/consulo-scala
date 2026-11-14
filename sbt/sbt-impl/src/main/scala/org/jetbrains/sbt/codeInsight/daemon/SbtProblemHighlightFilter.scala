@@ -5,7 +5,7 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.editor.ProblemHighlightFilter
 import consulo.application.ApplicationManager
 import consulo.module.content.ProjectRootManager
-import com.intellij.openapi.vfs.NonPhysicalFileSystem
+import consulo.virtualFileSystem.NonPhysicalFileSystem
 import consulo.language.psi.{PsiCodeFragment, PsiFile}
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiFileExt}
 import org.jetbrains.sbt.api.language.SbtFile

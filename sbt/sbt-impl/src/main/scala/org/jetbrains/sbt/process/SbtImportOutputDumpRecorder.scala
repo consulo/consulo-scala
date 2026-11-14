@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process
 
-import com.intellij.openapi.application.PathManager
+import consulo.container.boot.ContainerPathManager
 import consulo.logging.Logger
 import org.jetbrains.sbt.project.structure.OutputType
 
@@ -81,7 +81,7 @@ private object SbtImportOutputDumpRecorder {
 
   private def createOutputDumpFileInTempDir(): Option[Path] = {
     val dirTry = Try {
-      val tempDir = PathManager.getTempDir
+      val tempDir = Path.of(ContainerPathManager.get().getTempPath)
       Files.createDirectories(tempDir)
       Files.createTempFile(tempDir, "sbt-import-heartbeat-", ".log")
     }

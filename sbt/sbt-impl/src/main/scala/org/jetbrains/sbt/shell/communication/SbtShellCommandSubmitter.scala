@@ -1,5 +1,6 @@
 package org.jetbrains.sbt.shell.communication
 
+import consulo.annotation.component.{ComponentScope, ServiceAPI}
 import consulo.project.Project
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.executionContext.appExecutionContext
@@ -13,6 +14,7 @@ import scala.concurrent.Future
  * Still, this interface is useful to have to highlight a separate arthitectural component.
  */
 // upstream: @Experimental
+@ServiceAPI(ComponentScope.PROJECT)
 trait SbtShellCommandSubmitter {
 
   /**

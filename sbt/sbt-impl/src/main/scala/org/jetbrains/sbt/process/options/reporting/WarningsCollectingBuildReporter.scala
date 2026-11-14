@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process.options.reporting
 
-import com.intellij.build.FilePosition
-import com.intellij.build.issue.BuildIssue
+import consulo.build.ui.FilePosition
+import consulo.build.ui.issue.BuildIssue
 import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.NoOpBuildReporter
@@ -22,7 +22,7 @@ private[sbt] final class WarningsCollectingBuildReporter extends NoOpBuildReport
     warnings += SbtOptionsWarningData(message, details)
 
   override def warning(issue: BuildIssue): Unit =
-    warnings += SbtOptionsWarningData(issue.getTitle, issue.getDescription, issue.getQuickFixes.asScala.toSeq)
+    warnings += SbtOptionsWarningData(issue.getTitle.get, issue.getDescription.get, issue.getQuickFixes.asScala.toSeq)
 
   override def warning(
     @Nls message: String,

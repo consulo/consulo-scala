@@ -4,11 +4,11 @@ package project.settings
 
 import org.jetbrains.sbt.api.JvmMemorySize
 import org.jetbrains.sbt.api.SbtVersion
-import org.jetbrains.sbt.api.file
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
-import com.intellij.openapi.externalSystem.model.settings.ExternalSystemExecutionSettings
+import consulo.externalSystem.model.setting.ExternalSystemExecutionSettings
 import consulo.ide.setting.ShowSettingsUtil
+import consulo.localize.LocalizeValue
 import consulo.project.Project
 import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
 import org.jetbrains.plugins.scala.extensions.PathExt
@@ -85,10 +85,10 @@ object SbtExecutionSettings {
     val empty: SbtOptions = SbtOptions(Seq.empty)
   }
 
-  private final class ConfigureJdkAction(project: Project) extends NotificationAction(SbtBundle.message("sbt.shell.configure.sbt.jvm")) {
+  private final class ConfigureJdkAction(project: Project) extends NotificationAction(LocalizeValue.of(SbtBundle.message("sbt.shell.configure.sbt.jvm"))) {
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       // External system handles the Configurable name for sbt settings
-      ShowSettingsUtil.getInstance().showSettingsDialog(project, SbtProjectSystem.Id.getReadableName)
+      ShowSettingsUtil.getInstance().showSettingsDialog(project, SbtProjectSystem.Id.getReadableName.get)
       notification.expire()
     }
   }

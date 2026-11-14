@@ -4,41 +4,38 @@ package project
 import consulo.annotation.component.ExtensionImpl
 
 
-import org.jetbrains.sbt.api.JvmMemorySize
-import org.jetbrains.sbt.api.SbtVersion
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.jarWith
-import org.jetbrains.sbt.api.safeMap
-import com.intellij.execution.configurations.SimpleJavaParameters
+import com.intellij.java.language.projectRoots.{JavaSdkType, OwnJdkVersionDetector}
 import consulo.application.ApplicationManager
-import com.intellij.openapi.application.PathManager
-import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.model.ExternalSystemException
-import consulo.externalSystem.model.ProjectSystemId
-import com.intellij.openapi.externalSystem.util.ExternalSystemConstants
-import com.intellij.openapi.externalSystem.{ExternalSystemConfigurableAware, ExternalSystemManager}
 import consulo.configurable.Configurable
+import consulo.content.bundle.SdkTable
+import consulo.externalSystem.model.ProjectSystemId
+import consulo.externalSystem.rt.model.ExternalSystemException
+import consulo.externalSystem.service.project.ExternalSystemProjectResolver
+import consulo.externalSystem.task.ExternalSystemTaskManager
+import consulo.externalSystem.{ExternalSystemConfigurableAware, ExternalSystemManager}
+import consulo.fileChooser.FileChooserDescriptor
+import consulo.java.language.module.extension.JavaModuleExtension
+import consulo.language.util.ModuleUtilCore
+import consulo.logging.Logger
+import consulo.module.ModuleManager
 import consulo.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkType, ProjectJdkTable}
-import consulo.process.cmd.JdkUtil
-import consulo.module.content.ProjectRootManager
+import consulo.application.util.SystemInfo
 import consulo.application.util.registry.Registry
 import consulo.util.lang.Pair
-import consulo.application.util.SystemInfo
-import java.util.function.Function
+import java.util.function.{Function, Supplier}
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
-import org.jetbrains.jps.model.java.JdkVersionDetector
 import org.jetbrains.plugins.scala.extensions.{PathExt, invokeAndWait}
 import org.jetbrains.sbt.SbtUtil.{defaultLauncherPath, detectSbtVersion}
+import org.jetbrains.sbt.api.{JvmMemorySize, RichOption, SbtVersion}
 import org.jetbrains.sbt.process.options.SbtProcessOptionsResolver
 import org.jetbrains.sbt.project.settings.*
 import org.jetbrains.sbt.settings.{SbtExternalSystemConfigurable, SbtSettings}
 import org.jetbrains.sbt.{SbtBundle, SbtUtil}
 
+import java.nio.file.Files
 import java.nio.file.Path
-import scala.annotation.nowarn
 
 @ExtensionImpl
 class SbtExternalSystemManager
@@ -46,35 +43,24 @@ class SbtExternalSystemManager
     with ExternalSystemConfigurableAware
     with AutoImportAwareness {
 
-  override def enhanceRemoteProcessing(parameters: SimpleJavaParameters): Unit = {
-    val classpath = parameters.getClassPath
-
-    classpath.add(jarWith[this.type])
-    //    classpath.add(jarWith[org.jetbrains.sbt.structure.XmlSerializer[?]].toCanonicalPath.toString)
-    classpath.add(jarWith[scala.Specializable])
-    classpath.add(jarWith[scala.xml.Node])
-
-    parameters.getVMParametersList.addProperty(
-      ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY, SbtProjectSystem.Id.getId)
-
-    parameters.getVMParametersList.addProperty(
-      PathManager.PROPERTY_LOG_PATH, PathManager.getLogPath)
-  }
+  // upstream: enhanceRemoteProcessing - Consulo resolves external projects in the IDE process
 
   override def getSystemId: ProjectSystemId = SbtProjectSystem.Id
 
-  override def getSettingsProvider: Function[Project, SbtSettings] = SbtSettings.getInstance
+  override def getSettingsProvider: Function[Project, SbtSettings] = SbtSettings.getInstance(_)
 
-  override def getLocalSettingsProvider: Function[Project, SbtLocalSettings] = SbtLocalSettings.getInstance
+  override def getLocalSettingsProvider: Function[Project, SbtLocalSettings] = SbtLocalSettings.getInstance(_)
 
   override def getExecutionSettingsProvider: Function[Pair[Project, String], SbtExecutionSettings] =
     tup => SbtExternalSystemManager.executionSettingsFor(tup.first, tup.second)
 
-  override def getProjectResolverClass: Class[SbtProjectResolver] = classOf[SbtProjectResolver]
+  override def getProjectResolverFactory: Supplier[? <: ExternalSystemProjectResolver[SbtExecutionSettings]] =
+    () => new SbtProjectResolver
 
-  override def getTaskManagerClass: Class[SbtTaskManager] = classOf[SbtTaskManager]
+  override def getTaskManagerFactory: Supplier[? <: ExternalSystemTaskManager[SbtExecutionSettings]] =
+    () => new SbtTaskManager
 
-  override def getExternalProjectDescriptor = new SbtOpenProjectDescriptor()
+  override def getExternalProjectDescriptor: FileChooserDescriptor = new SbtOpenProjectDescriptor()
 
   override def getConfigurable(project: Project): Configurable = new SbtExternalSystemConfigurable(project)
 }
@@ -105,8 +91,8 @@ object SbtExternalSystemManager {
     val linkedProjectSettings = settings.getLinkedProjectSettings(path)
     val projectSettings = Option(linkedProjectSettings).getOrElse(SbtProjectSettings.default)
 
-    val customLauncher = Option(settingsState.customLauncherPath).map(Path.of(_))
-    val customSbtStructureFile = Option(settingsState.customSbtStructurePath).filterNot(StringUtils.isBlank).map(Path.of(_))
+    val customLauncher = Option(settingsState.customLauncherPath).map(Path.of(_: String))
+    val customSbtStructureFile = Option(settingsState.customSbtStructurePath).filterNot(StringUtils.isBlank).map(Path.of(_: String))
 
     val realProjectPath = Option(projectSettings.getExternalProjectPath).getOrElse(path)
 
@@ -120,7 +106,7 @@ object SbtExternalSystemManager {
     val projectJdkName = bootstrapJdk(project, projectSettings)
     val vmExecutable = getVmExecutable(project, projectJdkName, settingsState, sbtVersion)
     val jreHome = Option(vmExecutable.getParent).flatMap(p => Option(p.getParent))
-    val separateProdTestSources = Registry.is(SbtProjectSettings.SeparateMainTestModulesRegistryKey)
+    val separateProdTestSources = Registry.is(SbtProjectSettings.SeparateMainTestModulesRegistryKey, true)
     val vmOptions = getVmOptions(settingsState, jreHome, separateProdTestSources)
     val parsedSbtOptions = SbtProcessOptionsResolver.parseSbtOptionsFromSettings(settings.sbtOptions)
 
@@ -152,7 +138,11 @@ object SbtExternalSystemManager {
    */
   private def bootstrapJdk(project: Project, importSettings: SbtProjectSettings): Option[String] = {
     // either what was set in previous import, or default from Project Structure defaults
-    val jdkInProject = Option(ProjectRootManager.getInstance(project).getProjectSdk).map(_.getName)
+    // upstream: the project JDK (ProjectRootManager.getProjectSdk), Consulo modules have own JDKs - the JDK of the first module having one
+    val jdkInProject = ModuleManager.getInstance(project).getModules.iterator
+      .flatMap(module => Option(ModuleUtilCore.getSdk(module, classOf[JavaModuleExtension[?]])))
+      .nextOption()
+      .map(_.getName)
     // setting used *only* for initial import
     val jdkInImportSettings = importSettings.jdkName
     // use setting from initial import only when there is no other information
@@ -163,7 +153,7 @@ object SbtExternalSystemManager {
 
   // upstream: @RequiresBackgroundThread
   private def getVmExecutable(project: Project, projectJdkName: Option[String], settings: SbtSettings.State, sbtVersion: SbtVersion): Path = {
-    val jdkTable = ProjectJdkTable.getInstance(project)
+    val jdkTable = SdkTable.getInstance()
 
     val customVmExecutable = getCustomJvmPath(settings)
     val orProjectJdk = customVmExecutable.orElse(getProjectJdkPath(projectJdkName, jdkTable))
@@ -175,24 +165,35 @@ object SbtExternalSystemManager {
 
   private def getCustomJvmPath(settings: SbtSettings.State): Option[Path] = {
     Option(settings.customVMPath)
-      .map(Path.of(_))
-      .filter(JdkUtil.checkForJre)
+      .map(Path.of(_: String))
+      .filter(checkForJre)
       .map: customPath =>
         Log.debug(s"Using Java from custom VM path: $customPath")
-        @NonNls val javaExe = if SystemInfo.isWindows then "java.exe" else "java"
-        customPath / "bin" / javaExe
+        customPath / "bin" / javaExecutableName
   }
 
-  private def getProjectJdkPath(projectJdkName: Option[String], jdkTable: ProjectJdkTable): Option[Path] = {
+  // upstream: JdkUtil.checkForJre / checkForJdk / JavaSdk.getVMExecutablePath
+  private def javaExecutableName: String = if (SystemInfo.isWindows) "java.exe" else "java"
+
+  private def checkForJre(home: Path): Boolean =
+    Files.isRegularFile(home.resolve("bin").resolve(javaExecutableName))
+
+  private def checkForJdk(home: Path): Boolean =
+    checkForJre(home) && Files.isRegularFile(home.resolve("bin").resolve(if (SystemInfo.isWindows) "javac.exe" else "javac"))
+
+  private def vmExecutablePath(sdk: consulo.content.bundle.Sdk): Path =
+    Path.of(sdk.getHomePath).resolve("bin").resolve(javaExecutableName)
+
+  private def getProjectJdkPath(projectJdkName: Option[String], jdkTable: SdkTable): Option[Path] = {
     val projectJdkFound = projectJdkName
-      .safeMap(jdkTable.findJdk)
-      .filter(jdk => JdkUtil.checkForJdk(jdk.getHomePath)): @nowarn("cat=deprecation")
+      .safeMap(jdkTable.findSdk)
+      .filter(jdk => jdk.getHomePath != null && checkForJdk(Path.of(jdk.getHomePath)))
     projectJdkFound.map { sdk =>
       Log.debug(s"Using Java project JDK: $sdk")
 
       sdk.getSdkType match {
-        case sdkType: JavaSdkType =>
-          Path.of(sdkType.getVMExecutablePath(sdk))
+        case _: JavaSdkType =>
+          vmExecutablePath(sdk)
         case _ =>
           // ugh
           throw new ExternalSystemException(SbtBundle.message("sbt.import.noProjectJvmFound"))
@@ -202,29 +203,29 @@ object SbtExternalSystemManager {
 
   // upstream: @VisibleForTesting
   private[project] trait AutoDetectJdkProvider {
-    def findJdkWithSuitableVersion(jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate
+    def findJdkWithSuitableVersion(jdkTable: SdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate
 
-    def preconfigureJdkForSbt(project: Project, jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): Unit
+    def preconfigureJdkForSbt(project: Project, jdkTable: SdkTable, sbtVersion: SbtVersion): Unit
   }
 
   // upstream: @VisibleForTesting
   private[project] object SbtProcessAutoDetectJdkProvider extends AutoDetectJdkProvider {
-    override def findJdkWithSuitableVersion(jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate =
+    override def findJdkWithSuitableVersion(jdkTable: SdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate =
       SbtProcessJdkGuesser.findJdkWithSuitableVersion(jdkTable, sbtVersion)
 
-    override def preconfigureJdkForSbt(project: Project, jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): Unit =
+    override def preconfigureJdkForSbt(project: Project, jdkTable: SdkTable, sbtVersion: SbtVersion): Unit =
       SbtProcessJdkGuesser.preconfigureJdkForSbt(project, jdkTable, sbtVersion)
   }
 
   // upstream: @RequiresBackgroundThread
-  private def getAutoDetectJdkPath(project: Project, sbtVersion: SbtVersion, jdkTable: ProjectJdkTable): Option[Path] =
+  private def getAutoDetectJdkPath(project: Project, sbtVersion: SbtVersion, jdkTable: SdkTable): Option[Path] =
     getAutoDetectJdkPath(project, sbtVersion, jdkTable, SbtProcessAutoDetectJdkProvider)
 
   // upstream: @RequiresBackgroundThread
   private[project] def getAutoDetectJdkPath(
     project: Project,
     sbtVersion: SbtVersion,
-    jdkTable: ProjectJdkTable,
+    jdkTable: SdkTable,
     autoDetectJdkProvider: AutoDetectJdkProvider,
   ): Option[Path] = {
     //automatically detect JDK if none is defined
@@ -241,14 +242,14 @@ object SbtExternalSystemManager {
     sdk.map { sdk =>
       Log.debug(s"Using Java from best auto-detected JDK: $sdk")
 
-      Path.of(JavaSdk.getInstance().getVMExecutablePath(sdk))
+      vmExecutablePath(sdk)
     }
   }
 
   // upstream: @RequiresBackgroundThread
   private def preconfigureJdkTableForSbtImportIfAllowed(
     project: Project,
-    jdkTable: ProjectJdkTable,
+    jdkTable: SdkTable,
     sbtVersion: SbtVersion,
     autoDetectJdkProvider: AutoDetectJdkProvider,
   ): Unit = {
@@ -264,7 +265,7 @@ object SbtExternalSystemManager {
 
   private def preconfigureJdkTableForSbtImport(
     project: Project,
-    jdkTable: ProjectJdkTable,
+    jdkTable: SdkTable,
     sbtVersion: SbtVersion,
     autoDetectJdkProvider: AutoDetectJdkProvider,
   ): Unit = {
@@ -325,7 +326,7 @@ object SbtExternalSystemManager {
       val withoutPermSize = for {
         home <- jreHome
         if !hasOption(maxPermSize.key)
-        jreVersion <- Option(JdkVersionDetector.getInstance().detectJdkVersionInfo(home.toCanonicalPath.toString))
+        jreVersion <- Option(OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(home.toCanonicalPath.toString))
         if jreVersion.version.feature >= 8
       } yield options
 

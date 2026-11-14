@@ -2,34 +2,21 @@ package org.jetbrains.sbt
 package project.data
 package service
 
+import com.intellij.java.compiler.impl.javaCompiler.javac.JavacCompilerConfiguration
 import consulo.annotation.component.ExtensionImpl
-
-
-import org.jetbrains.sbt.api.SbtVersion
-import org.jetbrains.sbt.api.asScala
-import com.intellij.compiler.CompilerConfiguration
-import com.intellij.compiler.impl.javaCompiler.javac.JavacConfiguration
-import consulo.externalSystem.service.project.ProjectData
+import consulo.content.bundle.Sdk
 import consulo.externalSystem.model.{DataNode, ProjectKeys}
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.externalSystem.service.project.manage.ContentRootDataService
 import consulo.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.ModuleType
+import consulo.platform.JavaVersion
 import consulo.project.Project
-import com.intellij.platform.eel.provider.EelProviderUtil
-import consulo.content.library.{Library => LibraryEx}
-import com.intellij.openapi.roots.LanguageLevelProjectExtension
-import consulo.module.content.ProjectRootManager
-import com.intellij.util.lang.JavaVersion
+import consulo.project.content.library.ProjectLibraryTable
 import org.jetbrains.plugins.scala.compiler.data.IncrementalityType
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.plugins.scala.api.project.*
-import org.jetbrains.plugins.scala.rt.project.*
-import org.jetbrains.plugins.scala.shared.project.*
 import org.jetbrains.plugins.scala.project.external.*
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
+import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.project.SharedSourcesOwnersData
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
-import org.jetbrains.sbt.project.sources.SharedSourcesModuleType
 import org.jetbrains.sbt.project.template.wizard.JdkSbtCompatibilityChecker
 import org.jetbrains.sbt.settings.SbtSettings
 
@@ -40,25 +27,22 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectData, Project](SbtProjectData.Key) {
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[SbtProjectData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[SbtProjectData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
+    synchronous: Boolean
   ): Unit = {
-    val dataToImport  = toImport.asScala
-
-    for {
-      head <- dataToImport.headOption
-      projectData <- Option(ExternalSystemApiUtil.findParent(head, ProjectKeys.PROJECT))
-    } {
-      projectData.removeUserData(ContentRootDataService.CREATE_EMPTY_DIRECTORIES) //we don't need creating empty dirs anyway
+    val dataToImport = toImport.asScala
+    // upstream: removes ContentRootDataService.CREATE_EMPTY_DIRECTORIES user data, Consulo doesn't create empty directories
+    SbtModuleExtensions.executeProjectChangeAction(project, synchronous) {
+      // note: this condition is required because sbt service might also be invoked for non-sbt projects
+      if (dataToImport.nonEmpty) {
+        revertScalaSdkFromLibraries(project)
+      }
+      dataToImport.foreach(node => doImport(project, node))
     }
-    // note: this condition is required because sbt service might also be invoked for non-sbt projects
-    if (dataToImport.nonEmpty) {
-      revertScalaSdkFromLibraries(modelsProvider)
-    }
-    dataToImport.foreach(node => doImport(project, node.getData, modelsProvider))
   }
+
+  override def removeData(toRemove: util.Collection[? <: Project], project: Project, synchronous: Boolean): Unit = ()
 
   // This was implemented because, without this method, if a user reloads a project that was previously imported
   // in a plugin version where existing Scala libraries were converted to Scala SDKs, it would result in having multiple Scala SDKs.
@@ -66,8 +50,8 @@ class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectDa
   // However, since that method was introduced just a few days before the release, I’m not using it here to avoid breaking anything.
   // TODO This was introduced in 2023. By now, all users should have updated IDEA to a newer version,
   //  so it might be possible to remove this in 2025.x or 2026.x.
-  private def revertScalaSdkFromLibraries(modelsProvider: IdeModifiableModelsProvider): Unit = {
-    val libraries = modelsProvider.getModifiableProjectLibrariesModel.getLibraries.filter(_.hasRuntimeLibrary)
+  private def revertScalaSdkFromLibraries(project: Project): Unit = {
+    val libraries = ProjectLibraryTable.getInstance(project).getLibraries.filter(_.hasRuntimeLibrary)
     /* note: there is a possibility that in IDEA we will have projects with different subsystems (I think it is a very rare case
      but from a technical point of view it is possible). In such case we do not want to remove scala SDK kind from libraries that come from systems other than SBT.
      "sbt: scala-sdk" prefix is left because it indicates that this SDK comes from the new implementation of Scala SDK and shouldn't be removed.
@@ -80,65 +64,26 @@ class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectDa
     libraries
       .filter { library => library.isScalaSdk && !Seq("sbt: scala-sdk", "Gradle:", "Maven:", "BSP:").exists(library.getName.startsWith)}
       .foreach { library =>
-        val model = modelsProvider.getModifiableLibraryModel(library).asInstanceOf[LibraryEx.ModifiableModelEx]
+        val model = library.getModifiableModel
         model.setKind(null)
+        model.commit()
     }
   }
 
-  private def doImport(project: Project, data: SbtProjectData, modelsProvider: IdeModifiableModelsProvider): Unit = {
+  private def doImport(project: Project, node: DataNode[SbtProjectData]): Unit = {
+    val data = node.getData
     SbtProjectSettings.forProject(project).foreach(_.converterVersion = SbtProjectSettings.ConverterVersion)
-    configureJdk(project, data)
+    // upstream: configureJdk sets the project JDK, Consulo has no project JDK - modules get it in their Java extension
     setDefaultJavacOptions(project)
     setSbtVersion(project, data)
-    updateIncrementalityType(project, modelsProvider)
+    updateIncrementalityType(project, node)
     updateSeparateProdTestSources(project, data.prodTestSourcesSeparated)
   }
 
-  private def configureJdk(project: Project, data: SbtProjectData): Unit = executeProjectChangeAction(project) {
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-    val existingJdk = Option(ProjectRootManager.getInstance(project).getProjectSdk)
-
-    val jdk1 = Option(data.jdk).flatMap(SdkUtils.findProjectSdk(_, eelDescriptor))
-    val jdk2 = jdk1.orElse(existingJdk)
-    val jdk3 = jdk2.orElse {
-      SdkUtils.findMostRecentJdkConfiguredInIde(
-        sdk =>
-          val sbtVersion = SbtVersion(data.sbtVersion)
-          val sdkVersion = JavaVersion.parse(sdk.getVersionString)
-          JdkSbtCompatibilityChecker.isSbtAndJdkVersionCompatible(sdkVersion, sbtVersion, strict = true),
-        eelDescriptor
-      )
-    }
-    val jdk4 = jdk3.orElse(SdkUtils.mostRecentRegisteredJdk(eelDescriptor))
-    jdk4.foreach(ProjectRootManager.getInstance(project).setProjectSdk)
-  }
-
-
-  private def setDefaultJavacOptions(project: Project): Unit = executeProjectChangeAction(project) {
-    // special options -source, -target OR --release
-    setDefaultProjectLanguageLevel(project)
-    setDefaultTargetBytecodeLevel(project)
-
-    val javacOptions = JavacConfiguration.getOptions(project, classOf[JavacConfiguration])
+  // upstream: also resets the project language level and the project bytecode target, these are module extension settings in Consulo
+  private def setDefaultJavacOptions(project: Project): Unit = {
+    val javacOptions = JavacCompilerConfiguration.getInstance(project)
     javacOptions.ADDITIONAL_OPTIONS_STRING = ""
-  }
-
-  // NOTE: looks like this will not effect anything in sbt projects,
-  // because each module (including root module) has explicitly set java language level
-  // so project language level should not be used
-  private def setDefaultProjectLanguageLevel(project: Project): Unit = {
-    val projectJdk = Option(ProjectRootManager.getInstance(project).getProjectSdk)
-    val jdkLanguageLevel = projectJdk.flatMap(SdkUtils.defaultJavaLanguageLevelIn)
-    jdkLanguageLevel.foreach { level =>
-      val extension = LanguageLevelProjectExtension.getInstance(project)
-      extension.setLanguageLevel(level)
-      extension.setDefault(true)
-    }
-  }
-
-  private def setDefaultTargetBytecodeLevel(project: Project): Unit = {
-    val compilerSettings = CompilerConfiguration.getInstance(project)
-    compilerSettings.setProjectBytecodeTarget(null) // means "same as language level"
   }
 
   private def setSbtVersion(project: Project, data: SbtProjectData): Unit =
@@ -148,9 +93,36 @@ class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectDa
   private def updateSeparateProdTestSources(project: Project, separateProdTestSources: Boolean): Unit =
     ScalaCompilerConfiguration.instanceIn(project).separateProdTestSources = separateProdTestSources
 
-  private def updateIncrementalityType(project: Project, modelsProvider: IdeModifiableModelsProvider): Unit = {
-    val modules = modelsProvider.getModules
-    if (modules.exists(it => ModuleType.get(it) == SharedSourcesModuleType.instance))
+  // upstream: checks for modules of SharedSourcesModuleType, Consulo has no module types - shared sources modules carry SharedSourcesOwnersData
+  private def updateIncrementalityType(project: Project, node: DataNode[SbtProjectData]): Unit = {
+    val projectNode = Option(ExternalSystemApiUtil.findParent(node, ProjectKeys.PROJECT))
+    if (projectNode.exists(hasSharedSourcesModules))
       ScalaCompilerConfiguration.instanceIn(project).incrementalityType = IncrementalityType.SBT
+  }
+
+  private def hasSharedSourcesModules(node: DataNode[?]): Boolean =
+    node.getKey == SharedSourcesOwnersData.Key || node.getChildren.asScala.exists(hasSharedSourcesModules)
+}
+
+object SbtProjectDataService {
+
+  /**
+   * The JDK of the sbt project. upstream: it is set as the project JDK
+   */
+  def findJdk(project: Project, data: SbtProjectData): Option[Sdk] = {
+    val platform = project.getPlatform
+
+    val jdk1 = Option(data.jdk).flatMap(SdkUtils.findProjectSdk(_, platform))
+    val jdk2 = jdk1.orElse {
+      SdkUtils.findMostRecentJdkConfiguredInIde(
+        sdk =>
+          val sbtVersion = SbtVersion(data.sbtVersion)
+          Option(JavaVersion.tryParse(sdk.getVersionString)).exists { sdkVersion =>
+            JdkSbtCompatibilityChecker.isSbtAndJdkVersionCompatible(sdkVersion, sbtVersion, strict = true)
+          },
+        platform
+      )
+    }
+    jdk2.orElse(SdkUtils.mostRecentRegisteredJdk(platform))
   }
 }

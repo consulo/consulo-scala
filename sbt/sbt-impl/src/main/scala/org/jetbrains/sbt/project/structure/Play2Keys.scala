@@ -2,9 +2,6 @@ package org.jetbrains.sbt
 package project.structure
 
 
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.find
-import com.intellij.serialization.PropertyMapping
 import org.jetbrains.annotations.NonNls
 
 import java.util
@@ -28,9 +25,9 @@ object Play2Keys {
       def parsed: T
       override def toString: String = parsed.toString
     }
-    case class StringParsedValue @PropertyMapping(Array("parsed")) (override val parsed: String) extends ParsedValue[String]
+    case class StringParsedValue(override val parsed: String) extends ParsedValue[String]
 
-    case class SeqStringParsedValue @PropertyMapping(Array("parsed")) (override val parsed: util.List[String]) extends ParsedValue[util.List[String]]
+    case class SeqStringParsedValue(override val parsed: util.List[String]) extends ParsedValue[util.List[String]]
 
     abstract class ParsedKey[T](val name: String) {
       def in(allKeys: Map[String, Map[String, ParsedValue[?]]]): Option[Map[String, ParsedValue[?]]] = allKeys get name

@@ -1,9 +1,7 @@
 package org.jetbrains.sbt
 
 
-import org.jetbrains.sbt.api.Latest
 import org.jetbrains.sbt.api.SbtVersion
-import org.jetbrains.sbt.api.file
 import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.SbtExternalSystemManager

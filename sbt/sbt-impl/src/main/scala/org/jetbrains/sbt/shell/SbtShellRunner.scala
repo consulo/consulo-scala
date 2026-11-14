@@ -1,18 +1,20 @@
 package org.jetbrains.sbt.shell
 
 import consulo.execution.executor.Executor
-import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.execution.console.{ConsoleHistoryController, ConsoleRootType, LanguageConsoleView, ProcessBackedConsoleExecuteActionHandler}
-import com.intellij.execution.process.{OSProcessHandler, ProcessHandler}
-import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory
-import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.java.execution.configurations.RemoteConnection
+import consulo.execution.ui.console.ConsoleRootType
+import consulo.ide.impl.idea.execution.console.ConsoleHistoryControllerImpl
+import consulo.execution.ui.console.language.LanguageConsoleView
+import consulo.execution.ui.console.language.ProcessBackedConsoleExecuteActionHandler
+import consulo.process.{NativeProcessHandler, ProcessHandler}
+import consulo.execution.ui.console.language.AbstractConsoleRunnerWithHistory
+import consulo.execution.ui.RunContentDescriptor
 import consulo.ui.ex.action.{AnAction, DefaultActionGroup}
-import consulo.application.ApplicationManager
-import com.intellij.openapi.application.WriteIntentReadAction
 import consulo.logging.Logger
-import com.intellij.openapi.editor.ex.util.EditorUtil
+import consulo.codeEditor.util.EditorUtil
 import consulo.project.Project
-import com.intellij.ui.content.impl.ContentImpl
+import consulo.ui.ex.content.ContentFactory
+import consulo.ui.image.Image
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, invokeLater}
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.project.ProjectExt
@@ -21,7 +23,7 @@ import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.api.icons.Icons
 
 import java.util
-import javax.swing.{Icon, JLabel, SwingConstants}
+import javax.swing.{JLabel, SwingConstants}
 import scala.jdk.CollectionConverters.*
 
 final class SbtShellRunner(
@@ -42,16 +44,13 @@ final class SbtShellRunner(
   // SbtProcessManager is solely responsible for destroying/respawning
   // TODO: why is this lazy val? acquireShellProcessHandler can create a new process handler process data with
   //  new process handler, new data and new runner!!
-  private lazy val myProcessHandler: OSProcessHandler =
+  private lazy val myProcessHandler: NativeProcessHandler =
     SbtProcessManager.forProject(project)
       .acquireShellProcessHandler()
 
   // is called from AbstractConsoleRunnerWithHistory.initAndRun synchronously
-  override def createProcess: Process = myProcessHandler.getProcess
-
-  // TODO: why is ignored? rethink API
-  override def createProcessHandler(ignored : Process): OSProcessHandler = myProcessHandler
-  def createProcessHandler: OSProcessHandler = createProcessHandler(null)
+  // upstream: createProcess returns myProcessHandler.getProcess, createProcessHandler(Process) ignores it
+  override def createProcessHandler(): NativeProcessHandler = myProcessHandler
 
   //called manually by Scala Plugin, underlying initialization can be done asynchronously, so
   //right after the method execution `getConsoleView` can still return `null` and `isRunning` return false
@@ -69,7 +68,7 @@ final class SbtShellRunner(
         val label = new JLabel(SbtBundle.message("initializing.sbt.shell.message"), SwingConstants.CENTER)
         label.setOpaque(true)
         //noinspection ScalaExtractStringToBundle
-        SbtShellToolWindowFactory.setContent(toolWindow, new ContentImpl(label, "", false))
+        SbtShellToolWindowFactory.setContent(toolWindow, ContentFactory.getInstance.createContent(label, "", false))
       }
     }
   }
@@ -83,18 +82,8 @@ final class SbtShellRunner(
   // is called from AbstractConsoleRunnerWithHistory.initAndRun from EDT, can be invoked asynchronously
   override def createContentDescriptorAndActions(): Unit = {
     log.debug("createContentDescriptorAndActions")
-    val callSuper: Runnable = () => super.createContentDescriptorAndActions()
-    if (ApplicationManager.getApplication.isUnitTestMode) {
-      // IJPL-27737
-      // `com.intellij.openapi.editor.impl.SettingsImpl.reinitDocumentIndentOptions` is not
-      // called within a read action in tests only.
-      // A write-intent read action _must_ be used here. A regular read action causes a deadlock in tests.
-      // TODO: remove this branch after a fix in the platform.
-      //noinspection ApiStatus,UnstableApiUsage
-      WriteIntentReadAction.run(callSuper)
-    } else {
-      callSuper.run()
-    }
+    // upstream: wrapped in WriteIntentReadAction in unit test mode (IJPL-27737)
+    super.createContentDescriptorAndActions()
 
     executeOnPooledThread {
       initSbtShell()
@@ -148,7 +137,7 @@ final class SbtShellRunner(
   }
 
   override def createExecuteActionHandler(): SbtShellExecuteActionHandler = {
-    val historyController = new ConsoleHistoryController(SbtShellRootType, null, getConsoleView)
+    val historyController = new ConsoleHistoryControllerImpl(SbtShellRootType, null, getConsoleView)
     historyController.install()
 
     myConsoleExecuteActionHandler
@@ -163,7 +152,7 @@ final class SbtShellRunner(
     List(createConsoleExecAction(myConsoleExecuteActionHandler)).asJava
   }
 
-  override def getConsoleIcon: Icon = Icons.SBT_SHELL
+  override def getConsoleIcon: Image = Icons.SBT_SHELL
 
   override def showConsole(defaultExecutor: Executor, contentDescriptor: RunContentDescriptor): Unit =
     SbtShellRunner.openShellOnStartup(

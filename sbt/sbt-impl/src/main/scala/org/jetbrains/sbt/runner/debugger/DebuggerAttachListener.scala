@@ -1,6 +1,7 @@
 package org.jetbrains.sbt.runner.debugger
 
-import com.intellij.debugger.engine.{DebugProcessAdapterImpl, DebugProcessImpl}
+import com.intellij.java.debugger.impl.engine.DebugProcessAdapterImpl
+import com.intellij.java.debugger.impl.engine.DebugProcessImpl
 import consulo.process.ExecutionException
 import org.jetbrains.sbt.SbtBundle
 

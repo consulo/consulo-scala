@@ -1,22 +1,14 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.externalSystem.ExternalSystemAutoImportAware
+import consulo.externalSystem.service.project.autoimport.ExternalSystemAutoImportAware
 import consulo.project.Project
-import consulo.util.collection.ContainerUtil
 
 import java.nio.file.Path
 
 /**
  * A compatibility trait which exists to make sure that the new [[java.nio.file.Path]] based API is
- * abstract and must be overridden and to provide a default implementation for the old
- * [[java.io.File]] based API which will be removed in the future.
+ * abstract and must be overridden.
  */
+// upstream: also implements the deprecated java.io.File based getAffectedExternalProjectFiles (not in Consulo)
 trait ExternalSystemAutoImportAwareCompat extends ExternalSystemAutoImportAware:
-  def getAffectedExternalProjectFilePaths(projectPath: String, project: Project): java.util.List[Path]
-
-  @deprecated(message = "Deprecated in the platform. Use getAffectedExternalProjectFilePaths. This method will be removed.", since = "2026.2")
-  @Deprecated(since = "2026.2", forRemoval = true)
-  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
-  //noinspection SSBasedInspection
-  final override def getAffectedExternalProjectFiles(projectPath: String, project: Project): java.util.List[java.io.File] =
-    ContainerUtil.map(getAffectedExternalProjectFilePaths(projectPath, project), (p: Path) => p.toFile)
+  override def getAffectedExternalProjectFilePaths(projectPath: String, project: Project): java.util.List[Path]

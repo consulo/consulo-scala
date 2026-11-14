@@ -5,12 +5,14 @@ import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
 import consulo.annotation.component.ActionRefAnchor
 
-import com.intellij.build.events.BuildEvents
-import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
-import com.intellij.build.{DefaultBuildDescriptor, SyncViewManager}
-import com.intellij.execution.process.ProcessOutputType
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskType}
+import consulo.application.Application
+import consulo.build.ui.event.{BuildEventFactory, EventResult}
+import consulo.build.ui.{DefaultBuildDescriptor, SyncViewManager}
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskType}
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.document.FileDocumentManager
 import consulo.application.progress.{ProgressIndicator, Task}
 import consulo.virtualFileSystem.util.VirtualFileUtil
@@ -20,62 +22,60 @@ import org.jetbrains.plugins.scala.build.BuildMessages
 import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.process.SbtRunner
 import org.jetbrains.sbt.project.{SbtExternalSystemManager, SbtProjectSystem}
-import org.jetbrains.sbt.{SbtBundle, SbtUtil, eelDescriptor, normalizedLocalPath}
+import org.jetbrains.sbt.{SbtBundle, SbtUtil, normalizedLocalPath, platform}
 import org.jetbrains.sbt.api.SbtVersionCapabilities
 
 import java.nio.file.{Files, Path}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
-@ActionImpl(id = "Scala.Sbt.GenerateManagedSources", parents = Array(new ActionParentRef(value = new ActionRef(id = "ExternalSystemView.ActionsToolbar.SyncPanel"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ExternalSystem.RefreshAllProjects"))))
-private final class SbtGenerateManagedSourcesAction extends AnAction(
-  SbtBundle.message("sbt.generate.managed.sources.action.title"),
-  SbtBundle.message("sbt.generate.managed.sources.action.description"),
+@ActionImpl(id = "Scala.Sbt.GenerateManagedSources", parents = Array(new ActionParentRef(value = new ActionRef(id = "ExternalSystemView.ActionsToolbar"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ExternalSystem.RefreshAllProjects"))))
+final class SbtGenerateManagedSourcesAction extends AnAction(
+  LocalizeValue.of(SbtBundle.message("sbt.generate.managed.sources.action.title")),
+  LocalizeValue.of(SbtBundle.message("sbt.generate.managed.sources.action.description")),
   Icons.SBT_GENERATE_MANAGED_SOURCES
-) {
+) with AnActionWithSyncUpdate {
 
+  @RequiredUIAccess
   override def actionPerformed(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
+    if (project eq null) return
 
-    val task = new Task.Backgroundable(project, SbtBundle.message("sbt.generate.managed.sources.task.progress.title"), true) {
+    val task = new Task.Backgroundable(project, LocalizeValue.of(SbtBundle.message("sbt.generate.managed.sources.task.progress.title")), true) {
       override def run(indicator: ProgressIndicator): Unit = {
         val viewManager = project.getInstance(classOf[SyncViewManager])
         val taskId = ExternalSystemTaskId.create(SbtProjectSystem.Id, ExternalSystemTaskType.EXECUTE_TASK, project)
         val reporter = new GenerateManagedSourcesReporter(viewManager, taskId)
+        val factory = Application.get().getInstance(classOf[BuildEventFactory])
+
+        def output(text: String): Unit =
+          viewManager.onEvent(taskId, factory.createOutputBuildEvent(taskId, text, true))
+
+        def finish(@Nullable message: String, result: EventResult): Unit =
+          viewManager.onEvent(taskId, factory.createFinishBuildEvent(taskId, null, System.currentTimeMillis(), LocalizeValue.of(message), result))
 
         val settings = SbtExternalSystemManager.executionSettingsFor(project)
         val projectBasePath = Path.of(settings.realProjectPath)
 
-        val descriptor = new DefaultBuildDescriptor(taskId, SbtBundle.message("sbt.generate.managed.sources.action.title"), projectBasePath.toString, System.currentTimeMillis())
+        val descriptor = new DefaultBuildDescriptor(taskId, LocalizeValue.of(SbtBundle.message("sbt.generate.managed.sources.action.title")), projectBasePath.toString, System.currentTimeMillis())
         descriptor.setActivateToolWindowWhenAdded(false)
         descriptor.setActivateToolWindowWhenFailed(true)
 
         {
-          val event = BuildEvents.getInstance()
-            .startBuild(SbtBundle.message("sbt.generate.managed.sources.action.title"), descriptor)
-            .build()
+          val event = factory.createStartBuildEvent(descriptor, LocalizeValue.of(SbtBundle.message("sbt.generate.managed.sources.action.title")))
           viewManager.onEvent(taskId, event)
         }
 
         def reportFailure(@Nullable throwable: Throwable): Unit = {
           {
             val sbtOutput = reporter.outputLines.mkString(start = "", sep = System.lineSeparator(), end = System.lineSeparator())
-            val event = BuildEvents.getInstance()
-              .output(sbtOutput)
-              .withId(taskId)
-              .withOutputType(ProcessOutputType.STDOUT)
-              .build()
-            viewManager.onEvent(taskId, event)
+            output(sbtOutput)
           }
           {
             val failureWord = SbtBundle.message("sbt.generate.managed.sources.task.result.failure")
             val failureMessage = SbtBundle.message("sbt.generate.managed.sources.task.result.failure.message")
-            val failureResult = new FailureResultImpl(failureMessage, throwable)
-            val events = BuildEvents.getInstance()
-              .finishBuild(taskId, failureWord, failureResult)
-              .withTime(System.currentTimeMillis())
-              .build()
-            viewManager.onEvent(taskId, events)
+            val failureResult = factory.newFailure().message(LocalizeValue.of(failureMessage)).optionalError(throwable).createResult()
+            finish(failureWord, failureResult)
           }
         }
 
@@ -88,16 +88,12 @@ private final class SbtGenerateManagedSourcesAction extends AnAction(
           if (!addPluginCommandSupported) {
             val notSupportedWord = SbtBundle.message("sbt.generate.managed.sources.action.not.supported")
             val notSupportedMessage = SbtBundle.message("sbt.generate.managed.sources.action.not.supported.message", sbtVersion.minor)
-            val failureResult = new FailureResultImpl(notSupportedMessage)
-            val finishEvent = BuildEvents.getInstance()
-              .finishBuild(taskId, notSupportedWord, failureResult)
-              .withTime(System.currentTimeMillis())
-              .build()
-            viewManager.onEvent(taskId, finishEvent)
+            val failureResult = factory.newFailure().message(LocalizeValue.of(notSupportedMessage)).createResult()
+            finish(notSupportedWord, failureResult)
             return
           }
 
-          val descriptor = projectBasePath.eelDescriptor
+          val descriptor = projectBasePath.platform
           val sbtFileContent = SbtUtil.sbtStructurePluginDeclaration(
             sbtVersion,
             SbtUtil.getRepoDir(descriptor)
@@ -127,20 +123,11 @@ private final class SbtGenerateManagedSourcesAction extends AnAction(
             case Success(buildMessages) if buildMessages.status == BuildMessages.Canceled =>
               {
                 val canceledMessage = SbtBundle.message("sbt.generate.managed.sources.task.result.canceled.message")
-                val event = BuildEvents.getInstance()
-                  .output(canceledMessage)
-                  .withId(taskId)
-                  .withOutputType(ProcessOutputType.STDOUT)
-                  .build()
-                viewManager.onEvent(taskId, event)
+                output(canceledMessage)
               }
               {
                 val canceledWord = SbtBundle.message("sbt.generate.managed.sources.task.result.canceled")
-                val finishEvent = BuildEvents.getInstance()
-                  .finishBuild(taskId, canceledWord, new SkippedResultImpl())
-                  .withTime(System.currentTimeMillis())
-                  .build()
-                viewManager.onEvent(taskId, finishEvent)
+                finish(canceledWord, factory.createSkippedResult())
               }
 
             case Success(_) =>
@@ -156,23 +143,14 @@ private final class SbtGenerateManagedSourcesAction extends AnAction(
                     .flatMap(path => Try(Path.of(path).toRealPath()).filter(realFile).toOption)
                   val fileManager = VirtualFileManager.getInstance()
                   val virtualFiles = generatedSources.flatMap(p => Option(fileManager.refreshAndFindFileByNioPath(p)))
-                  VfsUtil.markDirtyAndRefresh(false, false, true, virtualFiles*)
+                  VirtualFileUtil.markDirtyAndRefresh(false, false, true, virtualFiles*)
 
                   {
-                    val output = lines.mkString(start = "", sep = System.lineSeparator(), end = System.lineSeparator())
-                    val event = BuildEvents.getInstance()
-                      .output(output)
-                      .withId(taskId)
-                      .withOutputType(ProcessOutputType.STDOUT)
-                      .build()
-                    viewManager.onEvent(taskId, event)
+                    val text = lines.mkString(start = "", sep = System.lineSeparator(), end = System.lineSeparator())
+                    output(text)
                   }
                   {
-                    val successEvent = BuildEvents.getInstance()
-                      .finishBuild(taskId, SbtBundle.message("sbt.generate.managed.sources.task.result.success"), new SuccessResultImpl())
-                      .withTime(System.currentTimeMillis())
-                      .build()
-                    viewManager.onEvent(taskId, successEvent)
+                    finish(SbtBundle.message("sbt.generate.managed.sources.task.result.success"), factory.createSuccessResult())
                   }
                 } catch {
                   case NonFatal(t) => reportFailure(t)
@@ -192,8 +170,9 @@ private final class SbtGenerateManagedSourcesAction extends AnAction(
     task.queue()
   }
 
+  @RequiredUIAccess
   override def update(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
     if (project eq null) return
     val enabled = SbtUtil.isSbtProject(project)
     e.getPresentation.setEnabledAndVisible(enabled)

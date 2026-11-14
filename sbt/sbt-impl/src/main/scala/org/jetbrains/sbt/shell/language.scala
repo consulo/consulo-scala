@@ -2,11 +2,6 @@ package org.jetbrains.sbt
 package shell
 
 import consulo.annotation.component.ExtensionImpl
-import org.jetbrains.sbt.shell.SbtShellLanguage
-
-
-import org.jetbrains.sbt.api.Factory
-import org.jetbrains.sbt.api.file
 import consulo.language.impl.psi.PsiFileBase
 import consulo.language.ast.ASTNode
 import consulo.language.{DependentLanguage, Language}
@@ -17,10 +12,12 @@ import consulo.language.ast.{IElementType, IFileElementType, TokenSet}
 import consulo.language.file.FileViewProvider
 import consulo.language.psi.PsiElement
 import consulo.language.ast.TokenType
+import consulo.language.version.LanguageVersion
+import consulo.ui.image.Image
+import consulo.virtualFileSystem.fileType.{FileTypeConsumer, FileTypeFactory}
 import org.jetbrains.annotations._
 import org.jetbrains.plugins.scala.api.LanguageFileTypeBase
-
-import javax.swing.Icon
+import org.jetbrains.sbt.api.language.SbtFileType
 
 object SbtShellLanguage extends Language("sbtShell") with DependentLanguage {
   override def isCaseSensitive: Boolean = true
@@ -37,10 +34,10 @@ final class SbtShellParserDefinition extends ParserDefinition {
 
   import SbtShellParserDefinition._
 
-  override def createLexer(project: Project): FlexAdapter =
+  override def createLexer(languageVersion: LanguageVersion): FlexAdapter =
     new SbtShellLexerAdapter
 
-  override def createParser(project: Project): PsiParser =
+  override def createParser(languageVersion: LanguageVersion): PsiParser =
     new grammar.SbtShellParser
 
   override def createFile(viewProvider: FileViewProvider): PsiFileBase =
@@ -51,11 +48,18 @@ final class SbtShellParserDefinition extends ParserDefinition {
 
   override def getFileNodeType: IFileElementType = File
 
-  override def getWhitespaceTokens: TokenSet = WhiteSpaces
+  override def getWhitespaceTokens(languageVersion: LanguageVersion): TokenSet = WhiteSpaces
 
-  override def getCommentTokens: TokenSet = TokenSet.EMPTY
+  override def getCommentTokens(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
 
-  override def getStringLiteralElements: TokenSet = TokenSet.EMPTY
+  override def getStringLiteralElements(languageVersion: LanguageVersion): TokenSet = TokenSet.EMPTY
+}
+
+// upstream: <fileType name="sbtShell" language="sbtShell" extensions="sbts"/>
+@ExtensionImpl
+final class SbtShellFileTypeFactory extends FileTypeFactory {
+  override def createFileTypes(consumer: FileTypeConsumer): Unit =
+    consumer.consume(SbtShellParserDefinition.SbtShellFileType, "sbts")
 }
 
 object SbtShellParserDefinition {
@@ -70,7 +74,7 @@ object SbtShellParserDefinition {
 
     override def getDefaultExtension = "sbts"
 
-    override def getIcon: Icon = language.SbtFileType.getIcon
+    override def getIcon: Image = SbtFileType.getIcon
   }
 
   private final class SbtShellLexerAdapter extends FlexAdapter(new grammar._SbtShellLexer)

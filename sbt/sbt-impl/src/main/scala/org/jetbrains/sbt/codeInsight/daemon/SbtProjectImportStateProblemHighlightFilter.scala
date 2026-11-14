@@ -41,7 +41,7 @@ object SbtProjectImportStateProblemHighlightFilter {
 
   private[sbt] def isWritableSourceFile(psiFile: PsiFile): Boolean = {
     val virtualFile = psiFile.getVirtualFile
-    virtualFile != null && virtualFile.isWritable && !JavaProjectRootsUtil.isOutsideJavaSourceRoot(psiFile)
+    virtualFile != null && virtualFile.isWritable && !JavaProjectRootsUtil.isOutsideSourceRoot(psiFile)
   }
 
   // Ideally, this would hold references to each of the file types, but we're trying to avoid dependencies on

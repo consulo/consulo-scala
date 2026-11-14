@@ -6,12 +6,12 @@ import consulo.annotation.component.ServiceImpl
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
-import com.intellij.execution.process.OSProcessHandler
+import consulo.process.NativeProcessHandler
 import consulo.logging.Logger
 import consulo.project.Project
 import consulo.application.util.SystemInfo
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.ide.PooledThreadExecutor
+import consulo.application.util.concurrent.PooledThreadExecutor
 import org.jetbrains.plugins.scala.api.{isInternalMode, isUnitTestMode}
 import org.jetbrains.sbt.shell.SbtShellCommunication.*
 import org.jetbrains.sbt.shell.communication.SbtShellLifecycle.{ShellState, ShellStateEvent}
@@ -284,16 +284,17 @@ final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCo
    * @see [[org.jetbrains.sbt.shell.communication.SbtShellOutputRecognizer.isProjectLoadingPromptError]]
    */
   private def sendIgnore(): Unit = {
-    if currentState.isShuttingDownOrOff then
+    if (currentState.isShuttingDownOrOff) {
       recordDiagnosticEvent(SbtShellDiagnosticEvent.SendIgnoreSkipped(currentState))
       return
+    }
 
     val sbtVersion = getRunningOrDetectedSbtVersion
     val isNewShell = process.isRunWithNewShell
     val isLinux = SystemInfo.isLinux
     val requiresNewLine = isLoadFailureIgnoreNewlineRequired(sbtVersion)
     val command =
-      if requiresNewLine then
+      if (requiresNewLine)
         "i" + System.lineSeparator
       else
         "i"
@@ -356,8 +357,8 @@ final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCo
   }
 
   /** Start processing the command queue if it is not yet active. */
-  private def startQueueProcessing(handler: OSProcessHandler): Unit = {
-    PooledThreadExecutor.INSTANCE.submit(new Runnable {
+  private def startQueueProcessing(handler: NativeProcessHandler): Unit = {
+    PooledThreadExecutor.getInstance.submit(new Runnable {
       override def run(): Unit = try {
         Log.info(s"startQueueProcessing start: state=$currentState...")
 
@@ -498,11 +499,12 @@ final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCo
    */
   private def initiateSoftRestart(): Boolean = {
     val state = currentState
-    if state.isStarting || state.isSoftRestarting || state.isShuttingDown || state.isOff then
+    if (state.isStarting || state.isSoftRestarting || state.isShuttingDown || state.isOff)
       false
-    else
+    else {
       emitShellStateEvent(ShellStateEvent.SoftRestartInitiated)
       true
+    }
   }
 
   private def processCommand(qc: QueuedCommand): Unit = {
@@ -564,7 +566,7 @@ final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCo
    * This is usually ensured by calling openShellRunner first, but it's possible
    * to manually trigger it if a fully background process is desired
    */
-  private[shell] def initCommunication(handler: OSProcessHandler): Unit = {
+  private[shell] def initCommunication(handler: NativeProcessHandler): Unit = {
     Log.debug(s"initCommunication start: state=$currentState...")
 
     val lockAcquired = communicationActive.tryAcquire(5, TimeUnit.SECONDS)
@@ -617,7 +619,7 @@ final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCo
     }
   }
 
-  private def canHandlePromptStateChange(handler: OSProcessHandler): Boolean =
+  private def canHandlePromptStateChange(handler: NativeProcessHandler): Boolean =
     !handler.isProcessTerminating && !handler.isProcessTerminated && !currentState.isShuttingDown
 
   private def queuedStartupOutputOwner: Option[Owner] =

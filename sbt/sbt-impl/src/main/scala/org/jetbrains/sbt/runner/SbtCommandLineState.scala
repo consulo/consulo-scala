@@ -1,17 +1,14 @@
 package org.jetbrains.sbt.runner
 
 import com.intellij.java.execution.configurations.JavaCommandLineState
-import com.intellij.execution.configurations.JavaParameters
+import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.ui.ConsoleView
-import com.intellij.execution.util.EnvFilesUtilKt.configureEnvsFromFiles
-import com.intellij.execution.util.JavaParametersUtil
-import com.intellij.execution.ExecutionResult
+import com.intellij.java.execution.impl.util.JavaParametersUtil
+import com.intellij.java.language.projectRoots.JavaSdkType
+import consulo.execution.ExecutionResult
 import consulo.execution.executor.Executor
-import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
-import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUtil
 import consulo.project.Project
-import consulo.content.bundle.Sdk
+import consulo.content.bundle.{Sdk, SdkTable}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.rt.util.JarManifestUtils
 import org.jetbrains.sbt.SbtUtil
@@ -31,7 +28,7 @@ import java.util
  * an existing sbt shell or as a separate JVM process (with a warning, see below)
  *
  * In separate-process mode this class acts as a regular [[JavaCommandLineState]]: the IntelliJ platform calls
- * [[createJavaParameters]], and the returned [[JavaParameters]] describe the sbt launcher JVM process to start.
+ * [[createJavaParameters]], and the returned [[OwnJavaParameters]] describe the sbt launcher JVM process to start.
  * That path configures the working directory, environment, JDK, sbt launcher classpath/main class, VM parameters, and
  * program parameters containing the sbt commands.
  *
@@ -62,7 +59,10 @@ private final class SbtCommandLineState(
     result
   }
 
-  /**
+  /*
+   * upstream: createConsole decorates the console through JavaRunConfigurationExtensionManager.decorateExecutionConsole
+   * (no counterpart in consulo-java)
+   *
    * Decorates the console for the separate-process SBT run configuration path.
    *
    * This state extends the plain [[JavaCommandLineState]], whose default console creation is inherited from
@@ -75,39 +75,26 @@ private final class SbtCommandLineState(
    * because that path creates a remote attach console through [[com.intellij.debugger.engine.RemoteStateState]]
    * instead of using this state to create the execution console.
    */
-  override protected def createConsole(executor: Executor): ConsoleView = {
-    val console = super.createConsole(executor)
-    if (console == null)
-      null
-    else
-      // Use the same Java console extension pipeline as regular Java run/debug configurations.
-      JavaRunConfigurationExtensionManager.getInstance.decorateExecutionConsole(
-        configuration,
-        getRunnerSettings,
-        console,
-        executor
-      )
-  }
 
-  override def createJavaParameters(): JavaParameters = {
+  override def createJavaParameters(): OwnJavaParameters = {
     val params = createJavaParametersImpl
     MockSbtProcessForTests.configureJavaParametersForNonSbtShell(configuration.getProject, params)
     params
   }
 
-  private def createJavaParametersImpl: JavaParameters = {
+  private def createJavaParametersImpl: OwnJavaParameters = {
     val project = configuration.getProject
-    val params: JavaParameters = new JavaParameters
+    val params: OwnJavaParameters = new OwnJavaParameters
 
     params.setWorkingDirectory(configuration.workingDir)
 
     val sbtExecutionSettings = SbtExternalSystemManager.executionSettingsFor(project)
 
     val jdk = getJdk(project, sbtExecutionSettings)
-    params.configureByProject(project, JavaParameters.JDK_ONLY, jdk)
+    params.configureByProject(project, OwnJavaParameters.JDK_ONLY, jdk)
 
+    // upstream: also loads variables from configuration env files
     val environmentVariables = new util.HashMap(configuration.environmentVariables)
-    environmentVariables.putAll(configureEnvsFromFiles(configuration, true))
     params.setEnv(environmentVariables)
 
     val sbtSystemSettings = SbtSettings.getInstance(project).getState
@@ -124,7 +111,7 @@ private final class SbtCommandLineState(
     params
   }
 
-  private def setClasspathAndMainClass(params: JavaParameters, sbtSystemSettings: SbtSettings.State): Unit = {
+  private def setClasspathAndMainClass(params: OwnJavaParameters, sbtSystemSettings: SbtSettings.State): Unit = {
     // One of these checks might be redundant.
     // Why do we need the customLauncherEnabled at all?
     if (sbtSystemSettings.customLauncherPath != null) {
@@ -149,11 +136,16 @@ private final class SbtCommandLineState(
       // The java installation directory is two levels up.
       // See org.jetbrains.sbt.project.SbtExternalSystemManager.getVmExecutable
       javaHome <- vmExecutablePath << 2
-      jdk <- Option(ExternalSystemJdkUtil.findJdkInSdkTableByPath(javaHome.toCanonicalPath.toString))
+      jdk <- findJdkByHomePath(javaHome.toCanonicalPath.toString)
     } yield jdk
 
     customJdk.getOrElse {
       JavaParametersUtil.createProjectJdk(project, null)
     }
   }
+
+  private def findJdkByHomePath(homePath: String): Option[Sdk] =
+    SdkTable.getInstance.getAllSdks.find { sdk =>
+      sdk.getSdkType.isInstanceOf[JavaSdkType] && Option(sdk.getHomePath).exists(home => Path.of(home).toCanonicalPath.toString == homePath)
+    }
 }

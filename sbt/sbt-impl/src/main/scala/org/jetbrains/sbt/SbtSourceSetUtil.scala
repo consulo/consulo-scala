@@ -6,6 +6,14 @@ import org.jetbrains.plugins.scala.shared.util.SbtModuleType
 import org.jetbrains.sbt.project.SourceSetType
 
 object SbtSourceSetUtil {
+
+  /**
+   * Module extension option holding the external module type (e.g. [[SbtModuleType.sbtSourceSetModuleType]]).
+   */
+  // upstream: ExternalSystemModulePropertyManager external module type; Consulo's ModuleDataService does not store it,
+  // the sbt importer sets this option
+  final val ExternalModuleTypeKey = "external.system.module.type"
+
   implicit class SbtSourceSetModuleExt(private val module: Module) extends AnyVal {
 
     /**
@@ -21,7 +29,7 @@ object SbtSourceSetUtil {
     def isMain: Boolean = is(SourceSetType.Main)
 
     def isSbtSourceSetModule: Boolean = {
-      val externalModuleType = ExternalSystemApiUtil.getExternalModuleType(module)
+      val externalModuleType = ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalModuleTypeKey)
       externalModuleType == SbtModuleType.sbtSourceSetModuleType
     }
 

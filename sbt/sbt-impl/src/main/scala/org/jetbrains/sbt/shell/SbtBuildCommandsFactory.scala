@@ -16,9 +16,10 @@ private[shell] object SbtBuildCommandsFactory {
 
   /** Represents the sbt source set scope (main or test) for which a build command should be generated. */
   @TestOnly
-  enum SbtScope:
+  enum SbtScope {
     case Main
     case Test
+  }
 
   @TestOnly
   final case class ModuleWithScopes(
@@ -34,10 +35,15 @@ private[shell] object SbtBuildCommandsFactory {
    */
   def createBuildCommands(
     sbtVersion: SbtVersion,
-    taskModules: Seq[Module]
+    taskModules: Seq[Module],
+    includeTests: Boolean = true,
   ): Seq[String] = {
     val scopesPerModule = collectScopesPerModule(taskModules)
-    createBuildCommandsInner(sbtVersion, scopesPerModule)
+    // the Test scope is built only when the compile scope includes tests
+    val scopesPerModuleFiltered =
+      if (includeTests) scopesPerModule
+      else scopesPerModule.map(m => m.copy(scopes = m.scopes - SbtScope.Test)).filter(_.scopes.nonEmpty)
+    createBuildCommandsInner(sbtVersion, scopesPerModuleFiltered)
   }
 
   /**
@@ -70,9 +76,9 @@ private[shell] object SbtBuildCommandsFactory {
     }.toSeq.map(ModuleWithScopes.apply)
 
   private def scopesForModule(module: Module): Set[SbtScope] =
-    if !module.isSbtSourceSetModule then
+    if (!module.isSbtSourceSetModule)
       Set(SbtScope.Main, SbtScope.Test)
-    else if module.isMain then
+    else if (module.isMain)
       Set(SbtScope.Main)
     else
       Set(SbtScope.Test)
@@ -124,7 +130,7 @@ private[shell] object SbtBuildCommandsFactory {
       case SbtScope.Main =>
         s"$projectScope/products"
       case SbtScope.Test =>
-        if SbtVersionCapabilities.isSlashSyntaxSupported(sbtVersion) then
+        if (SbtVersionCapabilities.isSlashSyntaxSupported(sbtVersion))
           s"$projectScope/Test/products"
         else
           s"$projectScope/test:products"

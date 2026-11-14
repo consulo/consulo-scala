@@ -1,8 +1,9 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.build.events.impl.{FailureResultImpl, SuccessResultImpl}
+import consulo.application.Application
+import consulo.build.ui.event.BuildEventFactory
 import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.model.ExternalSystemException
+import consulo.externalSystem.rt.model.ExternalSystemException
 import consulo.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
@@ -26,6 +27,8 @@ private[sbt] final class SbtShellBuildMessagesEventProcessor(
   onOutputLine: String => Unit,
   showSbtShellOnError: Boolean,
 ) extends SbtShellCommandEventProcessor[BuildMessages] {
+  private def eventFactory: BuildEventFactory = Application.get().getInstance(classOf[BuildEventFactory])
+
   override def initialResult: BuildMessages =
     BuildMessages.empty
 
@@ -40,7 +43,7 @@ private[sbt] final class SbtShellBuildMessagesEventProcessor(
       case TaskComplete =>
         log.trace(s"messageAggregator TaskComplete: dumpTaskId=$dumpTaskId")
 
-        reporter.finishTask(dumpTaskId, finishMessage, new SuccessResultImpl())
+        reporter.finishTask(dumpTaskId, finishMessage, eventFactory.createSuccessResult())
         val messagesUpdated =
           if (messages.status == BuildMessages.Indeterminate) messages.status(BuildMessages.OK)
           else messages
@@ -51,7 +54,7 @@ private[sbt] final class SbtShellBuildMessagesEventProcessor(
 
         //TODO: it seems like in practice "process terminated" is not used at all
         // we need to refactor the reporter API to not demand it
-        reporter.finishTask(dumpTaskId, "process terminated", new SuccessResultImpl())
+        reporter.finishTask(dumpTaskId, "process terminated", eventFactory.createSuccessResult())
         messages
           .addError("process terminated")
           .status(BuildMessages.Canceled)
@@ -62,7 +65,7 @@ private[sbt] final class SbtShellBuildMessagesEventProcessor(
         val msg = SbtBundle.message("sbt.import.errors.project.reload.aborted")
         val ex = new ExternalSystemException(msg)
 
-        val result = new FailureResultImpl(msg, ex)
+        val result = eventFactory.createFailureResult(msg, ex)
         reporter.finishTask(dumpTaskId, msg, result)
 
         // addError records the diagnostic text, but it does not make the structure dump fail by itself.

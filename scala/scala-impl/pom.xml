@@ -41,7 +41,8 @@
                 <executions>
                     <execution>
                         <id>bundle-libraries</id>
-                        <phase>prepare-package</phase>
+                        <!-- before compilation: module-info exports bundled packages -->
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>

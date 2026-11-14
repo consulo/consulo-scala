@@ -4,12 +4,9 @@ package project
 import consulo.annotation.component.ExtensionImpl
 
 
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.file
-import org.jetbrains.sbt.api.find
-import org.jetbrains.sbt.api.safeMap
 import consulo.externalSystem.model.ProjectSystemId
-import com.intellij.openapi.externalSystem.service.settings.ExternalSystemConfigLocator
+import org.jetbrains.sbt.api.{RichOption, RichVirtualFile}
+import consulo.externalSystem.service.setting.ExternalSystemConfigLocator
 import consulo.externalSystem.setting.ExternalProjectSettings
 import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 

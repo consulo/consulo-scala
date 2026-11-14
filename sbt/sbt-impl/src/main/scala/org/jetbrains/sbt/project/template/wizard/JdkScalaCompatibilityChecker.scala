@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.template.wizard
 
-import com.intellij.util.lang.JavaVersion
+import consulo.platform.JavaVersion
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 

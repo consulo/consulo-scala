@@ -2,13 +2,11 @@ package org.jetbrains.sbt
 package language.references
 
 
-import org.jetbrains.sbt.api.asScala
-import org.jetbrains.sbt.api.find
-import org.jetbrains.sbt.api.safeMap
+import org.jetbrains.sbt.api.RichOption
+import org.jetbrains.sbt.api.language.SbtFileType
 import consulo.project.Project
 import consulo.document.util.TextRange
 import consulo.util.io.FileUtil
-import com.intellij.psi.Immediate
 import consulo.language.psi.{PsiElement, PsiFile, PsiManager, PsiReference, PsiReferenceBase, PsiReferenceProvider}
 import consulo.language.psi.search.FilenameIndex
 import consulo.language.psi.scope.GlobalSearchScope
@@ -26,14 +24,14 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class SbtSubprojectReferenceProvider extends PsiReferenceProvider {
 
   override def getReferencesByElement(element: PsiElement, context: ProcessingContext): Array[PsiReference] = {
-    if (element.getContainingFile.getFileType.getName != Sbt.Name) return Array.empty
+    if (element.getContainingFile.getFileType != SbtFileType) return Array.empty
     extractSubprojectPath(element).flatMap { path =>
       findBuildFile(path, element.getProject).map(new SbtSubprojectReference(element, _))
     }.toArray
   }
 
   private def findBuildFile(subprojectPath: String, project: Project): Option[PsiFile] = {
-    val vFiles = FilenameIndex.getVirtualFilesByName("build.sbt", GlobalSearchScope.allScope(project)).asScala
+    val vFiles = FilenameIndex.getVirtualFilesByName(project, "build.sbt", GlobalSearchScope.allScope(project)).asScala
     val buildVFile = vFiles.find { vFile =>
       val relativeToProjectPath = project.getBasePath + Separator + subprojectPath
       val absolutePath = FileUtil.toSystemIndependentName(FileUtil.toCanonicalPath(relativeToProjectPath))

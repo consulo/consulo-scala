@@ -1,7 +1,8 @@
 package org.jetbrains.sbt.runner
 
 import consulo.execution.configuration.ConfigurationFactory
-import com.intellij.execution.configurations.{ConfigurationType, RunConfiguration}
+import consulo.execution.configuration.ConfigurationType
+import consulo.execution.configuration.RunConfiguration
 import consulo.project.Project
 
 /**

@@ -2,22 +2,19 @@ package org.jetbrains.sbt.project
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.openapi.application.AppUIExecutor
 import consulo.application.ApplicationManager
-import consulo.ui.ModalityState
-import com.intellij.openapi.externalSystem.ExternalSystemManager
-import consulo.externalSystem.setting.ExternalProjectSettings
-import com.intellij.openapi.externalSystem.settings.ExternalSystemSettingsListenerEx
+import consulo.externalSystem.ExternalSystemManager
+import consulo.externalSystem.setting.{ExternalProjectSettings, ExternalSystemSettingsListenerEx}
 import consulo.project.Project
 import consulo.project.startup.StartupManager
+import consulo.project.ui.util.AppUIUtil
+import consulo.project.ui.wm.ToolWindowManager
 import consulo.ui.ex.toolWindow.ToolWindow
-import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.ui.AppUIUtil
+import jakarta.inject.Inject
 import org.jetbrains.sbt.settings.SbtSettings
 import org.jetbrains.sbt.shell.SbtShellToolWindowFactory
 
 import java.util
-import scala.annotation.nowarn
 
 /**
  * This is hacky workaround to show sbt-shell tool window when a new sbt project is created.<br>
@@ -35,10 +32,9 @@ import scala.annotation.nowarn
  * related: SCL-19909, IDEA-287117, SCL-20978
  */
 @ExtensionImpl
-final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsListenerEx {
+final class ShowSbtShellAfterCreatingNewProject @Inject()(project: Project) extends ExternalSystemSettingsListenerEx {
 
   override def onProjectsLinked(
-    project: Project,
     externalSystemManager: ExternalSystemManager[?, ?, ?, ?, ?],
     collection: util.Collection[? <: ExternalProjectSettings]
   ): Unit = {
@@ -54,7 +50,7 @@ final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsLi
     }
 
     StartupManager.getInstance(project).runAfterOpened(() => {
-      val settings: SbtSettings = sbtManager.getSettingsProvider.fun(project)
+      val settings: SbtSettings = sbtManager.getSettingsProvider.apply(project)
 
       val sbtShellToolWindow = getSbtShellToolWindowInstance(project)
       if (sbtShellToolWindow != null) {
@@ -63,21 +59,20 @@ final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsLi
       else {
         //in some rare cases, toolwindow can be non-initialized by this moment ¯\_(ツ)_/¯
         //this hack comes from ExternalToolWindowManager
-        AppUIExecutor.onUiThread(ModalityState.nonModal()).expireWith(settings).later.execute(() => {
-          ToolWindowManager.getInstance(settings.getProject).invokeLater(() => {
-            val toolWindow1 = getSbtShellToolWindowInstance(project)
-            if (toolWindow1 != null) {
-              setAvailable(toolWindow1)
-            }
-          })
-        }): @nowarn("cat=deprecation") // recommended alternative is Kotlin coroutines with edtDispatcher context
+        // upstream: AppUIExecutor.onUiThread(...).expireWith(settings).later + ToolWindowManager.invokeLater
+        AppUIUtil.invokeLaterIfProjectAlive(settings.getProject, () => {
+          val toolWindow1 = getSbtShellToolWindowInstance(project)
+          if (toolWindow1 != null) {
+            setAvailable(toolWindow1)
+          }
+        })
       }
     })
   }
 
   private def setAvailable(toolWindow: ToolWindow): Unit = {
     if (!toolWindow.isAvailable) {
-      AppUIUtil.invokeLaterIfProjectAlive(toolWindow.getProject, () => {
+      AppUIUtil.invokeLaterIfProjectAlive(project, () => {
         toolWindow.setAvailable(true)
       })
     }
@@ -86,14 +81,7 @@ final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsLi
   private def getSbtShellToolWindowInstance(project: Project): ToolWindow =
     ToolWindowManager.getInstance(project).getToolWindow(SbtShellToolWindowFactory.ID)
 
-  override def onProjectsLoaded(
-    project: Project,
-    externalSystemManager: ExternalSystemManager[?, ?, ?, ?, ?],
-    collection: util.Collection[? <: ExternalProjectSettings]
-  ): Unit = {}
-
   override def onProjectsUnlinked(
-    project: Project,
     externalSystemManager: ExternalSystemManager[?, ?, ?, ?, ?],
     set: util.Set[String]
   ): Unit = {
@@ -102,18 +90,15 @@ final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsLi
       case _ =>
         return
     }
-    val settings: SbtSettings = sbtManager.getSettingsProvider.fun(project)
+    val settings: SbtSettings = sbtManager.getSettingsProvider.apply(project)
 
     if (!settings.getLinkedProjectsSettings.isEmpty)
       return
 
     val toolWindow = getSbtShellToolWindowInstance(project)
     if (toolWindow != null) {
-      AppUIExecutor
-        .onUiThread
-        .expireWith(settings)
-        .expireWith(toolWindow.getDisposable)
-        .execute(() => toolWindow.setAvailable(false)): @nowarn("cat=deprecation") // recommended alternative is Kotlin coroutines with edtDispatcher context
+      // upstream: AppUIExecutor.onUiThread.expireWith(settings).expireWith(toolWindow.getDisposable)
+      AppUIUtil.invokeLaterIfProjectAlive(project, () => toolWindow.setAvailable(false))
     }
   }
 }

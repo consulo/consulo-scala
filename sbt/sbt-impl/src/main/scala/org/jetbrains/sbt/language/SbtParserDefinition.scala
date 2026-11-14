@@ -5,9 +5,8 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 
 
-import org.jetbrains.sbt.api.file
 import org.jetbrains.sbt.api.language.SbtLanguage
-import consulo.project.Project
+import consulo.language.version.LanguageVersion
 import consulo.language.file.FileViewProvider
 import consulo.language.ast.IFileElementType
 import org.jetbrains.plugins.scala.lang.lexer.ScalaLexer
@@ -18,9 +17,9 @@ final class SbtParserDefinition extends ScalaParserDefinitionBase {
   override def getLanguage: Language = SbtLanguage.INSTANCE
 
 
-  override def createLexer(project: Project) = new ScalaLexer(false, project)
+  override def createLexer(languageVersion: LanguageVersion) = new ScalaLexer(false, null)
 
-  override def createParser(project: Project) = new ScalaParser(isScala3 = false)
+  override def createParser(languageVersion: LanguageVersion) = new ScalaParser(isScala3 = false)
 
   override val getFileNodeType = new IFileElementType("sbt.FILE", SbtLanguage.INSTANCE)
 

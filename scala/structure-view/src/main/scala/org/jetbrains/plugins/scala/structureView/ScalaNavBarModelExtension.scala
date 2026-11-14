@@ -16,7 +16,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.projectView.FileKind
 import org.jetbrains.plugins.scala.structureView.element.{AbstractItemPresentation, Element}
 
-@ExtensionImpl(order = "first")
+// upstream: order = "first" (not allowed on platform extension points)
+@ExtensionImpl
 final class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE

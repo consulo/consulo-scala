@@ -1,16 +1,18 @@
 package org.jetbrains.sbt.runner.debugger
 
-import com.intellij.debugger.engine.DebugProcessImpl
-import com.intellij.debugger.engine.events.DebuggerCommandImpl
-import com.intellij.debugger.impl.PrioritizedTask
+import com.intellij.java.debugger.impl.engine.DebugProcessImpl
+import com.intellij.java.debugger.impl.engine.events.DebuggerCommandImpl
+import com.intellij.java.debugger.impl.PrioritizedTask
 import consulo.process.ExecutionException
 import org.jetbrains.sbt.SbtBundle
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 import scala.concurrent.duration.FiniteDuration
 
-private final class DebuggerCommandListener extends DebuggerCommandImpl(PrioritizedTask.Priority.NORMAL) {
+private final class DebuggerCommandListener extends DebuggerCommandImpl {
   private val completed = new CountDownLatch(1)
+
+  override def getPriority: PrioritizedTask.Priority = PrioritizedTask.Priority.NORMAL
 
   override protected def action(): Unit =
     completed.countDown()

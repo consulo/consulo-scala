@@ -1,19 +1,19 @@
 package org.jetbrains.sbt.settings
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components._
-import com.intellij.openapi.externalSystem.settings.{AbstractExternalSystemSettings, ExternalSystemSettingsListener}
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.util.messages.Topic
-import com.intellij.util.xmlb.annotations.XCollection
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.component.persist.{PersistentStateComponent, RoamingType, State, Storage}
+import consulo.disposer.Disposable
+import consulo.externalSystem.setting.{AbstractExternalSystemSettings, ExternalSystemSettingsListener}
+import consulo.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemConstants}
+import consulo.module.Module
+import consulo.project.Project
+import consulo.util.xml.serializer.annotation.AbstractCollection
+import jakarta.inject.{Inject, Singleton}
 import org.jetbrains.annotations.{NotNull, Nullable}
-import org.jetbrains.plugins.scala.util.UnloadAwareDisposable
+import org.jetbrains.sbt.api.{JvmMemorySize, RichOption}
 import org.jetbrains.sbt.project.settings.{SbtProjectSettings, SbtProjectSettingsListener, SbtProjectSettingsListenerAdapter}
-import org.jetbrains.sbt.{JvmMemorySize, RichOption}
 
-import java.{util => j}
+import java.util as j
 import scala.beans.BeanProperty
 
 /**
@@ -29,18 +29,19 @@ import scala.beans.BeanProperty
  * @see [[org.jetbrains.sbt.project.settings.SbtProjectSettings]]
  */
 //noinspection ConvertNullInitializerToUnderscore
+// upstream: lives in sbt-api
 @State(
   name = "ScalaSbtSettings",
-  storages = Array(new Storage(value = "sbt.xml", roamingType = RoamingType.DISABLED)),
-  reportStatistic = true
+  storages = Array[Storage](new Storage(value = "$PROJECT_CONFIG_DIR$/sbt.xml", roamingType = RoamingType.DISABLED))
 )
-@Service(Array(Service.Level.PROJECT))
-final class SbtSettings(project: Project)
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
+final class SbtSettings @Inject()(project: Project)
   extends AbstractExternalSystemSettings[SbtSettings, SbtProjectSettings, SbtProjectSettingsListener](SbtSettings.SbtTopic, project)
   with PersistentStateComponent[SbtSettings.State] {
 
   @BeanProperty @Nullable var customLauncherPath: String = null
-  @ReportValue
   @BeanProperty var maximumHeapSize: Integer = null
   @BeanProperty var vmParameters: String = ""
   @BeanProperty var sbtOptions: String = ""
@@ -78,11 +79,10 @@ final class SbtSettings(project: Project)
     sbtPassParentEnvironment = state.sbtPassParentEnvironment
   }
 
-  override def subscribe(listener: ExternalSystemSettingsListener[SbtProjectSettings]): Unit = {
-    subscribe(listener, UnloadAwareDisposable.forProject(project))
-  }
+  override def subscribe(listener: ExternalSystemSettingsListener[SbtProjectSettings]): Unit =
+    subscribe(listener, project)
 
-  override def subscribe(listener: ExternalSystemSettingsListener[SbtProjectSettings], parentDisposable: Disposable): Unit = {
+  def subscribe(listener: ExternalSystemSettingsListener[SbtProjectSettings], parentDisposable: Disposable): Unit = {
     val adapter = new SbtProjectSettingsListenerAdapter(listener)
     val messageBus = getProject.getMessageBus
     messageBus.connect(parentDisposable).subscribe(SbtSettings.SbtTopic, adapter)
@@ -100,7 +100,8 @@ final class SbtSettings(project: Project)
   }
 
   def getLinkedProjectSettings(module: Module): Option[SbtProjectSettings] =
-    Option(ExternalSystemApiUtil.getExternalRootProjectPath(module)).safeMap(getLinkedProjectSettings)
+    Option(ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalSystemConstants.ROOT_PROJECT_PATH_KEY))
+      .safeMap(getLinkedProjectSettings)
 
   @Nullable
   override def getLinkedProjectSettings(linkedProjectPath: String): SbtProjectSettings =
@@ -113,16 +114,15 @@ final class SbtSettings(project: Project)
 }
 
 object SbtSettings {
-  def getInstance(@NotNull project: Project): SbtSettings = project.getService(classOf[SbtSettings])
+  def getInstance(@NotNull project: Project): SbtSettings = project.getInstance(classOf[SbtSettings])
 
   val hiddenDefaultMaxHeapSize: JvmMemorySize = JvmMemorySize.Megabytes(1536)
 
-  val SbtTopic: Topic[SbtProjectSettingsListener] = new Topic("sbt-specific settings", classOf[SbtProjectSettingsListener])
+  val SbtTopic: Class[SbtProjectSettingsListener] = classOf[SbtProjectSettingsListener]
 
   //noinspection ConvertNullInitializerToUnderscore
   class State extends AbstractExternalSystemSettings.State[SbtProjectSettings] {
     @BeanProperty @Nullable var customLauncherPath: String = null
-    @ReportValue
     @BeanProperty @Nullable var maximumHeapSize: Integer = null
     @BeanProperty var vmParameters: String = ""
     @BeanProperty var sbtOptions: String = ""
@@ -133,12 +133,12 @@ object SbtSettings {
 
     private val linkedProjectSettings: j.TreeSet[SbtProjectSettings] = new j.TreeSet[SbtProjectSettings]
 
-    @XCollection(style = XCollection.Style.v1, elementTypes = Array(classOf[SbtProjectSettings]))
+    @AbstractCollection(surroundWithTag = false, elementTypes = Array(classOf[SbtProjectSettings]))
     override def getLinkedExternalProjectsSettings: j.Set[SbtProjectSettings] =
       linkedProjectSettings
 
     override def setLinkedExternalProjectsSettings(settings: j.Set[SbtProjectSettings]): Unit = {
-      linkedProjectSettings.addAll(settings)
+      if (settings != null) linkedProjectSettings.addAll(settings)
     }
   }
 }

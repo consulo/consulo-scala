@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.settings
 
-import com.intellij.openapi.externalSystem.settings.{DelegatingExternalSystemSettingsListener, ExternalSystemSettingsListener}
+import consulo.externalSystem.setting.{DelegatingExternalSystemSettingsListener, ExternalSystemSettingsListener}
 
 import java.util
 

@@ -1,15 +1,15 @@
 package org.jetbrains.plugins.scala.build
 
-import com.intellij.build.events.*
-import com.intellij.build.events.MessageEvent.Kind
-import com.intellij.build.issue.BuildIssue
-import com.intellij.build.{BuildContentManager, FilePosition, SyncViewManager}
-import com.intellij.execution.process.ProcessOutputType
+import consulo.application.Application
+import consulo.build.ui.event.MessageEvent.Kind
+import consulo.build.ui.event.{BuildEvent, BuildEventFactory, EventResult, MessageEvent}
+import consulo.build.ui.issue.BuildIssue
+import consulo.build.ui.{BuildContentManager, FilePosition, SyncViewManager}
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationEvent, ExternalSystemTaskNotificationListener}
+import consulo.localize.LocalizeValue
 import consulo.logging.Logger
-import com.intellij.openapi.externalSystem.model.task.event.{Failure as ExternalSystemFailure, FailureResult as ExternalSystemFailureResult, SkippedResult as ExternalSystemSkippedResult, SuccessResult as ExternalSystemSuccessResult, *}
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
-import com.intellij.openapi.wm.ToolWindowManager
 import consulo.navigation.Navigatable
+import consulo.project.ui.wm.ToolWindowManager
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.ExternalSystemNotificationReporter.*
@@ -17,8 +17,6 @@ import org.jetbrains.sbt.SbtBundle
 
 import java.nio.file.Path
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
-import scala.util.Random
 
 class ExternalSystemNotificationReporter(
   workingDir: String,
@@ -26,7 +24,11 @@ class ExternalSystemNotificationReporter(
   notifications: ExternalSystemTaskNotificationListener
 ) extends BuildReporter {
 
+  // upstream: workingDir is passed to the listener; Consulo's ExternalSystemTaskNotificationListener has no build events,
+  // task events are sent to the sync view directly
   private val descriptors: mutable.Map[EventId, TaskDescriptor] = mutable.Map.empty
+
+  private def factory: BuildEventFactory = Application.get().getInstance(classOf[BuildEventFactory])
 
   private val viewManager: Option[SyncViewManager] =
     Option(taskId.findProject()).map(_.getInstance(classOf[SyncViewManager]))
@@ -35,14 +37,14 @@ class ExternalSystemNotificationReporter(
   private var warningActivatedToolWindow: Boolean = false
 
   override def start(): Unit = {
-    notifications.onStart(workingDir, taskId)
+    notifications.onStart(taskId)
   }
 
   override def finish(messages: BuildMessages): Unit = {
     isFinished = true
     if (messages.status == BuildMessages.OK && messages.errors.isEmpty) {
-      notifications.onEnd(workingDir, taskId)
-      notifications.onSuccess(workingDir, taskId)
+      notifications.onSuccess(taskId)
+      notifications.onEnd(taskId)
     }
     else if (messages.status == BuildMessages.Canceled) {
       finishCanceled()
@@ -51,7 +53,7 @@ class ExternalSystemNotificationReporter(
       finishWithFailure(messages.exceptions.head)
     } else if (messages.errors.nonEmpty) {
       val firstError = messages.errors.head
-      val throwable = Option(firstError.getError).getOrElse(new Exception(firstError.getMessage))
+      val throwable = Option(firstError.getError).getOrElse(new Exception(firstError.getMessage.get))
       finishWithFailure(throwable)
     } else if (messages.status == BuildMessages.Indeterminate) {
       finishWithFailure(new Exception("task ended in indeterminate state"))
@@ -62,18 +64,18 @@ class ExternalSystemNotificationReporter(
 
   override def finishWithFailure(err: Throwable): Unit = {
     isFinished = true
-    notifications.onFailure(workingDir, taskId, throwableToException(err))
-    notifications.onEnd(workingDir, taskId)
+    notifications.onFailure(taskId, throwableToException(err))
+    notifications.onEnd(taskId)
   }
 
   override def finishCanceled(): Unit = {
     isFinished = true
     val time = System.currentTimeMillis()
     descriptors.foreach { case (id, _) =>
-      val result = new com.intellij.build.events.impl.SkippedResultImpl
-      finishTask(id, SbtBundle.message("report.build.task.canceled"), result, time)
+      finishTask(id, SbtBundle.message("report.build.task.canceled"), factory.createSkippedResult(), time)
     }
-    notifications.onCancel(workingDir, taskId)
+    // upstream: notifications.onCancel
+    notifications.onEnd(taskId)
   }
 
   override def warning(message: String, position: Option[FilePosition]): Unit =
@@ -120,22 +122,18 @@ class ExternalSystemNotificationReporter(
     navigatable: Option[Navigatable] = None
   ): Unit = {
     val event = createBuildEvent(message, kind, position, details, navigatable)
-    notifications.onStatusChange(new ExternalSystemBuildEvent(taskId, event))
-    viewManager.foreach { manager =>
-      manager.onEvent(taskId, event)
-    }
+    onBuildEvent(event)
   }
 
   private def onEvent(issue: BuildIssue, kind: Kind): Unit = {
-    val event = BuildEvents.getInstance()
-      .buildIssue(issue, kind)
-      .withParentId(taskId)
-      .build()
-    notifications.onStatusChange(new ExternalSystemBuildEvent(taskId, event))
+    val event = factory.createBuildIssueEvent(taskId, issue, kind)
+    onBuildEvent(event)
+  }
+
+  private def onBuildEvent(event: BuildEvent): Unit =
     viewManager.foreach { manager =>
       manager.onEvent(taskId, event)
     }
-  }
 
   private def activateToolWindowOnWarning(): Unit =
     if (!warningActivatedToolWindow) {
@@ -157,8 +155,7 @@ class ExternalSystemNotificationReporter(
     if (!isFinished) {
       //NOTE: new lines are also added in BspSession.BspProcessMessageHandler.call
       val messageWithNewLine = if (message.endsWith("\n")) message else message + "\n"
-      val outputType = if (isStdOut) ProcessOutputType.STDOUT else ProcessOutputType.STDERR
-      notifications.onTaskOutput(taskId, messageWithNewLine, outputType)
+      notifications.onTaskOutput(taskId, messageWithNewLine, isStdOut)
     } else {
       //NOTE: it might be not valid to log output when the task is already finished
       //(see comments of https://youtrack.jetbrains.com/issue/SCL-21794/Reload-ALL-BSP-projects-action-is-disabled)
@@ -167,28 +164,14 @@ class ExternalSystemNotificationReporter(
   }
 
   override def startTask(eventId: EventId, parent: Option[EventId], message: String, time: Long = System.currentTimeMillis()): Unit = {
-    val taskDescriptor = descriptors.getOrElseUpdate(
-      eventId,
-      TaskDescriptor(
-        new TaskOperationDescriptor(message, System.currentTimeMillis(), "task-" + Random.nextLong()),
-        parent
-      )
-    )
-
-    val startEvent =
-      new ExternalSystemStartEvent[TaskOperationDescriptor](eventId.id, parent.map(_.id).orNull, taskDescriptor.descriptor)
-    val statusEvent =
-      new ExternalSystemTaskExecutionEvent(taskId, startEvent)
-    notifications.onStatusChange(statusEvent)
+    descriptors.getOrElseUpdate(eventId, TaskDescriptor(message, parent))
+    notifications.onStatusChange(new ExternalSystemTaskNotificationEvent(taskId, message))
+    onBuildEvent(factory.createStartEvent(eventId.id, parent.map(_.id).getOrElse(taskId), time, LocalizeValue.of(message)))
   }
 
   override def progressTask(eventId: EventId, total: Long, progress: Long, unit: String, message: String, time: Long = System.currentTimeMillis()): Unit = {
-    descriptors.get(eventId).foreach { taskDescriptor =>
-      val progressEvent = new ExternalSystemStatusEvent[TaskOperationDescriptor](
-        eventId.id, taskDescriptor.parent.map(_.id).orNull, taskDescriptor.descriptor, total, progress, unit
-      )
-      val statusEvent = new ExternalSystemTaskExecutionEvent(taskId, progressEvent)
-      notifications.onStatusChange(statusEvent)
+    descriptors.get(eventId).foreach { _ =>
+      notifications.onStatusChange(new ExternalSystemTaskNotificationEvent(taskId, message))
     }
   }
 
@@ -196,24 +179,7 @@ class ExternalSystemNotificationReporter(
     descriptors
       .remove(eventId)
       .foreach { taskDescriptor =>
-        val startTime = taskDescriptor.descriptor.getEventTime
-
-        val resultObject = result match {
-          case _: SuccessResult =>
-            new ExternalSystemSuccessResult(startTime, time, true)
-          case result: FailureResult =>
-            val fails = result.getFailures.asScala.map(convertFailure).asJava
-            new ExternalSystemFailureResult(startTime, time, fails)
-          case _: SkippedResult =>
-            new ExternalSystemSkippedResult(startTime, time)
-          case _ => // unknown or unhandled result type
-            new ExternalSystemSkippedResult(startTime, time)
-        }
-
-        val finishEvent = new ExternalSystemFinishEvent[TaskOperationDescriptor](
-          eventId.id, taskDescriptor.parent.map(_.id).orNull, taskDescriptor.descriptor, resultObject)
-        val statusEvent = new ExternalSystemTaskExecutionEvent(taskId, finishEvent)
-        notifications.onStatusChange(statusEvent)
+        onBuildEvent(factory.createFinishEvent(eventId.id, taskDescriptor.parent.map(_.id).getOrElse(taskId), time, LocalizeValue.of(message), result))
       }
   }
 
@@ -232,15 +198,10 @@ class ExternalSystemNotificationReporter(
 object ExternalSystemNotificationReporter {
   private val Log = Logger.getInstance(this.getClass)
 
-  private case class TaskDescriptor(descriptor: TaskOperationDescriptor, parent: Option[EventId])
+  private case class TaskDescriptor(@Nls message: String, parent: Option[EventId])
 
   private def throwableToException(throwable: Throwable) = throwable match {
     case x: Exception => x
     case t: Throwable => new Exception(t)
-  }
-
-  private def convertFailure(fail: com.intellij.build.events.Failure): ExternalSystemFailure = {
-    val causes = fail.getCauses.asScala.map(convertFailure).asJava
-    new ExternalSystemFailure(fail.getMessage, fail.getDescription, causes)
   }
 }

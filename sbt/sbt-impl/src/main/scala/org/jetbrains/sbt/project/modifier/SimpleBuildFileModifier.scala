@@ -154,7 +154,7 @@ object SimpleBuildFileModifier {
         //TODO: this 'saveText' seems extremely weird here
         //it is needed so that the virtual file gets modified even though we are already inside a write action when
         //modification is performed from setupLibrary (see org.jetbrains.plugins.scala.testingSupport.test.AbstractTestFramework)
-        VfsUtil.saveText(res, psiFile.getText)
+        VirtualFileUtil.saveText(res, psiFile.getText)
         Some(res)
       case _ => None
     }

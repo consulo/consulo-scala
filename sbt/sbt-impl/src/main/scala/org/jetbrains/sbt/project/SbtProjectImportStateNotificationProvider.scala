@@ -1,29 +1,26 @@
 package org.jetbrains.sbt.project
 
+import consulo.annotation.access.RequiredReadAction
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.fileEditor.FileEditor
+import consulo.fileEditor.{EditorNotificationBuilder, EditorNotificationProvider, FileEditor}
+import consulo.language.psi.PsiManager
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
-import consulo.language.psi.PsiManager
-import com.intellij.psi.impl.IncompleteModelUtil
-import com.intellij.ui.EditorNotificationProvider
-import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
+import jakarta.inject.Inject
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.sbt.codeInsight.daemon.SbtProblemHighlightFilter
 import org.jetbrains.sbt.api.language.SbtFile
+import org.jetbrains.sbt.codeInsight.daemon.SbtProblemHighlightFilter
 
-import javax.swing.JComponent
+import java.util.function.Supplier
 
 @ExtensionImpl
-private final class SbtProjectImportStateNotificationProvider extends EditorNotificationProvider {
+private final class SbtProjectImportStateNotificationProvider @Inject()(project: Project) extends EditorNotificationProvider {
 
-  @RequiresReadLock
+  override def getId: String = "sbt-project-import-state"
+
+  @RequiredReadAction
   @Nullable
-  override def collectNotificationData(
-    project: Project,
-    file: VirtualFile
-  ): java.util.function.Function[? >: FileEditor, ? <: JComponent] = {
+  override def buildNotification(file: VirtualFile, fileEditor: FileEditor, supplier: Supplier[EditorNotificationBuilder]): EditorNotificationBuilder = {
     val psiFile = PsiManager.getInstance(project).findFile(file)
     val sbtFile = psiFile match {
       case f: SbtFile => f
@@ -33,12 +30,10 @@ private final class SbtProjectImportStateNotificationProvider extends EditorNoti
     }
     // The sbt file is not a part of the current project, do not show any notifications.
     if (!SbtProblemHighlightFilter.shouldHighlightSbtFile(sbtFile)) return null
-    // Project reload is already in progress, do not show any notifications.
-    //noinspection ApiStatus,UnstableApiUsage
-    if (IncompleteModelUtil.isIncompleteModel(sbtFile)) return null
+    // upstream: no notification while the project reload is in progress (IncompleteModelUtil.isIncompleteModel) - not in Consulo
     // The project is fully imported, do not show any notifications.
     if (SbtProjectImportStateService.instance(project).isImported(sbtFile)) return null
 
-    (fileEditor: FileEditor) => SbtProjectImportStateNotificationPanel.createNotificationPanel(project, fileEditor)
+    SbtProjectImportStateNotificationPanel.fillNotification(project, supplier.get())
   }
 }

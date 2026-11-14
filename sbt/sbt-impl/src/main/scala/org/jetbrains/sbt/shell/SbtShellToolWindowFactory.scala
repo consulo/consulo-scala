@@ -2,20 +2,18 @@ package org.jetbrains.sbt.shell
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.ide.actions.ActivateToolWindowAction
 import consulo.ui.ex.action.{ActionGroup, ActionManager}
-import com.intellij.openapi.actionSystem.KeyboardShortcut
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
-import com.intellij.openapi.keymap.KeymapManager
 import consulo.application.dumb.DumbAware
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import consulo.ui.ex.toolWindow.ToolWindow
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.toolWindow.{ToolWindow, ToolWindowAnchor}
 import consulo.project.ui.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.openapi.wm.impl.ToolWindowImpl
-import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
-import com.intellij.ui.BadgeIconSupplier
+import consulo.project.ui.wm.ToolWindowManager
+import consulo.ui.ex.BadgeIconSupplier
+import consulo.ui.image.Image
 import consulo.ui.ex.content.{Content, ContentFactory}
 import org.jetbrains.annotations.{Nls, NotNull}
 import org.jetbrains.plugins.scala.extensions.{invokeLater, schedulePeriodicTask}
@@ -23,18 +21,28 @@ import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.shell.SbtShellToolWindowFactory.Log
 import org.jetbrains.sbt.{SbtBundle, SbtUtil, shell}
 
-import java.awt.event.{InputEvent, KeyEvent}
 import java.awt.{BorderLayout, Component, Container, FocusTraversalPolicy}
 import java.util.concurrent.TimeUnit
-import javax.swing.{JComponent, JPanel, KeyStroke}
+import javax.swing.{JComponent, JPanel}
 
 /**
   * Creates the sbt shell toolwindow, which is docked at the bottom of sbt projects.
   *
-  * This factory is registered in SBT.xml
   */
 @ExtensionImpl(id = "sbt-shell-toolwindow")
 class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
+  override def getId: String = SbtShellToolWindowFactory.ID
+
+  override def getAnchor: ToolWindowAnchor = ToolWindowAnchor.BOTTOM
+
+  override def getIcon: Image = Icons.SBT_SHELL_TOOL_WINDOW
+
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(SbtShellToolWindowFactory.Title)
+
+  override def canCloseContents: Boolean = false
+
+  override def isDoNotActivateOnStart: Boolean = true
+
   /**
    * @note usage of "badge is originally inspired by "Build" tool window
    *       (see [[com.intellij.build.BuildContentManagerImpl]])
@@ -49,18 +57,16 @@ class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
     SbtUtil.isSbtProject(project)
 
   // called once per project open
-  override def init(toolWindow: ToolWindow): Unit = {
+  // upstream: also adds the ctrl+shift+S shortcut of the "activate tool window" action to the default keymap
+  @RequiredUIAccess
+  override def init(project: Project, toolWindow: ToolWindow): Unit = {
     Log.debug("init")
     toolWindow.setStripeTitle(SbtShellToolWindowFactory.Title)
     toolWindow.setIcon(ToolWindowIconSupplier.getOriginalIcon)
-
-    val toolWindowId = toolWindow.asInstanceOf[ToolWindowImpl].getId
-    val actionId = ActivateToolWindowAction.Manager.getActionIdForToolWindow(toolWindowId)
-
-    addShortcuts(actionId)
   }
 
   // called once per project open, is not called during sbt shell restart OR close/open etc...
+  @RequiredUIAccess
   override def createToolWindowContent(project: Project, toolWindow: ToolWindow): Unit = {
     Log.debug("createToolWindowContent")
     // focus sbt shell input when opening toolWindow with shortcut. #SCL-13225
@@ -84,24 +90,6 @@ class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
       }
     }
 
-  private def addShortcuts(actionId: String): Unit = {
-    val keymapManager = KeymapManager.getInstance()
-
-    val defaultShortcut =
-      new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), null)
-
-    val defaultKeymap = keymapManager.getKeymap("$default")
-    if (defaultKeymap != null) {
-      defaultKeymap.addShortcut(actionId, defaultShortcut)
-    }
-
-    // NetBeans SaveAll is the only conflicting shortcut, and has the alternative ctrl+s
-    // so I think it's low impact to just remove this one conflict
-    val netbeansKeymap = keymapManager.getKeymap("NetBeans 6.5")
-    if (netbeansKeymap != null) {
-      netbeansKeymap.removeShortcut("SaveAll", defaultShortcut)
-    }
-  }
 }
 
 object SbtShellToolWindowFactory {
@@ -120,9 +108,9 @@ object SbtShellToolWindowFactory {
     } yield window
 
     if (result.isEmpty) {
-      // Similar to `com.intellij.openapi.externalSystem.service.ui.ExternalToolWindowManager#getToolWindow`.
+      // upstream: returns a MockToolWindow in unit test mode
       if (ApplicationManager.getApplication.isUnitTestMode) {
-        return Some(new MockToolWindow(project))
+        return None
       }
 
       Log.error(s"Failed to create sbt shell toolwindow content for $project.")
@@ -149,15 +137,11 @@ object SbtShellToolWindowFactory {
       val sbtManager = SbtProcessManager.forProject(project)
 
       def getShellComponent: Option[JComponent] =
-        if (sbtManager.isRunWithNewShell) {
-          sbtManager.terminalConsole.map(_.getComponent)
-        } else {
-          for {
-            shellRunner <- sbtManager.shellRunner
-            view <- Option(shellRunner.getConsoleView)
-            editor <- Option(view.getConsoleEditor)
-          } yield editor.getContentComponent
-        }
+        for {
+          shellRunner <- sbtManager.shellRunner
+          view <- Option(shellRunner.getConsoleView)
+          editor <- Option(view.getConsoleEditor)
+        } yield editor.getContentComponent
 
       val shellComponent =
         if (!sbtManager.isAlive) None

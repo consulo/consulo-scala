@@ -4,10 +4,10 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import com.intellij.lang.documentation.AbstractDocumentationProvider
-import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.language.editor.documentation.LanguageDocumentationProvider
+import consulo.language.editor.documentation.DocumentationProviderEx
 import consulo.codeEditor.Editor
-import com.intellij.openapi.util.text.HtmlBuilder
+import consulo.application.util.HtmlBuilder
 import consulo.application.util.HtmlChunk
 import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -20,7 +20,7 @@ import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.{getScalacOptionsFo
 import scala.collection.mutable
 
 @ExtensionImpl
-class SbtScalacOptionsDocumentationProvider extends AbstractDocumentationProvider {
+class SbtScalacOptionsDocumentationProvider extends DocumentationProviderEx with LanguageDocumentationProvider {
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def generateDoc(element: PsiElement, originalElement: PsiElement): String =
@@ -85,7 +85,7 @@ class SbtScalacOptionsDocumentationProvider extends AbstractDocumentationProvide
         .br()
     }
 
-    val content = contentBuilder.wrapWith(DocumentationMarkup.CONTENT_ELEMENT)
+    val content = contentBuilder.wrapWith(HtmlChunk.div().setClass("content"))
     builder.append(content)
   }
 
@@ -105,13 +105,18 @@ class SbtScalacOptionsDocumentationProvider extends AbstractDocumentationProvide
         Some(sectionsBuilder)
     }
 
+  // upstream: DocumentationMarkup.SECTION_HEADER_CELL / SECTION_CONTENT_CELL
+  private def SectionHeaderCell: HtmlChunk.Element = HtmlChunk.tag("td").attr("valign", "top").setClass("section")
+
+  private def SectionContentCell: HtmlChunk.Element = HtmlChunk.tag("td").attr("valign", "top")
+
   private def appendSection(builder: HtmlBuilder, sectionName: Option[String], sectionContent: String): Unit = {
     sectionName.foreach { name =>
-      val headerCell = DocumentationMarkup.SECTION_HEADER_CELL.child(HtmlChunk.text(name).wrapWith("p"))
+      val headerCell = SectionHeaderCell.child(HtmlChunk.text(name).wrapWith("p"))
       builder.append(HtmlChunk.tag("tr").child(headerCell))
     }
 
-    val contentCell = DocumentationMarkup.SECTION_CONTENT_CELL.addText(sectionContent)
+    val contentCell = SectionContentCell.addText(sectionContent)
     builder.append(HtmlChunk.tag("tr").child(contentCell))
   }
 }

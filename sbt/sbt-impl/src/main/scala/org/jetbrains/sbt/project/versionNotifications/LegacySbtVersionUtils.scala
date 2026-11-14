@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.versionNotifications
 
-import consulo.navigation.OpenFileDescriptor
+import consulo.navigation.{OpenFileDescriptor, OpenFileDescriptorFactory}
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFileManager
 import org.jetbrains.plugins.scala.extensions.{OptionExt, PathExt}
@@ -23,6 +23,6 @@ private object LegacySbtVersionUtils {
     val buildPropertiesFile = projectRoot / Sbt.ProjectDirectory / Sbt.PropertiesFile
     Option(buildPropertiesFile)
       .filter(_.exists).safeMap(VirtualFileManager.getInstance.findFileByNioPath)
-      .map(new OpenFileDescriptor(project, _, 0))
+      .map(OpenFileDescriptorFactory.getInstance(project).builder(_).offset(0).build())
   }
 }

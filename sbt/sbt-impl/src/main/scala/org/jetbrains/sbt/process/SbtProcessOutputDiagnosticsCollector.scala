@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process
 
 import consulo.process.event.{ProcessEvent, ProcessListener}
-import com.intellij.execution.process.ProcessHandler
+import consulo.process.ProcessHandler
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.util.dataholder.Key
@@ -64,9 +64,10 @@ object SbtProcessOutputDiagnosticsCollector {
 
   val PrintProcessOutputOnFailurePropertyName = "sbt.import.print.process.output.on.failure"
 
-  private[sbt] def createIfEnabled(): Option[SbtProcessOutputDiagnosticsCollector] =
+  private[sbt] def createIfEnabled(): Option[SbtProcessOutputDiagnosticsCollector] = {
     Log.debug(s"collectProcessOutput = $isProcessOutputCollectionEnabled")
     if (isProcessOutputCollectionEnabled) Some(new SbtProcessOutputDiagnosticsCollector) else None
+  }
 
   private def sharedIfEnabled: Option[SbtProcessOutputDiagnosticsCollector] =
     if (isProcessOutputCollectionEnabled) Some(SharedCollector) else None
