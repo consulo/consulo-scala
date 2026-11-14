@@ -1,6 +1,7 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
 
 import scala.annotation.tailrec
 import scala.concurrent.duration._

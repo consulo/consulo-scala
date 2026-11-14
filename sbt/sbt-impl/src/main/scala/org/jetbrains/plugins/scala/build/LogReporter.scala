@@ -3,8 +3,8 @@ package org.jetbrains.plugins.scala.build
 import com.intellij.build.FilePosition
 import com.intellij.build.events.EventResult
 import com.intellij.build.issue.BuildIssue
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.pom.Navigatable
+import consulo.logging.Logger
+import consulo.navigation.Navigatable
 
 import java.nio.file.Path
 

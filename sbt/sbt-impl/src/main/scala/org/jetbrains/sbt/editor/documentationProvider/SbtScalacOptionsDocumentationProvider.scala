@@ -1,19 +1,28 @@
 package org.jetbrains.sbt.editor.documentationProvider
 
-import com.intellij.lang.documentation.{AbstractDocumentationProvider, DocumentationMarkup}
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.util.text.{HtmlBuilder, HtmlChunk}
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import com.intellij.lang.documentation.AbstractDocumentationProvider
+import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.codeEditor.Editor
+import com.intellij.openapi.util.text.HtmlBuilder
+import consulo.application.util.HtmlChunk
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.sbt.language.psi.SbtScalacOptionDocHolder
 import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils
 import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.{getScalacOptionsForLiteralValue, withScalacOption}
 
 import scala.collection.mutable
 
+@ExtensionImpl
 class SbtScalacOptionsDocumentationProvider extends AbstractDocumentationProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def generateDoc(element: PsiElement, originalElement: PsiElement): String =
     element match {
       case docHolder: SbtScalacOptionDocHolder =>

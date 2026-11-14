@@ -1,13 +1,15 @@
 package org.jetbrains.sbt.project.data.service
 
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.model.DataNode
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.DataNode
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import consulo.project.Project
 import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
-import org.jetbrains.sbt.RichSeq
+import org.jetbrains.sbt.api.RichSeq
 import org.jetbrains.sbt.project.SharedSourcesOwnersData
 import org.jetbrains.sbt.project.data.findModuleForParentOfDataNode
 import org.jetbrains.sbt.project.settings.SharedSourcesOwnerModules
@@ -16,6 +18,7 @@ import java.util
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 // TODO SCL-22395
+@ExtensionImpl
 class SharedSourcesOwnersDataService extends ScalaAbstractProjectDataService[SharedSourcesOwnersData, Module](SharedSourcesOwnersData.Key){
 
   override def importData(

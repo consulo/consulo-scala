@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process.options
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import org.jetbrains.annotations.{Nullable, VisibleForTesting}
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.process.options.collecting.{JvmOptionsCollector, SbtOptionsCollector}
@@ -93,7 +93,7 @@ object SbtProcessOptionsResolver {
   /**
    * Resolves only sbt-option-derived arguments for a separate sbt process.
    */
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[options] def resolveSbtOptionsForSeparateProcess(
     workingDir: Path,
     sbtOptionsFromSettings: Seq[String],

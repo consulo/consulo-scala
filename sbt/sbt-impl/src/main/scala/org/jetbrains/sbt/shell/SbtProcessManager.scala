@@ -1,19 +1,24 @@
 package org.jetbrains.sbt.shell
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.{GeneralCommandLine, PtyCommandLine, RemoteConnection}
+import consulo.process.cmd.ParametersList
 import com.intellij.execution.configurations.GeneralCommandLine.ParentEnvironmentType
 import com.intellij.execution.process.{ColoredProcessHandler, KillableProcessHandler, OSProcessHandler, OSProcessUtil}
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.{ActionGroup, DefaultActionGroup}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.{Project, ProjectManager, ProjectManagerListener}
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.registry.Registry
+import consulo.project.ui.notification.NotificationType
+import consulo.disposer.Disposable
+import consulo.ui.ex.action.{ActionGroup, DefaultActionGroup}
+import consulo.logging.Logger
+import consulo.document.FileDocumentManager
+import consulo.application.progress.ProgressManager
+import consulo.project.{Project, ProjectManager}
+import consulo.project.event.ProjectManagerListener
+import consulo.disposer.Disposer
+import consulo.application.util.registry.Registry
 import com.intellij.openapi.vfs.encoding.EncodingProjectManager
 import com.intellij.platform.eel.provider.EelProviderUtil
 import com.intellij.platform.eel.provider.utils.EelPathUtils
@@ -22,14 +27,13 @@ import com.intellij.terminal.ui.TerminalWidget
 import com.intellij.terminal.{ProcessHandlerTtyConnector, TerminalExecutionConsole, TerminalExecutionConsoleBuilder}
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.concurrency.ThreadingAssertions
-import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
+import consulo.ui.annotation.RequiredUIAccess
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.system.OS
 import com.jediterm.core.util.TermSize
-import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.extensions.*
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 import org.jetbrains.sbt.buildinfo.BuildInfo
 import org.jetbrains.sbt.process.mock.MockSbtProcessForTests
@@ -43,7 +47,8 @@ import org.jetbrains.sbt.shell.action.{DebugShellAction, EOFAction, StartAction,
 import org.jetbrains.sbt.shell.communication.SbtShellLifecycle.ShellStateEvent
 import org.jetbrains.sbt.shell.optionsWarn.SbtShellOptionsWarningService
 import org.jetbrains.sbt.shell.process.utils.{SbtSettingsInjector, SbtShellJdkSelector, SbtShellRunId, SbtShellVmOptionsBuilder}
-import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersion, SbtVersionCapabilities, SbtVersionDetector, normalizedLocalPath}
+import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersionDetector, normalizedLocalPath}
+import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities}
 
 import java.io.{OutputStreamWriter, PrintWriter}
 import java.nio.file.Path
@@ -56,7 +61,10 @@ import scala.jdk.CollectionConverters.*
  * Instantiates an sbt instance when initially requested.
  */
 //noinspection ApiStatus,UnstableApiUsage
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class SbtProcessManager(project: Project) extends Disposable {
 
   private val messageBus: MessageBusConnection = project.getMessageBus.connect
@@ -474,7 +482,7 @@ final class SbtProcessManager(project: Project) extends Disposable {
    * The background thread is required because other parts of the invoked code also require it
    * (for example [[SbtExternalSystemManager.executionSettingsFor]]).
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def acquireShellProcessHandler(activateSbtShellToolWindowOnStartup: Boolean = true): OSProcessHandler = {
     log.debug("acquireShellProcessHandler start...")
     if isUnitTestMode then
@@ -508,7 +516,7 @@ final class SbtProcessManager(project: Project) extends Disposable {
     }
 
   @TestOnly
-  @Internal
+  // upstream: @Internal
   def flushConsoleOutputForTests(): Unit =
     processData match {
       case Some(pd) if isAlive(pd) =>
@@ -539,7 +547,7 @@ final class SbtProcessManager(project: Project) extends Disposable {
   def terminalConsole: Option[TerminalExecutionConsole] = processData.collect { case x: TerminalConsoleProcessData => x.console }
   def debugConnection: Option[RemoteConnection] = processData.flatMap(_.debugConnection)
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def restartProcess(): Unit = {
     doRestartProcess()
   }
@@ -800,7 +808,7 @@ object SbtProcessManager {
   )
 
   def forProject(project: Project): SbtProcessManager = {
-    val pm = project.getService(classOf[SbtProcessManager])
+    val pm = project.getInstance(classOf[SbtProcessManager])
     if (pm == null) throw new IllegalStateException(s"unable to get component SbtProcessManager for project $project")
     else pm
   }

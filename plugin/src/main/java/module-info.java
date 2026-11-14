@@ -16,4 +16,5 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.compile.server;
     requires transitive org.intellij.scala.debugger;
     requires transitive org.intellij.scala.compiler.consulo;
+    requires transitive org.intellij.scala.sbt.impl;
 }

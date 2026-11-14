@@ -6,12 +6,14 @@ import com.intellij.build.issue.BuildIssue
 import com.intellij.build.{AbstractViewManager, BuildContentManager, BuildViewManager, DefaultBuildDescriptor, FilePosition}
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.RunContentDescriptor
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
-import com.intellij.openapi.project.{DumbAwareAction, Project}
+import consulo.application.AllIcons
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
+import com.intellij.openapi.project.DumbAwareAction
+import consulo.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.sbt.SbtBundle
@@ -52,7 +54,7 @@ class BuildToolWindowReporter(
       project,
       buildId,
       title,
-      project.getService(classOf[BuildViewManager]),
+      project.getInstance(classOf[BuildViewManager]),
       cancelAction,
       activateToolWindowWhenFailed = activateToolWindowWhenFailed,
       activateToolWindowWhenWarned = activateToolWindowWhenWarned

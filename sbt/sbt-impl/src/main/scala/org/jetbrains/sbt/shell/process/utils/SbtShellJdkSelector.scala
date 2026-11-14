@@ -1,15 +1,16 @@
 package org.jetbrains.sbt.shell.process.utils
 
-import com.intellij.execution.CantRunException
-import com.intellij.notification.{Notification, NotificationAction, NotificationType}
-import com.intellij.openapi.actionSystem.AnActionEvent
+import consulo.execution.CantRunException
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
 import com.intellij.openapi.options.ex.SingleConfigurableEditor
 import com.intellij.openapi.options.newEditor.SettingsDialog
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdkType, Sdk}
-import com.intellij.openapi.roots.ProjectRootManager
+import consulo.project.Project
+import com.intellij.openapi.projectRoots.JavaSdkType
+import consulo.content.bundle.Sdk
+import consulo.module.content.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
-import com.intellij.openapi.ui.DialogWrapper.DialogStyle
+import consulo.ui.ex.awt.DialogWrapper.DialogStyle
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.project.external.{JdkByName, SdkUtils}
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups

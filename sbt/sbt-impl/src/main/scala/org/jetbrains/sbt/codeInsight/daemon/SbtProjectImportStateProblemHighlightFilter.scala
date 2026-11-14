@@ -1,15 +1,18 @@
 package org.jetbrains.sbt.codeInsight.daemon
 
-import com.intellij.codeInsight.daemon.ProblemHighlightFilter
-import com.intellij.ide.highlighter.JavaFileType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.roots.JavaProjectRootsUtil
-import com.intellij.psi.PsiFile
-import org.jetbrains.annotations.{ApiStatus, TestOnly}
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.ProblemHighlightFilter
+import com.intellij.java.language.impl.JavaFileType
+import consulo.application.ApplicationManager
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.java.impl.util.JavaProjectRootsUtil
+import consulo.language.psi.PsiFile
+import org.jetbrains.annotations.TestOnly
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.sbt.project.SbtProjectImportStateService
 
+@ExtensionImpl
 private final class SbtProjectImportStateProblemHighlightFilter extends ProblemHighlightFilter {
   import SbtProjectImportStateProblemHighlightFilter.{isQodanaTestExclusionEnabled, isTrackedFileType, isWritableSourceFile}
 
@@ -54,7 +57,7 @@ object SbtProjectImportStateProblemHighlightFilter {
   private def isQodanaTestExclusionEnabled: Boolean =
     ApplicationManager.getApplication.isUnitTestMode && qodanaTestExclusionEnabled
 
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   @TestOnly
   private[jetbrains] def setQodanaTestExclusionEnabled(enabled: Boolean): Unit = {
     qodanaTestExclusionEnabled = enabled

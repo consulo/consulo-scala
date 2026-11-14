@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.process.options.reporting
 
 import com.intellij.build.issue.{BuildIssue, BuildIssueQuickFix}
-import com.intellij.openapi.project.Project
-import com.intellij.pom.Navigatable
+import consulo.project.Project
+import consulo.navigation.Navigatable
 
 import java.util.{List => JList}
 import scala.jdk.CollectionConverters.*

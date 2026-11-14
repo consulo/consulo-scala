@@ -1,13 +1,19 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.util.ProcessingContext
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+
+import consulo.language.editor.completion.{CompletionContributor, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.LookupElementBuilder
+import consulo.application.dumb.DumbAware
+import consulo.language.pattern.PlatformPatterns
+import consulo.language.util.ProcessingContext
 import org.jetbrains.annotations.NonNls
 
+@ExtensionImpl(order = "first")
 final class SbtShellCompletionContributor extends CompletionContributor with DumbAware {
+  override def getLanguage: Language = SbtShellLanguage
+
   extend(
     CompletionType.BASIC,
     PlatformPatterns.psiElement().withLanguage(SbtShellLanguage),

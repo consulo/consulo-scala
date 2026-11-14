@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.shell.communication
 
-import org.jetbrains.annotations.ApiStatus.Experimental
 import org.jetbrains.annotations.NonNls
 
 /**
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.NonNls
  * @param mirrorQueuedOutput       whether output printed while this request waits for a starting sbt shell should be routed to this request.
  * @tparam Result the command result type produced by shell-event processing.
  */
-@Experimental
+// upstream: @Experimental
 final case class SbtShellCommandRequest[Result] private(
   private val commandTextSupplier: () => String,
   requestId: SbtShellCommandRequestId,
@@ -79,7 +78,7 @@ final case class SbtShellCommandRequest[Result] private(
 /**
  * Factory methods whose parameter semantics match the [[SbtShellCommandRequest]] constructor unless noted otherwise.
  */
-@Experimental
+// upstream: @Experimental
 object SbtShellCommandRequest {
   private def generatedRequestId: SbtShellCommandRequestId =
     SbtShellCommandRequestId.random()

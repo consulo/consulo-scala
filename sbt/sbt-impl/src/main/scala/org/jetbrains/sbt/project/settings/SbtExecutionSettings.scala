@@ -1,12 +1,16 @@
 package org.jetbrains.sbt
 package project.settings
 
-import com.intellij.notification.{Notification, NotificationAction, NotificationType}
-import com.intellij.openapi.actionSystem.AnActionEvent
+
+import org.jetbrains.sbt.api.JvmMemorySize
+import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.api.file
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
 import com.intellij.openapi.externalSystem.model.settings.ExternalSystemExecutionSettings
-import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.project.Project
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.project.Project
+import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 import org.jetbrains.sbt.process.options.parsing.model.MalformedSbtOption

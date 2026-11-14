@@ -1,17 +1,25 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{LibraryOrderEntry, ModuleRootManager, OrderRootType}
-import com.intellij.psi.PsiFile
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.module.content.layer.orderEntry.LibraryOrderEntry
+import consulo.module.content.ModuleRootManager
+import consulo.content.OrderRootType
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectUtil.{cachedModuleForPsiFile, isInSbtProject}
 
 import java.util.concurrent.ConcurrentHashMap
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private[sbt] final class SbtProjectImportStateService(project: Project) {
   import SbtProjectImportStateService.State
 
@@ -81,7 +89,7 @@ private[sbt] final class SbtProjectImportStateService(project: Project) {
 private[sbt] object SbtProjectImportStateService {
 
   def instance(project: Project): SbtProjectImportStateService =
-    project.getService(classOf[SbtProjectImportStateService])
+    project.getInstance(classOf[SbtProjectImportStateService])
 
   private sealed trait State extends Product with Serializable
   private object State {

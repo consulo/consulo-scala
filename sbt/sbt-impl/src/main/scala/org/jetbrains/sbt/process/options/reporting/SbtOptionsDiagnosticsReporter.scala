@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.process.options.reporting
 
 import com.intellij.build.issue.BuildIssueQuickFix
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.project.Project
+import consulo.dataContext.DataContext
+import consulo.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.settings.ShowSettingsUtilImplExt

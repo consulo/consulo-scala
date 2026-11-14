@@ -1,12 +1,12 @@
 package org.jetbrains.sbt.runner.console
 
 import com.intellij.execution.ui.{ConsoleView, ConsoleViewContentType}
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.ui.SimpleTextAttributes
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.ex.SimpleTextAttributes
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import com.intellij.util.ui.EdtInvocationManager
-import org.jetbrains.annotations.{Nls, VisibleForTesting}
+import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.runner.console.inlayHint.InlineActionHintFilter
@@ -26,11 +26,11 @@ import org.jetbrains.sbt.shell.SbtShellToolWindowFactory
  */
 private[runner] object SbtShellWaitingForReadyHint {
   @Nls
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   val HintText: String = SbtBundle.message("waiting.for.sbt.shell.to.become.ready")
 
   @Nls
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   val OpenShellText: String = SbtBundle.message("open.sbt.shell")
 
   private val GrayItalicStatusContentType: ConsoleViewContentType =

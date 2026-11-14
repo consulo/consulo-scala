@@ -1,12 +1,18 @@
 package org.jetbrains.sbt
 package project
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.option
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.notification._
+import com.intellij.notification.Bus
+import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
 import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener, ExternalSystemTaskType}
 import org.jetbrains.plugins.scala.project.ScalaProjectConfigurationUtil
 
 // TODO Rely on the immediate UI interaction API when IDEA-123007 will be implemented
+@ExtensionImpl
 class SbtNotificationListener extends ExternalSystemTaskNotificationListener {
   override def onTaskOutput(id: ExternalSystemTaskId, text: String, outputType: ProcessOutputType): Unit = {
     // TODO this check must be performed in the External System itself (see SCL-7405)

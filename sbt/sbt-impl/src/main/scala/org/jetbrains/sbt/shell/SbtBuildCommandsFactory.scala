@@ -1,11 +1,12 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
+import consulo.logging.Logger
+import consulo.module.Module
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.sbt.SbtSourceSetUtil.SbtSourceSetModuleExt
 import org.jetbrains.sbt.project.data.SbtModuleData
-import org.jetbrains.sbt.{SbtUtil, SbtVersion, SbtVersionCapabilities}
+import org.jetbrains.sbt.SbtUtil
+import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities}
 
 /**
  * Constructs a list of sbt commands to build a list of given IntelliJ modules

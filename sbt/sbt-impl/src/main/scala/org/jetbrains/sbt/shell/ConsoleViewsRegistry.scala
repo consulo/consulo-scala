@@ -1,9 +1,9 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.disposer.Disposable
+import consulo.project.Project
+import consulo.disposer.Disposer
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.plugins.scala.extensions.invokeAndWait
 
 import scala.collection.mutable

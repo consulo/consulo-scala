@@ -1,9 +1,10 @@
 package org.jetbrains.sbt.project.versionNotifications
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildReporter
-import org.jetbrains.sbt.{SbtBundle, SbtVersion}
+import org.jetbrains.sbt.SbtBundle
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.nio.file.Path
 

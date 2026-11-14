@@ -2,7 +2,7 @@ package org.jetbrains.sbt.project.structure
 
 import com.intellij.platform.eel.EelDescriptor
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.sbt.RichSeq
+import org.jetbrains.sbt.api.RichSeq
 import org.jetbrains.sbt.project.data.SbtPlay2ProjectData
 import org.jetbrains.sbt.project.structure.Play2Keys.AllKeys.*
 import org.jetbrains.sbt.project.structure.data.Play2Data

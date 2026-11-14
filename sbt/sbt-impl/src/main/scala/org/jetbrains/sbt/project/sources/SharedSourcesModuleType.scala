@@ -1,12 +1,15 @@
 package org.jetbrains.sbt.project.sources
 
-import com.intellij.icons.AllIcons
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.application.AllIcons
 import com.intellij.openapi.module.ModuleType
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.project.DummyModuleBuilder
 
 import javax.swing.Icon
 
+@ExtensionImpl(id = "SHARED_SOURCES_MODULE")
 class SharedSourcesModuleType extends ModuleType[DummyModuleBuilder]("SHARED_SOURCES_MODULE") {
   override def createModuleBuilder: DummyModuleBuilder = new DummyModuleBuilder()
 

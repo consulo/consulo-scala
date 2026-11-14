@@ -1,9 +1,9 @@
 package org.jetbrains.sbt.language.psi
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiManager
-import com.intellij.psi.impl.light.LightElement
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.project.Project
+import consulo.language.psi.PsiManager
+import consulo.language.impl.psi.LightElement
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.sbt.language.utils.SbtScalacOptionInfo
 
 final class SbtScalacOptionDocHolder(val options: Seq[SbtScalacOptionInfo])(implicit project: Project)

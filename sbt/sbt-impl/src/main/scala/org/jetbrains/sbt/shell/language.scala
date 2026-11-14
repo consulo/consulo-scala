@@ -1,14 +1,24 @@
 package org.jetbrains.sbt
 package shell
 
-import com.intellij.extapi.psi.PsiFileBase
-import com.intellij.lang._
-import com.intellij.lexer.FlexAdapter
-import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.{IElementType, IFileElementType, TokenSet}
-import com.intellij.psi.{FileViewProvider, PsiElement, TokenType}
+import consulo.annotation.component.ExtensionImpl
+import org.jetbrains.sbt.shell.SbtShellLanguage
+
+
+import org.jetbrains.sbt.api.Factory
+import org.jetbrains.sbt.api.file
+import consulo.language.impl.psi.PsiFileBase
+import consulo.language.ast.ASTNode
+import consulo.language.{DependentLanguage, Language}
+import consulo.language.parser.{ParserDefinition, PsiParser}
+import consulo.language.lexer.FlexAdapter
+import consulo.project.Project
+import consulo.language.ast.{IElementType, IFileElementType, TokenSet}
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.PsiElement
+import consulo.language.ast.TokenType
 import org.jetbrains.annotations._
-import org.jetbrains.plugins.scala.LanguageFileTypeBase
+import org.jetbrains.plugins.scala.api.LanguageFileTypeBase
 
 import javax.swing.Icon
 
@@ -20,7 +30,10 @@ final class SbtShellTokenType(@NotNull @NonNls debugName: String) extends IEleme
 
 final class SbtShellElementType(@NotNull @NonNls debugName: String) extends IElementType(debugName, SbtShellLanguage)
 
+@ExtensionImpl
 final class SbtShellParserDefinition extends ParserDefinition {
+  override def getLanguage: Language = SbtShellLanguage
+
 
   import SbtShellParserDefinition._
 

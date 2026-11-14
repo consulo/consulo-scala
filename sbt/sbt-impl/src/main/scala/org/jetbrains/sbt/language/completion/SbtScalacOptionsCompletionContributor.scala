@@ -1,14 +1,20 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.codeInsight.template._
-import com.intellij.codeInsight.template.impl.ConstantNode
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.util.ProcessingContext
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.{InsertHandler, InsertionContext}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.editor.template.TemplateBuilderFactory
+import com.intellij.codeInsight.template.TemplateBuilderImpl
+import consulo.language.editor.template.ConstantNode
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.PsiDocumentManager
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.annotator.TemplateUtils
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.completion.{CaptureExt, PsiElementPatternExt, positionFromParameters}
@@ -16,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.sbt.language.completion.SbtScalacOptionsCompletionContributor._
 import org.jetbrains.sbt.language.psi.SbtScalacOptionDocHolder
 import org.jetbrains.sbt.language.utils.SbtScalacOptionInfo.ArgType
@@ -24,7 +30,10 @@ import org.jetbrains.sbt.language.utils.{SbtScalacOptionInfo, SbtScalacOptionUti
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "sbtScalacOptionsCompletionContributor", order = "first, before scalaVersionCompletionContributor")
 class SbtScalacOptionsCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   extend(CompletionType.BASIC, PATTERN, completionProvider)
 }
 

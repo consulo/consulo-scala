@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.shell.communication
 
-import org.jetbrains.annotations.ApiStatus.Experimental
 import org.jetbrains.sbt.shell.communication.ShellEvent.*
 
 /**
@@ -18,7 +17,7 @@ import org.jetbrains.sbt.shell.communication.ShellEvent.*
  *                `ProjectTaskManager.Result` when task success or failure is tracked.<br>
  *                `Unit` when shell events are consumed only for side effects.
  */
-@Experimental
+// upstream: @Experimental
 trait SbtShellCommandEventProcessor[Result] {
   /**
    * The result value used before any shell events are processed.
@@ -41,7 +40,7 @@ trait SbtShellCommandEventProcessor[Result] {
     new SbtShellCommandEventProcessor.Tap(this, listener)
 }
 
-@Experimental
+// upstream: @Experimental
 object SbtShellCommandEventProcessor {
   /**
    * Ignores every shell event and keeps the current command result unchanged.

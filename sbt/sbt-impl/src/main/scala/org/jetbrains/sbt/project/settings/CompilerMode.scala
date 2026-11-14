@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.settings
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 
 /**
  * Specifies which compiler (e.g. IDEA's own JPS, sbt shell, etc) is used for project builds

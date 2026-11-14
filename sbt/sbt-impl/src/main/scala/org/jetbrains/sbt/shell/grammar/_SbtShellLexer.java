@@ -3,10 +3,10 @@
 
 package org.jetbrains.sbt.shell.grammar;
 
-import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.tree.IElementType;
+import consulo.language.lexer.FlexLexer;
+import consulo.language.ast.IElementType;
 
-import static com.intellij.psi.TokenType.WHITE_SPACE;
+import static consulo.language.ast.TokenType.WHITE_SPACE;
 import static org.jetbrains.sbt.shell.grammar.SbtShellTypes.*;
 
 @SuppressWarnings({"ALL"})

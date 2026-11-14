@@ -1,14 +1,17 @@
 package org.jetbrains.sbt.codeInsight.daemon
 
-import com.intellij.codeInsight.daemon.ProblemHighlightFilter
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.roots.ProjectRootManager
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.ProblemHighlightFilter
+import consulo.application.ApplicationManager
+import consulo.module.content.ProjectRootManager
 import com.intellij.openapi.vfs.NonPhysicalFileSystem
-import com.intellij.psi.{PsiCodeFragment, PsiFile}
+import consulo.language.psi.{PsiCodeFragment, PsiFile}
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiFileExt}
-import org.jetbrains.sbt.language.SbtFile
+import org.jetbrains.sbt.api.language.SbtFile
 import org.jetbrains.sbt.project.SbtProjectImportStateService
-import org.jetbrains.sbt.{SbtHighlightingUtil, SbtUtil}
+import org.jetbrains.sbt.api.SbtHighlightingUtil
+import org.jetbrains.sbt.SbtUtil
 
 /**
  * We need to highlight only those `*.sbt` files which are actual project definition: {{{
@@ -29,6 +32,7 @@ import org.jetbrains.sbt.{SbtHighlightingUtil, SbtUtil}
  * It can contain references which can't be resolved
  * See also [[SbtProblemHighlightFilter]]
  */
+@ExtensionImpl
 final class SbtProblemHighlightFilter extends ProblemHighlightFilter {
 
   override def shouldHighlight(file: PsiFile): Boolean = file match {

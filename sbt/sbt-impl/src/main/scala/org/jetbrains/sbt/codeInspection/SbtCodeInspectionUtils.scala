@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.codeInspection
 
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.psi.PsiElement
+import consulo.util.lang.ControlFlowException
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersionInspection.{ArtifactIdSuffix, DependencyDescriptor}

@@ -1,14 +1,21 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.completion.CompletionConfidence
-import com.intellij.openapi.editor.Editor
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.util.ThreeState
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.completion.CompletionConfidence
+import consulo.codeEditor.Editor
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.util.lang.ThreeState
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScArgumentExprList, ScInfixExpr}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 
+@ExtensionImpl(order = "first")
 class EnableAutoPopupInDependencyStrings extends CompletionConfidence {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def shouldSkipAutopopup(editor: Editor, contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState = {
     contextElement.getParent match {
       case str: ScStringLiteral =>

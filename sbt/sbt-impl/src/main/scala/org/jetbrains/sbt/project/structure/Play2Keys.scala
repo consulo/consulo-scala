@@ -1,6 +1,9 @@
 package org.jetbrains.sbt
 package project.structure
 
+
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.find
 import com.intellij.serialization.PropertyMapping
 import org.jetbrains.annotations.NonNls
 

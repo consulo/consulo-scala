@@ -1,16 +1,16 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.patterns.PlatformPatterns.{psiElement, psiFile}
-import com.intellij.patterns.PsiElementPattern.Capture
-import com.intellij.patterns.StandardPatterns.instanceOf
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.ScalaFileType
+import consulo.language.pattern.PlatformPatterns.{psiElement, psiFile}
+import consulo.language.pattern.PsiElementPattern.Capture
+import consulo.language.pattern.StandardPatterns.instanceOf
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.lang.completion.condition
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScInfixExpr, ScReferenceExpression}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiElementExt}
-import org.jetbrains.sbt.language.SbtFileType
+import org.jetbrains.sbt.api.language.SbtFileType
 import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.isScalacOption
 
 object SbtPsiElementPatterns {

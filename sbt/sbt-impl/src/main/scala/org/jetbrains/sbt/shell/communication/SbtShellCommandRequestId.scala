@@ -1,6 +1,5 @@
 package org.jetbrains.sbt.shell.communication
 
-import org.jetbrains.annotations.ApiStatus.Experimental
 
 import java.util.UUID
 
@@ -15,10 +14,10 @@ import java.util.UUID
  *
  * @note it is NOT a build id, execution session id, build-event id, or process id.
  */
-@Experimental
+// upstream: @Experimental
 opaque type SbtShellCommandRequestId = String
 
-@Experimental
+// upstream: @Experimental
 object SbtShellCommandRequestId {
   def apply(value: String): SbtShellCommandRequestId = value
 

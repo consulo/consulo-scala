@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.sbt.shell.SbtProcessManager
 
 /**

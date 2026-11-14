@@ -1,20 +1,25 @@
 package org.jetbrains.sbt
 package shell
 
+
+import org.jetbrains.sbt.api.find
 import com.intellij.execution.actions.ClearConsoleAction
 import com.intellij.execution.configurations.RemoteConnection
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.filters.UrlFilter.UrlFilterProvider
-import com.intellij.execution.filters.*
-import com.intellij.openapi.actionSystem.{ActionGroup, AnAction, DefaultActionGroup}
-import com.intellij.openapi.application.{ApplicationManager, WriteIntentReadAction}
+import com.intellij.java.execution.filters.ExceptionFilter
+import com.intellij.execution.filters.{PatternBasedFileHyperlinkFilter, PatternBasedFileHyperlinkRawDataFinder, PatternHyperlinkFormat, PatternHyperlinkPart, RegexpFilter, UrlFilter}
+import consulo.ui.ex.action.{ActionGroup, AnAction, DefaultActionGroup}
+import consulo.application.ApplicationManager
+import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
-import com.intellij.openapi.editor.event.{EditorMouseEvent, EditorMouseListener}
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.psi.search.GlobalSearchScope
+import consulo.codeEditor.event.EditorMouseEvent
+import com.intellij.openapi.editor.event.EditorMouseListener
+import consulo.codeEditor.EditorEx
+import consulo.codeEditor.Editor
+import consulo.project.Project
+import consulo.application.ui.wm.IdeFocusManager
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.sbt.shell.action.*
 import org.jetbrains.sbt.shell.optionsWarn.SbtShellOptionsWarningService

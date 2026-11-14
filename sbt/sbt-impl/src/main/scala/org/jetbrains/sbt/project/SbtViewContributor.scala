@@ -1,11 +1,14 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.ide.projectView.PresentationData
-import com.intellij.openapi.externalSystem.model.project.{ModuleData, ModuleDependencyData}
-import com.intellij.openapi.externalSystem.model.{DataNode, Key, ProjectSystemId}
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.ui.ex.tree.PresentationData
+import consulo.externalSystem.model.project.ModuleData
+import com.intellij.openapi.externalSystem.model.project.ModuleDependencyData
+import consulo.externalSystem.model.{DataNode, Key, ProjectSystemId}
 import com.intellij.openapi.externalSystem.view.{ExternalProjectsView, ExternalSystemNode, ExternalSystemViewContributor, ModuleNode}
-import com.intellij.util.SmartList
-import com.intellij.util.containers.MultiMap
+import consulo.util.collection.SmartList
+import consulo.util.collection.MultiMap
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.project.SbtViewContributor._
 import org.jetbrains.sbt.project.data.{SbtCommandData, SbtSettingData, SbtTaskData}
@@ -14,6 +17,7 @@ import org.jetbrains.sbt.project.module.{SbtNestedModuleData, SbtSourceSetData}
 import java.util
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class SbtViewContributor extends ExternalSystemViewContributor {
 
   private val keys: List[Key[?]] = List(SbtTaskData.Key, SbtSettingData.Key, SbtCommandData.Key, SbtNestedModuleData.Key, SbtSourceSetData.Key)

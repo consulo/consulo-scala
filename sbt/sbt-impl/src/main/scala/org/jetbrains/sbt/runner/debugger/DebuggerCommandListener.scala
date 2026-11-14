@@ -3,7 +3,7 @@ package org.jetbrains.sbt.runner.debugger
 import com.intellij.debugger.engine.DebugProcessImpl
 import com.intellij.debugger.engine.events.DebuggerCommandImpl
 import com.intellij.debugger.impl.PrioritizedTask
-import com.intellij.execution.ExecutionException
+import consulo.process.ExecutionException
 import org.jetbrains.sbt.SbtBundle
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}

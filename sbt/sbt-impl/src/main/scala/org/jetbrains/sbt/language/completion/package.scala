@@ -1,10 +1,12 @@
 package org.jetbrains.sbt
 package language
 
-import com.intellij.patterns.PlatformPatterns.{psiElement, psiFile}
-import com.intellij.patterns.PsiElementPattern.Capture
-import com.intellij.patterns.StandardPatterns.instanceOf
-import com.intellij.psi.PsiElement
+
+import org.jetbrains.sbt.api.language.SbtFileType
+import consulo.language.pattern.PlatformPatterns.{psiElement, psiFile}
+import consulo.language.pattern.PsiElementPattern.Capture
+import consulo.language.pattern.StandardPatterns.instanceOf
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 
 package object completion {

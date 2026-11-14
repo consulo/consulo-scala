@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.language.utils
 
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.sbt.language.utils.SbtScalacOptionInfo.{ArgType, Deprecation}
 import spray.json.DefaultJsonProtocol.*
 import spray.json.*

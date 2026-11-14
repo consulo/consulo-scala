@@ -1,15 +1,16 @@
 package org.jetbrains.sbt.language.utils
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.ModificationTracker
-import com.intellij.psi.PsiElement
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.component.util.ModificationTracker
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.caches.cached
 import org.jetbrains.plugins.scala.codeInspection.collections.isSeq
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, SeqExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScInfixExpr, ScParenthesisedExpr, ScReferenceExpression}
-import org.jetbrains.plugins.scala.project.{ProjectExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.ProjectExt
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.sbt.language.completion.SbtScalacOptionsCompletionContributor
 import org.jetbrains.sbt.language.utils.SbtScalacOptionInfo.ArgType
 import spray.json.DefaultJsonProtocol._

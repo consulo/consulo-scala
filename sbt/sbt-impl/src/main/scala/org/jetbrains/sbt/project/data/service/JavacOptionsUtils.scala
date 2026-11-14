@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.data.service
 
-import com.intellij.pom.java.LanguageLevel
+import com.intellij.java.language.LanguageLevel
 
 /** javac options reference [[https://docs.oracle.com/en/java/javase/11/tools/javac.htm]] */
 private object JavacOptionsUtils {

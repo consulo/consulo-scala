@@ -1,16 +1,18 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.completion._
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.lang.Language
-import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.ElementPattern
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.lookup.LookupElementBuilder
+import consulo.language.Language
+import consulo.application.dumb.DumbAware
+import consulo.language.pattern.ElementPattern
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.language.util.ProcessingContext
 import org.apache.maven.artifact.versioning.ComparableVersion
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.completion.{CaptureExt, positionFromParameters}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
@@ -59,7 +61,10 @@ private object SbtScalaVersionCompletionContributor {
   }
 }
 
+@ExtensionImpl(id = "scalaVersionCompletionContributor", order = "first, after ml_context")
 private class ScalaVersionCompletionContributor extends SbtScalaVersionCompletionContributor with DumbAware {
+  override def getLanguage: Language = Language.ANY
+
   override protected def pattern: ElementPattern[? <: PsiElement] =
     (SbtPsiElementPatterns.sbtFilePattern || SbtPsiElementPatterns.scalaFilePattern) &&
       psiElement().inside(SbtPsiElementPatterns.versionPattern)

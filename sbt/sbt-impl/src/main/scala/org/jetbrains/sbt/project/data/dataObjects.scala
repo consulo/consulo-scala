@@ -1,17 +1,17 @@
 package org.jetbrains.sbt.project.data
 
-import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityData
-import com.intellij.openapi.externalSystem.model.{Key, ProjectKeys}
+import consulo.externalSystem.service.project.AbstractExternalEntityData
+import consulo.externalSystem.model.{Key, ProjectKeys}
 import com.intellij.serialization.PropertyMapping
 import org.jetbrains.annotations.{Nls, NotNull, Nullable}
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
 import org.jetbrains.plugins.scala.project.ReplClasspath
 import org.jetbrains.plugins.scala.project.external.SdkReference
-import org.jetbrains.sbt.RichSeq
+import org.jetbrains.sbt.api.RichSeq
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.SbtEntityData.*
 import org.jetbrains.sbt.project.structure.Play2Keys.AllKeys.{ParsedValue, SeqStringParsedValue, StringParsedValue}
-import org.jetbrains.sbt.resolvers.SbtResolver
+import org.jetbrains.sbt.api.resolvers.SbtResolver
 
 import java.net.URI
 import java.nio.file.Path

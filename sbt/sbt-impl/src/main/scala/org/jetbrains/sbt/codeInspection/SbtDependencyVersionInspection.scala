@@ -1,9 +1,15 @@
 package org.jetbrains.sbt.codeInspection
 
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElement
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.inspection.LocalQuickFix
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.codeInspection.AbstractFixOnPsiElement
 import org.jetbrains.plugins.scala.extensions.&
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
@@ -17,7 +23,18 @@ import org.jetbrains.plugins.scala.packagesearch.codeInspection.DependencyVersio
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 import org.jetbrains.sbt.SbtBundle
 
+@ExtensionImpl
 class SbtDependencyVersionInspection extends DependencyVersionInspection {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(SbtBundle.message("packagesearch.dependency.version.inspection.description"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(SbtBundle.message("group.sbt"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WEAK_WARNING
+
+  override def getShortName: String = "SbtDependencyVersionInspection"
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override protected def isAvailable(element: PsiElement): Boolean =
     SbtCodeInspectionUtils.isAvailable(element)
 

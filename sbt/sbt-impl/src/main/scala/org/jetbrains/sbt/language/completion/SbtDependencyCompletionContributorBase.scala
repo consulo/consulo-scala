@@ -1,15 +1,19 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.completion.*
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import com.intellij.codeInsight.completion.impl.RealPrefixMatchingWeigher
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.RangeMarker
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.util.TextRange
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.PsiElement
-import com.intellij.util.ProcessingContext
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.application.AllIcons
+import consulo.document.RangeMarker
+import consulo.application.dumb.DumbAware
+import consulo.document.util.TextRange
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.PsiElement
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiClassExt, PsiElementExt, ToNullSafe}
 import org.jetbrains.plugins.scala.lang.completion.*
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
@@ -39,7 +43,10 @@ abstract class SbtDependencyCompletionContributorBase extends CompletionContribu
   extend(CompletionType.BASIC, PATTERN, provider)
 }
 
+@ExtensionImpl(id = "sbtDependencyVersionCompletionContributor", order = "first")
 final class SbtDependencyVersionCompletionContributor extends SbtDependencyCompletionContributorBase {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override protected def provider: SbtDependencyCompletionProviderBase = new SbtDependencyVersionCompletionProvider
 }
 

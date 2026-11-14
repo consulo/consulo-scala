@@ -1,10 +1,13 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.model.task.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.util.{ExternalSystemActivityKey, ExternalSystemUtil}
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.project.autolink.SbtUnlinkedProjectAware
@@ -59,9 +62,12 @@ private object SbtExternalSystemUtil {
    *
    * @note Any service can get a coroutine scope injected in its constructor.
    */
-  @Service(Array(Service.Level.PROJECT))
+  // upstream: @Service(Array(Service.Level.PROJECT))
+  @Singleton
+  @ServiceAPI(ComponentScope.PROJECT)
+  @ServiceImpl
   private final class CoroutineScopeService(val coroutineScope: CoroutineScope)
 
   private def coroutineScope(project: Project): CoroutineScope =
-    project.getService(classOf[CoroutineScopeService]).coroutineScope
+    project.getInstance(classOf[CoroutineScopeService]).coroutineScope
 }

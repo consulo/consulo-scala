@@ -1,9 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package org.jetbrains.sbt.shell.grammar;
 
-import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.language.psi.PsiElement;
+import org.jspecify.annotations.Nullable;
 
 public interface SbtShellScopedKey extends PsiElement {
 
@@ -13,7 +12,6 @@ public interface SbtShellScopedKey extends PsiElement {
   @Nullable
   SbtShellIntask getIntask();
 
-  @NotNull
   SbtShellKey getKey();
 
   @Nullable

@@ -1,7 +1,7 @@
 package org.jetbrains.sbt
 package project.structure
 
-import com.intellij.openapi.util.Key
+import consulo.util.dataholder.Key
 
 sealed abstract class OutputType(val name: String)
 

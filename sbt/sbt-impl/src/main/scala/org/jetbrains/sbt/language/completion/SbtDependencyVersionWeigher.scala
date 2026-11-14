@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementWeigher}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementWeigher}
 
 object SbtDependencyVersionWeigher extends LookupElementWeigher("sbtDependencyVersionWeigher", true, false){
   override def weigh(element: LookupElement): Comparable[?] = {

@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.openapi.project.Project
+import consulo.process.event.ProcessEvent
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.LoggerExt
 import org.jetbrains.sbt.shell.communication.ShellEvent.*
 

@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.language.utils
 
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.plugins.scala.extensions.&
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral

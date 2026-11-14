@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.project.modifier.location
 
-import com.intellij.openapi.module.{Module => IJModule}
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.module.{Module => IJModule}
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.sbt.project.modifier.BuildFileElementType
 
 trait BuildFileModificationLocationProvider {

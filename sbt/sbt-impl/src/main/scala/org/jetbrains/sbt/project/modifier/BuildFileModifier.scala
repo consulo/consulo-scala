@@ -1,15 +1,16 @@
 package org.jetbrains.sbt.project.modifier
 
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
+import consulo.undoRedo.CommandProcessor
+import consulo.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.module.{Module => IJModule}
-import com.intellij.openapi.project.{Project => IJProject}
+import consulo.document.FileDocumentManager
+import consulo.module.{Module => IJModule}
+import consulo.project.{Project => IJProject}
 import com.intellij.openapi.vcs.changes.{CurrentContentRevision, SimpleContentRevision}
-import com.intellij.openapi.vfs.{VfsUtil, VfsUtilCore, VirtualFile}
-import com.intellij.testFramework.LightVirtualFile
-import com.intellij.vcsUtil.VcsUtil
+import consulo.virtualFileSystem.util.{VirtualFileUtil, VirtualFileUtil}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.file.light.LightVirtualFile
+import consulo.versionControlSystem.util.VcsUtil
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.project.SbtProjectSystem

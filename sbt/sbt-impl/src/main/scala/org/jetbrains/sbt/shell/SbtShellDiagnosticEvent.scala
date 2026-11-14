@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.shell
 
-import org.jetbrains.sbt.SbtVersion
+import org.jetbrains.sbt.api.SbtVersion
 import org.jetbrains.sbt.shell.communication.SbtShellCommandRequestId
 import org.jetbrains.sbt.shell.communication.SbtShellLifecycle.ShellState
 

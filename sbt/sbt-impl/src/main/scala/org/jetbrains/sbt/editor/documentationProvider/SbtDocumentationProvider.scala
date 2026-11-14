@@ -1,8 +1,13 @@
 package org.jetbrains.sbt.editor.documentationProvider
 
-import com.intellij.lang.documentation.{AbstractDocumentationProvider, DocumentationMarkup}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import com.intellij.lang.documentation.AbstractDocumentationProvider
+import consulo.language.editor.documentation.DocumentationMarkup
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.editor.documentationProvider.ScalaDocumentationProvider
 import org.jetbrains.plugins.scala.extensions.OptionExt
@@ -12,7 +17,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr._
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.sbt.editor.documentationProvider.SbtDocumentationProvider._
-import org.jetbrains.sbt.language.SbtFileType
+import org.jetbrains.sbt.api.language.SbtFileType
 
 import scala.jdk.CollectionConverters._
 
@@ -38,7 +43,10 @@ import scala.jdk.CollectionConverters._
  *   val libraryDependencies = settingKey[Seq[ModuleID]]("Declares managed dependencies.").withRank(APlusSetting)
  * }}}
  */
+@ExtensionImpl(order = "before ScalaDocumentationProvider")
 class SbtDocumentationProvider extends AbstractDocumentationProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private val scalaDocProvider = new ScalaDocumentationProvider
 

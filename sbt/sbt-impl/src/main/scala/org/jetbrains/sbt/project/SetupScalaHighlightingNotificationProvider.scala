@@ -1,16 +1,21 @@
 package org.jetbrains.sbt.project
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.framework.FrameworkTypeEx
 import com.intellij.framework.addSupport.impl.AddSupportForSingleFrameworkDialog
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileEditor
-import com.intellij.openapi.module.{JavaModuleType, Module, ModuleType, ModuleUtilCore}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.codeEditor.Editor
+import consulo.fileEditor.FileEditor
+import com.intellij.openapi.module.{JavaModuleType, ModuleType}
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import com.intellij.psi.impl.IncompleteModelUtil
-import com.intellij.psi.{PsiFile, PsiManager}
+import consulo.language.psi.{PsiFile, PsiManager}
 import com.intellij.ui.{EditorNotificationPanel, EditorNotificationProvider}
-import com.intellij.util.concurrency.annotations.{RequiresEdt, RequiresReadLock}
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.annotation.access.RequiredReadAction
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.notification.isScalaSourceFile
@@ -27,6 +32,7 @@ import javax.swing.event.HyperlinkEvent
  *  - [[com.intellij.codeInsight.daemon.ProjectSdkSetupValidator]]
  *  - [[com.intellij.codeInsight.daemon.impl.JavaProjectSdkSetupValidator]]
  */
+@ExtensionImpl
 private final class SetupScalaHighlightingNotificationProvider extends EditorNotificationProvider {
 
   @RequiresReadLock

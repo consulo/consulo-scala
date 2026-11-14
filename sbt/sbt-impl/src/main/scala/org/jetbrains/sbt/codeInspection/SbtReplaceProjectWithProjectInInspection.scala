@@ -1,9 +1,17 @@
 package org.jetbrains.sbt
 package codeInspection
 
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.psi.PsiElementVisitor
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.sbt.SbtBundle
+
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemsHolder}
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.language.psi.PsiElementVisitor
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
@@ -13,7 +21,16 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createExpressionFromText
 import org.jetbrains.plugins.scala.project.ScalaFeatures
 
+@ExtensionImpl
 final class SbtReplaceProjectWithProjectInInspection extends LocalInspectionTool with DumbAware {
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(SbtBundle.message("displayname.replace.project.with.project.in"))
+
+  override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(SbtBundle.message("group.sbt"))
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case defn: ScPatternDefinition if defn.getContainingFile.getFileType.getName == Sbt.Name =>
       (defn.expr, defn.bindings) match {

@@ -1,19 +1,25 @@
 package org.jetbrains.sbt.shell
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import org.jetbrains.annotations.{ApiStatus, TestOnly, VisibleForTesting}
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.application.util.SystemInfo
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.ide.PooledThreadExecutor
-import org.jetbrains.plugins.scala.{isInternalMode, isUnitTestMode}
+import org.jetbrains.plugins.scala.api.{isInternalMode, isUnitTestMode}
 import org.jetbrains.sbt.shell.SbtShellCommunication.*
 import org.jetbrains.sbt.shell.communication.SbtShellLifecycle.{ShellState, ShellStateEvent}
 import org.jetbrains.sbt.shell.communication.ShellEvent.ErrorWaitForInput
 import org.jetbrains.sbt.shell.communication.SbtShellQueuedStartupOutputMirroring.Owner
 import org.jetbrains.sbt.shell.communication.{SbtOutputCompleteLinesProcessListener, SbtShellCommandExecutionOutputListener, SbtShellCommandRequest, SbtShellCommandRequestId, SbtShellCommandSubmitter, SbtShellLifecycle, SbtShellOutputRecognizer, SbtShellQueuedStartupOutputMirroring}
-import org.jetbrains.sbt.{SbtUtil, SbtVersion}
+import org.jetbrains.sbt.SbtUtil
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
@@ -27,8 +33,10 @@ import scala.util.control.NonFatal
 /**
  * Service for connecting with an sbt shell associated with project.
  */
-@ApiStatus.Internal()
-final class SbtShellCommunication(project: Project) extends SbtShellCommandSubmitter {
+// upstream: @ApiStatus.Internal()
+@Singleton
+@ServiceImpl
+final class SbtShellCommunication @Inject()(project: Project) extends SbtShellCommandSubmitter {
 
   private val stateRef = new AtomicReference[ShellState](ShellState.Off)
   private[shell] def currentState: ShellState = stateRef.get()
@@ -105,7 +113,7 @@ final class SbtShellCommunication(project: Project) extends SbtShellCommandSubmi
   )
 
   //TODO: rename to commandsQueue
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[shell] val commands = new LinkedBlockingQueue[QueuedCommand]()
 
   private val queuedStartupOutputMirroring = new SbtShellQueuedStartupOutputMirroring(project)
@@ -119,7 +127,7 @@ final class SbtShellCommunication(project: Project) extends SbtShellCommandSubmi
    * @see [[AfterRestartCommandsGate]]
    * @see [[routeCommandDuringShutdownOrRestart]]
    */
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[shell] val afterRestartCommands = new AfterRestartCommandsGate[QueuedCommand]()
 
   /**
@@ -452,7 +460,7 @@ final class SbtShellCommunication(project: Project) extends SbtShellCommandSubmi
    * @see    [[org.jetbrains.sbt.shell.SbtProcessManager.destroyProcess]]
    * @return a future completed with the processed command result.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def runAfterSoftRestart[A](request: SbtShellCommandRequest[A]): Future[A] = {
     if (!initiateSoftRestart())
       return run(request)

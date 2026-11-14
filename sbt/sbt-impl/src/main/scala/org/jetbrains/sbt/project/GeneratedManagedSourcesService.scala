@@ -1,11 +1,17 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.project.Project
 
 import java.util.concurrent.ConcurrentHashMap
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private final class GeneratedManagedSourcesService {
   private val generatedForPath: ConcurrentHashMap[String, java.lang.Boolean] = new ConcurrentHashMap()
 
@@ -19,5 +25,5 @@ private final class GeneratedManagedSourcesService {
 
 private object GeneratedManagedSourcesService {
   def instance(project: Project): GeneratedManagedSourcesService =
-    project.getService(classOf[GeneratedManagedSourcesService])
+    project.getInstance(classOf[GeneratedManagedSourcesService])
 }

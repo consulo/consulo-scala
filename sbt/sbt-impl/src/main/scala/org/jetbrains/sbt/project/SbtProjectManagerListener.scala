@@ -1,13 +1,16 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.model.task.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.startup.ProjectActivity
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
 
+@ExtensionImpl
 private final class SbtProjectManagerListener extends ProjectActivity {
   override def execute(project: Project): Unit = invokeLater {
     SbtProjectSettings.forProject(project).foreach { settings =>

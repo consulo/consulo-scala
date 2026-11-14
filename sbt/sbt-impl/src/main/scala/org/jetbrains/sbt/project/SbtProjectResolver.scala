@@ -1,34 +1,38 @@
 package org.jetbrains.sbt.project
 
 import com.intellij.build.issue.{BuildIssue, BuildIssueQuickFix}
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import consulo.project.ui.notification.NotificationType
+import consulo.dataContext.DataContext
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.model.project.LibraryData
 import com.intellij.openapi.externalSystem.model.task.event.{Failure as ESFailure, *}
 import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
-import com.intellij.openapi.externalSystem.model.{DataNode, ExternalSystemException, project as esProjectData}
+import consulo.externalSystem.model.DataNode
+import com.intellij.openapi.externalSystem.model.{ExternalSystemException, project as esProjectData}
 import com.intellij.openapi.externalSystem.service.project.ExternalSystemProjectResolver
 import com.intellij.openapi.module.JavaModuleType
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.openapi.project.{Project, ProjectManager}
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
+import consulo.project.{Project, ProjectManager}
 import com.intellij.openapi.roots.DependencyScope
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.util.registry.{Registry, RegistryManager}
+import consulo.util.io.FileUtil
+import consulo.application.util.registry.Registry
+import com.intellij.openapi.util.registry.RegistryManager
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.EelProviderUtil
 import com.intellij.platform.eel.provider.utils.EelPathUtils
 import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
-import com.intellij.pom.Navigatable
-import com.intellij.util.SystemProperties
-import org.jetbrains.annotations.{ApiStatus, NonNls, Nullable, TestOnly}
+import consulo.navigation.Navigatable
+import consulo.util.lang.SystemProperties
+import org.jetbrains.annotations.{NonNls, Nullable, TestOnly}
 import org.jetbrains.plugins.scala.*
+import org.jetbrains.plugins.scala.api.*
 import org.jetbrains.plugins.scala.build.*
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.project.external.{JdkByHome, JdkByName, ReplClasspathCachedResolver, SdkReference}
-import org.jetbrains.plugins.scala.project.{ReplClasspath, Version}
+import org.jetbrains.plugins.scala.project.ReplClasspath
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 import org.jetbrains.sbt.SbtUtil.*
 import org.jetbrains.sbt.process.SbtProcessOutputDiagnosticsCollector.PrintProcessOutputOnFailurePropertyName
@@ -42,8 +46,9 @@ import org.jetbrains.sbt.project.structure.data.*
 import org.jetbrains.sbt.project.structure.data.XmlDeserializer.deserialize
 import org.jetbrains.sbt.project.structure.{Play2OldStructureAdapter, SbtStructureDumper, data as sbtStructure}
 import org.jetbrains.sbt.project.versionNotifications.LegacySbtVersionBuildToolWindowWarning
-import org.jetbrains.sbt.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
-import org.jetbrains.sbt.{RichBoolean, Sbt, SbtBundle, SbtUtil, SbtVersion, SbtVersionCapabilities, usingTempFile}
+import org.jetbrains.sbt.api.resolvers.{SbtIvyResolver, SbtMavenResolver, SbtResolver}
+import org.jetbrains.sbt.api.{RichBoolean, SbtVersion, SbtVersionCapabilities, usingTempFile}
+import org.jetbrains.sbt.{Sbt, SbtBundle, SbtUtil}
 
 import java.io.FileNotFoundException
 import java.net.URI
@@ -1489,11 +1494,11 @@ object SbtProjectResolver {
   //I know that it's a hacky dirty solution, but it's sufficient for now
   //It's hard to access process output from tests, because we use quite high-level project import API in tests
   @TestOnly
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   private var processOutputOfLatestStructureDump: String = ""
 
   @TestOnly
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   def getProcessOutputOfLatestStructureDump: String =
     processOutputOfLatestStructureDump
 
@@ -1511,16 +1516,16 @@ object SbtProjectResolver {
     }
 
   @TestOnly
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   private var structureFileForTests: Option[Path] = None
 
   @TestOnly
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   def setStructureFileForTests(structureFile: Path): Unit =
     structureFileForTests = Some(structureFile)
 
   @TestOnly
-  @ApiStatus.Internal
+  // upstream: @ApiStatus.Internal
   def clearStructureFileForTests(): Unit =
     structureFileForTests = None
 

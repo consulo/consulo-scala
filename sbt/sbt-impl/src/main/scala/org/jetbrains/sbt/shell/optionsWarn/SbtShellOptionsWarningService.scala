@@ -1,10 +1,13 @@
 package org.jetbrains.sbt.shell.optionsWarn
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.disposer.Disposable
+import consulo.codeEditor.EditorEx
+import consulo.project.Project
+import consulo.disposer.Disposer
 import com.intellij.terminal.ui.TerminalWidget
 import com.intellij.ui.EditorNotificationPanel
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildToolWindowReporter}
@@ -35,7 +38,10 @@ import scala.concurrent.Promise
  * dedicated sbt shell startup view in the Build tool window, so long option lists do not pollute or scroll away in the
  * shell output.
  */
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private[shell] final class SbtShellOptionsWarningService(project: Project) {
 
   import SbtShellOptionsWarningService.*
@@ -190,5 +196,5 @@ private[shell] object SbtShellOptionsWarningService {
     SbtBundle.message("sbt.options.shell.notification.text")
 
   def instance(project: Project): SbtShellOptionsWarningService =
-    project.getService(classOf[SbtShellOptionsWarningService])
+    project.getInstance(classOf[SbtShellOptionsWarningService])
 }

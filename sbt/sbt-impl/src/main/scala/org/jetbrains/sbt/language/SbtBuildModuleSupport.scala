@@ -1,11 +1,11 @@
 package org.jetbrains.sbt.language
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.project.Project
+import consulo.application.ApplicationManager
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.Sbt
-import org.jetbrains.sbt.project.SbtBuildModuleUriProvider
+import org.jetbrains.sbt.api.project.SbtBuildModuleUriProvider
 import org.jetbrains.sbt.project.module.SbtModule.Build
 
 object SbtBuildModuleSupport {

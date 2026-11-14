@@ -1,12 +1,14 @@
 package org.jetbrains.sbt.shell.action
 
-import com.intellij.openapi.actionSystem.AnActionEvent
+import consulo.annotation.component.ActionImpl
+
+import consulo.ui.ex.action.AnActionEvent
 import com.intellij.openapi.externalSystem.action.ExternalSystemNodeAction
-import com.intellij.openapi.externalSystem.model.{ExternalSystemDataKeys, ProjectSystemId}
+import consulo.externalSystem.model.{ExternalSystemDataKeys, ProjectSystemId}
 import com.intellij.openapi.externalSystem.view.{ModuleNode, ProjectNode}
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager, Task}
-import com.intellij.openapi.project.Project
+import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
+import consulo.project.Project
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.sbt.project.data.{SbtCommandData, SbtNamedKey, SbtSettingData, SbtTaskData}
 import org.jetbrains.sbt.shell.SbtShellCommunication
@@ -64,42 +66,49 @@ abstract class SbtTaskAction extends SbtNodeAction[SbtTaskData](classOf[SbtTaskD
 abstract class SbtSettingAction extends SbtNodeAction[SbtSettingData](classOf[SbtSettingData])
 abstract class SbtCommandAction extends SbtNodeAction[SbtCommandData](classOf[SbtCommandData])
 
+@ActionImpl(id = "Scala.Sbt.RunTask")
 class RunTaskAction extends SbtTaskAction {
   setText(SbtBundle.message("sbt.shell.action.run.task"))
   setDescription(SbtBundle.message("sbt.shell.action.run.task.description"))
   override def buildCmd(project: String, key: String): String = scopedKey(project,key)
 }
 
+@ActionImpl(id = "Scala.Sbt.ShowTask")
 class ShowTaskAction extends SbtTaskAction {
   setText(SbtBundle.message("sbt.shell.action.show.task"))
   setDescription(SbtBundle.message("sbt.shell.action.show.task.description"))
   override def buildCmd(project: String, key: String): String = s"show ${scopedKey(project,key)}"
 }
 
+@ActionImpl(id = "Scala.Sbt.InspectTask")
 class InspectTaskAction extends SbtTaskAction {
   setText(SbtBundle.message("sbt.shell.action.inspect.task"))
   setDescription(SbtBundle.message("sbt.shell.action.inspect.task.description"))
   override def buildCmd(project: String, key: String): String = s"inspect ${scopedKey(project,key)}"
 }
 
+@ActionImpl(id = "Scala.Sbt.ShowSetting")
 class ShowSettingAction extends SbtSettingAction {
   setText(SbtBundle.message("sbt.shell.action.show.setting"))
   setDescription(SbtBundle.message("sbt.shell.action.show.setting.description"))
   override def buildCmd(project: String, key: String): String = scopedKey(project,key)
 }
 
+@ActionImpl(id = "Scala.Sbt.InspectSetting")
 class InspectSettingAction extends SbtSettingAction {
   setText(SbtBundle.message("sbt.shell.action.inspect.setting"))
   setDescription(SbtBundle.message("sbt.shell.action.inspect.setting.description"))
   override def buildCmd(project: String, key: String): String = s"inspect ${scopedKey(project,key)}"
 }
 
+@ActionImpl(id = "Scala.Sbt.RunCommand")
 class RunCommandAction extends SbtCommandAction {
   setText(SbtBundle.message("sbt.shell.action.run.command"))
   setDescription(SbtBundle.message("sbt.shell.action.run.command.description"))
   override def buildCmd(project: String, key: String): String = s";project $project; $key"
 }
 
+@ActionImpl(id = "Scala.Sbt.Help")
 class SbtHelpAction extends SbtNodeAction[SbtNamedKey](classOf[SbtNamedKey]) {
   setText(SbtBundle.message("sbt.shell.action.help"))
   setDescription(SbtBundle.message("sbt.shell.action.help.description"))

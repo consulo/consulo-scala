@@ -1,12 +1,13 @@
 package org.jetbrains.sbt.project.template
 
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.{ApiStatus, NonNls}
+import consulo.module.Module
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.Versions
 import org.jetbrains.plugins.scala.project.template.DefaultModuleContentEntryFolders
-import org.jetbrains.sbt.{Sbt, SbtVersion}
+import org.jetbrains.sbt.Sbt
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.nio.file.{FileAlreadyExistsException, Files, Path}
 import javax.swing.*
@@ -18,7 +19,7 @@ import javax.swing.*
  * @param _selections initial selections value<br>
  *                    The parameter value is copied, changes to the original object do not affect the builder
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 class SbtModuleBuilder(
   _selections: SbtModuleBuilderSelections
 ) extends SbtModuleBuilderBase {

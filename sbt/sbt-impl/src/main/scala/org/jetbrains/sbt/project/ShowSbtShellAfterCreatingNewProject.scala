@@ -1,11 +1,17 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.application.{AppUIExecutor, ApplicationManager, ModalityState}
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.openapi.application.AppUIExecutor
+import consulo.application.ApplicationManager
+import consulo.ui.ModalityState
 import com.intellij.openapi.externalSystem.ExternalSystemManager
-import com.intellij.openapi.externalSystem.settings.{ExternalProjectSettings, ExternalSystemSettingsListenerEx}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupManager
-import com.intellij.openapi.wm.{ToolWindow, ToolWindowManager}
+import consulo.externalSystem.setting.ExternalProjectSettings
+import com.intellij.openapi.externalSystem.settings.ExternalSystemSettingsListenerEx
+import consulo.project.Project
+import consulo.project.startup.StartupManager
+import consulo.ui.ex.toolWindow.ToolWindow
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.AppUIUtil
 import org.jetbrains.sbt.settings.SbtSettings
 import org.jetbrains.sbt.shell.SbtShellToolWindowFactory
@@ -28,6 +34,7 @@ import scala.annotation.nowarn
  *
  * related: SCL-19909, IDEA-287117, SCL-20978
  */
+@ExtensionImpl
 final class ShowSbtShellAfterCreatingNewProject extends ExternalSystemSettingsListenerEx {
 
   override def onProjectsLinked(

@@ -1,10 +1,12 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.module.{Module, ModuleUtilCore}
-import com.intellij.openapi.project.{Project, ProjectUtil}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.psi.PsiFile
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.project.util.ProjectUtil
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFileManager
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt

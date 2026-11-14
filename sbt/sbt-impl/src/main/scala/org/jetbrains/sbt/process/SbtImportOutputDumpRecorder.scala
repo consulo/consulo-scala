@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process
 
 import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.diagnostic.Logger
+import consulo.logging.Logger
 import org.jetbrains.sbt.project.structure.OutputType
 
 import java.nio.charset.StandardCharsets

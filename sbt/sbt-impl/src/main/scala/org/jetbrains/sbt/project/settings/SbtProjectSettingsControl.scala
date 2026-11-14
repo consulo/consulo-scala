@@ -1,19 +1,20 @@
 package org.jetbrains.sbt
 package project.settings
 
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.model.task.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.service.settings.AbstractExternalProjectSettingsControl
 import com.intellij.openapi.externalSystem.util.ExternalSystemUiUtil.*
 import com.intellij.openapi.externalSystem.util.{ExternalSystemUtil, PaintAwarePanel}
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable, SdkTypeId}
 import com.intellij.openapi.roots.ui.configuration.JdkComboBox
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
-import com.intellij.openapi.util.Condition
-import com.intellij.ui.components.JBScrollPane
+import consulo.util.lang.function.Condition
+import consulo.ui.ex.awt.JBScrollPane
 import com.intellij.util.messages.Topic
-import com.intellij.util.ui.{GridBag, JBUI}
+import com.intellij.util.ui.GridBag
+import consulo.ui.ex.awt.JBUI
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.project.external.SdkUtils
 import org.jetbrains.sbt.project.SbtProjectSystem

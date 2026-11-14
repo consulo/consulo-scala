@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process
 
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.registry.Registry
+import consulo.application.util.SystemInfo
+import consulo.application.util.registry.Registry
 import com.intellij.util.EnvironmentUtil
 import org.jetbrains.sbt.SbtBundle
 

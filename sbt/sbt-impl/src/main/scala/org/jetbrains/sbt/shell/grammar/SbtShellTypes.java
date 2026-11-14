@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package org.jetbrains.sbt.shell.grammar;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
+import consulo.language.ast.ASTNode;
+import consulo.language.psi.PsiElement;
+import consulo.language.ast.IElementType;
 import org.jetbrains.sbt.shell.SbtShellElementType;
 import org.jetbrains.sbt.shell.SbtShellTokenType;
 import org.jetbrains.sbt.shell.grammar.impl.*;

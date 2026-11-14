@@ -3,8 +3,8 @@ package org.jetbrains.plugins.scala.build
 import com.intellij.build.events.{BuildEvent, BuildEvents, MessageEvent, Warning}
 import com.intellij.build.{FilePosition, events}
 import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputTypes}
-import com.intellij.pom.Navigatable
-import com.intellij.task.*
+import consulo.navigation.Navigatable
+import com.intellij.task.{ProjectTask, ProjectTaskContext, ProjectTaskManager, ProjectTaskRunner, ProjectTaskState}
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.build.BuildMessages.{BuildStatus, Canceled, Error}
 

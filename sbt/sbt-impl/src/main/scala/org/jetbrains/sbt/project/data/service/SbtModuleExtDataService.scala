@@ -3,17 +3,24 @@ package project
 package data
 package service
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.asScala
 import com.intellij.compiler.CompilerConfiguration
 import com.intellij.compiler.impl.javaCompiler.javac.JavacConfiguration
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.project.ProjectData
+import consulo.application.ApplicationManager
+import consulo.externalSystem.model.DataNode
+import consulo.externalSystem.service.project.ProjectData
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.module.Module
+import consulo.project.Project
 import com.intellij.openapi.roots.LanguageLevelModuleExtensionImpl
-import com.intellij.openapi.roots.libraries.Library
+import consulo.content.library.Library
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.*
+import org.jetbrains.plugins.scala.rt.project.*
+import org.jetbrains.plugins.scala.shared.project.*
 import org.jetbrains.plugins.scala.project.external.*
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.sbt.project.SbtKotlinCompilerOptionsImporter
@@ -21,6 +28,7 @@ import org.jetbrains.sbt.project.SbtKotlinCompilerOptionsImporter
 import java.util
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl(order = "last")
 final class SbtModuleExtDataService extends ScalaAbstractProjectDataService[SbtModuleExtData, Library](SbtModuleExtData.Key) {
 
   override def importData(
@@ -49,7 +57,7 @@ final class SbtModuleExtDataService extends ScalaAbstractProjectDataService[SbtM
   private def importKotlincOptions(module: Module, kotlincOptions: Seq[String])
                                   (implicit project: Project, modelsProvider: IdeModifiableModelsProvider): Unit =
     if (kotlincOptions.nonEmpty) {
-      Option(ApplicationManager.getApplication.getService(classOf[SbtKotlinCompilerOptionsImporter])).foreach { importer =>
+      Option(ApplicationManager.getApplication.getInstance(classOf[SbtKotlinCompilerOptionsImporter])).foreach { importer =>
         executeProjectChangeAction {
           importer.setAdditionalArguments(module, kotlincOptions.asJava, modelsProvider)
         }

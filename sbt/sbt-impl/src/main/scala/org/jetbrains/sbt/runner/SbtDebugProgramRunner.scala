@@ -1,16 +1,19 @@
 package org.jetbrains.sbt.runner
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.DebugEnvironment
 import com.intellij.debugger.engine.{DelayedRemoteConnection, DelayedRemoteConnectionImpl}
 import com.intellij.debugger.impl.GenericDebuggerRunner
-import com.intellij.execution.ExecutionException
-import com.intellij.execution.configurations.{RemoteConnection, RunProfile, RunProfileState}
+import consulo.process.ExecutionException
+import com.intellij.execution.configurations.{RemoteConnection, RunProfile}
+import consulo.execution.configuration.RunProfileState
 import com.intellij.execution.runToolbar.RunToolbarProcessData
-import com.intellij.execution.runners.{ExecutionEnvironment, ExecutionUtil}
+import consulo.execution.runner.ExecutionEnvironment
+import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunContentDescriptor
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.openapi.wm.ToolWindowId
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, executionContext, invokeAndWait, invokeLater}
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
@@ -38,6 +41,7 @@ import scala.util.control.NonFatal
  *
  * @see [[org.jetbrains.sbt.runner.SbtProgramRunner]]
  */
+@ExtensionImpl(order = "first")
 class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtDebugProgramRunner"
@@ -134,7 +138,7 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
    *  3. submits the SBT command to the shell, and
    *  4. detaches the lightweight debug process when command execution finishes.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def startSbtShellDebugCommandAsync(
     environment: ExecutionEnvironment,
     sbtState: SbtCommandLineState,

@@ -1,14 +1,13 @@
 package org.jetbrains.sbt.language.utils
 
 import com.intellij.buildsystem.model.unified.{UnifiedDependency, UnifiedDependencyRepository}
-import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.module.{ModuleManager, Module as OpenapiModule}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiElement, PsiFile, PsiManager}
-import org.jetbrains.annotations.ApiStatus
+import consulo.language.editor.WriteCommandAction
+import consulo.module.{ModuleManager, Module as OpenapiModule}
+import consulo.project.Project
+import consulo.module.content.ModuleRootManager
+import consulo.util.lang.StringUtil
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiFileExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
@@ -124,7 +123,7 @@ object SbtDependencyUtils {
   }
 
   /** Use [[org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil.getAllScalaVersionsOrDefault]] */
-  @ApiStatus.Obsolete
+  // upstream: @ApiStatus.Obsolete
   def getAllScalaVersionsOrDefault(psiElement: PsiElement, majorOnly: Boolean = false): Seq[String] = {
     var scalaVers = psiElement.getProject.allScalaVersions.map(_.minor).sortWith(SbtDependencyUtils.isGreaterStableVersion)
     if (scalaVers.isEmpty) scalaVers = Seq(psiElement.scalaLanguageLevelOrDefault.getVersion)
@@ -156,7 +155,7 @@ object SbtDependencyUtils {
   }
 
   /** Use [[org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil.buildScalaArtifactIdString]] */
-  @ApiStatus.Obsolete
+  // upstream: @ApiStatus.Obsolete
   def buildScalaArtifactIdString(groupId: String, artifactId: String, scalaVer: String): String = {
     if (scalaVer == null || scalaVer.isEmpty) return artifactId
     val shouldIncludeScalaMinorVer = SCALA_DEPENDENCIES_WITH_MINOR_SCALA_VERSION_LIST contains s"$groupId:$artifactId"

@@ -1,10 +1,19 @@
 package org.jetbrains.sbt
 package language
 
-import com.intellij.openapi.module.{Module, ModuleUtilCore}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi.*
-import com.intellij.psi.search.{GlobalSearchScope, searches}
+
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.file
+import org.jetbrains.sbt.api.language.SbtFile
+import org.jetbrains.sbt.api.language.SbtFileType
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore
+import consulo.module.content.ProjectRootManager
+import consulo.language.file.FileViewProvider
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.psi.search.searches
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.caches.{ModTracker, cached, cachedInUserData}
 import org.jetbrains.plugins.scala.extensions.PsiClassExt

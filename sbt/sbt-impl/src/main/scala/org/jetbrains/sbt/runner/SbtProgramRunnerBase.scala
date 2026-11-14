@@ -4,15 +4,15 @@ import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.runners.{ExecutionEnvironment, RunContentBuilder}
+import consulo.execution.runner.ExecutionEnvironment
+import com.intellij.execution.runners.RunContentBuilder
 import com.intellij.execution.ui.{ConsoleView, RunContentDescriptor}
 import com.intellij.execution.DefaultExecutionResult
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.Project
+import consulo.application.ApplicationManager
+import consulo.document.FileDocumentManager
+import consulo.component.ProcessCanceledException
+import consulo.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, invokeAndWait, invokeLater}
 import org.jetbrains.sbt.runner.SbtProgramRunnerBase.{DummyProcessHandler, commandFinishedSuccessfully}
@@ -91,7 +91,7 @@ trait SbtProgramRunnerBase {
   /**
    * @return a future with all the output collected during the command execution
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   protected def submitCommandsToShell(
     env: ExecutionEnvironment,
     sbtCommands: String,
@@ -126,7 +126,7 @@ trait SbtProgramRunnerBase {
     SbtShellCommandRequest(sbtCommands, eventProcessor)
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def submitCommandsToShell(
     env: ExecutionEnvironment,
     request: SbtShellCommandRequest[StringBuilder],

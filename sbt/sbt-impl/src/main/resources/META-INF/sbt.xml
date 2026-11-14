@@ -1,0 +1,123 @@
+<idea-plugin>
+    <extensionPoints>
+        <extensionPoint qualifiedName="com.intellij.newProjectWizard.scala.buildSystem" interface="org.jetbrains.sbt.project.template.wizard.buildSystem.BuildSystemScalaNewProjectWizard" dynamic="true"/>
+        <extensionPoint qualifiedName="org.intellij.scala.sbtUnlinkedProjectAwareHelper" interface="org.jetbrains.sbt.project.autolink.SbtUnlinkedProjectAwareHelper" dynamic="true"/>
+        <extensionPoint qualifiedName="org.jetbrains.sbt.buildToolModuleHandler" interface="org.jetbrains.sbt.project.BuildToolModuleHandler" dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="org.intellij">
+    </extensions>
+
+    <!--suppress PluginXmlValidity -->
+    <projectListeners>
+        <listener class="org.jetbrains.sbt.project.GeneratedManagedSourcesImportListener"
+                  topic="com.intellij.openapi.externalSystem.service.project.manage.ProjectDataImportListener"/>
+
+        <listener topic="com.intellij.openapi.roots.ModuleRootListener"
+                  class="org.jetbrains.sbt.project.SbtProjectImportStateModuleRootListener"/>
+
+        <listener topic="com.intellij.openapi.project.DumbService$DumbModeListener"
+                  class="org.jetbrains.sbt.project.versionNotifications.LegacySbtVersionProjectNotification$MyDumbModeListener"/>
+    </projectListeners>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="sbt" language="sbt" extensions="sbt"
+                  implementationClass="org.jetbrains.sbt.language.SbtFileType$" fieldName="MODULE$"/>
+        <fileType name="sbtShell" language="sbtShell" extensions="sbts"
+                  implementationClass="org.jetbrains.sbt.shell.SbtShellParserDefinition$SbtShellFileType$"
+                  fieldName="MODULE$"/>
+
+
+
+
+
+
+
+
+
+
+
+        <!--suppress PluginXmlCapitalization -->
+
+
+
+        <notificationGroup id="sbt.legacy.version.detected" displayType="STICKY_BALLOON" bundle="messages.SbtBundle" key="sbt.notification.group.id.legacy.version.detected"/>
+
+
+
+
+
+
+
+
+
+        <defaultLiveTemplates file="liveTemplates/sbt"/>
+
+        <!--suppress PluginXmlCapitalization -->
+
+        <!--Package Search inspections-->
+
+
+        <!--end of Package Search inspections-->
+
+
+
+
+
+        <registryKey key="SBT.system.in.process" defaultValue="true" restartRequired="true"
+                     description="Internal, do not change"/>
+
+        <registryKey key="sbt.new.shell" defaultValue="false" restartRequired="false"
+                     description="If enabled, new, terminal-like sbt shell implementation is used. It will apply only to new shell instances and only with sbt >= 1.4.0."/>
+
+        <registryKey key="sbt.import.time.measurement" defaultValue="false" restartRequired="false"
+                     description="Internal. It doesn't work when sync in the sbt shell is enabled. Requires sbt 1.9.0+.
+                     When enabled, the `sbt-task-timings` plugin (https://github.com/JetBrains/sbt-task-timings) is injected into the sbt during sync.
+                     After each command the plugin writes an aggregated JSON timing report and a Chrome Trace Event timeline and prints their paths into the output.
+                     The plugin is resolved from the build's resolvers, so an internet connection may be needed on the first sync."/>
+
+        <registryKey key="sbt.separate.main.test.modules" defaultValue="true" restartRequired="false"
+                     description="When disabled, sbt projects are imported with the legacy modules layout, i.e. without separate modules for main and test sources.
+                     Takes effect on the next project reload. The legacy modules layout is not supported anymore and will be removed."/>
+
+        <registryKey key="sbt.shell.import.old" defaultValue="false" restartRequired="false"
+                     description="Use old sbt shell import mechanism with `set` command instead of modifying system properties."/>
+
+        <registryKey key="sbt.terminal.props.sanitization" defaultValue="true" restartRequired="false"
+                     description="Clear SBT_TERMINAL_PROPS in sbt processes started directly by IntelliJ IDEA. The sbt client passes this terminal setting to a server it starts; when inherited by an IDEA-managed process, sbt skips its local console input channel."/>
+
+
+
+
+
+        <postStartupActivity implementation="org.jetbrains.sbt.project.versionNotifications.LegacySbtVersionProjectNotification$MyProjectActivity"/>
+    </extensions>
+
+    <actions>
+
+
+        <group id="Scala.Sbt.TaskMenu" popup="true">
+            <reference ref="RunContextGroup"/>
+            <separator/>
+            <reference ref="Scala.Sbt.RunTask"/>
+            <reference ref="Scala.Sbt.ShowTask"/>
+            <reference ref="Scala.Sbt.InspectTask"/>
+            <reference ref="Scala.Sbt.Help"/>
+        </group>
+
+        <group id="Scala.Sbt.SettingMenu" popup="true">
+            <reference ref="RunContextGroup"/>
+            <separator/>
+            <reference ref="Scala.Sbt.ShowSetting"/>
+            <reference ref="Scala.Sbt.InspectSetting"/>
+            <reference ref="Scala.Sbt.Help"/>
+        </group>
+
+        <group id="Scala.Sbt.CommandMenu" popup="true">
+            <reference ref="RunContextGroup"/>
+            <separator/>
+            <reference ref="Scala.Sbt.RunCommand"/>
+            <reference ref="Scala.Sbt.Help"/>
+        </group>
+    </actions>
+</idea-plugin>

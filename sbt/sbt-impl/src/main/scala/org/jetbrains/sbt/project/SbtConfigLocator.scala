@@ -1,14 +1,22 @@
 package org.jetbrains.sbt
 package project
 
-import com.intellij.openapi.externalSystem.model.ProjectSystemId
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.file
+import org.jetbrains.sbt.api.find
+import org.jetbrains.sbt.api.safeMap
+import consulo.externalSystem.model.ProjectSystemId
 import com.intellij.openapi.externalSystem.service.settings.ExternalSystemConfigLocator
-import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings
-import com.intellij.openapi.vfs.{LocalFileSystem, VirtualFile}
+import consulo.externalSystem.setting.ExternalProjectSettings
+import consulo.virtualFileSystem.{LocalFileSystem, VirtualFile}
 
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl
 class SbtConfigLocator extends ExternalSystemConfigLocator {
   override def getTargetExternalSystemId: ProjectSystemId = SbtProjectSystem.Id
 

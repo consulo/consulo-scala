@@ -1,16 +1,18 @@
 package org.jetbrains.sbt.runner
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
-import com.intellij.execution.configurations.*
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.{EnvFilesOptions, Executor}
-import com.intellij.openapi.application.ApplicationManager.getApplication
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.util.execution.ParametersListUtil
-import com.intellij.util.xmlb.XmlSerializer
+import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
+import com.intellij.execution.configurations.RunConfiguration
+import consulo.execution.runner.ExecutionEnvironment
+import com.intellij.execution.EnvFilesOptions
+import consulo.execution.executor.Executor
+import consulo.application.ApplicationManager.getApplication
+import consulo.module.Module
+import consulo.execution.configuration.ui.SettingsEditor
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import consulo.process.cmd.ParametersListUtil
+import consulo.util.xml.serializer.XmlSerializer
 import com.intellij.util.xmlb.annotations.XCollection
 import org.jdom.Element
 import org.jetbrains.plugins.scala.project.ProjectExt

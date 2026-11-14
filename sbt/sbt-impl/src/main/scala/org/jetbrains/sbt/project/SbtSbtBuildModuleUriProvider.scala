@@ -1,11 +1,16 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.module.Module
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.project.SbtBuildModuleUriProvider
+import consulo.module.Module
 import org.jetbrains.sbt.WorkspaceModelUtil
 
 import java.net.URI
 import java.nio.file.Path
 
+@ExtensionImpl
 final class SbtSbtBuildModuleUriProvider extends SbtBuildModuleUriProvider {
   override def getBuildModuleUri(module: Module): Option[URI] = {
     val sbtModuleEntity = WorkspaceModelUtil.getSbtModuleEntity(module)

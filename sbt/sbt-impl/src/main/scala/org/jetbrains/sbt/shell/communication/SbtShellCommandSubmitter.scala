@@ -1,7 +1,6 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.openapi.project.Project
-import org.jetbrains.annotations.ApiStatus.Experimental
+import consulo.project.Project
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.executionContext.appExecutionContext
 
@@ -13,7 +12,7 @@ import scala.concurrent.Future
  * However, later it was decided that we will mock the SBT JVM process itself.
  * Still, this interface is useful to have to highlight a separate arthitectural component.
  */
-@Experimental
+// upstream: @Experimental
 trait SbtShellCommandSubmitter {
 
   /**
@@ -48,7 +47,7 @@ trait SbtShellCommandSubmitter {
   def cancel(requestId: SbtShellCommandRequestId): Unit
 }
 
-@Experimental
+// upstream: @Experimental
 object SbtShellCommandSubmitter {
   /**
    * Returns the project-level sbt shell command submitter.
@@ -58,5 +57,5 @@ object SbtShellCommandSubmitter {
    * It can be mocked in tests
    */
   def instance(project: Project): SbtShellCommandSubmitter =
-    project.getService(classOf[SbtShellCommandSubmitter])
+    project.getInstance(classOf[SbtShellCommandSubmitter])
 }

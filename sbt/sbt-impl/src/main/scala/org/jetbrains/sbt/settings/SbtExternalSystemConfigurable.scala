@@ -1,10 +1,12 @@
 package org.jetbrains.sbt.settings
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.ide.ui.search.TraverseUIMode
 import com.intellij.openapi.externalSystem.ExternalSystemManager
 import com.intellij.openapi.externalSystem.service.settings.AbstractExternalSystemConfigurable
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.project.Project
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.settings.Context.Configuration
@@ -12,6 +14,7 @@ import org.jetbrains.sbt.project.settings._
 
 import javax.swing.JComponent
 
+@ExtensionImpl
 class SbtExternalSystemConfigurable(project: Project)
   extends AbstractExternalSystemConfigurable[SbtProjectSettings, SbtProjectSettingsListener, SbtSettings](project, SbtProjectSystem.Id) {
 

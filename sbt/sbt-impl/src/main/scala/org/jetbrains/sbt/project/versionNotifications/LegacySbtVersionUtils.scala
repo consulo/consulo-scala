@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.project.versionNotifications
 
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFileManager
+import consulo.navigation.OpenFileDescriptor
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFileManager
 import org.jetbrains.plugins.scala.extensions.{OptionExt, PathExt}
 import org.jetbrains.sbt.Sbt
 

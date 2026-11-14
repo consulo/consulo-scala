@@ -1,10 +1,14 @@
 package org.jetbrains.sbt.language.completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.util.PsiTreeUtil.getContextOfType
-import com.intellij.util.ProcessingContext
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.pattern.PlatformPatterns.psiElement
+import consulo.language.psi.util.PsiTreeUtil.getContextOfType
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.completion._
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.sbt.language.completion.SbtPsiElementPatterns.scalacOptionsStringLiteralPattern
@@ -14,7 +18,10 @@ import org.jetbrains.sbt.language.utils.SbtScalacOptionUtils.{getScalacOptionsFo
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl(id = "sbtScalacOptionArgumentsCompletionContributor", order = "first, before sbtScalacOptionsCompletionContributor")
 class SbtScalacOptionArgumentsCompletionContributor extends CompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   extend(CompletionType.BASIC, pattern, completionProvider)
 }
 

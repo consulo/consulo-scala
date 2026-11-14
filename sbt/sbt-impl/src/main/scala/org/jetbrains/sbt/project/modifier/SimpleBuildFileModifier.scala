@@ -1,10 +1,11 @@
 package org.jetbrains.sbt.project.modifier
 
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.{VfsUtil, VirtualFile}
-import com.intellij.psi.{PsiElement, PsiFile, PsiManager}
-import com.intellij.testFramework.LightVirtualFile
+import consulo.module.Module
+import consulo.project.Project
+import consulo.virtualFileSystem.util.VirtualFileUtil
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager}
+import consulo.language.file.light.LightVirtualFile
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.plugins.scala.lang.formatting.ScalaFormatterUtil
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._

@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.externalSystem.model.DataNode
+import consulo.externalSystem.model.DataNode
 import com.intellij.openapi.externalSystem.service.project.manage.AbstractModuleDataService
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 
 import java.util
 import scala.jdk.CollectionConverters._

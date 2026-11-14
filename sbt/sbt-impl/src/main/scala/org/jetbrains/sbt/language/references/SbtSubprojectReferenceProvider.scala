@@ -1,12 +1,18 @@
 package org.jetbrains.sbt
 package language.references
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.psi.*
-import com.intellij.psi.search.{FilenameIndex, GlobalSearchScope}
-import com.intellij.util.ProcessingContext
+
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.find
+import org.jetbrains.sbt.api.safeMap
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.io.FileUtil
+import com.intellij.psi.Immediate
+import consulo.language.psi.{PsiElement, PsiFile, PsiManager, PsiReference, PsiReferenceBase, PsiReferenceProvider}
+import consulo.language.psi.search.FilenameIndex
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.{ScConstructorInvocation, ScLiteral}

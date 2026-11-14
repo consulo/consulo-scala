@@ -1,8 +1,13 @@
 package org.jetbrains.sbt.project.settings
 
-import com.intellij.openapi.components.*
-import com.intellij.openapi.module.Module
-import com.intellij.util.xmlb.XmlSerializerUtil
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
+import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
+import consulo.module.Module
+import consulo.util.xml.serializer.XmlSerializerUtil
 
 import java.util.List as JList
 import scala.beans.BeanProperty
@@ -23,6 +28,9 @@ import scala.compiletime.uninitialized
   name = "SharedSourcesOwnerModules",
   storages = Array(new Storage(StoragePathMacros.MODULE_FILE))
 )
+@Singleton
+@ServiceAPI(ComponentScope.MODULE)
+@ServiceImpl
 class SharedSourcesOwnerModules extends PersistentStateComponent[SharedSourcesOwnerModules] {
 
   @BeanProperty
@@ -35,6 +43,6 @@ class SharedSourcesOwnerModules extends PersistentStateComponent[SharedSourcesOw
 
 object SharedSourcesOwnerModules {
   def getInstance(module: Module): SharedSourcesOwnerModules = {
-    module.getService(classOf[SharedSourcesOwnerModules])
+    module.getInstance(classOf[SharedSourcesOwnerModules])
   }
 }

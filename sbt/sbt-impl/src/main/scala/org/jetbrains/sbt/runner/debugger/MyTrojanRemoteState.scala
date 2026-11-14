@@ -1,13 +1,16 @@
 package org.jetbrains.sbt.runner.debugger
 
-import com.intellij.debugger.DebuggerManager
+import com.intellij.java.debugger.DebuggerManager
 import com.intellij.debugger.engine.{DebugProcessImpl, RemoteStateState}
 import com.intellij.execution.configurations.RemoteConnection
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
 import com.intellij.execution.ui.ConsoleView
-import com.intellij.execution.{DefaultExecutionResult, ExecutionException, ExecutionResult, Executor, JavaRunConfigurationExtensionManager}
+import com.intellij.execution.{DefaultExecutionResult, ExecutionResult}
+import consulo.process.ExecutionException
+import consulo.execution.executor.Executor
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import com.intellij.xdebugger.DapMode
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.sbt.SbtBundle

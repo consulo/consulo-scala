@@ -5,14 +5,13 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.GeneralCommandLine.ParentEnvironmentType
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.application.util.SystemInfo
 import com.intellij.platform.eel.provider.utils.EelPathUtils
 import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.jetbrains.annotations.{Nls, NonNls}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
@@ -42,7 +41,7 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
 
   def cancel(): Unit = cancellationFlag.set(true)
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def runSbt(
     indicator: ProgressIndicator,
     directory: Path,
@@ -107,7 +106,7 @@ final class SbtRunner(processOutputCollector: Option[SbtProcessOutputDiagnostics
    * @param reporter              A build reported instance for flexibly reporting different aspects of the status of the sbt process
    * @return A set of messages (success or failure) reported by the execution of the sbt process.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def runSbt(
     indicator: ProgressIndicator,
     directory: Path,

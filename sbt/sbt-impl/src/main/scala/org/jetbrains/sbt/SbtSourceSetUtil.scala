@@ -1,8 +1,8 @@
 package org.jetbrains.sbt
 
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import org.jetbrains.plugins.scala.util.SbtModuleType
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import org.jetbrains.plugins.scala.shared.util.SbtModuleType
 import org.jetbrains.sbt.project.SourceSetType
 
 object SbtSourceSetUtil {

@@ -3,7 +3,7 @@ package org.jetbrains.sbt.shell
 import com.intellij.task.{ProjectTaskContext, ProjectTaskManager}
 import org.jetbrains.plugins.scala.build.{BuildMessages, TaskManagerResult}
 import org.jetbrains.sbt.SbtUtil.SbtProjectUriAndId
-import org.jetbrains.sbt.SbtVersionCapabilities
+import org.jetbrains.sbt.api.SbtVersionCapabilities
 import org.jetbrains.sbt.shell.SettingQueryHandler.*
 import org.jetbrains.sbt.shell.communication.ShellEvent.{Output, TaskComplete}
 import org.jetbrains.sbt.shell.communication.{SbtShellCommandEventProcessor, SbtShellCommandRequest, ShellEvent}

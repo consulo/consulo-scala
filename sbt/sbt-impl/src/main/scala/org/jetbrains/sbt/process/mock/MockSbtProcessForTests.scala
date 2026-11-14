@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.process.mock
 
 import com.intellij.execution.configurations.JavaParameters
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
+import consulo.project.Project
+import consulo.util.dataholder.Key
 
 import java.nio.file.Path
 

@@ -2,9 +2,15 @@ package org.jetbrains.sbt
 package language
 package completion
 
-import com.intellij.codeInsight.completion._
-import com.intellij.psi._
-import com.intellij.util.ProcessingContext
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+
+import org.jetbrains.sbt.api.v
+import consulo.language.editor.completion.{CompletionParameters, CompletionProvider, CompletionResultSet, CompletionType}
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMember, PsiModifier}
+import consulo.language.util.ProcessingContext
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.completion._
 import org.jetbrains.plugins.scala.lang.completion.lookups.{ScalaChainLookupElement, ScalaLookupItem}
@@ -21,7 +27,10 @@ import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.resolve.ResolveUtils
 import org.jetbrains.plugins.scala.project.ProjectContext
 
+@ExtensionImpl(id = "sbtCompletionContributor", order = "first, before liveTemplates")
 final class SbtCompletionContributor extends ScalaCompletionContributor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private val afterInfixOperator = sbtFilePattern && infixExpressionChildPattern
 

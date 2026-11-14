@@ -1,8 +1,13 @@
 package org.jetbrains.sbt
 package project.data
 
-import com.intellij.openapi.externalSystem.model.project.*
-import com.intellij.openapi.externalSystem.model.{DataNode, Key, ProjectKeys}
+
+import org.jetbrains.sbt.api.file
+import consulo.externalSystem.model.project.{ContentRootData, ModuleData}
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
+import com.intellij.openapi.externalSystem.model.project.{LibraryData, LibraryDependencyData, LibraryLevel, LibraryPathType, ModuleDependencyData, ModuleSdkData}
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{DataNode, Key, ProjectKeys}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.module.{SbtNestedModuleData, SbtSourceSetData}
 import org.jetbrains.sbt.project.{SbtProjectSystem, SharedSourcesOwnersData, SourceSetType}

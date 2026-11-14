@@ -1,8 +1,9 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.*
+import org.jetbrains.sbt.api.*
 
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*

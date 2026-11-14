@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.build
 import com.intellij.build.FilePosition
 import com.intellij.build.events.EventResult
 import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputTypes}
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.sbt.SbtBundle
 
 import java.nio.file.Path

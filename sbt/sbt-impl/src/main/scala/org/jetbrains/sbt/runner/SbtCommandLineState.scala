@@ -1,16 +1,19 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configurations.*
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
+import com.intellij.java.execution.configurations.JavaCommandLineState
+import com.intellij.execution.configurations.JavaParameters
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.util.EnvFilesUtilKt.configureEnvsFromFiles
 import com.intellij.execution.util.JavaParametersUtil
-import com.intellij.execution.{ExecutionResult, Executor, JavaRunConfigurationExtensionManager}
+import com.intellij.execution.ExecutionResult
+import consulo.execution.executor.Executor
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUtil
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
+import consulo.project.Project
+import consulo.content.bundle.Sdk
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.plugins.scala.util.JarManifestUtils
+import org.jetbrains.plugins.scala.rt.util.JarManifestUtils
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.process.SbtProcessOutputDiagnosticsCollector
 import org.jetbrains.sbt.process.mock.MockSbtProcessForTests

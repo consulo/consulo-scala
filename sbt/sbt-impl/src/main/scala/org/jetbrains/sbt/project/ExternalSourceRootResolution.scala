@@ -1,8 +1,16 @@
 package org.jetbrains.sbt
 package project
 
+
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.distinctBy
+import org.jetbrains.sbt.api.file
+import org.jetbrains.sbt.api.find
+import org.jetbrains.sbt.api.v
 import com.intellij.openapi.externalSystem.model.ExternalSystemException
-import com.intellij.openapi.externalSystem.model.project.{ExternalSystemSourceType, LibraryData, ModuleData as ESModuleData}
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
+import com.intellij.openapi.externalSystem.model.project.LibraryData
+import consulo.externalSystem.model.project.{ModuleData as ESModuleData}
 import com.intellij.openapi.roots.DependencyScope
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.SbtProjectResolver.ImportContext

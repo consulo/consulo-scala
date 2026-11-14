@@ -5,11 +5,11 @@ import com.intellij.build.events.MessageEvent.Kind
 import com.intellij.build.issue.BuildIssue
 import com.intellij.build.{BuildContentManager, FilePosition, SyncViewManager}
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.openapi.diagnostic.Logger
+import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.model.task.event.{Failure as ExternalSystemFailure, FailureResult as ExternalSystemFailureResult, SkippedResult as ExternalSystemSkippedResult, SuccessResult as ExternalSystemSuccessResult, *}
 import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.annotations.{Nls, Nullable}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.ExternalSystemNotificationReporter.*
@@ -29,7 +29,7 @@ class ExternalSystemNotificationReporter(
   private val descriptors: mutable.Map[EventId, TaskDescriptor] = mutable.Map.empty
 
   private val viewManager: Option[SyncViewManager] =
-    Option(taskId.findProject()).map(_.getService(classOf[SyncViewManager]))
+    Option(taskId.findProject()).map(_.getInstance(classOf[SyncViewManager]))
 
   private var isFinished: Boolean = false
   private var warningActivatedToolWindow: Boolean = false

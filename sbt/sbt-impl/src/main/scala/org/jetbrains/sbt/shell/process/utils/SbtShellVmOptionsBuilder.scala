@@ -2,10 +2,11 @@ package org.jetbrains.sbt.shell.process.utils
 
 import com.intellij.debugger.engine.DebuggerUtils
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.configurations.{ParametersList, RemoteConnection}
+import consulo.process.cmd.ParametersList
+import com.intellij.execution.configurations.RemoteConnection
 import com.intellij.util.system.OS
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.sbt.JvmMemorySize
+import org.jetbrains.sbt.api.JvmMemorySize
 import org.jetbrains.sbt.process.options.SbtProcessOptionsResolver
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
 import org.jetbrains.sbt.shell.SbtProcessManager.SbtShellVmOptionsData

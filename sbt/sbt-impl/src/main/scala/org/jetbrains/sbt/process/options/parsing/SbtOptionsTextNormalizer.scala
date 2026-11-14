@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.process.options.parsing
 
-import com.intellij.util.execution.ParametersListUtil
+import consulo.process.cmd.ParametersListUtil
 import org.jetbrains.sbt.process.options.knownOptions.KnownSbtOption.Form.SeparateValue
 import org.jetbrains.sbt.process.options.knownOptions.KnownSbtOptions
 import org.jetbrains.sbt.process.options.parsing.model.MalformedSbtOption

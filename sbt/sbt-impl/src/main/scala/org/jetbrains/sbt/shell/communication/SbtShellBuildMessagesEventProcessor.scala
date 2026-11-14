@@ -1,9 +1,9 @@
 package org.jetbrains.sbt.shell.communication
 
 import com.intellij.build.events.impl.{FailureResultImpl, SuccessResultImpl}
-import com.intellij.openapi.diagnostic.Logger
+import consulo.logging.Logger
 import com.intellij.openapi.externalSystem.model.ExternalSystemException
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}

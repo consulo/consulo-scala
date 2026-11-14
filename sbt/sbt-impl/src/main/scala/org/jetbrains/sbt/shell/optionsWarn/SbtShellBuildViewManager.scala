@@ -1,8 +1,11 @@
 package org.jetbrains.sbt.shell.optionsWarn
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.build.AbstractViewManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.sbt.SbtBundle
 
 /**
@@ -23,7 +26,10 @@ import org.jetbrains.sbt.SbtBundle
  * @see [[org.jetbrains.sbt.process.options.reporting.SbtOptionsDiagnosticsReporter]]
  * @see [[org.jetbrains.plugins.scala.build.BuildReporter]]
  */
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private[shell] final class SbtShellBuildViewManager(project: Project) extends AbstractViewManager(project) {
   override protected def getViewName: String =
     SbtBundle.message("sbt.shell.title")
@@ -31,5 +37,5 @@ private[shell] final class SbtShellBuildViewManager(project: Project) extends Ab
 
 private[shell] object SbtShellBuildViewManager {
   def instance(project: Project): SbtShellBuildViewManager =
-    project.getService(classOf[SbtShellBuildViewManager])
+    project.getInstance(classOf[SbtShellBuildViewManager])
 }

@@ -1,6 +1,8 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.sbt
 
+
+import org.jetbrains.sbt.api.file
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.utils.EelPathUtilsKt
 import com.intellij.platform.eel.provider.LocalEelDescriptor

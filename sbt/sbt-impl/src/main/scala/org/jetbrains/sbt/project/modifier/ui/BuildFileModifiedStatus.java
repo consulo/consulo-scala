@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.modifier.ui;
 
-import com.intellij.openapi.vcs.FileStatus;
+import consulo.virtualFileSystem.status.FileStatus;
 import org.jetbrains.sbt.SbtBundle;
 
 public enum BuildFileModifiedStatus {

@@ -1,13 +1,19 @@
 package org.jetbrains.sbt
 package project
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.containsFile
+import org.jetbrains.sbt.api.file
 import com.intellij.openapi.externalSystem.service.project.wizard.AbstractExternalProjectImportProvider
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nullable
 
 import javax.swing.Icon
 
+@ExtensionImpl
 final class SbtProjectImportProvider(builder: SbtProjectImportBuilder)
   extends AbstractExternalProjectImportProvider(builder, SbtProjectSystem.Id) {
 

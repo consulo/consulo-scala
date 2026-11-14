@@ -1,7 +1,8 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, RunConfiguration}
-import com.intellij.openapi.project.Project
+import consulo.execution.configuration.ConfigurationFactory
+import com.intellij.execution.configurations.{ConfigurationType, RunConfiguration}
+import consulo.project.Project
 
 /**
  * Configuration factory for [[SbtConfigurationType]]

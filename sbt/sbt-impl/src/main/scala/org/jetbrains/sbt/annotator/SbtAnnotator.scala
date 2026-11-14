@@ -1,8 +1,16 @@
 package org.jetbrains.sbt
 package annotator
 
-import com.intellij.lang.annotation.{AnnotationHolder, Annotator}
-import com.intellij.psi.{PsiComment, PsiElement, PsiWhiteSpace}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+
+import org.jetbrains.sbt.api.Latest
+import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.api.file
+import consulo.language.editor.annotation.{AnnotationHolder, Annotator}
+import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.annotator.ScalaAnnotationHolder
 import org.jetbrains.plugins.scala.annotator.annotationHolder.ScalaAnnotationHolderAdapter
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
@@ -14,7 +22,10 @@ import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiFileExt}
 import org.jetbrains.sbt.language.SbtFileImpl
 
 // TODO: we need to review SBT 2.0 new rules and adopt SbtAnnotator logic
+@ExtensionImpl
 final class SbtAnnotator extends Annotator {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   import SbtAnnotator._
 

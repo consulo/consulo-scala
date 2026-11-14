@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.externalSystem.model.project.ExternalSystemSourceType
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
 import com.intellij.platform.eel.EelDescriptor
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.Sbt

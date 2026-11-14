@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project.modifier.location
 
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.project.modifier.BuildFileElementType

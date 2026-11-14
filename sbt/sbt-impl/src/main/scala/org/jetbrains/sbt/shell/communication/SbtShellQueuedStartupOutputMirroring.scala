@@ -1,8 +1,8 @@
 package org.jetbrains.sbt.shell.communication
 
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
+import consulo.logging.Logger
+import consulo.project.Project
 import org.jetbrains.sbt.shell.communication.SbtShellQueuedStartupOutputMirroring.{Owner, Registration}
 
 import java.util.concurrent.atomic.AtomicReference

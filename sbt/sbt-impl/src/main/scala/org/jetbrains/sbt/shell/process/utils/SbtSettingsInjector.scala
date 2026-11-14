@@ -1,17 +1,18 @@
 package org.jetbrains.sbt.shell.process.utils
 
-import com.intellij.execution.configurations.*
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
+import consulo.process.cmd.ParametersList
+import consulo.logging.Logger
+import consulo.project.Project
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.EelProviderUtil
 import com.intellij.platform.eel.provider.utils.EelProjectUtils
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.extensions.*
-import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.sbt.SbtUtil.*
 import org.jetbrains.sbt.buildinfo.BuildInfo
-import org.jetbrains.sbt.{Sbt, SbtUtil, SbtVersion, SbtVersionCapabilities, normalizedLocalPath}
+import org.jetbrains.sbt.{Sbt, SbtUtil, normalizedLocalPath}
+import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities}
 
 import java.io.IOException
 import java.nio.charset.StandardCharsets

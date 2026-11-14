@@ -2,21 +2,30 @@ package org.jetbrains.sbt
 package project.data
 package service
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.api.asScala
 import com.intellij.compiler.CompilerConfiguration
 import com.intellij.compiler.impl.javaCompiler.javac.JavacConfiguration
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.model.{DataNode, ProjectKeys}
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{DataNode, ProjectKeys}
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
 import com.intellij.openapi.externalSystem.service.project.manage.ContentRootDataService
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleType
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.{LanguageLevelProjectExtension, ProjectRootManager}
+import consulo.content.library.{Library => LibraryEx}
+import com.intellij.openapi.roots.LanguageLevelProjectExtension
+import consulo.module.content.ProjectRootManager
 import com.intellij.util.lang.JavaVersion
 import org.jetbrains.plugins.scala.compiler.data.IncrementalityType
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.*
+import org.jetbrains.plugins.scala.rt.project.*
+import org.jetbrains.plugins.scala.shared.project.*
 import org.jetbrains.plugins.scala.project.external.*
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
@@ -27,6 +36,7 @@ import org.jetbrains.sbt.settings.SbtSettings
 import java.util
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
+@ExtensionImpl
 class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectData, Project](SbtProjectData.Key) {
 
   override def importData(
@@ -61,7 +71,7 @@ class SbtProjectDataService extends ScalaAbstractProjectDataService[SbtProjectDa
     /* note: there is a possibility that in IDEA we will have projects with different subsystems (I think it is a very rare case
      but from a technical point of view it is possible). In such case we do not want to remove scala SDK kind from libraries that come from systems other than SBT.
      "sbt: scala-sdk" prefix is left because it indicates that this SDK comes from the new implementation of Scala SDK and shouldn't be removed.
-     The only way I could find to check from which system the library comes from is com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.isExternalSystemLibrary method, but
+     The only way I could find to check from which system the library comes from is consulo.externalSystem.util.ExternalSystemApiUtil.isExternalSystemLibrary method, but
      the logic there is also based on checking the prefix in the library name
 
     TODO checking if library name does not start with hardcoded prefixes ("Gradle:", "Maven:", "BSP:") is not an ideal implementation.

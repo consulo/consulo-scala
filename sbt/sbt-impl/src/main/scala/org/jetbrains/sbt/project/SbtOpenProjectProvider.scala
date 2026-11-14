@@ -1,21 +1,22 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
+import consulo.disposer.Disposable
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.model.internal.InternalExternalProjectInfo
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.model.{DataNode, ProjectSystemId}
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{DataNode, ProjectSystemId}
+import consulo.externalSystem.model.task.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
-import com.intellij.openapi.externalSystem.service.project.{ExternalProjectRefreshCallback, ProjectDataManager}
+import com.intellij.openapi.externalSystem.service.project.ExternalProjectRefreshCallback
+import consulo.externalSystem.service.project.manage.ProjectDataManager
 import com.intellij.openapi.externalSystem.service.ui.ExternalProjectDataSelectorDialog
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.project.Project
+import consulo.disposer.Disposer
+import consulo.application.util.registry.Registry
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.project.SbtOpenProjectProvider.Log
 import org.jetbrains.sbt.project.settings.SbtProjectSettings

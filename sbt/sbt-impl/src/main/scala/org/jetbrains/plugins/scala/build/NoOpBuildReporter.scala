@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.build
 import com.intellij.build.FilePosition
 import com.intellij.build.events.EventResult
 import com.intellij.build.issue.BuildIssue
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 

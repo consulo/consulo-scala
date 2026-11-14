@@ -1,9 +1,10 @@
 package org.jetbrains.sbt.process
 
-import com.intellij.execution.process.{ProcessEvent, ProcessHandler, ProcessListener}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Key
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import com.intellij.execution.process.ProcessHandler
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.util.dataholder.Key
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.sbt.process.SbtProcessOutputDiagnosticsCollector.ProcessOutputCollectingListener
 

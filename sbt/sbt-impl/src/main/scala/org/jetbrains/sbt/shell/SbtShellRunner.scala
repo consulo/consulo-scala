@@ -1,23 +1,24 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.execution.Executor
+import consulo.execution.executor.Executor
 import com.intellij.execution.configurations.RemoteConnection
-import com.intellij.execution.console.*
+import com.intellij.execution.console.{ConsoleHistoryController, ConsoleRootType, LanguageConsoleView, ProcessBackedConsoleExecuteActionHandler}
 import com.intellij.execution.process.{OSProcessHandler, ProcessHandler}
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory
 import com.intellij.execution.ui.RunContentDescriptor
-import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.{ApplicationManager, WriteIntentReadAction}
-import com.intellij.openapi.diagnostic.Logger
+import consulo.ui.ex.action.{AnAction, DefaultActionGroup}
+import consulo.application.ApplicationManager
+import com.intellij.openapi.application.WriteIntentReadAction
+import consulo.logging.Logger
 import com.intellij.openapi.editor.ex.util.EditorUtil
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.intellij.ui.content.impl.ContentImpl
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, invokeLater}
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.statistics.SbtShellCommandsUsagesCollector
 import org.jetbrains.sbt.SbtBundle
-import org.jetbrains.sbt.icons.Icons
+import org.jetbrains.sbt.api.icons.Icons
 
 import java.util
 import javax.swing.{Icon, JLabel, SwingConstants}

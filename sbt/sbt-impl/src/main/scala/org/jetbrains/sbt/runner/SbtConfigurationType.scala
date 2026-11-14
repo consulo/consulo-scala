@@ -1,7 +1,10 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType}
-import com.intellij.openapi.project.DumbAware
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.configuration.ConfigurationFactory
+import com.intellij.execution.configurations.ConfigurationType
+import consulo.application.dumb.DumbAware
 import org.jetbrains.sbt.{Sbt, SbtBundle}
 
 import javax.swing.Icon
@@ -9,6 +12,7 @@ import javax.swing.Icon
 /**
  * Configuration running of sbt task.
  */
+@ExtensionImpl
 class SbtConfigurationType extends ConfigurationType with DumbAware {
   val confFactory = new SbtRunConfigurationFactory(this)
   

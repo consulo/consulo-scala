@@ -1,9 +1,8 @@
 package org.jetbrains.sbt.project
 
 import com.intellij.openapi.externalSystem.ExternalSystemAutoImportAware
-import com.intellij.openapi.project.Project
-import com.intellij.util.containers.ContainerUtil
-import org.jetbrains.annotations.ApiStatus
+import consulo.project.Project
+import consulo.util.collection.ContainerUtil
 
 import java.nio.file.Path
 
@@ -17,7 +16,7 @@ trait ExternalSystemAutoImportAwareCompat extends ExternalSystemAutoImportAware:
 
   @deprecated(message = "Deprecated in the platform. Use getAffectedExternalProjectFilePaths. This method will be removed.", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
   //noinspection SSBasedInspection
   final override def getAffectedExternalProjectFiles(projectPath: String, project: Project): java.util.List[java.io.File] =
     ContainerUtil.map(getAffectedExternalProjectFilePaths(projectPath, project), (p: Path) => p.toFile)

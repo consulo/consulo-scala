@@ -1,13 +1,17 @@
 package org.jetbrains.sbt
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.asScala
 import com.intellij.ide.actions.runAnything.RunAnythingUtil.*
 import com.intellij.ide.actions.runAnything.activity.RunAnythingProviderBase
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.util.text.StringUtil
+import consulo.dataContext.DataContext
+import consulo.module.ModuleManager
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.sbt.SbtRunAnythingProvider.*
-import org.jetbrains.sbt.icons.Icons
+import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.project.data.{SbtSettingData, SbtTaskData}
 import org.jetbrains.sbt.settings.SbtSettings
 import org.jetbrains.sbt.shell.action.SbtNodeAction
@@ -19,6 +23,7 @@ import scala.jdk.CollectionConverters.*
 
 //TODO: consider extending com.intellij.ide.actions.runAnything.activity.RunAnythingCommandLineProvider
 // like in Maven and Gradle? Is it applicable to us?
+@ExtensionImpl
 class SbtRunAnythingProvider extends RunAnythingProviderBase[SbtRunItem] {
 
   override def getValues(dataContext: DataContext, pattern: String): util.Collection[SbtRunItem] = {

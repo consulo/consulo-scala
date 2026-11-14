@@ -6,7 +6,7 @@ import com.intellij.build.issue.BuildIssue
 import com.intellij.build.{BuildContentManager, SyncViewManager}
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 

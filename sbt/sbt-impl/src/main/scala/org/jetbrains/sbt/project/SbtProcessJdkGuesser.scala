@@ -1,19 +1,22 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressManager}
-import com.intellij.openapi.project.Project
+import consulo.logging.Logger
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
 import com.intellij.openapi.projectRoots.impl.{JavaHomeFinder, SdkConfigurationUtil}
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion, ProjectJdkTable, Sdk}
-import com.intellij.openapi.util.ThrowableComputable
+import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion, ProjectJdkTable}
+import consulo.content.bundle.Sdk
+import consulo.application.util.function.ThrowableComputable
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.{EelProviderUtil, LocalEelDescriptor}
-import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresEdt}
+import consulo.ui.annotation.RequiredUIAccess
 import com.intellij.util.lang.JavaVersion
-import org.jetbrains.annotations.{ApiStatus, Nullable}
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.sbt.project.template.wizard.JdkSbtCompatibilityChecker
-import org.jetbrains.sbt.{SbtBundle, SbtVersion}
+import org.jetbrains.sbt.SbtBundle
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.util
 import java.util.Comparator
@@ -93,8 +96,8 @@ object SbtProcessJdkGuesser {
 
   @deprecated(message = "Use findAllExistingJavaPaths(JavaSdk, EelDescriptor)", since = "2026.2")
   @Deprecated(since = "2026.2", forRemoval = true)
-  @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
-  @RequiresBackgroundThread
+  // upstream: @ApiStatus.ScheduledForRemoval(inVersion = "2026.3")
+  // upstream: @RequiresBackgroundThread
   def findAllExistingJavaPaths(jdkType: JavaSdk): Seq[(String, JavaVersion)] =
     findAllExistingJavaPaths(jdkType, LocalEelDescriptor.INSTANCE)
 
@@ -103,7 +106,7 @@ object SbtProcessJdkGuesser {
    *
    * @return suggested sdk home paths and corresponding versions
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def findAllExistingJavaPaths(jdkType: JavaSdk, eelDescriptor: EelDescriptor): Seq[(String, JavaVersion)] = {
     val javaPaths = JavaHomeFinder.suggestHomePaths(eelDescriptor, false).asScala.toSeq
     javaPaths
@@ -125,7 +128,7 @@ object SbtProcessJdkGuesser {
 
 
   /** Alternative for [[com.intellij.openapi.projectRoots.impl.JavaAwareProjectJdkTableImpl#guessJdk()]] */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def createJdkWithSuitableVersion(sbtVersion: SbtVersion, eelDescriptor: EelDescriptor): Option[Sdk] = {
     val javaPaths0 = findAllExistingJavaPaths(jdkType, eelDescriptor)
 

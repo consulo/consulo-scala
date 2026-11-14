@@ -1,8 +1,10 @@
 package org.jetbrains.sbt
 package project
 
+
+import org.jetbrains.sbt.api.file
 import com.intellij.ide.actions.OpenProjectFileChooserDescriptor
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.virtualFileSystem.VirtualFile
 
 import scala.annotation.nowarn
 

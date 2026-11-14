@@ -1,10 +1,10 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessEvent, ProcessListener, ProcessOutputType, ProcessOutputTypes}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
-import org.jetbrains.annotations.ApiStatus.Internal
+import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessOutputType, ProcessOutputTypes}
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.util.dataholder.Key
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.sbt.shell.communication.SbtOutputCompleteLinesProcessListener.{LineSeparatorRegex, escapeNewLines, streamKey}
 
@@ -57,12 +57,12 @@ private[shell] abstract class SbtOutputCompleteLinesProcessListener(
   private val lastIncompleteLineByStream = mutable.Map.empty[Key[?], String]
 
   @TestOnly
-  @Internal
+  // upstream: @Internal
   final def processCompleteLines(text: String): Unit =
     processCompleteLines(text, ProcessOutputTypes.STDOUT)
 
   @TestOnly
-  @Internal
+  // upstream: @Internal
   final def processCompleteLines(text: String, outputType: Key[?]): Unit = {
     val lines = getCompleteLines(text, outputType)
     lines.foreach(onLine)

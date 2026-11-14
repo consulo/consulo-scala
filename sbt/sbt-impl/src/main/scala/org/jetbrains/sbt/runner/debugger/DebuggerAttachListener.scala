@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.runner.debugger
 
 import com.intellij.debugger.engine.{DebugProcessAdapterImpl, DebugProcessImpl}
-import com.intellij.execution.ExecutionException
+import consulo.process.ExecutionException
 import org.jetbrains.sbt.SbtBundle
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}

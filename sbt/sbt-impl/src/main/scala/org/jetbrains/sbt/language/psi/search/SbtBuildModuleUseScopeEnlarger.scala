@@ -1,14 +1,19 @@
 package org.jetbrains.sbt.language.psi.search
 
-import com.intellij.openapi.module.{Module, ModuleUtilCore}
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope, SearchScope, UseScopeEnlarger}
-import com.intellij.psi.{PsiElement, PsiMember}
-import org.jetbrains.annotations.ApiStatus
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore
+import consulo.module.content.ModuleRootManager
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import consulo.content.scope.SearchScope
+import consulo.language.psi.UseScopeEnlarger
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.project.ModuleExt
-import org.jetbrains.sbt.language.SbtFileType
+import org.jetbrains.sbt.api.language.SbtFileType
 
 /**
  * This class is designed to extend use scope of definitions located in files in `project-root/project/` folder in sbt projects.
@@ -20,7 +25,8 @@ import org.jetbrains.sbt.language.SbtFileType
  * @note dual logic is located in [[org.jetbrains.sbt.language.SbtFileImpl#getFileResolveScope]]
  * @todo investigate possibility to include `.sbt` files in `-build` module content/source roots via new WorkspaceModel
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
+@ExtensionImpl
 class SbtBuildModuleUseScopeEnlarger extends UseScopeEnlarger {
 
   override def getAdditionalUseScope(element: PsiElement): SearchScope = {

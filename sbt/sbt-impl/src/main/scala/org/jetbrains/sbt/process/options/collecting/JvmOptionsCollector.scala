@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.process.options.collecting
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.util.execution.ParametersListUtil
+import consulo.process.cmd.ParametersListUtil
 import org.jetbrains.sbt.process.options.parsing.CommentsAndQuotesPreprocessor
 
 import java.nio.file.Path

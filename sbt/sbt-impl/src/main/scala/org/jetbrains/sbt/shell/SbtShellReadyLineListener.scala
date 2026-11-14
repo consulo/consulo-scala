@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.shell
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.extensions.LoggerExt
 import org.jetbrains.sbt.shell.communication.{SbtOutputCompleteLinesProcessListener, SbtShellOutputRecognizer}
 

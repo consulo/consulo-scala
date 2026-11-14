@@ -1,12 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package org.jetbrains.sbt.shell.grammar;
 
-import com.intellij.lang.ASTNode;
+import consulo.language.ast.ASTNode;
 import com.intellij.lang.LightPsiParser;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
+import consulo.language.parser.PsiBuilder;
+import consulo.language.parser.PsiBuilder.Marker;
+import consulo.language.parser.PsiParser;
+import consulo.language.ast.IElementType;
 
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static org.jetbrains.sbt.shell.grammar.SbtShellTypes.*;

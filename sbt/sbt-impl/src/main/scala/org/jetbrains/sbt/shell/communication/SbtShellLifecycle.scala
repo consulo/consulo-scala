@@ -1,15 +1,21 @@
 package org.jetbrains.sbt.shell.communication
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.logging.Logger
+import consulo.project.Project
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.plugins.scala.{isInternalMode, isUnitTestMode}
+import org.jetbrains.plugins.scala.api.{isInternalMode, isUnitTestMode}
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import scala.jdk.CollectionConverters.*
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 private[shell] final class SbtShellLifecycle {
   import SbtShellLifecycle.*
 
@@ -70,7 +76,7 @@ private[shell] object SbtShellLifecycle {
   private val log = Logger.getInstance(getClass)
 
   def getInstance(project: Project): SbtShellLifecycle =
-    project.getService(classOf[SbtShellLifecycle])
+    project.getInstance(classOf[SbtShellLifecycle])
 
   /**
    * Shell states

@@ -1,6 +1,6 @@
 package org.jetbrains.sbt.project
 
-import com.intellij.openapi.roots.{ModuleRootEvent, ModuleRootListener}
+import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
 
 private final class SbtProjectImportStateModuleRootListener extends ModuleRootListener {
   override def rootsChanged(event: ModuleRootEvent): Unit = {

@@ -1,9 +1,10 @@
 package org.jetbrains.sbt
 package project.settings
 
-import com.intellij.openapi.components._
+import consulo.component.persist.{PersistentStateComponent, Storage, StoragePathMacros}
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemLocalSettings
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 @State(
@@ -29,5 +30,5 @@ class SbtLocalSettingsState extends AbstractExternalSystemLocalSettings.State {
 }
 
 object SbtLocalSettings {
-  def getInstance(project: Project): SbtLocalSettings = project.getService(classOf[SbtLocalSettings])
+  def getInstance(project: Project): SbtLocalSettings = project.getInstance(classOf[SbtLocalSettings])
 }

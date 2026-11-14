@@ -2,7 +2,7 @@ package org.jetbrains.sbt.process.options.reporting
 
 import com.intellij.build.FilePosition
 import com.intellij.build.issue.BuildIssue
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.build.NoOpBuildReporter
 

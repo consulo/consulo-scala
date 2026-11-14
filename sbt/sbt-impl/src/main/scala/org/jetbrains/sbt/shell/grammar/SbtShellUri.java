@@ -1,12 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package org.jetbrains.sbt.shell.grammar;
 
-import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
+import consulo.language.psi.PsiElement;
 
 public interface SbtShellUri extends PsiElement {
 
-  @NotNull
   PsiElement getUristring();
 
 }

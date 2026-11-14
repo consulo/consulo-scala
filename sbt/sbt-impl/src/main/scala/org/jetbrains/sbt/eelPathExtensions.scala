@@ -1,7 +1,9 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.sbt
 
-import com.intellij.openapi.util.io.FileUtil
+
+import org.jetbrains.sbt.api.file
+import consulo.util.io.FileUtil
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor}
 

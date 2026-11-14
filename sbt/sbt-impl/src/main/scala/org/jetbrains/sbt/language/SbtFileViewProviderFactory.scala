@@ -1,11 +1,21 @@
 package org.jetbrains.sbt
 package language
 
-import com.intellij.lang.Language
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{FileViewProviderFactory, PsiManager, SingleRootFileViewProvider}
+import consulo.annotation.component.ExtensionImpl
+import org.jetbrains.sbt.api.language.SbtLanguage
 
+
+import org.jetbrains.sbt.api.file
+import consulo.language.Language
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.file.FileViewProviderFactory
+import consulo.language.psi.PsiManager
+import consulo.language.impl.file.SingleRootFileViewProvider
+
+@ExtensionImpl
 final class SbtFileViewProviderFactory extends FileViewProviderFactory {
+  override def getLanguage: Language = SbtLanguage.INSTANCE
+
 
   override def createFileViewProvider(file: VirtualFile,
                                       language: Language,

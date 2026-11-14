@@ -8,16 +8,20 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.remote.{RemoteConfiguration, RemoteConfigurationType}
-import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import consulo.execution.runner.ExecutionEnvironmentBuilder
 import com.intellij.execution.ui.{RunContentDescriptor, RunContentManager}
 import com.intellij.execution.{ProgramRunnerUtil, RunManager, RunnerAndConfigurationSettings}
-import com.intellij.find.{EditorSearchSession, FindManager, FindModel, FindUtil}
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.*
+import com.intellij.find.{EditorSearchSession, FindModel, FindUtil}
+import consulo.find.FindManager
+import consulo.application.AllIcons
+import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, CustomShortcutSet, IdeActions}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.{CommonShortcuts, Presentation, ToggleAction}
 import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
-import com.intellij.openapi.editor.{Editor, SelectionModel}
-import com.intellij.openapi.project.{DumbAwareAction, Project}
-import com.intellij.openapi.wm.IdeFocusManager
+import consulo.codeEditor.{Editor, SelectionModel}
+import com.intellij.openapi.project.DumbAwareAction
+import consulo.project.Project
+import consulo.application.ui.wm.IdeFocusManager
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, executeOnPooledThread}
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.shell.action.SbtShellActionUtil.shellAlive

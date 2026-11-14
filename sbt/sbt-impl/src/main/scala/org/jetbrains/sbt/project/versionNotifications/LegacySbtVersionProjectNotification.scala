@@ -1,16 +1,17 @@
 package org.jetbrains.sbt.project.versionNotifications
 
-import com.intellij.ide.BrowserUtil
-import com.intellij.notification.*
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.DumbService.DumbModeListener
-import com.intellij.openapi.project.{Project, ProjectManager}
-import com.intellij.openapi.util.Key
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import org.jetbrains.annotations.{Nls, TestOnly, VisibleForTesting}
+import consulo.webBrowser.BrowserUtil
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationGroup, NotificationType}
+import com.intellij.notification.NotificationGroupManager
+import consulo.ui.ex.action.AnActionEvent
+import consulo.project.DumbService.DumbModeListener
+import consulo.project.{Project, ProjectManager}
+import consulo.util.dataholder.Key
+import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.plugins.scala.startup.ProjectActivity
-import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersion, SbtVersionDetector}
+import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersionDetector}
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.nio.file.Path
 
@@ -59,7 +60,7 @@ private object LegacySbtVersionProjectNotification {
     onProjectLoaded(project)
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def onProjectLoaded(project: Project): Unit = {
     if (project.isDisposed)
       return
@@ -99,7 +100,7 @@ private object LegacySbtVersionProjectNotification {
     project.putUserData(WarningShownKey, java.lang.Boolean.TRUE)
   }
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[versionNotifications] def clearShownInCurrentSession(project: Project): Unit = {
     project.putUserData(WarningShownKey, null)
   }

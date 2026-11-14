@@ -1,8 +1,9 @@
 package org.jetbrains.sbt.language
 
-import com.intellij.lang.Language
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiManager, SingleRootFileViewProvider}
+import consulo.language.Language
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiManager
+import consulo.language.impl.file.SingleRootFileViewProvider
 
 private final class SbtFileViewProvider(
   manager: PsiManager,

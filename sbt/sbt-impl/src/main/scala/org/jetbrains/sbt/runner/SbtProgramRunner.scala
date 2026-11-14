@@ -1,7 +1,11 @@
 package org.jetbrains.sbt.runner
 
-import com.intellij.execution.configurations.{RunProfile, RunProfileState, RunnerSettings}
-import com.intellij.execution.runners.{ExecutionEnvironment, GenericProgramRunner}
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.execution.configurations.RunProfile
+import consulo.execution.configuration.{RunProfileState, RunnerSettings}
+import consulo.execution.runner.ExecutionEnvironment
+import com.intellij.execution.runners.GenericProgramRunner
 import com.intellij.execution.ui.RunContentDescriptor
 
 /**
@@ -14,6 +18,7 @@ import com.intellij.execution.ui.RunContentDescriptor
  *
  * @see [[org.jetbrains.sbt.runner.SbtDebugProgramRunner]]
  */
+@ExtensionImpl(order = "first")
 class SbtProgramRunner extends GenericProgramRunner[RunnerSettings] with SbtProgramRunnerBase {
 
   override def getRunnerId: String = "SbtProgramRunner"

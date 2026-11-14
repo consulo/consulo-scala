@@ -1,8 +1,9 @@
 package org.jetbrains.sbt
 package project.structure
 
-import com.intellij.execution.process.{ProcessEvent, ProcessListener, ProcessOutputTypes}
-import com.intellij.openapi.util.Key
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import com.intellij.execution.process.ProcessOutputTypes
+import consulo.util.dataholder.Key
 
 class ListenerAdapter(listener: (OutputType, String) => Unit) extends ProcessListener {
   override def onTextAvailable(event: ProcessEvent, outputType: Key[?]): Unit = {

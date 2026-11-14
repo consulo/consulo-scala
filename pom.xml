@@ -77,6 +77,7 @@
         <module>scala/compile-server</module>
         <module>scala/debugger</module>
         <module>scala/compiler-consulo</module>
+        <module>sbt/sbt-impl</module>
         <module>plugin</module>
     </modules>
 

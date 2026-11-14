@@ -1,25 +1,33 @@
 package org.jetbrains.sbt.actions
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
 import com.intellij.build.events.BuildEvents
 import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
 import com.intellij.build.{DefaultBuildDescriptor, SyncViewManager}
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
 import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskType}
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.vfs.{VfsUtil, VirtualFileManager}
+import consulo.document.FileDocumentManager
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.virtualFileSystem.util.VirtualFileUtil
+import consulo.virtualFileSystem.VirtualFileManager
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.build.BuildMessages
-import org.jetbrains.sbt.icons.Icons
+import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.process.SbtRunner
 import org.jetbrains.sbt.project.{SbtExternalSystemManager, SbtProjectSystem}
-import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersionCapabilities, eelDescriptor, normalizedLocalPath}
+import org.jetbrains.sbt.{SbtBundle, SbtUtil, eelDescriptor, normalizedLocalPath}
+import org.jetbrains.sbt.api.SbtVersionCapabilities
 
 import java.nio.file.{Files, Path}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
+@ActionImpl(id = "Scala.Sbt.GenerateManagedSources", parents = Array(new ActionParentRef(value = new ActionRef(id = "ExternalSystemView.ActionsToolbar.SyncPanel"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ExternalSystem.RefreshAllProjects"))))
 private final class SbtGenerateManagedSourcesAction extends AnAction(
   SbtBundle.message("sbt.generate.managed.sources.action.title"),
   SbtBundle.message("sbt.generate.managed.sources.action.description"),
@@ -31,7 +39,7 @@ private final class SbtGenerateManagedSourcesAction extends AnAction(
 
     val task = new Task.Backgroundable(project, SbtBundle.message("sbt.generate.managed.sources.task.progress.title"), true) {
       override def run(indicator: ProgressIndicator): Unit = {
-        val viewManager = project.getService(classOf[SyncViewManager])
+        val viewManager = project.getInstance(classOf[SyncViewManager])
         val taskId = ExternalSystemTaskId.create(SbtProjectSystem.Id, ExternalSystemTaskType.EXECUTE_TASK, project)
         val reporter = new GenerateManagedSourcesReporter(viewManager, taskId)
 

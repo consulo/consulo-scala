@@ -1,23 +1,34 @@
 package org.jetbrains.sbt
 package project
 
+import consulo.annotation.component.ExtensionImpl
+
+
+import org.jetbrains.sbt.api.JvmMemorySize
+import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.api.asScala
+import org.jetbrains.sbt.api.jarWith
+import org.jetbrains.sbt.api.safeMap
 import com.intellij.execution.configurations.SimpleJavaParameters
-import com.intellij.openapi.application.{ApplicationManager, PathManager}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.model.{ExternalSystemException, ProjectSystemId}
-import com.intellij.openapi.externalSystem.util.*
+import consulo.application.ApplicationManager
+import com.intellij.openapi.application.PathManager
+import consulo.logging.Logger
+import com.intellij.openapi.externalSystem.model.ExternalSystemException
+import consulo.externalSystem.model.ProjectSystemId
+import com.intellij.openapi.externalSystem.util.ExternalSystemConstants
 import com.intellij.openapi.externalSystem.{ExternalSystemConfigurableAware, ExternalSystemManager}
-import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkType, JdkUtil, ProjectJdkTable}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.util.{Pair, SystemInfo}
-import com.intellij.util.Function
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import consulo.configurable.Configurable
+import consulo.project.Project
+import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkType, ProjectJdkTable}
+import consulo.process.cmd.JdkUtil
+import consulo.module.content.ProjectRootManager
+import consulo.application.util.registry.Registry
+import consulo.util.lang.Pair
+import consulo.application.util.SystemInfo
+import java.util.function.Function
 import org.apache.commons.lang3.StringUtils
-import org.jetbrains.annotations.{NonNls, VisibleForTesting}
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
+import org.jetbrains.annotations.NonNls
+import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
 import org.jetbrains.jps.model.java.JdkVersionDetector
 import org.jetbrains.plugins.scala.extensions.{PathExt, invokeAndWait}
 import org.jetbrains.sbt.SbtUtil.{defaultLauncherPath, detectSbtVersion}
@@ -29,6 +40,7 @@ import org.jetbrains.sbt.{SbtBundle, SbtUtil}
 import java.nio.file.Path
 import scala.annotation.nowarn
 
+@ExtensionImpl
 class SbtExternalSystemManager
   extends ExternalSystemManager[SbtProjectSettings, SbtProjectSettingsListener, SbtSettings, SbtLocalSettings, SbtExecutionSettings]
     with ExternalSystemConfigurableAware
@@ -71,7 +83,7 @@ object SbtExternalSystemManager {
 
   private val Log = Logger.getInstance(classOf[SbtExternalSystemManager])
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def executionSettingsFor(project: Project): SbtExecutionSettings = {
     val workingDirPath = SbtUtil.getWorkingDirPath(project)
     executionSettingsFor(project, workingDirPath)
@@ -83,7 +95,7 @@ object SbtExternalSystemManager {
    * not during these settings extractions, but at some point where the BGT is available.
    * And when the [[executionSettingsFor]] would be called on EDT we would rely on the JDK to be already initialised.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def executionSettingsFor(project: Project, path: String): SbtExecutionSettings = {
     import scala.jdk.CollectionConverters.*
 
@@ -149,7 +161,7 @@ object SbtExternalSystemManager {
     result
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def getVmExecutable(project: Project, projectJdkName: Option[String], settings: SbtSettings.State, sbtVersion: SbtVersion): Path = {
     val jdkTable = ProjectJdkTable.getInstance(project)
 
@@ -188,14 +200,14 @@ object SbtExternalSystemManager {
     }
   }
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[project] trait AutoDetectJdkProvider {
     def findJdkWithSuitableVersion(jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate
 
     def preconfigureJdkForSbt(project: Project, jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): Unit
   }
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[project] object SbtProcessAutoDetectJdkProvider extends AutoDetectJdkProvider {
     override def findJdkWithSuitableVersion(jdkTable: ProjectJdkTable, sbtVersion: SbtVersion): SbtProcessJdkGuesser.SdkCandidate =
       SbtProcessJdkGuesser.findJdkWithSuitableVersion(jdkTable, sbtVersion)
@@ -204,11 +216,11 @@ object SbtExternalSystemManager {
       SbtProcessJdkGuesser.preconfigureJdkForSbt(project, jdkTable, sbtVersion)
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def getAutoDetectJdkPath(project: Project, sbtVersion: SbtVersion, jdkTable: ProjectJdkTable): Option[Path] =
     getAutoDetectJdkPath(project, sbtVersion, jdkTable, SbtProcessAutoDetectJdkProvider)
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private[project] def getAutoDetectJdkPath(
     project: Project,
     sbtVersion: SbtVersion,
@@ -233,7 +245,7 @@ object SbtExternalSystemManager {
     }
   }
 
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def preconfigureJdkTableForSbtImportIfAllowed(
     project: Project,
     jdkTable: ProjectJdkTable,

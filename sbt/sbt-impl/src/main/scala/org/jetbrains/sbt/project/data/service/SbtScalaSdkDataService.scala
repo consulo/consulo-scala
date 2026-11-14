@@ -1,10 +1,12 @@
 package org.jetbrains.sbt.project.data.service
 
-import com.intellij.openapi.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.project.ProjectData
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.externalSystem.model.DataNode
+import consulo.externalSystem.service.project.ProjectData
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.Library
+import consulo.project.Project
+import consulo.content.library.Library
 import org.jetbrains.plugins.scala.project.ReplClasspath
 import org.jetbrains.plugins.scala.project.external.{ScalaAbstractProjectDataService, ScalaSdkUtils}
 import org.jetbrains.sbt.project.SbtProjectSystem
@@ -13,6 +15,7 @@ import org.jetbrains.sbt.project.data.SbtScalaSdkData
 import java.util
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
+@ExtensionImpl
 class SbtScalaSdkDataService extends ScalaAbstractProjectDataService[SbtScalaSdkData, Library](SbtScalaSdkData.Key){
 
   override def importData(

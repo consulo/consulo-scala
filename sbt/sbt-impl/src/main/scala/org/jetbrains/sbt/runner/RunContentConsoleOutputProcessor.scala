@@ -1,7 +1,7 @@
 package org.jetbrains.sbt.runner
 
 import com.intellij.execution.process.{AnsiEscapeDecoder, ProcessHandler, ProcessOutputType}
-import com.intellij.openapi.util.Key
+import consulo.util.dataholder.Key
 import org.jetbrains.plugins.scala.build.BuildMessages
 import org.jetbrains.sbt.shell.communication.{SbtShellBuildMessagesEventProcessor, SbtShellCommandEventProcessor, ShellEvent}
 

@@ -2,11 +2,11 @@
 package org.jetbrains.sbt.project.structure
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.application.util.registry.Registry
 import com.intellij.platform.eel.EelDescriptor
-import org.jetbrains.annotations.{TestOnly, VisibleForTesting}
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 import org.jetbrains.sbt.process.options.SbtProcessOptionsResolver
@@ -15,7 +15,8 @@ import org.jetbrains.sbt.project.SbtProjectResolver.ImportContext
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
 import org.jetbrains.sbt.shell.communication.{SbtShellBuildMessagesEventProcessor, SbtShellCommandRequest}
 import org.jetbrains.sbt.shell.{SbtProcessManager, SbtShellCommunication}
-import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersion, SbtVersionCapabilities, normalizedLocalPath}
+import org.jetbrains.sbt.{SbtBundle, SbtUtil, normalizedLocalPath}
+import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities}
 
 import java.nio.file.Path
 import java.util.UUID
@@ -301,7 +302,7 @@ object SbtStructureDumper:
    * in the global plugins directory and to verify that it does not break the current import. The settings are guarded by
    * the `idea.import.id` system property, which the current import never sets.
    */
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   @TestOnly
   private[project] def createGuardedPluginContent(importId: String, sbtVersion: SbtVersion, settings: Seq[String]): String = {
     val SeqFqn = SbtVersionCapabilities.collectionsSeqClassFqn(sbtVersion)

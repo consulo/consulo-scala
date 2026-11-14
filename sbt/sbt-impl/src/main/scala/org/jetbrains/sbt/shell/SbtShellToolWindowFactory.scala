@@ -1,19 +1,25 @@
 package org.jetbrains.sbt.shell
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.ide.actions.ActivateToolWindowAction
-import com.intellij.openapi.actionSystem.{ActionGroup, ActionManager, KeyboardShortcut}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import consulo.ui.ex.action.{ActionGroup, ActionManager}
+import com.intellij.openapi.actionSystem.KeyboardShortcut
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.wm._
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.ui.ex.toolWindow.ToolWindow
+import consulo.project.ui.wm.ToolWindowFactory
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.ToolWindowImpl
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl.MockToolWindow
 import com.intellij.ui.BadgeIconSupplier
-import com.intellij.ui.content.{Content, ContentFactory}
+import consulo.ui.ex.content.{Content, ContentFactory}
 import org.jetbrains.annotations.{Nls, NotNull}
 import org.jetbrains.plugins.scala.extensions.{invokeLater, schedulePeriodicTask}
-import org.jetbrains.sbt.icons.Icons
+import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.shell.SbtShellToolWindowFactory.Log
 import org.jetbrains.sbt.{SbtBundle, SbtUtil, shell}
 
@@ -27,6 +33,7 @@ import javax.swing.{JComponent, JPanel, KeyStroke}
   *
   * This factory is registered in SBT.xml
   */
+@ExtensionImpl(id = "sbt-shell-toolwindow")
 class SbtShellToolWindowFactory extends ToolWindowFactory with DumbAware {
   /**
    * @note usage of "badge is originally inspired by "Build" tool window

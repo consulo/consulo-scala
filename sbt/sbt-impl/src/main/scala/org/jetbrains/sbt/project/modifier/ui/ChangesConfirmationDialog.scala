@@ -1,10 +1,10 @@
 package org.jetbrains.sbt.project.modifier.ui
 
-import com.intellij.openapi.actionSystem.{ActionManager, IdeActions}
-import com.intellij.openapi.project.{Project => IJProject}
-import com.intellij.openapi.ui.DialogWrapper
+import consulo.ui.ex.action.{ActionManager, IdeActions}
+import consulo.project.{Project => IJProject}
+import consulo.ui.ex.awt.DialogWrapper
 import com.intellij.openapi.vcs.changes.Change
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.sbt.SbtBundle
 
 import java.awt.BorderLayout
