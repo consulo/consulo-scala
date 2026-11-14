@@ -106,7 +106,9 @@ trait ExternalSourceRootResolution { self: SbtProjectResolver & ContentRootsReso
       val representativeProject = representativeProjectIn(projects)
       val representativeProjectModule = projectToModuleNode.get(representativeProject)
 
-      val moduleFilesDirectory = representativeProjectModule.map(_.parent.getModuleDirPath).getOrElse(defaultModuleFilesDirectory)
+      // upstream: representativeProjectModule.map(_.parent.getModuleDirPath).getOrElse(defaultModuleFilesDirectory) - the module
+      // directory is the module identity in Consulo
+      val moduleFilesDirectory = rootGroup.base.toCanonicalPath.toString
       val (moduleNode, contentRootNode) = createSharedSourceModuleSimple(rootGroup, moduleFilesDirectory, ownerProjectsIds)
       //todo: get jdk from a corresponding jvm module ?
       // upstream: moduleNode.add(ModuleSdkNode.inheritFromProject) - Consulo has no project SDK

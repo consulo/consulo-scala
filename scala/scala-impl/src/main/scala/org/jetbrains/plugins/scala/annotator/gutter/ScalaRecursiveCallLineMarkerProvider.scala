@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.annotator.gutter
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.Pass
 import consulo.language.editor.gutter.{LineMarkerInfo, LineMarkerProvider}
-import consulo.application.AllIcons
 import consulo.codeEditor.markup.GutterIconRenderer
 import consulo.application.progress.ProgressManager
 import consulo.language.psi.PsiElement
@@ -60,7 +61,7 @@ object ScalaRecursiveCallLineMarkerProvider {
     new LineMarkerInfo(
       element,
       element.getTextRange,
-      AllIcons.Gutter.RecursiveMethod,
+      PlatformIconGroup.gutterRecursivemethod(),
       Pass.LINE_MARKERS,
       (_: PsiElement) => tooltip,
       null, // navigation handler

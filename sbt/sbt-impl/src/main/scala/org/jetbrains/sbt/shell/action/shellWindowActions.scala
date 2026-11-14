@@ -1,5 +1,7 @@
 package org.jetbrains.sbt.shell.action
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import com.intellij.java.debugger.impl.DebuggerManagerEx
 import com.intellij.java.debugger.impl.engine.RemoteDebugProcessHandler
 import com.intellij.java.debugger.impl.DebuggerSession
@@ -19,7 +21,6 @@ import consulo.ide.impl.idea.find.EditorSearchSession
 import consulo.find.FindModel
 import consulo.ide.impl.idea.find.FindUtil
 import consulo.find.FindManager
-import consulo.application.AllIcons
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, AnActionWithSyncUpdate, CustomShortcutSet, IdeActions}
 import consulo.ui.event.details.{KeyCode, KeyStroke}
 import consulo.ui.event.details.ModifiedInputDetails.Modifier
@@ -56,7 +57,7 @@ final class StartAction(project: Project) extends DumbAwareAction with AnActionW
 
   copyShortcutFrom(ActionManager.getInstance.getAction(IdeActions.ACTION_DEFAULT_RUNNER))
   private val templatePresentation: Presentation = getTemplatePresentation
-  templatePresentation.setIcon(AllIcons.Actions.Execute)
+  templatePresentation.setIcon(PlatformIconGroup.actionsExecute())
   templatePresentation.setText(SbtBundle.message("sbt.shell.start"))
 
   override def actionPerformed(e: AnActionEvent): Unit =
@@ -71,10 +72,10 @@ final class StartAction(project: Project) extends DumbAwareAction with AnActionW
   override def update(e: AnActionEvent): Unit = {
     val presentation = e.getPresentation
     if (shellAlive(project)) {
-      presentation.setIcon(AllIcons.Actions.Restart)
+      presentation.setIcon(PlatformIconGroup.actionsRestart())
       presentation.setText(SbtBundle.message("sbt.shell.restart"))
     } else {
-      presentation.setIcon(AllIcons.Actions.Execute)
+      presentation.setIcon(PlatformIconGroup.actionsExecute())
       presentation.setText(SbtBundle.message("sbt.shell.start"))
     }
   }
@@ -86,7 +87,7 @@ final class StopAction(project: Project) extends DumbAwareAction with AnActionWi
 
   copyFrom(ActionManager.getInstance.getAction(IdeActions.ACTION_STOP_PROGRAM))
   private val templatePresentation: Presentation = getTemplatePresentation
-  templatePresentation.setIcon(AllIcons.Actions.Suspend)
+  templatePresentation.setIcon(PlatformIconGroup.actionsSuspend())
   templatePresentation.setText(SbtBundle.message("sbt.shell.stop"))
   templatePresentation.setDescription(null: String)
 
@@ -107,7 +108,7 @@ final class StopAction(project: Project) extends DumbAwareAction with AnActionWi
 final class EOFAction(project: Project) extends DumbAwareAction {
 
   private val templatePresentation: Presentation = getTemplatePresentation
-  templatePresentation.setIcon(AllIcons.Actions.TraceOver) // TODO sensible icon
+  templatePresentation.setIcon(PlatformIconGroup.actionsTraceover()) // TODO sensible icon
   templatePresentation.setText(SbtBundle.message("sbt.shell.ctrl.d.eof"))
   //noinspection ScalaExtractStringToBundle
   templatePresentation.setDescription("")

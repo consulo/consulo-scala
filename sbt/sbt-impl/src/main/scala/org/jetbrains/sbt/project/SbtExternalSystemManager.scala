@@ -20,7 +20,6 @@ import consulo.logging.Logger
 import consulo.module.ModuleManager
 import consulo.project.Project
 import consulo.application.util.SystemInfo
-import consulo.application.util.registry.Registry
 import consulo.util.lang.Pair
 import java.util.function.{Function, Supplier}
 import org.apache.commons.lang3.StringUtils
@@ -106,7 +105,9 @@ object SbtExternalSystemManager {
     val projectJdkName = bootstrapJdk(project, projectSettings)
     val vmExecutable = getVmExecutable(project, projectJdkName, settingsState, sbtVersion)
     val jreHome = Option(vmExecutable.getParent).flatMap(p => Option(p.getParent))
-    val separateProdTestSources = Registry.is(SbtProjectSettings.SeparateMainTestModulesRegistryKey, true)
+    // upstream: Registry.is(SbtProjectSettings.SeparateMainTestModulesRegistryKey, true) - Consulo identifies a module by its
+    // directory, the main/test modules of an sbt project would share it, so one module per sbt project has both main and test sources
+    val separateProdTestSources = false
     val vmOptions = getVmOptions(settingsState, jreHome, separateProdTestSources)
     val parsedSbtOptions = SbtProcessOptionsResolver.parseSbtOptionsFromSettings(Option(settings.sbtOptions).getOrElse(""))
 

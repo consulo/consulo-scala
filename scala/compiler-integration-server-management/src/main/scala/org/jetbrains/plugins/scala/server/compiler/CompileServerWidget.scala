@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.server.compiler
-import consulo.application.AllIcons
+
+import consulo.platform.base.icon.PlatformIconGroup
 import consulo.dataContext.DataManager
 import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent, AnActionWithSyncUpdate, AnSeparator, DefaultActionGroup, DumbAwareAction}
 import consulo.application.ApplicationManager
@@ -76,7 +77,7 @@ private final class CompileServerWidget(project: Project) extends StatusBarWidge
   @Nls
   private def title: String = ServerManagementBundle.message("scala.compile.server.title")
 
-  private object Start extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.run")), LocalizeValue.of(ServerManagementBundle.message("start.compile.server")), AllIcons.Actions.Execute) with AnActionWithSyncUpdate {
+  private object Start extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.run")), LocalizeValue.of(ServerManagementBundle.message("start.compile.server")), PlatformIconGroup.actionsExecute()) with AnActionWithSyncUpdate {
     override def update(e: AnActionEvent): Unit =
       e.getPresentation.setEnabled(!launcher.running)
 
@@ -86,7 +87,7 @@ private final class CompileServerWidget(project: Project) extends StatusBarWidge
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 
-  private object Stop extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.stop")), LocalizeValue.of(ServerManagementBundle.message("shutdown.compile.server")), AllIcons.Actions.Suspend) with AnActionWithSyncUpdate {
+  private object Stop extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.stop")), LocalizeValue.of(ServerManagementBundle.message("shutdown.compile.server")), PlatformIconGroup.actionsSuspend()) with AnActionWithSyncUpdate {
     override def update(e: AnActionEvent): Unit =
       e.getPresentation.setEnabled(launcher.running)
 
@@ -96,7 +97,7 @@ private final class CompileServerWidget(project: Project) extends StatusBarWidge
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 
-  private object Configure extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.configure")), LocalizeValue.of(ServerManagementBundle.message("configure.compile.server")), AllIcons.General.Settings) {
+  private object Configure extends DumbAwareAction(LocalizeValue.of(ServerManagementBundle.message("action.configure")), LocalizeValue.of(ServerManagementBundle.message("configure.compile.server")), PlatformIconGroup.generalSettings()) {
     override def actionPerformed(e: AnActionEvent): Unit =
       CompileServerSettingsUtil.showCompileServerSettingsDialog(project)
   }

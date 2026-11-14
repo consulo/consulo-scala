@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.grouper
 
-import consulo.application.AllIcons
+import consulo.platform.base.icon.PlatformIconGroup
+
 import com.intellij.java.impl.ide.structureView.impl.java.SuperTypeGroup
 import consulo.project.ui.view.tree.AbstractTreeNode
 import consulo.fileEditor.structureView.tree.{ActionPresentation, ActionPresentationData, Group, Grouper, TreeElement}
@@ -22,7 +23,7 @@ object ScalaSuperTypesGrouper extends Grouper {
   override def getPresentation: ActionPresentation = new ActionPresentationData(
     ScalaStructureViewBundle.message("group.members.by.defining.type"),
     null,
-    AllIcons.General.ImplementingMethod
+    PlatformIconGroup.gutterImplementingmethod()
   )
 
   override def group(parent: AnyRef, children: util.Collection[TreeElement]): util.Collection[Group] = {

@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.project.settings
 
-import consulo.application.AllIcons
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnActionEvent, ShortcutSet}
 import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
@@ -203,7 +204,7 @@ class ScalaCompilerProfilesPanel(val myProject: Project) extends JPanel(new Bord
   }
 
   private class MoveToAction
-    extends AnActionButton(ScalaBundle.message("scala.compiler.profiles.panel.move.to"), AllIcons.Actions.Forward) {
+    extends AnActionButton(ScalaBundle.message("scala.compiler.profiles.panel.move.to"), PlatformIconGroup.actionsForward()) {
 
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.EDT
 
@@ -319,7 +320,7 @@ class ScalaCompilerProfilesPanel(val myProject: Project) extends JPanel(new Bord
           append(node.profile.getName)
         case node: MyModuleNode =>
           val module = node.getUserObject.asInstanceOf[Module]
-          setIcon(AllIcons.Nodes.Module)
+          setIcon(PlatformIconGroup.nodesModule())
           //noinspection ReferencePassedToNls
           append(module.getName)
         case _ =>

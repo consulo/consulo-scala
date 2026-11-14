@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.lang.formatting.settings
 
-import consulo.application.AllIcons
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.language.Language
 import consulo.ui.ex.action.ActionManager
 import consulo.application.ApplicationManager
@@ -294,7 +295,7 @@ final class ScalaFmtSettingsPanel(settings: CodeStyleSettings) extends ScalaCode
 
     showScalaFmtInvalidCodeWarnings = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.show.warnings.when.formatting.invalid.code"))
     useIntellijFormatterForRangeFormat = new JBCheckBox(ScalaBundle.message("scalafmt.settings.panel.use.intellij.formatter.for.code.range.formatting"))
-    useIntellijWarning = new JBLabel(AllIcons.General.Warning)
+    useIntellijWarning = new JBLabel(PlatformIconGroup.generalWarning())
     useIntellijWarning.setToolTipText(ScalaBundle.message("scalafmt.settings.panel.use.intellij.formatter.for.code.range.formatting.warning.tooltip"))
     useIntellijFormatterForRangeFormat.addChangeListener((_: ChangeEvent) => {
       useIntellijWarning.setVisible(!useIntellijFormatterForRangeFormat.isSelected)

@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.lang.refactoring.ui
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.ui.image.Image
-import consulo.application.AllIcons
 import consulo.language.psi.PsiElement
 import consulo.language.editor.refactoring.classMember.MemberInfoModel
 import consulo.language.editor.refactoring.ui.AbstractMemberSelectionTable
@@ -38,8 +39,8 @@ abstract class ScalaMemberSelectionTableBase[M <: PsiElement, I <: ScalaMemberIn
 
   override def getOverrideIcon(memberInfo: I): Image = memberInfo.getMember match {
     case _: ScFunction =>
-      if (java.lang.Boolean.TRUE == memberInfo.getOverrides) AllIcons.General.OverridingMethod
-      else if (java.lang.Boolean.FALSE == memberInfo.getOverrides) AllIcons.General.ImplementingMethod
+      if (java.lang.Boolean.TRUE == memberInfo.getOverrides) PlatformIconGroup.gutterOverridingmethod()
+      else if (java.lang.Boolean.FALSE == memberInfo.getOverrides) PlatformIconGroup.gutterImplementingmethod()
       else AbstractMemberSelectionTable.EMPTY_OVERRIDE_ICON
     case _ => AbstractMemberSelectionTable.EMPTY_OVERRIDE_ICON
   }

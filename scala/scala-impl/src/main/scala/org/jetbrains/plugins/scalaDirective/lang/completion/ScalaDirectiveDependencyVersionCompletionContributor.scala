@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scalaDirective.lang.completion
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scalaDirective.ScalaDirectiveLanguage
 
 import consulo.language.editor.completion.{CompletionResultSet, CompletionSorter}
-import consulo.application.AllIcons
 import org.jetbrains.plugins.scala.packagesearch.lang.completion.DependencyVersionWeigher
 import org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil
 import org.jetbrains.plugins.scalaDirective.dependencies.ScalaDirectiveDependencyDescriptor
@@ -30,7 +31,7 @@ final class ScalaDirectiveDependencyVersionCompletionProvider extends ScalaDirec
           case ScalaDirectiveDependencyDescriptor(descriptor) =>
             val onlyStableVersions = !params.completionParams.isExtendedCompletion
             val versions = DependencyUtil.getDependencyVersions(descriptor, params.place, onlyStable = onlyStableVersions)
-            val icon = Some(AllIcons.Nodes.PpLib) // upstream: AllIcons.Build.CompletionLocalCache
+            val icon = Some(PlatformIconGroup.nodesPplib()) // upstream: AllIcons.Build.CompletionLocalCache
             val lookupElements =
               versions.map(version => ScalaDirectiveDependencyVersionLookupItem(version, descriptor, params.valueKind, icon))
 

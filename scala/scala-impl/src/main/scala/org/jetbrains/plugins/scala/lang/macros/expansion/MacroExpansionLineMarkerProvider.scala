@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.lang.macros.expansion
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.language.editor.Pass
 import consulo.language.navigation.GotoRelatedItem
 import consulo.ui.image.Image
 import consulo.language.editor.gutter.{GutterIconNavigationHandler, RelatedItemLineMarkerInfo, RelatedItemLineMarkerProvider}
-import consulo.application.AllIcons
 import consulo.codeEditor.markup.GutterIconRenderer
 import consulo.document.util.TextRange
 import consulo.language.codeStyle.CodeStyleManager
@@ -62,7 +63,7 @@ abstract class MacroExpansionLineMarkerProvider extends RelatedItemLineMarkerPro
   }
 
   protected def createExpandMarker(elem: PsiElement, navigationHandler: GutterIconNavigationHandler[PsiElement]): Marker = {
-    createMarker(elem, AllIcons.Actions.Expandall, ScalaBundle.message("expand.macro"), navigationHandler)
+    createMarker(elem, PlatformIconGroup.actionsExpandall(), ScalaBundle.message("expand.macro"), navigationHandler)
   }
 
   protected def reformatCode(psi: PsiElement): PsiElement = {

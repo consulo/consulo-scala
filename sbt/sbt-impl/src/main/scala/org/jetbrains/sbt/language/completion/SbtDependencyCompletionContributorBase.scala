@@ -1,12 +1,13 @@
 package org.jetbrains.sbt.language.completion
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.annotation.component.ExtensionImpl
 import consulo.language.Language
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import consulo.language.editor.completion.{CompletionContributor, CompletionInitializationContext, CompletionParameters, CompletionProvider, CompletionResultSet, CompletionSorter, CompletionType}
 import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
-import consulo.application.AllIcons
 import consulo.document.RangeMarker
 import consulo.application.dumb.DumbAware
 import consulo.document.util.TextRange
@@ -222,7 +223,7 @@ final class SbtDependencyVersionCompletionProvider extends SbtDependencyCompleti
         val lookupElements = versions.map { version =>
           val presentableText = s"\"$version\""
           LookupElementBuilder.create(DependencyVersion(version), version.toString)
-            .withIcon(AllIcons.Nodes.PpLib) // upstream: AllIcons.Build.CompletionLocalCache
+            .withIcon(PlatformIconGroup.nodesPplib()) // upstream: AllIcons.Build.CompletionLocalCache
             .withInsertHandler { (context, _) =>
               val marker = params.marker
               context.getDocument.replaceString(marker.getStartOffset, marker.getEndOffset, presentableText)

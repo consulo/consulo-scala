@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.build
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.application.{AllIcons, Application}
 import consulo.application.progress.ProgressIndicator
 import consulo.build.ui.event.{BuildEvent, BuildEventFactory, EventResult, MessageEvent, ProgressBuildEvent}
@@ -204,7 +206,7 @@ object BuildToolWindowReporter {
 
   /** Action to cancel an ongoing build by failing the promise and canceling the progress indicator. */
   class CancelBuildAction(cancelToken: Promise[?], indicator: Option[ProgressIndicator])
-    extends DumbAwareAction(LocalizeValue.of(SbtBundle.message("report.build.toolwindow.cancel")), LocalizeValue.of(SbtBundle.message("report.build.toolwindow.cancel")), AllIcons.Actions.Suspend) with AnActionWithSyncUpdate {
+    extends DumbAwareAction(LocalizeValue.of(SbtBundle.message("report.build.toolwindow.cancel")), LocalizeValue.of(SbtBundle.message("report.build.toolwindow.cancel")), PlatformIconGroup.actionsSuspend()) with AnActionWithSyncUpdate {
 
     override def actionPerformed(e: AnActionEvent): Unit = {
       cancelToken.failure(new ProcessCanceledException())

@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.caches.stats
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.ui.image.Image
 import consulo.application.util.concurrent.AppExecutorUtil
-import consulo.application.AllIcons
 import consulo.project.ui.notification.{NotificationGroup, NotificationService, NotificationType}
 import consulo.localize.LocalizeValue
 import consulo.ui.ex.action.{ActionManager, ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, DefaultActionGroup}
@@ -36,7 +37,7 @@ class InternalProfilerToolWindowFactory extends ToolWindowFactory with DumbAware
   override def isDoNotActivateOnStart: Boolean = true
 
   //noinspection UnstableApiUsage,ApiStatus
-  override def getIcon: Image = AllIcons.Toolwindows.ToolWindowRun // upstream: AllIcons.Toolwindows.ToolWindowProfiler
+  override def getIcon: Image = PlatformIconGroup.toolwindowsToolwindowrun() // upstream: AllIcons.Toolwindows.ToolWindowProfiler
 
   override def createToolWindowContent(project: Project, toolWindow: ToolWindow): Unit = {
     InternalProfilerToolWindowFactory.createContent(project).foreach {
@@ -169,8 +170,8 @@ object InternalProfilerToolWindowFactory {
 
     private def currentIcon(): Image = {
       if (dataSource.isActive)
-        AllIcons.Actions.Pause
-      else AllIcons.Actions.Resume
+        PlatformIconGroup.actionsPause()
+      else PlatformIconGroup.actionsResume()
     }
 
     override def update(e: AnActionEvent): Unit = {
@@ -186,7 +187,7 @@ object InternalProfilerToolWindowFactory {
   }
 
   class ClearAction(dataSource: DataSource[?], tableModel: DataByIdTableModel[?]) extends AnAction with DumbAware {
-    getTemplatePresentation.setIcon(AllIcons.Actions.GC)
+    getTemplatePresentation.setIcon(PlatformIconGroup.actionsGc())
 
     override def actionPerformed(e: AnActionEvent): Unit = {
       dataSource.clear()
@@ -197,10 +198,10 @@ object InternalProfilerToolWindowFactory {
   }
 
   class CacheContentClearAction(project: Project) extends AnAction with DumbAware {
-    getTemplatePresentation.setIcon(AllIcons.Actions.Uninstall)
+    getTemplatePresentation.setIcon(PlatformIconGroup.actionsUninstall())
     getTemplatePresentation.setText("Clear Cache Contents")
-    // AllIcons.Actions.Uninstall
-    // AllIcons.Actions.Unselectall
+    // PlatformIconGroup.actionsUninstall()
+    // PlatformIconGroup.actionsUnselectall()
 
     override def actionPerformed(e: AnActionEvent): Unit = {
       def toMB(bytes: Double) = bytes / (1024.0 * 1024.0)

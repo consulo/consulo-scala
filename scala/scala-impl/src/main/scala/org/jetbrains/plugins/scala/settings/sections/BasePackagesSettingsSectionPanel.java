@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import consulo.application.AllIcons;
+import consulo.platform.base.icon.PlatformIconGroup;
+
 import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
@@ -346,7 +347,7 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
                 if (module != null) {
                     setText(module.getName());
                     // upstream: ModuleType.get(module).getIcon()
-                    setIcon(TargetAWT.to(AllIcons.Nodes.Module));
+                    setIcon(TargetAWT.to(PlatformIconGroup.nodesModule()));
                 }
                 else {
                     setText("");

@@ -947,18 +947,11 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     moduleNameWithGroup
   }
 
-  private def createModuleFilesDirectory(projectRoot: Path, moduleBase: Path): String = {
-    val relativePath =
-      try projectRoot.relativize(moduleBase).toString
-      catch
-        case _: IllegalArgumentException => ""
-
-    val projectRootDirectory = Seq(projectRoot.getFileName.toString).filter(_.nonEmpty)
-    val pathComponents = projectRootDirectory :+ relativePath
-
-    val defaultModuleFilesDir = getDefaultModuleFilesDirectory(projectRoot)
-    Path.of(defaultModuleFilesDir, pathComponents*).toCanonicalPath.toString
-  }
+  // upstream: module files are stored in <projectRoot>/.idea/modules/<projectRootName>/<relative module base>.
+  // Consulo identifies a module by its directory (ModuleManager reuses the module of an existing directory), so the module
+  // directory is the sbt project base
+  private def createModuleFilesDirectory(projectRoot: Path, moduleBase: Path): String =
+    moduleBase.toCanonicalPath.toString
 
   private def createModuleWithAllRequiredDataForSeparateProdAndTestSources(
     project: sbtStructure.ProjectData,
@@ -1238,7 +1231,8 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
     val buildProjectDirRoot = buildBaseDir / Sbt.ProjectDirectory
 
     val rootNode = buildBaseProject.flatMap(projectToParentModule.get)
-    val moduleFilesDirectory = rootNode.map(_.getModuleDirPath).getOrElse(defaultModuleFilesDirectory)
+    // upstream: rootNode.map(_.getModuleDirPath).getOrElse(defaultModuleFilesDirectory) - the module directory is the module identity in Consulo
+    val moduleFilesDirectory = buildProjectDirRoot.toCanonicalPath.toString
     // TODO explicit canonical path is needed until IDEA-126011 is fixed
     val result = createModuleNode(
       SbtModuleType.Id, buildId, buildId, moduleFilesDirectory, buildProjectDirRoot.toCanonicalPath.toString, shouldCreateNestedModule = true

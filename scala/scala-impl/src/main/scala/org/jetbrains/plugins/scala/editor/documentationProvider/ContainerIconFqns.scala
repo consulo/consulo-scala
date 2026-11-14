@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.editor.documentationProvider
 
+import consulo.platform.base.icon.PlatformIconGroup
+
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnum, ScObject, ScTrait}
@@ -15,7 +17,7 @@ private object ContainerIconUtils {
   private val TraitFqn = "org.jetbrains.plugins.scala.icons.Icons.TRAIT"
   private val PackageObjectFqn = "org.jetbrains.plugins.scala.icons.Icons.PACKAGE_OBJECT"
   private val ObjectFqn = "org.jetbrains.plugins.scala.icons.Icons.OBJECT"
-  private val PackageFqn = "AllIcons.Nodes.Package"
+  private val PackageFqn = "PlatformIconGroup.nodesPackage()"
 
   def getContainerIconFqn(container: PsiElement): Option[String] =
     container match {
