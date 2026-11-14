@@ -4,15 +4,15 @@ import ch.epfl.scala.bsp4j.TaskDataKind._
 import ch.epfl.scala.bsp4j.TestStatus._
 import ch.epfl.scala.bsp4j._
 import com.google.gson.{Gson, JsonObject}
-import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.{ProcessHandler, ProcessOutputType}
-import com.intellij.execution.runners.ProgramRunner
-import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
-import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
-import com.intellij.execution.{DefaultExecutionResult, ExecutionResult, Executor}
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.project.Project
-import jetbrains.buildServer.messages.serviceMessages._
+import consulo.execution.configuration.RunProfileState
+import consulo.execution.runner.ProgramRunner
+import consulo.execution.test.sm.SMTestRunnerConnectionUtil
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties
+import consulo.execution.{DefaultExecutionResult, ExecutionResult}
+import consulo.execution.executor.Executor
+import consulo.module.ModuleManager
+import consulo.process.{BaseProcessHandler, ProcessHandler, ProcessOutputTypes}
+import consulo.project.Project
 import org.jetbrains.bsp.data.BspMetadata
 import org.jetbrains.bsp.protocol.BspCommunication
 import org.jetbrains.bsp.protocol.BspNotifications.{BspNotification, LogMessage, TaskFinish, TaskStart}
@@ -40,7 +40,7 @@ class BspTestRunner(
 
   val gson = new Gson()
 
-  class MProcHandler extends ProcessHandler {
+  class MProcHandler extends BaseProcessHandler {
     override def destroyProcessImpl(): Unit = ()
 
     override def detachProcessImpl(): Unit = {}
@@ -90,13 +90,37 @@ class BspTestRunner(
   }
 
 
-  def printProc(str: MessageWithAttributes)(implicit proc: ProcessHandler): Unit = {
-    proc.notifyTextAvailable(str.toString + System.lineSeparator(), ProcessOutputType.STDOUT)
+  def printProc(str: ServiceMsg)(implicit proc: ProcessHandler): Unit = {
+    proc.notifyTextAvailable(str.toString + System.lineSeparator(), ProcessOutputTypes.STDOUT)
   }
 
-  class ServiceMsg(val name: String, val map: Map[String, String]) extends MessageWithAttributes(name, map.asJava) {
+  // upstream: jetbrains.buildServer.messages.serviceMessages (TeamCity service messages library, not in Consulo)
+  class ServiceMsg(val name: String, val map: Map[String, String]) {
     def this(n: String) = this(n, Map())
+
+    private def escape(value: String): String =
+      value.flatMap {
+        case '|' => "||"
+        case '\'' => "|'"
+        case '\n' => "|n"
+        case '\r' => "|r"
+        case '[' => "|["
+        case ']' => "|]"
+        case c => c.toString
+      }
+
+    override def toString: String = {
+      val attributes = map.collect { case (key, value) if value != null => s" $key='${escape(value)}'" }.mkString
+      s"##teamcity[$name$attributes]"
+    }
   }
+
+  private def Message(text: String, status: String) = new ServiceMsg("message", Map("text" -> text, "status" -> status))
+  private def TestSuiteStarted(name: String) = new ServiceMsg("testSuiteStarted", Map("name" -> name))
+  private def TestSuiteFinished(name: String) = new ServiceMsg("testSuiteFinished", Map("name" -> name))
+  private def TestStarted(name: String) = new ServiceMsg("testStarted", Map("name" -> name, "captureStandardOutput" -> "false"))
+  private def TestIgnored(name: String, comment: String) = new ServiceMsg("testIgnored", Map("name" -> name, "message" -> comment))
+  private def TestFinished(name: String, duration: Int) = new ServiceMsg("testFinished", Map("name" -> name, "duration" -> duration.toString))
 
   case class BspMessageNestedData(dataKind: String, data: AnyRef)
 
@@ -123,25 +147,25 @@ class BspTestRunner(
     implicit val pr: ProcessHandler = proc
     n match {
       case LogMessage(params) => // TODO associate log messages with the running test correctly
-        printProc(new Message(params.getMessage + System.lineSeparator(), "NORMAL", null))
+        printProc(Message(params.getMessage + System.lineSeparator(), "NORMAL"))
       case TaskStart(params) => extractNestedMessage(BspMessageNestedData(params.getDataKind, params.getData)) match {
         case t: TestTask =>
           printProc(new ServiceMsg("enteredTheMatrix"))
-          printProc(new TestSuiteStarted("BSP"))
+          printProc(TestSuiteStarted("BSP"))
         case t: TestStart =>
-          printProc(new TestStarted(t.getDisplayName, false, null))
+          printProc(TestStarted(t.getDisplayName))
           session.startTime += (t.getDisplayName -> params.getEventTime)
         case _ =>
       }
       case TaskFinish(params) => extractNestedMessage(BspMessageNestedData(params.getDataKind, params.getData)) match {
-        case t: TestReport => printProc(new TestSuiteFinished("BSP"))
+        case t: TestReport => printProc(TestSuiteFinished("BSP"))
         case t: TestFinish =>
           t.getStatus match {
             case PASSED =>
             case FAILED => printProc(new ServiceMsg("testFailed", Map("name" -> t.getDisplayName, "message" -> t.getMessage)))
-            case _ => printProc(new TestIgnored(t.getDisplayName, "Ignored"))
+            case _ => printProc(TestIgnored(t.getDisplayName, "Ignored"))
           }
-          printProc(new TestFinished(t.getDisplayName, session.startTime.get(t.getDisplayName)
+          printProc(TestFinished(t.getDisplayName, session.startTime.get(t.getDisplayName)
             .map { st =>
               session.startTime -= t.getDisplayName
               (params.getEventTime - st).intValue()
@@ -157,7 +181,7 @@ class BspTestRunner(
   override def execute(executor: Executor, runner: ProgramRunner[?]): ExecutionResult = {
     val procHandler = new MProcHandler
     val console = SMTestRunnerConnectionUtil.createAndAttachConsole("BSP", procHandler, new SMTRunnerConsoleProperties(
-      project, rc, "BSP", ex))
+      rc, "BSP", ex))
     val bspCommunication = BspCommunication.forWorkspace(Path.of(project.getBasePath), project)
 
     val cancelToken = Promise[Unit]()

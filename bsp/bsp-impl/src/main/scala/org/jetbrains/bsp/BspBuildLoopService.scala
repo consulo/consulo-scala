@@ -1,16 +1,19 @@
 package org.jetbrains.bsp
 
-import com.intellij.openapi.application.{ApplicationManager, ModalityState}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.externalSystem.service.project.autoimport.FileChangeListenerBase
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
-import com.intellij.task.ProjectTaskManager
-import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.util.messages.MessageBusConnection
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.{Inject, Singleton}
+import consulo.application.ApplicationManager
+import consulo.compiler.{CompileContext, CompileStatusNotification, CompilerManager}
+import consulo.component.messagebus.MessageBusConnection
+import consulo.ui.ModalityState
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.event.{BulkFileListener, VFileDeleteEvent, VFileEvent}
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.bsp.settings.{BspProjectSettings, BspSettings}
 import org.jetbrains.plugins.scala.project.ProjectExt
 
@@ -20,8 +23,11 @@ import java.util.concurrent.{ScheduledFuture, TimeUnit}
   * Builds bsp modules on file save. We should change this to support the bsp file change notifications.
  * TODO IDEA platform already supports a save-triggered build-in-background mode. Investigate if we can replace this service.
   */
-@Service(Array(Service.Level.PROJECT))
-final class BspBuildLoopService(project: Project) {
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class BspBuildLoopService @Inject()(project: Project) {
 
   private def bspSettings: Option[BspProjectSettings] =
     Option(
@@ -32,11 +38,12 @@ final class BspBuildLoopService(project: Project) {
 
   private val busConnection: MessageBusConnection = project.getMessageBus.connect(project.unloadAwareDisposable)
   private val fileIndex = ProjectRootManager.getInstance(project).getFileIndex
-  private val taskManager = ProjectTaskManager.getInstance(project)
+  private val compilerManager = CompilerManager.getInstance(project)
 
-  busConnection.subscribe(VirtualFileManager.VFS_CHANGES, FileChangeListener)
+  busConnection.subscribe(classOf[BulkFileListener], FileChangeListener)
 
-  private object FileChangeListener extends FileChangeListenerBase {
+  // upstream: FileChangeListenerBase
+  private object FileChangeListener extends BulkFileListener {
 
     /** Nanoseconds to wait between checking stuff to compile */
     private val checkDelay = 30 * 1000000
@@ -60,9 +67,23 @@ final class BspBuildLoopService(project: Project) {
     }
 
 
-    override def isRelevant(path: String): Boolean = true
+    override def before(events: java.util.List[? <: VFileEvent]): Unit =
+      events.forEach {
+        case event: VFileDeleteEvent => deleteFile(event.getFile, event)
+        case _ =>
+      }
 
-    override def apply(): Unit = if (
+    override def after(events: java.util.List[? <: VFileEvent]): Unit = {
+      events.forEach {
+        case _: VFileDeleteEvent =>
+        case event =>
+          val file = event.getFile
+          if (file != null) updateFile(file, event)
+      }
+      apply()
+    }
+
+    private def apply(): Unit = if (
       changesSinceCompile &&
         modulesToCompile.nonEmpty &&
         bspSettings.exists(_.buildOnSave) &&
@@ -72,9 +93,9 @@ final class BspBuildLoopService(project: Project) {
         .scheduleWithFixedDelay(() => checkCompile(), checkDelay, checkDelay, TimeUnit.NANOSECONDS)
     }
 
-    override def updateFile(file: VirtualFile, event: VFileEvent): Unit =
+    private def updateFile(file: VirtualFile, event: VFileEvent): Unit =
       fileChanged(file, event)
-    override def deleteFile(file: VirtualFile, event: VFileEvent): Unit =
+    private def deleteFile(file: VirtualFile, event: VFileEvent): Unit =
       fileChanged(file, event)
 
     private def fileChanged(file: VirtualFile, event: VFileEvent) = {
@@ -90,8 +111,9 @@ final class BspBuildLoopService(project: Project) {
     private def runCompile(): Unit = {
       changesSinceCompile = false
 
-      def clearOnSuccess(res: ProjectTaskManager.Result): Unit =
-        if (res.hasErrors || res.isAborted) {
+      // upstream: ProjectTaskManager.build(modules).onSuccess
+      val clearOnSuccess: CompileStatusNotification = (aborted: Boolean, errors: Int, _: Int, _: CompileContext) =>
+        if (errors > 0 || aborted) {
           // modules stay queued for recompile on next try
           // TODO only re-queue failed modules? requires information to be available in ProjectTaskResult
         } else {
@@ -99,9 +121,7 @@ final class BspBuildLoopService(project: Project) {
         }
 
       val runnable: Runnable = { () =>
-        taskManager
-          .build(modulesToCompile.toArray*)
-          .onSuccess(clearOnSuccess(_)): Unit
+        compilerManager.make(project, modulesToCompile.toArray, clearOnSuccess)
       }
       ApplicationManager.getApplication.invokeLater(runnable, ModalityState.nonModal())
     }
@@ -117,5 +137,5 @@ final class BspBuildLoopService(project: Project) {
 
 object BspBuildLoopService {
   def getInstance(project: Project): BspBuildLoopService =
-    project.getService(classOf[BspBuildLoopService])
+    project.getInstance(classOf[BspBuildLoopService])
 }

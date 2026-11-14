@@ -1,18 +1,20 @@
 package org.jetbrains.bsp
 
-import com.intellij.notification.{NotificationGroup, NotificationGroupManager}
-import com.intellij.openapi.externalSystem.model.ProjectSystemId
+import consulo.externalSystem.model.ProjectSystemId
+import consulo.localize.LocalizeValue
+import consulo.project.ui.notification.{NotificationDisplayType, NotificationGroup}
+import consulo.ui.image.Image
 import org.jetbrains.annotations.Nls
-
-import javax.swing.Icon
 
 object BSP {
   @Nls
   //noinspection ScalaExtractStringToBundle
   val Name = "BSP"
-  val Icon: Icon = Icons.BSP
+  val Icon: Image = Icons.BSP
 
-  val ProjectSystemId = new ProjectSystemId("BSP", Name)
+  val ProjectSystemId = new ProjectSystemId("BSP", LocalizeValue.of(Name), Icons.BSP)
 
-  lazy val NotificationGroup: NotificationGroup = NotificationGroupManager.getInstance().getNotificationGroup("BSP")
+  // upstream: notificationGroup extension in scalaCommunity.bsp.xml, registered by BspNotificationGroupContributor
+  lazy val NotificationGroup: NotificationGroup =
+    new NotificationGroup("BSP", LocalizeValue.of(BspBundle.message("scala.notification.group.id.bsp")), NotificationDisplayType.BALLOON, true)
 }

@@ -1,6 +1,8 @@
 package org.jetbrains.scalaCli.project.importing
 
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.project.Project
 import org.jetbrains.bsp.BspUtil
 import org.jetbrains.bsp.project.importing.bspConfigSteps
 import org.jetbrains.bsp.project.importing.bspConfigSteps.ConfigSetup
@@ -10,6 +12,7 @@ import org.jetbrains.scalaCli.project.ScalaCliProjectUtils.ProjectDefinitionFile
 
 import java.nio.file.Path
 
+@ExtensionImpl
 class ScalaCliConfigSetupProvider extends BspSetupProvider {
 
   override def configSetup: ConfigSetup =

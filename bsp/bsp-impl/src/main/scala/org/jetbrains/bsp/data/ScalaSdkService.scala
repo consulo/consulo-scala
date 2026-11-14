@@ -1,34 +1,38 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.Library
+import consulo.annotation.component.ExtensionImpl
+import consulo.content.library.Library
+import consulo.externalSystem.model.DataNode
+import consulo.module.Module
+import consulo.module.content.ModuleRootManager
+import consulo.project.Project
+import consulo.project.content.library.ProjectLibraryTable
 import org.jetbrains.bsp.BSP
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.project.external.{ReplClasspathCachedResolver, ScalaAbstractProjectDataService, ScalaSdkUtils}
 
 import java.nio.file.Path
+import java.util
 
+@ExtensionImpl // upstream: order="last" (data services are grouped by data key in Consulo)
 class ScalaSdkService extends ScalaAbstractProjectDataService[ScalaSdkData, Library](ScalaSdkData.Key) {
 
   override final def importData(
-    toImport: java.util.Collection[? <: DataNode[ScalaSdkData]],
-    projectData: ProjectData,
+    toImport: java.util.Collection[DataNode[ScalaSdkData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
-  ): Unit = {
+    synchronous: Boolean
+  ): Unit = BspModuleExtensions.executeProjectChangeAction(project, synchronous) {
     //noinspection ApiStatus
-    val replClasspathResolver = ReplClasspathCachedResolver(project)
-    toImport.forEach(doImport(_, project, replClasspathResolver.resolve)(using modelsProvider))
+    val replClasspathResolver = new ReplClasspathCachedResolver(project)
+    toImport.forEach(doImport(_, project, replClasspathResolver.resolve))
   }
 
-  private def doImport(dataNode: DataNode[ScalaSdkData], project: Project, resolveReplClasspath: String => ReplClasspath)
-                      (implicit modelsProvider: IdeModifiableModelsProvider): Unit =
+  override def removeData(toRemove: util.Collection[? <: Library], project: Project, synchronous: Boolean): Unit = ()
+
+  private def doImport(dataNode: DataNode[ScalaSdkData], project: Project, resolveReplClasspath: String => ReplClasspath): Unit =
     for {
-      module <- modelsProvider.getIdeModuleByNode(dataNode)
+      module <- project.getIdeModuleByNode(dataNode)
     } {
       val ScalaSdkData(_, scalaVersion, scalacClasspath, _, scalacOptions) = dataNode.getData
       module.configureScalaCompilerSettingsFrom("bsp", scalacOptions, project)
@@ -47,24 +51,34 @@ class ScalaSdkService extends ScalaAbstractProjectDataService[ScalaSdkData, Libr
     scalaVersionOpt: Option[String],
     compilerClasspath: Seq[Path],
     resolveReplClasspath: String => ReplClasspath
-  )(implicit modelsProvider: IdeModifiableModelsProvider): Unit = for {
+  ): Unit = for {
     scalaVersion <- scalaVersionOpt
     if ScalaLanguageLevel.findByVersion(scalaVersion).isDefined
   } {
     val compilerBridgeBinaryJar = ScalaSdkUtils.resolveCompilerBridgeJar(project, scalaVersion)
     val replClasspath = resolveReplClasspath(scalaVersion)
-    ScalaSdkUtils.configureScalaSdk(
-      module,
-      scalaVersion,
-      compilerClasspath,
-      // TODO: currently we agreed that BSP implementation should just omit Scala3 doc jars in `ScalaBuildTarget.jars` field
-      //  and we should probably create a separate request to obtain scaladoc classpath
-      //  see https://github.com/build-server-protocol/build-server-protocol/issues/229
-      scaladocExtraClasspath = Nil,
-      compilerBridgeBinaryJar = compilerBridgeBinaryJar,
-      replClasspath = replClasspath,
-      BSP.Name,
-      modelsProvider
-    )
+    val rootModel = ModuleRootManager.getInstance(module).getModifiableModel
+    val projectLibrariesModel = ProjectLibraryTable.getInstance(project).getModifiableModel
+    try {
+      ScalaSdkUtils.configureScalaSdk(
+        module,
+        scalaVersion,
+        compilerClasspath,
+        // TODO: currently we agreed that BSP implementation should just omit Scala3 doc jars in `ScalaBuildTarget.jars` field
+        //  and we should probably create a separate request to obtain scaladoc classpath
+        //  see https://github.com/build-server-protocol/build-server-protocol/issues/229
+        scaladocExtraClasspath = Nil,
+        compilerBridgeBinaryJar = compilerBridgeBinaryJar,
+        replClasspath = replClasspath,
+        BSP.Name,
+        projectLibrariesModel,
+        rootModel
+      )
+      // Consulo: Scala is enabled in a module by the Scala module extension
+      BspModuleExtensions.enableScala(rootModel)
+    } finally {
+      projectLibrariesModel.commit()
+      rootModel.commit()
+    }
   }
 }

@@ -1,15 +1,17 @@
-package org.jetbrains.plugins.scala.build
-
-import com.intellij.build.FilePosition
-import com.intellij.build.events.EventResult
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.bsp.build
+import consulo.build.ui.FilePosition
+import consulo.build.ui.event.EventResult
+import consulo.project.Project
 import org.jetbrains.annotations.Nls
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
-import org.jetbrains.jps.incremental.scala.{Client, MessageKind}
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
+import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
+import org.jetbrains.jps.incremental.scala.shared.{Client, MessageKind}
+import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 import org.jetbrains.plugins.scala.build.BuildMessages.stripAnsiCodes
-import org.jetbrains.plugins.scala.compiler.{CompilationUnitId, CompilerEvent, CompilerEventListener, EelPathTranslator}
-import org.jetbrains.plugins.scala.util.CompilationId
+import org.jetbrains.plugins.scala.bsp.compiler.CompilerEventListener
+import org.jetbrains.plugins.scala.shared.compiler.{CompilationUnitId, CompilerEvent}
+import org.jetbrains.plugins.scala.compiler.EelPathTranslator
+import org.jetbrains.plugins.scala.shared.util.CompilationId
 
 import java.nio.file.Path
 import scala.collection.mutable
@@ -31,6 +33,8 @@ class CompilerEventReporter(project: Project,
   private val files = mutable.Set[Path]()
 
   private var hasErrors: Boolean = false
+
+  private val errored = mutable.Set[Path]()
 
   private def publish(kind: MessageKind, @Nls text: String, position: Option[FilePosition]): Unit =
     position.foreach { pos =>
@@ -92,6 +96,7 @@ class CompilerEventReporter(project: Project,
 
   override def error(@Nls message: String, position: Option[FilePosition]): Unit = {
     publish(MessageKind.Error, message, position)
+    position.foreach(pos => errored.add(pos.getPath))
     hasErrors = true
   }
 
@@ -118,4 +123,7 @@ class CompilerEventReporter(project: Project,
    * withholds the clean files leaves them out, costing them a compilation rather than a wrong answer.
    */
   private[scala] def coveredFiles: Set[Path] = files.toSet
+
+  /** The files the server reported an error against. */
+  private[scala] def erroredFiles: Set[Path] = errored.toSet
 }

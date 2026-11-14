@@ -1,79 +1,78 @@
 package org.jetbrains.bsp
 
-import com.intellij.icons.AllIcons
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup, Separator}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.wm.{StatusBar, StatusBarWidget}
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.Consumer
-import com.intellij.util.messages.MessageBusConnection
-import org.apache.commons.io.IOUtils
+import consulo.platform.base.icon.PlatformIconGroup
+import consulo.dataContext.DataManager
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate, AnSeparator, DefaultActionGroup}
+import consulo.application.ApplicationManager
+import consulo.application.dumb.DumbAware
+import consulo.component.messagebus.MessageBusConnection
+import consulo.localize.LocalizeValue
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.project.ui.wm.{StatusBar, StatusBarWidget}
+import consulo.ui.{Component => UIComponent}
+import consulo.ui.event.{ClickEvent, ComponentEventListener}
+import consulo.ui.ex.RelativePoint
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.image.Image
 import org.jetbrains.bsp.protocol.{BspCommunication, BspCommunicationService}
 import org.jetbrains.bsp.settings.BspProjectSettings.BspServerConfig
 
 import java.awt.Point
-import java.awt.event.MouseEvent
 import java.net.URI
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
-import javax.swing.Icon
 import scala.jdk.CollectionConverters.*
 
 private final class BspServerWidget extends StatusBarWidget
   with StatusBarWidget.IconPresentation
-  with Consumer[MouseEvent]
-  with BspServerWidgetFactory.UpdateWidgetListener {
+  with BspServerWidgetUpdateListener {
 
-  private val connection: MessageBusConnection = ApplicationManager.getApplication.getMessageBus.connect()
+  private val connection: MessageBusConnection = ApplicationManager.getApplication.getMessageBus.connect(this)
   private var statusBar: StatusBar = scala.compiletime.uninitialized
 
-  override def ID(): String = BspServerWidgetFactory.ID
+  override def getId: String = BspServerWidgetFactory.ID
 
   override def install(statusBar: StatusBar): Unit = {
     this.statusBar = statusBar
     connection.subscribe(BspServerWidgetFactory.Topic, this)
   }
 
-  override def dispose(): Unit = {
-    Disposer.dispose(connection)
-  }
+  override def dispose(): Unit = {}
 
   override def getPresentation: StatusBarWidget.WidgetPresentation = this
 
-  override def getIcon: Icon =
+  override def getIcon: Image =
     if (connectionsActive) BspServerWidgetFactory.IconRunning
     else BspServerWidgetFactory.IconStopped
 
-  override def getTooltipText: String = BspBundle.message("bsp.widget.bsp.connection")
+  override def getTooltipText: LocalizeValue = LocalizeValue.of(BspBundle.message("bsp.widget.bsp.connection"))
 
-  override def getClickConsumer: Consumer[MouseEvent] = this
+  override def getClickListener: ComponentEventListener[UIComponent, ClickEvent] =
+    event => showPopup(TargetAWT.to(event.getComponent))
 
-  override def consume(e: MouseEvent): Unit = {
+  private def showPopup(component: java.awt.Component): Unit = {
     val openCom = BspCommunicationService.getInstance.listOpenComms
     val connectionClosers =
       (openCom.map(c => new CloseBspSession(c._1, c._2)).toList
         ++ List(new CloseAllSessions)
         ++ openCom.map(c => new TerminateServer(c._1, c._2)).toList
-        :+ Separator.getInstance
+        :+ AnSeparator.getInstance
         ).asJava
 
     val group = new DefaultActionGroup(connectionClosers)
     val mnemonics = JBPopupFactory.ActionSelectionAid.MNEMONICS
-    val context = DataManager.getInstance.getDataContext(e.getComponent)
+    val context = DataManager.getInstance.getDataContext(component)
     val title = BspBundle.message("bsp.widget.connections", if (connectionsActive) BspBundle.message("bsp.widget.connections.on") else BspBundle.message("bsp.widget.connections.off"))
 
     val popup = JBPopupFactory.getInstance.createActionGroupPopup(title, group, context, mnemonics, true)
     val dimension = popup.getContent.getPreferredSize
     val at = new Point(0, -dimension.height)
-    popup.show(new RelativePoint(e.getComponent, at))
+    popup.show(new RelativePoint(component, at))
   }
 
   override def updateWidget(): Unit = {
     if (statusBar ne null) {
-      statusBar.updateWidget(ID())
+      statusBar.updateWidget(getId)
     }
   }
 
@@ -83,7 +82,7 @@ private final class BspServerWidget extends StatusBarWidget
   }
 
   //noinspection ReferencePassedToNls
-  private final class CloseBspSession(uri: URI, config: BspServerConfig) extends AnAction(uri.toString, BspBundle.message("bsp.widget.kill.bsp.connection.at.uri", uri), AllIcons.Actions.Suspend) with DumbAware {
+  private final class CloseBspSession(uri: URI, config: BspServerConfig) extends AnAction(LocalizeValue.of(uri.toString), LocalizeValue.of(BspBundle.message("bsp.widget.kill.bsp.connection.at.uri", uri)), PlatformIconGroup.actionsSuspend()) with DumbAware with AnActionWithSyncUpdate {
     override def update(e: AnActionEvent): Unit = {
       val isAlive = BspCommunicationService.getInstance.isAlive(uri, config)
       e.getPresentation.setEnabled(isAlive)
@@ -96,7 +95,7 @@ private final class BspServerWidget extends StatusBarWidget
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 
-  private final class CloseAllSessions extends AnAction(BspBundle.message("bsp.widget.stop.all.bsp.connections"), BspBundle.message("bsp.widget.stop.all.bsp.connections"), AllIcons.Actions.Suspend) with DumbAware {
+  private final class CloseAllSessions extends AnAction(LocalizeValue.of(BspBundle.message("bsp.widget.stop.all.bsp.connections")), LocalizeValue.of(BspBundle.message("bsp.widget.stop.all.bsp.connections")), PlatformIconGroup.actionsSuspend()) with DumbAware with AnActionWithSyncUpdate {
 
     override def update(e: AnActionEvent): Unit = {
       e.getPresentation.setEnabled(connectionsActive)
@@ -109,7 +108,7 @@ private final class BspServerWidget extends StatusBarWidget
     override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
   }
 
-  private final class TerminateServer(uri: URI, config: BspServerConfig) extends AnAction(BspBundle.message("bsp.widget.bsp.terminate.server", uri), BspBundle.message("bsp.widget.bsp.terminate.server", uri), AllIcons.Actions.Exit) with DumbAware {
+  private final class TerminateServer(uri: URI, config: BspServerConfig) extends AnAction(LocalizeValue.of(BspBundle.message("bsp.widget.bsp.terminate.server", uri)), LocalizeValue.of(BspBundle.message("bsp.widget.bsp.terminate.server", uri)), PlatformIconGroup.actionsExit()) with DumbAware with AnActionWithSyncUpdate {
     override def update(e: AnActionEvent): Unit = {
       val exitCommandDefined = BspCommunicationService.getInstance.exitCommands(uri, config).toOption.exists(_.nonEmpty)
       e.getPresentation.setVisible(exitCommandDefined)
@@ -135,8 +134,8 @@ private final class BspServerWidget extends StatusBarWidget
                 // We log only timeouts, and skip regular errors because they occur too often,
                 // ex. when the server is just not running.
                 val title = s"Timeout when terminating BSP server after ${timeoutLength} seconds"
-                val stderr = s"[STDERR]\n${IOUtils.toString(process.getErrorStream, "UTF-8")}\n"
-                val stdout = s"[STDOUT]\n${IOUtils.toString(process.getInputStream, "UTF-8")}\n"
+                val stderr = s"[STDERR]\n${new String(process.getErrorStream.readAllBytes(), StandardCharsets.UTF_8)}\n"
+                val stdout = s"[STDOUT]\n${new String(process.getInputStream.readAllBytes(), StandardCharsets.UTF_8)}\n"
                 BspServerWidgetFactory.logger.error(s"$title\n $stderr\n $stdout")
               }
             }

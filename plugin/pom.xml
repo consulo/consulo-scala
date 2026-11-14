@@ -259,6 +259,31 @@
             <scope>provided</scope>
         </dependency>
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-devKit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-scala.cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-bsp.junit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-bsp.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-i18n</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- test-runners: TestRunnerUtil is used by the IDE, the jar is also added to the classpath of the test JVM -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -405,6 +430,29 @@
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
             <version>1.4.9</version>
+        </dependency>
+        <!-- bsp: bsp4j and lsp4j-jsonrpc (gson is provided by the platform) -->
+        <dependency>
+            <groupId>ch.epfl.scala</groupId>
+            <artifactId>bsp4j</artifactId>
+            <version>2.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lsp4j</groupId>
+            <artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
+            <version>0.20.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>

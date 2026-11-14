@@ -1,11 +1,15 @@
 package org.jetbrains.bsp.project.test
 
-import com.intellij.execution.Executor
-import com.intellij.execution.configurations._
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
-import com.intellij.util.xmlb.XmlSerializer
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.executor.Executor
+import consulo.execution.configuration.{ConfigurationFactory, ConfigurationType, RunConfiguration, RunConfigurationBase, RunProfileState}
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.execution.configuration.fragment.RunConfigurationFragment
+import consulo.project.Project
+import consulo.util.xml.serializer.XmlSerializer
 import org.jdom.Element
 import org.jetbrains.bsp.project.test.BspTestConfigurationForm._
 import org.jetbrains.bsp.{BspBundle, Icons}
@@ -13,16 +17,16 @@ import org.jetbrains.bsp.{BspBundle, Icons}
 import java.net.URI
 import java.util.Collections
 import java.{util => j}
-import javax.swing.Icon
 import scala.beans.BeanProperty
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class BspTestRunType extends ConfigurationType {
-  override def getDisplayName: String = BspBundle.message("bsp.test")
+  override def getDisplayName: LocalizeValue = LocalizeValue.of(BspBundle.message("bsp.test"))
 
-  override def getConfigurationTypeDescription: String = getDisplayName
+  override def getConfigurationTypeDescription: LocalizeValue = getDisplayName
 
-  override def getIcon: Icon = Icons.BSP
+  override def getIcon: Image = Icons.BSP
 
   override def getId: String = "BSP_TEST_RUN_CONFIGURATION"
 
@@ -35,7 +39,8 @@ class BspTestRunFactory(t: ConfigurationType) extends ConfigurationFactory(t) {
 
   override def createTemplateConfiguration(project: Project): RunConfiguration = new BspTestRunConfiguration(project, this, "BSP_TEST_RUN")
 
-  override def getName: String = "BspTestRunFactory"
+  // upstream: getName = "BspTestRunFactory"
+  override def getDisplayName: LocalizeValue = LocalizeValue.of("BspTestRunFactory")
 }
 
 class TestClass(@BeanProperty var target: String, @BeanProperty var classes: j.List[String]) {
@@ -43,7 +48,7 @@ class TestClass(@BeanProperty var target: String, @BeanProperty var classes: j.L
 }
 
 class BspTestRunConfiguration(val project: Project, val configurationFactory: ConfigurationFactory, val name: String)
-  extends RunConfigurationBase[String](project, configurationFactory, name) {
+  extends RunConfigurationBase(project, configurationFactory, name) {
 
 
   @BeanProperty var testMode: TestMode = TestMode.ALL_IN_PROJECT
@@ -61,7 +66,11 @@ class BspTestRunConfiguration(val project: Project, val configurationFactory: Co
     XmlSerializer.serializeInto(this, element)
   }
 
-  override def getConfigurationEditor: SettingsEditor[? <: RunConfiguration] = new BspTestConfigurationForm(getProject)
+  override def checkConfiguration(): Unit = ()
+
+  // upstream: getConfigurationEditor = new BspTestConfigurationForm(getProject)
+  override def createFragments(): j.List[RunConfigurationFragment[?]] =
+    j.List.of(new BspTestRunConfigurationFragment)
 
   override def getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = {
     val scalaMap = matchedTestClasses.asScala.map { case (uri, list) => (URI.create(uri), list.asScala.toList) }.toMap

@@ -1,7 +1,7 @@
 package org.jetbrains.bsp.project.importing
 
 import ch.epfl.scala.bsp4j._
-import com.intellij.pom.java.LanguageLevel
+import com.intellij.java.language.LanguageLevel
 import org.jetbrains.bsp.data.{JdkData, SbtBuildModuleDataBsp, ScalaSdkData}
 import org.jetbrains.sbt.project.structure.data.InterpretablePath
 

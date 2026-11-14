@@ -4,13 +4,13 @@ package codeInspection
 package i18n
 package internal
 
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages.InputDialog
-import com.intellij.openapi.ui.{InputValidatorEx, Messages}
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.psi.PsiElement
-import com.intellij.util.io.URLUtil
+import consulo.document.FileDocumentManager
+import consulo.project.Project
+import consulo.ui.ex.InputValidatorEx
+import consulo.ui.ex.awt.Messages
+import consulo.virtualFileSystem.VirtualFileManager
+import consulo.language.psi.PsiElement
+import consulo.util.io.URLUtil
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.extensions.{inWriteAction, _}
 import org.jetbrains.plugins.scala.util.internal.I18nBundleContent
@@ -61,13 +61,10 @@ object BundleExtraction {
     val path = elementPath.substring(srcRoot.length)
     val (keyProposal, text, arguments) = toKeyAndTextAndArgs(parts)
 
-    val inputDialog = new InputDialog(project, "Key:", "Enter key for new bundle entry", null, keyProposal, new BundleNameInputValidator(bundle))
-    if (!inputDialog.showAndGet()) {
+    val key = Messages.showInputDialog(project, "Key:", "Enter key for new bundle entry", null, keyProposal, new BundleNameInputValidator(bundle))
+    if (key == null) {
       return
     }
-
-    val key = inputDialog.getInputString
-    assert(key != null)
 
     val newEntry = Entry(key, text, path)
 

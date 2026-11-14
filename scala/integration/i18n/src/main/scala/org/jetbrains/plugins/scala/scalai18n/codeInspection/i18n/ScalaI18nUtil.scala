@@ -3,12 +3,12 @@ package scalai18n
 package codeInspection
 package i18n
 
-import com.intellij.codeInsight.AnnotationUtil
+import com.intellij.java.language.codeInsight.AnnotationUtil
 import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.lang.properties.{IProperty, PropertiesReferenceManager}
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.psi.*
-import com.intellij.util.containers.ContainerUtil
+import consulo.language.util.ModuleUtilCore
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiAnnotation, PsiAnnotationMemberValue, PsiAnnotationOwner, PsiField, PsiMethod, PsiModifierListOwner, PsiParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.extensions.{&, NullSafe, ObjectExt, Parent, PsiMethodExt, PsiParameterExt}
 import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil
@@ -40,7 +40,7 @@ object ScalaI18nUtil {
   private sealed abstract class PassedToAnnotatedChecker(protected val annotations: Seq[String]) extends AnnotationChecker {
     private val annotationsSet: java.util.Set[String] = annotations match {
       case Seq(one) => Collections.singleton(one)
-      case multiple => ContainerUtil.newHashSet(multiple.asJava)
+      case multiple => new java.util.HashSet[String](multiple.asJavaCollection)
     }
 
     override def checkPsiModifierListOwner(owner: PsiModifierListOwner): Boolean = {

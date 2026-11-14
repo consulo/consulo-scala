@@ -1,27 +1,34 @@
 package org.jetbrains.bsp.project.test.environment
 
-import com.intellij.execution.BeforeRunTaskProvider
-import com.intellij.execution.configurations.{ModuleBasedConfiguration, RunConfiguration}
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.util.Key
-import org.jetbrains.bsp.{BspBundle, Icons}
+import consulo.annotation.component.ExtensionImpl
+import consulo.application.util.concurrent.AppExecutorUtil
+import consulo.dataContext.DataContext
+import consulo.execution.BeforeRunFragment
+import consulo.execution.configuration.{ModuleBasedConfiguration, RunConfiguration}
+import consulo.execution.runner.ExecutionEnvironment
+import consulo.localize.LocalizeValue
+import consulo.logging.Logger
+import consulo.module.Module
+import consulo.ui.UIAccess
+import consulo.ui.image.Image
 import org.jetbrains.bsp.protocol.BspCommunication
-import org.jetbrains.concurrency.{Promise, Promises}
+import org.jetbrains.bsp.{BspBundle, Icons}
 
-import java.lang
-import javax.swing.Icon
+import java.util.concurrent.CompletableFuture
 
-class BspFetchEnvironmentTaskProvider extends BeforeRunTaskProvider[BspFetchEnvironmentTask] {
+// upstream: BeforeRunTaskProvider; configureTask (prompting for the BSP target when the task is configured) is not ported -
+// the target is asked for when the task is executed and there is more than one candidate
+@ExtensionImpl
+class BspFetchEnvironmentTaskProvider extends BeforeRunFragment[BspFetchEnvironmentTask] {
   private val logger = Logger.getInstance(classOf[BspCommunication])
 
-  override def getId: Key[BspFetchEnvironmentTask] = BspFetchEnvironmentTask.runTaskKey
+  override def getId: String = BspFetchEnvironmentTask.runTaskId
 
-  override def getName: String = BspBundle.message("bsp.task.name")
+  override def getName: LocalizeValue = LocalizeValue.of(BspBundle.message("bsp.task.name"))
 
-  override def getIcon: Icon = Icons.BSP
+  override def getIcon(configuration: RunConfiguration): Image = Icons.BSP
+
+  override def getStateClass: Class[BspFetchEnvironmentTask] = classOf[BspFetchEnvironmentTask]
 
   override def createTask(runConfiguration: RunConfiguration): BspFetchEnvironmentTask = {
     runConfiguration match {
@@ -30,29 +37,18 @@ class BspFetchEnvironmentTaskProvider extends BeforeRunTaskProvider[BspFetchEnvi
     }
   }
 
-  override def isConfigurable: Boolean = true
+  override def isSingleton: Boolean = true
 
-  override def configureTask(context: DataContext, configuration: RunConfiguration, task: BspFetchEnvironmentTask): Promise[lang.Boolean] = {
-    configuration match {
-      case BspSupportedConfiguration(_, module) =>
-        val potentialTargets = BspJvmEnvironment.getBspTargets(module) match {
-          case Right(targets) => targets
-          case Left(error) =>
-            logger.error(BspBundle.message("bsp.task.could.not.get.potential.targets", error.msg))
-            Seq.empty
-        }
-        BspJvmEnvironment.promptUserToSelectBspTarget(configuration.getProject, potentialTargets, task)
-        Promises.resolvedPromise(potentialTargets.length == 1)
-      case _ => Promises.resolvedPromise(false)
-    }
-  }
-
-  override def executeTask(
+  override def executeAsync(
+    uiAccess: UIAccess,
     context: DataContext,
     configuration: RunConfiguration,
     env: ExecutionEnvironment,
     task: BspFetchEnvironmentTask
-  ): Boolean = {
+  ): CompletableFuture[?] =
+    CompletableFuture.runAsync(() => executeTask(configuration, task), AppExecutorUtil.getAppExecutorService)
+
+  private def executeTask(configuration: RunConfiguration, task: BspFetchEnvironmentTask): Unit =
     try {
       configuration match {
         case BspSupportedConfiguration(config, module) =>
@@ -67,15 +63,11 @@ class BspFetchEnvironmentTaskProvider extends BeforeRunTaskProvider[BspFetchEnvi
     } catch {
       case error: Throwable => logger.error(error)
     }
-    true
-  }
-
 
   private object BspSupportedConfiguration {
-    def unapply(configuration: RunConfiguration): Option[(ModuleBasedConfiguration[?, ?], Module)] = {
+    def unapply(configuration: RunConfiguration): Option[(ModuleBasedConfiguration[?], Module)] = {
       org.jetbrains.bsp.project.test.environment.ModuleBasedConfiguration.unapply(configuration)
         .filter(_ => BspEnvironmentRunnerExtension.isSupported(configuration))
     }
   }
-
 }

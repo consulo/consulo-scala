@@ -1,9 +1,13 @@
 package org.jetbrains.bsp
 
-import com.intellij.openapi.externalSystem.ui.ExternalSystemIconProvider
+import consulo.annotation.component.ExtensionImpl
+import consulo.externalSystem.model.ProjectSystemId
+import consulo.externalSystem.ui.ExternalSystemIconProvider
+import consulo.ui.image.Image
 
-import javax.swing.Icon
-
+@ExtensionImpl
 class BspIconProvider extends ExternalSystemIconProvider {
-  override def getReloadIcon: Icon = Icons.BSP_LOAD_CHANGES
+  override def getSystemId: ProjectSystemId = BSP.ProjectSystemId
+
+  override def getReloadIcon: Image = Icons.BSP_LOAD_CHANGES
 }

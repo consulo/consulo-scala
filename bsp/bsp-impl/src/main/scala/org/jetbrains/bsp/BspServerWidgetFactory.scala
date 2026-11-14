@@ -1,13 +1,12 @@
 package org.jetbrains.bsp
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
-import com.intellij.openapi.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
-import com.intellij.util.messages.Topic
+import consulo.annotation.component.ExtensionImpl
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.project.ui.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
+import consulo.ui.image.{Image, ImageEffects}
 
-import javax.swing.Icon
-
+@ExtensionImpl(id = "BSP", order = "before ScalaCompileServer")
 private final class BspServerWidgetFactory extends StatusBarWidgetFactory {
   override def getId: String = BspServerWidgetFactory.ID
 
@@ -27,14 +26,11 @@ private final class BspServerWidgetFactory extends StatusBarWidgetFactory {
 private object BspServerWidgetFactory {
   val ID: String = "BSP"
 
-  val IconRunning: Icon = Icons.BSP
-  val IconStopped: Icon = IconLoader.getDisabledIcon(IconRunning)
+  val IconRunning: Image = Icons.BSP
+  val IconStopped: Image = ImageEffects.grayed(IconRunning)
   val logger: Logger = Logger.getInstance(classOf[BspServerWidgetFactory])
 
-  trait UpdateWidgetListener {
-    def updateWidget(): Unit
-  }
+  type UpdateWidgetListener = BspServerWidgetUpdateListener
 
-  val Topic: Topic[UpdateWidgetListener] =
-    new Topic("Bsp server widget update topic", classOf[UpdateWidgetListener])
+  val Topic: Class[BspServerWidgetUpdateListener] = classOf[BspServerWidgetUpdateListener]
 }

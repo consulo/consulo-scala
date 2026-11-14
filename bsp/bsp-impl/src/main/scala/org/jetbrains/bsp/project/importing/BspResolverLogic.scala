@@ -1,30 +1,30 @@
 package org.jetbrains.bsp.project.importing
 
+import consulo.platform.Platform
 import ch.epfl.scala.bsp4j.*
 import com.google.gson.{Gson, JsonElement}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.model.project.*
-import com.intellij.openapi.externalSystem.model.{DataNode, ProjectKeys}
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.JavaModuleType
-import com.intellij.openapi.roots.DependencyScope
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.LocalEelDescriptor
-import com.intellij.pom.java.LanguageLevel
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.FileSystem
+import consulo.logging.Logger
+import consulo.externalSystem.model.project.{ContentRootData, ModuleData}
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
+import consulo.externalSystem.model.project.{LibraryData, LibraryDependencyData, LibraryLevel, LibraryPathType, ModuleDependencyData}
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.{DataNode, ProjectKeys}
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.content.layer.orderEntry.DependencyScope
+import consulo.util.io.FileUtil
+import com.intellij.java.language.LanguageLevel
+import consulo.util.io.DigestUtil
+
+import java.nio.charset.StandardCharsets
 import org.jetbrains.bsp.BspUtil.*
 import org.jetbrains.bsp.data.*
-import org.jetbrains.bsp.project.BspSyntheticModuleType
 import org.jetbrains.bsp.project.importing.BspResolverDescriptors.*
 import org.jetbrains.bsp.{BSP, BspBundle}
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PathExt, StringExt}
-import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.project.external.{JdkByHome, JdkByVersion, SdkReference}
 import org.jetbrains.sbt.asPath
 import org.jetbrains.sbt.project.data.MyURI
-import org.jetbrains.sbt.project.module.SbtModuleType
 import org.jetbrains.sbt.project.structure.data.{InterpretablePath, PathConstructor}
 import org.jetbrains.sbt.project.{isUnder, toPath}
 
@@ -40,8 +40,8 @@ private[importing] object BspResolverLogic {
   private given PathConstructor[String]:
     override def construct(str: String): InterpretablePath = new InterpretablePath(str)
 
-  private def interpretablePathFromUri(uriString: String)(using descriptor: EelDescriptor): InterpretablePath =
-    if descriptor == LocalEelDescriptor.INSTANCE then
+  private def interpretablePathFromUri(uriString: String)(using descriptor: Platform): InterpretablePath =
+    if descriptor == Platform.current() then
       InterpretablePath.construct(Paths.get(uriString.toURI).toString)
     else
       InterpretablePath.construct(uriString.toURI.getPath)
@@ -63,7 +63,7 @@ private[importing] object BspResolverLogic {
     JdkData(javaHome.map(new MyURI(_)).orNull, target.getJavaVersion)
   }
 
-  private[importing] def getScalaSdkData(target: ScalaBuildTarget, scalacOptionsItem: Option[ScalacOptionsItem])(using EelDescriptor): (JdkData, ScalaSdkData) = {
+  private[importing] def getScalaSdkData(target: ScalaBuildTarget, scalacOptionsItem: Option[ScalacOptionsItem])(using Platform): (JdkData, ScalaSdkData) = {
     val jdk = Option(target.getJvmBuildTarget).fold(JdkData(null, null))(getJdkData)
 
     val scalaOptionsStrings = scalacOptionsItem.map(item => item.getOptions).getOrElse(Collections.emptyList())
@@ -81,7 +81,7 @@ private[importing] object BspResolverLogic {
     targetId: URI,
     target: SbtBuildTarget,
     scalacOptionsItem: Option[ScalacOptionsItem]
-  )(using EelDescriptor): (JdkData, ScalaSdkData, SbtBuildModuleDataBsp) = {
+  )(using Platform): (JdkData, ScalaSdkData, SbtBuildModuleDataBsp) = {
     val children = target.getChildren.asScala.map { target => new MyURI(target.getUri) }
 
     val sbtBuildModuleData = SbtBuildModuleDataBsp(
@@ -102,7 +102,7 @@ private[importing] object BspResolverLogic {
                                                      resourcesItems: Seq[ResourcesItem],
                                                      outputPathsItems: Seq[OutputPathsItem],
                                                      dependencySourcesItems: Seq[DependencySourcesItem])
-                                                    (using EelDescriptor): ProjectModules = try {
+                                                    (using Platform): ProjectModules = try {
 
     val idToTarget = buildTargets.map(t => (t.getId, t)).toMap
     val idToScalacOptions = scalacOptionsItems.map(item => (item.getTarget, item)).toMap
@@ -263,7 +263,7 @@ private[importing] object BspResolverLogic {
     sourceEntryToIdsWithCollisions.filterNot(e => targetsHaveSameBaseDirs(e._2))
   }
 
-  private def sourceEntries(sourcesItem: SourcesItem)(using EelDescriptor): Seq[SourceEntry] = {
+  private def sourceEntries(sourcesItem: SourcesItem)(using Platform): Seq[SourceEntry] = {
     sourcesItem.getSources.asScala.iterator.distinct.map { item =>
       val packagePrefix = findPackagePrefix(sourcesItem, item.getUri)
       val isDirectory = item.getKind == SourceItemKind.DIRECTORY || item.getUri.endsWith("/")
@@ -283,7 +283,7 @@ private[importing] object BspResolverLogic {
     }.filter(_.nonEmpty)
   }
 
-  private def sourceEntry(uri: String, generated: Boolean = false)(using EelDescriptor): SourceEntry =
+  private def sourceEntry(uri: String, generated: Boolean = false)(using Platform): SourceEntry =
     SourceEntry(interpretablePathFromUri(uri), isDirectory = uri.endsWith("/"), generated, None)
 
   /**
@@ -307,7 +307,7 @@ private[importing] object BspResolverLogic {
    *    basePath2
    * }}}
    */
-  private def excludeChildDirectories(entries: Seq[SourceEntry])(using EelDescriptor) = {
+  private def excludeChildDirectories(entries: Seq[SourceEntry])(using Platform) = {
     val dirs = entries.filter(_.isDirectory)
     entries.filter { entry =>
       !dirs.exists(a => entry.file.toPath.isUnder(a.file.toPath))
@@ -323,7 +323,7 @@ private[importing] object BspResolverLogic {
     resourceEntries: Seq[SourceEntry],
     outputPaths: Seq[InterpretablePath],
     dependencyOutputs: Seq[InterpretablePath]
-  )(using EelDescriptor)(implicit gson: Gson): Option[ModuleDescription] = {
+  )(using Platform)(implicit gson: Gson): Option[ModuleDescription] = {
     val moduleBaseDir: Option[InterpretablePath] = Option(buildTarget.getBaseDirectory).map(interpretablePathFromUri)
     val outputPath =
       scalacOptions.map(o => interpretablePathFromUri(o.getClassDirectory))
@@ -543,11 +543,12 @@ private[importing] object BspResolverLogic {
 
   //IntelliJ may attempt to append " (shared)" to the file name, putting it back over the max limit
   //so we subtract 50 characters just in this case
-  private final val MaxFileNameLength = FileSystem.getCurrent.getMaxFileNameLength - 50
+  // upstream: org.apache.commons.io.FileSystem.getCurrent.getMaxFileNameLength (255 on all supported file systems)
+  private final val MaxFileNameLength = 255 - 50
 
   private def trimFileNameLengthIfNeeded(name: String): String =
     if (name.length > MaxFileNameLength) {
-      val suffix = DigestUtils.md5Hex(name)
+      val suffix = DigestUtil.md5().digest(name.getBytes(StandardCharsets.UTF_8)).map(b => f"${b & 0xff}%02x").mkString
       val prefix = name.substring(0, MaxFileNameLength - suffix.length)
       prefix + suffix
     }
@@ -696,7 +697,7 @@ private[importing] object BspResolverLogic {
     excludedPaths: List[Path],
     displayName: String,
     canCompile: List[String]
-  )(using EelDescriptor): DataNode[ProjectData] = {
+  )(using Platform): DataNode[ProjectData] = {
 
     val projectRootPath = workspace.toCanonicalPath.toString
     val moduleFileDirectoryPath = moduleFilesDirectory(workspace).toCanonicalPath.toString
@@ -710,7 +711,8 @@ private[importing] object BspResolverLogic {
       if (projectModules.modules.exists(_.data.basePath.exists(_.toPath == projectRoot))) None
       else {
         val name = projectRoot.getFileName.toString + "-root"
-        val moduleData = new ModuleData(name, BSP.ProjectSystemId, BspSyntheticModuleType.Id, name, moduleFileDirectoryPath, projectRootPath)
+        // upstream: module type BSP_SYNTHETIC_MODULE, module file in moduleFileDirectoryPath - a Consulo module is identified by its directory
+        val moduleData = new ModuleData(name, BSP.ProjectSystemId, name, projectRootPath, projectRootPath)
         val moduleNode = new DataNode[ModuleData](ProjectKeys.MODULE, moduleData, projectNode)
         val contentRootData = new ContentRootData(BSP.ProjectSystemId, projectRoot.toCanonicalPath.toString)
         val contentRootDataNode = new DataNode[ContentRootData](ProjectKeys.CONTENT_ROOT, contentRootData, moduleNode)
@@ -830,7 +832,7 @@ private[importing] object BspResolverLogic {
       data.storePath(ExternalSystemSourceType.EXCLUDED, p.toCanonicalPath.toString)
     }
 
-  private def inferProjectJdk(modules: Seq[DataNode[ModuleData]])(using EelDescriptor): Option[SdkReference] = {
+  private def inferProjectJdk(modules: Seq[DataNode[ModuleData]])(using Platform): Option[SdkReference] = {
     val groupedJdks = modules
       .flatMap(m => Option(ExternalSystemApiUtil.find(m, BspMetadata.Key)))
       .map(m => (m.getData.javaHome, m.getData.javaVersion))
@@ -846,7 +848,8 @@ private[importing] object BspResolverLogic {
     jdkReference
   }
 
-  private[importing] def moduleFilesDirectory(workspace: Path) = workspace / ".idea" / "modules"
+  // upstream: workspace / ".idea" / "modules" (the module files)
+  private[importing] def moduleFilesDirectory(workspace: Path) = workspace / ".consulo" / "modules"
 
   private[importing] def createModuleNode(
     projectRootPath: String,
@@ -855,7 +858,7 @@ private[importing] object BspResolverLogic {
     projectNode: DataNode[ProjectData],
     projectLibraryDependencies: Map[String, LibraryData],
     buildTargetIdToBuildModuleTargetId: Map[MyURI, MyURI]
-  )(using EelDescriptor): DataNode[ModuleData] = {
+  )(using Platform): DataNode[ModuleData] = {
     import ExternalSystemSourceType._
 
     val moduleDescriptionData = moduleDescription.data
@@ -886,13 +889,13 @@ private[importing] object BspResolverLogic {
       sourceRoots ++ testRoots ++ resourceRoots ++ testResourceRoots
 
     val moduleName = moduleDescriptionData.name
-    val moduleType = moduleDescription.moduleKindData match {
-      case ModuleKind.SbtModule(_, _, _) =>
-        SbtModuleType.instance
-      case _ =>
-        JavaModuleType.getModuleType
-    }
-    val moduleData = new ModuleData(moduleDescriptionData.idUri, BSP.ProjectSystemId, moduleType.getId, moduleName, moduleFileDirectoryPath, projectRootPath)
+    // upstream: module type SbtModuleType/JavaModuleType, module files of all modules in moduleFileDirectoryPath - a Consulo module
+    // is identified by its directory (ModuleManager.newModule returns the module of the directory): the module directory is the
+    // base directory of the target, modules without a base directory (synthetic modules of shared sources) get their own directory
+    val moduleDirectory = moduleDescriptionData.basePath
+      .map(_.toPath.toCanonicalPath.toString)
+      .getOrElse(Path.of(moduleFileDirectoryPath).resolve(trimFileNameLengthIfNeeded(moduleName.replaceAll("[/\\\\:*?\"<>|]", "_"))).toString)
+    val moduleData = new ModuleData(moduleDescriptionData.idUri, BSP.ProjectSystemId, moduleName, moduleDirectory, projectRootPath)
 
     moduleDescriptionData.output.foreach { outputPath =>
       moduleData.setCompileOutputPath(SOURCE, outputPath.toPath.toCanonicalPath.toString)
@@ -1096,7 +1099,7 @@ private[importing] object BspResolverLogic {
     moduleKind: ModuleKind,
     moduleDescriptionData: ModuleDescriptionData,
     buildTargetIdToBuildModuleTargetId: Map[MyURI, MyURI]
-  )(using EelDescriptor): Unit =
+  )(using Platform): Unit =
     moduleKind match {
       case ModuleKind.ScalaModule(_, scalaSdkData) =>
         val scalaSdkNode = new DataNode[ScalaSdkData](ScalaSdkData.Key, scalaSdkData, moduleNode)

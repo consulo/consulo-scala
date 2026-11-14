@@ -1,25 +1,26 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+import consulo.externalSystem.model.DataNode
+import consulo.project.Project
 import org.jetbrains.bsp.project.BspTargetCanCompile
+import org.jetbrains.plugins.scala.project.external.ScalaAbstractProjectDataService
 
 import java.util
 
+@ExtensionImpl
 class BspTargetCanCompileDataService extends ScalaAbstractProjectDataService[BspTargetCanCompileData, Project](BspTargetCanCompileData.Key) {
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[BspTargetCanCompileData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[BspTargetCanCompileData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
+    synchronous: Boolean
   ): Unit = {
     // there will be always one node to import
     toImport.forEach { node =>
       BspTargetCanCompile.getInstance(project).compilableTargets = node.getData.compilableTargets
     }
   }
+
+  override def removeData(toRemove: util.Collection[? <: Project], project: Project, synchronous: Boolean): Unit = ()
 }

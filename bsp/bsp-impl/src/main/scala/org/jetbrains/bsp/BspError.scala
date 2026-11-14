@@ -1,6 +1,6 @@
 package org.jetbrains.bsp
 
-import com.intellij.openapi.progress.ProcessCanceledException
+import consulo.component.ProcessCanceledException
 import org.eclipse.lsp4j.jsonrpc.messages.ResponseError
 import org.jetbrains.annotations.Nls
 

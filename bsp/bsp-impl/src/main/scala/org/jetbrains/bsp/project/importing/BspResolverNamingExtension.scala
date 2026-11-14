@@ -1,7 +1,10 @@
 package org.jetbrains.bsp.project.importing
 
-import com.intellij.openapi.extensions.ExtensionPointName
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.component.extension.ExtensionPointName
 import org.jetbrains.bsp.project.importing.BspResolverDescriptors.ModuleDescription
+
+import scala.jdk.CollectionConverters.*
 
 /**
  * This extension allows to customize names created during BSP project import/refresh.
@@ -9,6 +12,7 @@ import org.jetbrains.bsp.project.importing.BspResolverDescriptors.ModuleDescript
  * libraries under External Libraries node in project view.
  * You may for example use it to apply custom shortening logic for long names.
  **/
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait BspResolverNamingExtension {
   def libraryData(moduleDescription: ModuleDescription): Option[String]
 
@@ -17,7 +21,7 @@ trait BspResolverNamingExtension {
 
 object BspResolverNamingExtension {
   val EP_NAME =
-    ExtensionPointName.create[BspResolverNamingExtension]("com.intellij.bspResolverNamingExtension")
+    ExtensionPointName.create(classOf[BspResolverNamingExtension])
 
   def libraryData(moduleDescription: ModuleDescription): Option[String] = {
     get(_.libraryData(moduleDescription))
@@ -28,7 +32,7 @@ object BspResolverNamingExtension {
   }
 
   private def get(apply: BspResolverNamingExtension => Option[String]): Option[String] = {
-    EP_NAME.getExtensions.iterator.map(apply).collectFirst { case Some(r) => r }
+    EP_NAME.getExtensionList.iterator.asScala.map(apply).collectFirst { case Some(r) => r }
   }
 
 }

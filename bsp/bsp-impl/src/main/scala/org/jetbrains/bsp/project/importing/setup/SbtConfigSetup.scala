@@ -1,14 +1,15 @@
 package org.jetbrains.bsp.project.importing.setup
 
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable, Sdk}
+import consulo.application.progress.ProgressIndicator
+import org.jetbrains.bsp.BspJdkUtil
+import consulo.content.bundle.Sdk
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.bsp.BspBundle
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 import org.jetbrains.plugins.scala.extensions.invokeAndWait
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.sbt.SbtUtil.{defaultLauncherPath, detectSbtVersion, sbtVersionParam}
-import org.jetbrains.sbt.SbtVersion
+import org.jetbrains.sbt.api.SbtVersion
 import org.jetbrains.sbt.process.SbtRunner
 import org.jetbrains.sbt.project.SbtExternalSystemManager
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
@@ -40,11 +41,8 @@ object SbtConfigSetup {
    * @param environment additional environment variables to pass to sbt process (e.g., JAVA_HOME for tests)
    */
   private def createSbtConfigSetup(baseDir: Path, jdk: Sdk, environment: Map[String, String]): SbtConfigSetup = {
-    invokeAndWait {
-      ProjectJdkTable.getInstance.preconfigure()
-    }
-    val jdkType = JavaSdk.getInstance()
-    val jdkExe = Path.of(jdkType.getVMExecutablePath(jdk))
+    // upstream: ProjectJdkTable.preconfigure() - not in Consulo
+    val jdkExe = BspJdkUtil.vmExecutablePath(jdk)
     val jdkHome = Option(jdk.getHomePath).map(Path.of(_))
     val sbtLauncher = defaultLauncherPath
 
@@ -57,7 +55,7 @@ object SbtConfigSetup {
 
     val sbtLauncherArgs = getCommandForConnectionFileGeneration(sbtVersion)
 
-    val vmArgs = SbtExternalSystemManager.getVmOptions(Seq.empty, jdkHome) ++ upgradeParam
+    val vmArgs = SbtExternalSystemManager.getVmOptions(Seq.empty, jdkHome) ++ upgradeParam ++ SbtOverBspVmOptions.getInstance.vmOptions
 
     val runInit = (runner: SbtRunner, indicator: ProgressIndicator, reporter: BuildReporter) => runner.runSbt(
       indicator,

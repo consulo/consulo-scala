@@ -1,10 +1,12 @@
-package org.jetbrains.bsp.project.test.environment
+package org.jetbrains.bsp.junit.project.test.environment
 
-import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.junit.JUnitConfiguration
-import org.jetbrains.annotations.ApiStatus
+import consulo.annotation.component.ExtensionImpl
+import consulo.execution.configuration.RunConfiguration
+import org.jetbrains.bsp.project.test.environment.{BspEnvironmentRunnerExtension, ExecutionEnvironmentType}
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
+@ExtensionImpl
 class BspEnvironmentJUnitRunnerExtension extends BspEnvironmentRunnerExtension {
   override def runConfigurationSupported(config: RunConfiguration): Boolean =
     config.isInstanceOf[JUnitConfiguration]
@@ -12,9 +14,10 @@ class BspEnvironmentJUnitRunnerExtension extends BspEnvironmentRunnerExtension {
   override def classes(config: RunConfiguration): Option[List[String]] = {
     config match {
       case jUnitConfig: JUnitConfiguration =>
-        jUnitConfig.getTestType match {
+        // upstream: getTestType / getPersistentData - Consulo keeps them in the run configuration options
+        jUnitConfig.getOptions.getTestObject match {
           case JUnitConfiguration.TEST_METHOD | JUnitConfiguration.TEST_CLASS =>
-            Some(List(jUnitConfig.getPersistentData.getMainClassName))
+            Some(List(jUnitConfig.getOptions.getMainClassName))
           case _ => None
         }
       case _ => None
@@ -23,4 +26,3 @@ class BspEnvironmentJUnitRunnerExtension extends BspEnvironmentRunnerExtension {
 
   override def environmentType: ExecutionEnvironmentType = ExecutionEnvironmentType.TEST
 }
-

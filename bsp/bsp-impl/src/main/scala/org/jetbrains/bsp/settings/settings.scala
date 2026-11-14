@@ -1,19 +1,21 @@
 package org.jetbrains.bsp.settings
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components._
-import com.intellij.openapi.externalSystem.model.settings.ExternalSystemExecutionSettings
-import com.intellij.openapi.externalSystem.service.settings.AbstractExternalProjectSettingsControl
-import com.intellij.openapi.externalSystem.settings._
-import com.intellij.openapi.externalSystem.util.ExternalSystemUiUtil._
-import com.intellij.openapi.externalSystem.util.{ExternalSystemApiUtil, ExternalSystemSettingsControl, ExternalSystemUiUtil, PaintAwarePanel}
-import com.intellij.openapi.project.Project
-import com.intellij.util.messages.Topic
-import com.intellij.util.ui.UI
-import com.intellij.util.xmlb.Converter
-import com.intellij.util.xmlb.annotations.{OptionTag, XCollection}
-import com.intellij.ui.TitledSeparator
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl, TopicAPI}
+import consulo.application.ApplicationManager
+import consulo.component.persist.{PersistentStateComponent, State, Storage, StoragePathMacros}
+import consulo.disposer.Disposable
+import consulo.externalSystem.model.setting.ExternalSystemExecutionSettings
+import consulo.externalSystem.service.setting.{AbstractExternalProjectSettingsConfigurable, ExternalSystemSettingsConfigurable, ExternalSystemSettingsPlace}
+import consulo.externalSystem.setting.{AbstractExternalSystemLocalSettings, AbstractExternalSystemSettings, DelegatingExternalSystemSettingsListener, ExternalProjectSettings, ExternalSystemSettingsListener}
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.layout.{LabeledLayout, VerticalLayout}
+import consulo.ui.{CheckBox, Component}
+import consulo.util.xml.serializer.Converter
+import consulo.util.xml.serializer.annotation.{AbstractCollection, OptionTag}
+import jakarta.inject.{Inject, Singleton}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.bsp._
 import org.jetbrains.bsp.settings.BspProjectSettings._
@@ -22,8 +24,6 @@ import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.nio.file.{Path, Paths}
 import java.util
-import javax.swing.JCheckBox
-import scala.annotation.nowarn
 import scala.beans.BeanProperty
 
 class BspProjectSettings extends ExternalProjectSettings {
@@ -144,97 +144,64 @@ object BspProjectSettings {
   }
 }
 
-class BspProjectSettingsControl(settings: BspProjectSettings)
-  extends AbstractExternalProjectSettingsControl[BspProjectSettings](null, settings) {
+// upstream: AbstractExternalProjectSettingsControl with a Swing panel; the settings without check boxes (pre-import config,
+// server config, ...) are kept by editing the given settings object in place
+class BspProjectSettingsControl(settings: BspProjectSettings, place: ExternalSystemSettingsPlace = ExternalSystemSettingsPlace.SETTINGS)
+  extends AbstractExternalProjectSettingsConfigurable[BspProjectSettings](settings, place) {
 
-  @BeanProperty
-  var buildOnSave = false
+  private var buildOnSaveCheckBox: CheckBox = scala.compiletime.uninitialized
+  private var runPreImportTaskCheckBox: CheckBox = scala.compiletime.uninitialized
+  private var autoRegenerateBspConfigCheckBox: CheckBox = scala.compiletime.uninitialized
 
-  @BeanProperty
-  var runPreImportTask = true
+  @RequiredUIAccess
+  override protected def createExtraUIComponent(uiDisposable: Disposable): Component = {
+    val initial = getSettings
+    buildOnSaveCheckBox = CheckBox.create(LocalizeValue.of(BspBundle.message("bsp.protocol.build.automatically.on.file.save")), initial.buildOnSave)
+    runPreImportTaskCheckBox = CheckBox.create(LocalizeValue.of(BspBundle.message("bsp.protocol.export.sbt.projects.to.bloop.before.import")), initial.runPreImportTask)
+    autoRegenerateBspConfigCheckBox = CheckBox.create(LocalizeValue.of(BspBundle.message("bsp.protocol.auto.generate.config")), initial.autoRegenerateBspConfigOnServerStartup)
+    autoRegenerateBspConfigCheckBox.setToolTipText(LocalizeValue.of(BspBundle.message("bsp.protocol.auto.generate.config.tooltip")))
 
-  @BeanProperty
-  var preImportConfig: PreImportConfig = AutoPreImport
-
-  @BeanProperty
-  var serverConfig: BspServerConfig = AutoConfig
-
-  @BeanProperty
-  var autoRegenerateBspConfigOnServerStartup = false
-
-  @BeanProperty
-  var bspConfigGenerated: Boolean = false
-
-  @BeanProperty
-  @Nullable
-  var connectionFileHash: Integer = null
-
-  private val buildOnSaveCheckBox = new JCheckBox(BspBundle.message("bsp.protocol.build.automatically.on.file.save"))
-  private val runPreImportTaskCheckBox = new JCheckBox(BspBundle.message("bsp.protocol.export.sbt.projects.to.bloop.before.import"))
-  private val autoRegenerateBspConfigCheckBox = new JCheckBox(BspBundle.message("bsp.protocol.auto.generate.config"))
-
-  override def fillExtraControls(content: PaintAwarePanel, indentLevel: Int): Unit = {
-    val fillLineConstraints = getFillLineConstraints(1)
-    content.add(buildOnSaveCheckBox, fillLineConstraints)
-
-    content.add(new TitledSeparator(BspBundle.message("bsp.protocol.sbt.project")), fillLineConstraints)
-    content.add(runPreImportTaskCheckBox, fillLineConstraints)
-
-    content.add(new TitledSeparator(BspBundle.message("bsp.protocol.scala.cli.mill.project")), fillLineConstraints)
-
-    val panelBuilder = UI.PanelFactory.panel(autoRegenerateBspConfigCheckBox): @nowarn("cat=deprecation")
-    val panelBuilderWithTooltip = panelBuilder.withTooltip(BspBundle.message("bsp.protocol.auto.generate.config.tooltip")): @nowarn("cat=deprecation")
-    val panel = panelBuilderWithTooltip.createPanel()
-
-    content.add(panel, fillLineConstraints)
+    val layout = VerticalLayout.create()
+    layout.add(buildOnSaveCheckBox)
+    layout.add(LabeledLayout.create(LocalizeValue.of(BspBundle.message("bsp.protocol.sbt.project")), runPreImportTaskCheckBox))
+    layout.add(LabeledLayout.create(LocalizeValue.of(BspBundle.message("bsp.protocol.scala.cli.mill.project")), autoRegenerateBspConfigCheckBox))
+    layout
   }
 
-  override def isExtraSettingModified: Boolean = {
-    val initial = getInitialSettings
-    buildOnSaveCheckBox.isSelected != initial.buildOnSave ||
-      runPreImportTaskCheckBox.isSelected != initial.runPreImportTask ||
-      autoRegenerateBspConfigCheckBox.isSelected != initial.autoRegenerateBspConfigOnServerStartup
+  @RequiredUIAccess
+  override protected def isExtraModified: Boolean = {
+    val initial = getSettings
+    buildOnSaveCheckBox != null && (
+      buildOnSaveCheckBox.getValue.booleanValue != initial.buildOnSave ||
+        runPreImportTaskCheckBox.getValue.booleanValue != initial.runPreImportTask ||
+        autoRegenerateBspConfigCheckBox.getValue.booleanValue != initial.autoRegenerateBspConfigOnServerStartup
+      )
   }
 
-  override def resetExtraSettings(isDefaultModuleCreation: Boolean): Unit = {
-    val initial = getInitialSettings
-    buildOnSaveCheckBox.setSelected(initial.buildOnSave)
-    runPreImportTaskCheckBox.setSelected(initial.runPreImportTask)
-    autoRegenerateBspConfigCheckBox.setSelected(initial.autoRegenerateBspConfigOnServerStartup)
-    // It's required, even for settings that don't have corresponding checkboxes,
-    // to preserve the existing values in the project settings instead of using defaults.
-    preImportConfig = initial.preImportConfig
-    serverConfig = initial.serverConfig
-    bspConfigGenerated = initial.bspConfigGenerated
-    connectionFileHash = initial.connectionFileHash
+  @RequiredUIAccess
+  override protected def applyExtra(): Unit = {
+    if (buildOnSaveCheckBox == null) return
+    val settings = getSettings
+    settings.buildOnSave = buildOnSaveCheckBox.getValue
+    settings.runPreImportTask = runPreImportTaskCheckBox.getValue
+    settings.autoRegenerateBspConfigOnServerStartup = autoRegenerateBspConfigCheckBox.getValue
   }
 
-  override def applyExtraSettings(settings: BspProjectSettings): Unit = {
-    settings.buildOnSave = buildOnSaveCheckBox.isSelected
-    settings.runPreImportTask = runPreImportTaskCheckBox.isSelected
-    settings.autoRegenerateBspConfigOnServerStartup = autoRegenerateBspConfigCheckBox.isSelected
-    // It's required, even for settings that don't have corresponding checkboxes,
-    // to preserve the existing values in the project settings instead of using defaults.
-    settings.preImportConfig = preImportConfig
-    settings.serverConfig = serverConfig
-    settings.bspConfigGenerated = bspConfigGenerated
-    settings.connectionFileHash = connectionFileHash
+  @RequiredUIAccess
+  override def reset(): Unit = {
+    if (buildOnSaveCheckBox == null) return
+    val initial = getSettings
+    buildOnSaveCheckBox.setValue(initial.buildOnSave)
+    runPreImportTaskCheckBox.setValue(initial.runPreImportTask)
+    autoRegenerateBspConfigCheckBox.setValue(initial.autoRegenerateBspConfigOnServerStartup)
   }
-
-  override def validate(settings: BspProjectSettings): Boolean = true
-
-  override def updateInitialExtraSettings(): Unit = {
-    applyExtraSettings(getInitialSettings)
-  }
-
 }
 
 
 /** A dummy to satisfy interface constraints of ExternalSystem */
-trait BspProjectSettingsListener extends ExternalSystemSettingsListener[BspProjectSettings]
-
-class BspProjectSettingsListenerAdapter(listener: ExternalSystemSettingsListener[BspProjectSettings])
-  extends DelegatingExternalSystemSettingsListener[BspProjectSettings](listener) with BspProjectSettingsListener {
+@TopicAPI(ComponentScope.PROJECT)
+trait BspProjectSettingsListener extends ExternalSystemSettingsListener[BspProjectSettings] {
+  // the message bus dispatches only methods declared on the topic interface, so the inherited ones are redeclared
   override def onProjectRenamed(oldName: String, newName: String): Unit = {}
   override def onProjectsLoaded(settings: util.Collection[BspProjectSettings]): Unit = {}
   override def onProjectsLinked(settings: util.Collection[BspProjectSettings]): Unit = {}
@@ -243,19 +210,41 @@ class BspProjectSettingsListenerAdapter(listener: ExternalSystemSettingsListener
   override def onBulkChangeEnd(): Unit = {}
 }
 
+class BspProjectSettingsListenerAdapter(listener: ExternalSystemSettingsListener[BspProjectSettings])
+  extends DelegatingExternalSystemSettingsListener[BspProjectSettings](listener) with BspProjectSettingsListener {
+  override def onProjectRenamed(oldName: String, newName: String): Unit =
+    super[DelegatingExternalSystemSettingsListener].onProjectRenamed(oldName, newName)
+  override def onProjectsLoaded(settings: util.Collection[BspProjectSettings]): Unit =
+    super[DelegatingExternalSystemSettingsListener].onProjectsLoaded(settings)
+  override def onProjectsLinked(settings: util.Collection[BspProjectSettings]): Unit =
+    super[DelegatingExternalSystemSettingsListener].onProjectsLinked(settings)
+  override def onProjectsUnlinked(linkedProjectPaths: util.Set[String]): Unit =
+    super[DelegatingExternalSystemSettingsListener].onProjectsUnlinked(linkedProjectPaths)
+  override def onBulkChangeStart(): Unit =
+    super[DelegatingExternalSystemSettingsListener].onBulkChangeStart()
+  override def onBulkChangeEnd(): Unit =
+    super[DelegatingExternalSystemSettingsListener].onBulkChangeEnd()
+}
+
 @State(
   name = "BspSettings",
   storages = Array(new Storage("bsp.xml"))
 )
-class BspSettings(project: Project)
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class BspSettings @Inject()(project: Project)
   extends AbstractExternalSystemSettings[BspSettings, BspProjectSettings, BspProjectSettingsListener](BspSettings.BspTopic, project)
     with PersistentStateComponent[BspSettings.State]
 {
 
   def getSystemSettings: BspSystemSettings = BspSystemSettings.getInstance
-   
-  override def subscribe(listener: ExternalSystemSettingsListener[BspProjectSettings], parentDisposable: Disposable):Unit =
-    doSubscribe(new BspProjectSettingsListenerAdapter(listener), parentDisposable)
+
+  override def subscribe(listener: ExternalSystemSettingsListener[BspProjectSettings]): Unit =
+    subscribe(listener, project)
+
+  def subscribe(listener: ExternalSystemSettingsListener[BspProjectSettings], parentDisposable: Disposable): Unit =
+    project.getMessageBus.connect(parentDisposable).subscribe(BspSettings.BspTopic, new BspProjectSettingsListenerAdapter(listener))
 
   override def copyExtraSettingsFrom(settings: BspSettings): Unit = {}
 
@@ -278,24 +267,25 @@ object BspSettings {
 
     private val projectSettings = new util.TreeSet[BspProjectSettings]
 
-    @XCollection(style = XCollection.Style.v1, elementTypes = Array(classOf[BspProjectSettings]))
+    @AbstractCollection(surroundWithTag = false, elementTypes = Array(classOf[BspProjectSettings]))
     override def getLinkedExternalProjectsSettings: util.Set[BspProjectSettings] = projectSettings
     override def setLinkedExternalProjectsSettings(settings: util.Set[BspProjectSettings]): Unit =
       projectSettings.addAll(settings)
   }
 
-  def getInstance(project: Project): BspSettings = project.getService(classOf[BspSettings])
+  def getInstance(project: Project): BspSettings = project.getInstance(classOf[BspSettings])
 
-  val BspTopic: Topic[BspProjectSettingsListener] = new Topic(BspBundle.message("bsp.protocol.specific.settings"), classOf[BspProjectSettingsListener])
+  val BspTopic: Class[BspProjectSettingsListener] = classOf[BspProjectSettingsListener]
 }
 
 
 @State(
   name = "BspSystemSettings",
-  storages = Array(new Storage("bsp.settings.xml")),
-  reportStatistic = true,
-  category = SettingsCategory.TOOLS
+  storages = Array(new Storage("bsp.settings.xml"))
 )
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 class BspSystemSettings extends PersistentStateComponent[BspSystemSettings.State] {
 
   @BeanProperty
@@ -309,7 +299,7 @@ class BspSystemSettings extends PersistentStateComponent[BspSystemSettings.State
 }
 
 object BspSystemSettings {
-  def getInstance: BspSystemSettings = ApplicationManager.getApplication.getService(classOf[BspSystemSettings])
+  def getInstance: BspSystemSettings = ApplicationManager.getApplication.getInstance(classOf[BspSystemSettings])
 
   class State {
     @BeanProperty
@@ -322,16 +312,25 @@ object BspSystemSettings {
   name = "BspLocalSettings",
   storages = Array(new Storage(StoragePathMacros.WORKSPACE_FILE))
 )
-class BspLocalSettings(project: Project)
-  extends AbstractExternalSystemLocalSettings[BspLocalSettingsState](BSP.ProjectSystemId, project)
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class BspLocalSettings @Inject()(project: Project)
+  extends AbstractExternalSystemLocalSettings(BSP.ProjectSystemId, project)
     with PersistentStateComponent[BspLocalSettingsState] {
+
+  override def getState: BspLocalSettingsState = {
+    val state = new BspLocalSettingsState
+    fillState(state)
+    state
+  }
 
   override def loadState(state: BspLocalSettingsState): Unit =
     super[AbstractExternalSystemLocalSettings].loadState(state)
 }
 
 object BspLocalSettings {
-  def getInstance(project: Project): BspLocalSettings = project.getService(classOf[BspLocalSettings])
+  def getInstance(project: Project): BspLocalSettings = project.getInstance(classOf[BspLocalSettings])
 }
 
 class BspLocalSettingsState extends AbstractExternalSystemLocalSettings.State
@@ -365,32 +364,27 @@ object BspExecutionSettings {
   }
 }
 
-class BspSystemSettingsControl(settings: BspSettings) extends ExternalSystemSettingsControl[BspSettings] {
+// upstream: Swing BspSystemSettingsForm
+class BspSystemSettingsControl(settings: BspSettings) extends ExternalSystemSettingsConfigurable[BspSettings](settings) {
 
-  private val pane = new BspSystemSettingsPane
   private val systemSettings = settings.getSystemSettings
+  private var bspTraceCheckbox: CheckBox = scala.compiletime.uninitialized
 
-  override def fillUi(canvas: PaintAwarePanel, indentLevel: Int): Unit = {
-    canvas.add(pane.content, ExternalSystemUiUtil.getFillLineConstraints(indentLevel))
+  @RequiredUIAccess
+  override def createUIComponent(uiDisposable: Disposable): Component = {
+    bspTraceCheckbox = CheckBox.create(LocalizeValue.of(BspBundle.message("bcp.trace.log.enable")), systemSettings.getState.traceBsp)
+    LabeledLayout.create(LocalizeValue.of(BspBundle.message("bsp.trace.log")), bspTraceCheckbox)
   }
 
-  override def showUi(show: Boolean): Unit ={
-    pane.content.setVisible(show)
-  }
+  @RequiredUIAccess
+  override def reset(): Unit =
+    if (bspTraceCheckbox != null) bspTraceCheckbox.setValue(systemSettings.getState.traceBsp)
 
-  override def reset(): Unit = {
-    pane.bspTraceCheckbox.setSelected(systemSettings.getState.traceBsp)
-  }
-
+  @RequiredUIAccess
   override def isModified: Boolean =
-    pane.bspTraceCheckbox.isSelected != systemSettings.getState.traceBsp
+    bspTraceCheckbox != null && bspTraceCheckbox.getValue.booleanValue != systemSettings.getState.traceBsp
 
-  override def apply(settings: BspSettings): Unit = {
-    systemSettings.getState.traceBsp = pane.bspTraceCheckbox.isSelected
-  }
-
-  override def validate(settings: BspSettings): Boolean =
-    true
-
-  override def disposeUIResources(): Unit = {}
+  @RequiredUIAccess
+  override def apply(): Unit =
+    if (bspTraceCheckbox != null) systemSettings.getState.traceBsp = bspTraceCheckbox.getValue
 }

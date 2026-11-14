@@ -1,17 +1,14 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.externalSystem.model.DataNode
-import com.intellij.openapi.externalSystem.model.project.ProjectData
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProvider
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.roots.impl.LanguageLevelProjectExtensionImpl
-import com.intellij.openapi.vcs.roots.VcsRootDetector
-import com.intellij.openapi.vcs.{ProjectLevelVcsManager, VcsDirectoryMapping, VcsRoot}
-import com.intellij.openapi.vfs.{LocalFileSystem, VfsUtilCore}
-import com.intellij.pom.java.LanguageLevel
-import org.jetbrains.plugins.scala.project.ProjectContext
+import consulo.annotation.component.ExtensionImpl
+import consulo.content.bundle.Sdk
+import consulo.externalSystem.model.DataNode
+import consulo.project.Project
+import consulo.versionControlSystem.root.VcsRootDetector
+import consulo.versionControlSystem.root.VcsRoot
+import consulo.versionControlSystem.{ProjectLevelVcsManager, VcsDirectoryMapping}
+import consulo.virtualFileSystem.LocalFileSystem
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import org.jetbrains.plugins.scala.project.external.{ScalaAbstractProjectDataService, SdkReference, SdkUtils}
 
 import java.nio.file.Path
@@ -19,20 +16,23 @@ import java.util
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl
 class BspProjectDataService extends ScalaAbstractProjectDataService[BspProjectData, Project](BspProjectData.Key) {
 
   override def importData(
-    toImport: util.Collection[? <: DataNode[BspProjectData]],
-    projectData: ProjectData,
+    toImport: util.Collection[DataNode[BspProjectData]],
     project: Project,
-    modelsProvider: IdeModifiableModelsProvider
+    synchronous: Boolean
   ): Unit = {
     toImport.forEach { node =>
-      val BspProjectData(jdkOpt, vcsRootsCandidates, _) = node.getData
-      configureJdk(jdkOpt)(using project)
+      val BspProjectData(_, vcsRootsCandidates, _) = node.getData
+      // upstream: configureJdk sets the project JDK and language level, Consulo has no project JDK -
+      // modules get it in their Java extension (BspMetadataService)
       configureVcs(vcsRootsCandidates.map(_.toPath), project)
     }
   }
+
+  override def removeData(toRemove: util.Collection[? <: Project], project: Project, synchronous: Boolean): Unit = ()
 
   private def configureVcs(vcsRootsCandidates: collection.Seq[Path], project: Project): Unit = {
     val vcsManager = ProjectLevelVcsManager.getInstance(project)
@@ -40,14 +40,14 @@ class BspProjectDataService extends ScalaAbstractProjectDataService[BspProjectDa
     val currentMappings = vcsManager.getDirectoryMappings
 
     val detectedRoots = {
-      val detector = project.getService(classOf[VcsRootDetector])
+      val detector = project.getInstance(classOf[VcsRootDetector])
       val detected = mutable.Set[VcsRoot]()
       vcsRootsCandidates
         .iterator
         .map(LocalFileSystem.getInstance.findFileByNioFile)
         .filter(_ != null)
         .foreach { virtualFile =>
-          val isUnderDetectedVcsRoot = VfsUtilCore.isUnder(virtualFile, detected.map(_.getPath).asJava)
+          val isUnderDetectedVcsRoot = VirtualFileUtil.isUnder(virtualFile, detected.map(_.getPath).asJava)
           if (!isUnderDetectedVcsRoot) {
             val roots = detector.detect(virtualFile).asScala
             detected ++= roots
@@ -58,6 +58,7 @@ class BspProjectDataService extends ScalaAbstractProjectDataService[BspProjectDa
 
     val newMappings = detectedRoots
       .filterNot(currentVcsRoots.contains)
+      .filter(_.getVcs != null)
       .map(root => new VcsDirectoryMapping(root.getPath.getPath, root.getVcs.getName))
     val allMappings = (currentMappings.asScala ++ newMappings).asJava
 
@@ -66,25 +67,17 @@ class BspProjectDataService extends ScalaAbstractProjectDataService[BspProjectDa
       BspVcsRootExtension.onVcsRootAdded(project)
     }
   }
+}
 
-  private def configureJdk(jdk: Option[SdkReference])(implicit project: ProjectContext): Unit = executeProjectChangeAction {
-    val existingJdk = Option(ProjectRootManager.getInstance(project).getProjectSdk)
-    val projectJdk =
-      jdk
-        .flatMap(SdkUtils.findOrCreateSdk(_, project))
-        .orElse(existingJdk)
-        .orElse(SdkUtils.mostRecentRegisteredJdk(project))
-    projectJdk.foreach(ProjectRootManager.getInstance(project).setProjectSdk)
+object BspProjectDataService {
 
-    setLanguageLevel(projectJdk, project)
-  }
-
-  private def setLanguageLevel(projectJdk: Option[Sdk], project: ProjectContext): Unit = {
-    projectJdk.foreach { jdk =>
-      Option(LanguageLevel.parse(jdk.getVersionString)).foreach {
-        languageLevel =>
-          LanguageLevelProjectExtensionImpl.getInstanceImpl(project).setLanguageLevel(languageLevel)
-      }
-    }
+  /**
+   * The JDK of the BSP project. upstream: it is set as the project JDK
+   */
+  def findJdk(project: Project, data: BspProjectData): Option[Sdk] = {
+    val BspProjectData(jdk, _, _) = data
+    jdk
+      .flatMap(SdkUtils.findOrCreateSdk(_: SdkReference, project))
+      .orElse(SdkUtils.mostRecentRegisteredJdk(project))
   }
 }

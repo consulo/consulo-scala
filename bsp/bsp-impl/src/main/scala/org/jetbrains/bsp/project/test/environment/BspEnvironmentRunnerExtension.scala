@@ -1,7 +1,8 @@
 package org.jetbrains.bsp.project.test.environment
 
-import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.openapi.extensions.ExtensionPointName
+import consulo.execution.configuration.RunConfiguration
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.component.extension.ExtensionPointName
 import org.jetbrains.bsp.BspUtil
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
@@ -19,7 +20,7 @@ object BspEnvironmentRunnerExtension
   extends ExtensionPointDeclaration[BspEnvironmentRunnerExtension]("com.intellij.bspEnvironmentRunnerExtension") {
 
   val EP_NAME: ExtensionPointName[BspEnvironmentRunnerExtension] =
-    ExtensionPointName.create("com.intellij.bspEnvironmentRunnerExtension")
+    ExtensionPointName.create(classOf[BspEnvironmentRunnerExtension])
 
   def isSupported(config: RunConfiguration): Boolean = {
     config match {
@@ -37,6 +38,7 @@ object BspEnvironmentRunnerExtension
   }
 }
 
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait BspEnvironmentRunnerExtension {
   /**
    * BSP run/test environment may differ, depending on the BSP target that is chosen.

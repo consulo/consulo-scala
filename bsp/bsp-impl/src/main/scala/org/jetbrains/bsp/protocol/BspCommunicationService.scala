@@ -1,12 +1,18 @@
 package org.jetbrains.bsp
 package protocol
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.{Project, ProjectManager, ProjectManagerListener, ProjectUtil}
-import com.intellij.openapi.util.Disposer
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
+import consulo.disposer.Disposable
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.project.{Project, ProjectManager}
+import consulo.project.event.ProjectManagerListener
+import consulo.disposer.Disposer
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.bsp.settings.BspProjectSettings.BspServerConfig
 import org.jetbrains.plugins.scala.extensions.PathExt
@@ -20,6 +26,9 @@ import scala.concurrent.duration.*
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 class BspCommunicationService extends Disposable {
 
   import BspCommunicationService.{projectPath, updateWidget}
@@ -30,7 +39,7 @@ class BspCommunicationService extends Disposable {
     ScalaShutDownTracker.registerShutdownTask(() => Disposer.dispose(this))
 
     val bus = ApplicationManager.getApplication.getMessageBus.connect(this)
-    bus.subscribe(ProjectManager.TOPIC, MyProjectListener)
+    bus.subscribe(classOf[ProjectManagerListener], MyProjectListener)
   }
 
   private val timeout = 10.minutes
@@ -146,10 +155,11 @@ class BspCommunicationService extends Disposable {
 object BspCommunicationService {
 
   def getInstance: BspCommunicationService =
-    ApplicationManager.getApplication.getService(classOf[BspCommunicationService])
+    ApplicationManager.getApplication.getInstance(classOf[BspCommunicationService])
 
   private def projectPath(implicit project: Project): Option[String] =
-    Option(ProjectUtil.guessProjectDir(project))
+    // upstream: ProjectUtil.guessProjectDir
+    Option(project.getBaseDir)
       .map(_.getCanonicalPath)
 
   private def updateWidget(): Unit = {

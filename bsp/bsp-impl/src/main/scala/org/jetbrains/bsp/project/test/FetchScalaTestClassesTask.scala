@@ -1,10 +1,10 @@
 package org.jetbrains.bsp.project.test
 
 import ch.epfl.scala.bsp4j._
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.ModuleManager
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.project.Project
 import org.jetbrains.bsp.data.BspMetadata
 import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, BuildServerInfo}
 import org.jetbrains.bsp.protocol.{BspCommunication, BspJob}

@@ -1,17 +1,18 @@
 package org.jetbrains.bsp.project.importing
 
+import consulo.platform.Platform
+import org.jetbrains.sbt.platform
 import ch.epfl.scala.bsp4j._
-import com.intellij.build.events.impl.SuccessResultImpl
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.model.project._
-import com.intellij.openapi.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
-import com.intellij.openapi.externalSystem.model.{DataNode, ExternalSystemException}
-import com.intellij.openapi.externalSystem.service.project.ExternalSystemProjectResolver
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.EelProviderUtil
+import consulo.application.Application
+import consulo.build.ui.event.BuildEventFactory
+import consulo.logging.Logger
+import consulo.externalSystem.service.project.ProjectData
+import consulo.externalSystem.model.task.{ExternalSystemTaskId, ExternalSystemTaskNotificationListener}
+import consulo.externalSystem.model.DataNode
+import consulo.externalSystem.rt.model.ExternalSystemException
+import consulo.externalSystem.service.project.ExternalSystemProjectResolver
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import org.jetbrains.bsp.BspUtil._
-import org.jetbrains.bsp.project.BspExternalSystemManager.ScalaCliAffectedProjectFiles
 import org.jetbrains.bsp.project.importing.BspProjectResolver._
 import org.jetbrains.bsp.project.importing.BspResolverDescriptors._
 import org.jetbrains.bsp.project.importing.BspResolverLogic._
@@ -53,7 +54,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
 
     importState = Active
 
-    given EelDescriptor = EelProviderUtil.getEelDescriptor(workspace)
+    given Platform = workspace.platform
 
     reporter.start()
 
@@ -73,15 +74,14 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
 
     importState = Inactive
 
-    // It's necessary to nullify this key after the reload
-    // because the number of affected external project files for Scala CLI may change afterward.
-    result.putUserData(ScalaCliAffectedProjectFiles, null)
+    // upstream: nullifies the cache of the affected Scala CLI files in the user data of the project node - Consulo data nodes
+    // hold no user data, the affected files are not cached (see BspExternalSystemManager)
 
     result
   }
 
   private def requests(workspace: Path)
-                      (using EelDescriptor)
+                      (using Platform)
                       (using server: BspServer, serverInfo: BuildServerInfo, reporter: BuildReporter)
   : CompletableFuture[DataNode[ProjectData]] = {
 
@@ -97,7 +97,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
     }
     val targetsEventId = BuildMessages.randomEventId
     val targetsRequest = reloadRequest.thenCompose { _ =>
-      reporter.finishTask(reloadEventId, BspBundle.message("bsp.resolver.build.reloading"), new SuccessResultImpl())
+      reporter.finishTask(reloadEventId, BspBundle.message("bsp.resolver.build.reloading"), Application.get().getInstance(classOf[BuildEventFactory]).createSuccessResult())
       reporter.startTask(targetsEventId, Some(structureEventId), BspBundle.message("bsp.resolver.build.targets"))
       server.workspaceBuildTargets()
     }
@@ -105,7 +105,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
     val projectNodeFuture: CompletableFuture[DataNode[ProjectData]] =
       targetsRequest
         .thenCompose { targetsResponse =>
-          reporter.finishTask(targetsEventId, BspBundle.message("bsp.resolver.build.targets"), new SuccessResultImpl())
+          reporter.finishTask(targetsEventId, BspBundle.message("bsp.resolver.build.targets"), Application.get().getInstance(classOf[BuildEventFactory]).createSuccessResult())
 
           val targets = targetsResponse.getTargets.asScala.toList
 
@@ -138,7 +138,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
   }
 
   private def runImport(workspace: Path, executionSettings: BspExecutionSettings, indicator: ProgressIndicator)
-                       (using reporter: BuildReporter, eelDescriptor: EelDescriptor) = {
+                       (using reporter: BuildReporter, platform: Platform) = {
     def notifications(implicit reporter: BuildReporter): NotificationAggregator[BuildMessages] =
     (messages, notification) => notification match {
       case BspNotifications.LogMessage(params) =>
@@ -159,7 +159,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
         val projectJob: BspJob[(DataNode[ProjectData], BuildMessages)] =
           communication.run(
             { (server: BspServer, serverInfo: BuildServerInfo) =>
-              requests(workspace)(using eelDescriptor)(using server, serverInfo, reporter)
+              requests(workspace)(using platform)(using server, serverInfo, reporter)
             },
             BuildMessages.empty, 
             notifications, 
@@ -207,7 +207,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
     executionSettings: BspExecutionSettings,
     workspace: Path,
     indicator: ProgressIndicator
-  )(using reporter: BuildReporter, eelDescriptor: EelDescriptor): Try[BuildMessages] = {
+  )(using reporter: BuildReporter, platform: Platform): Try[BuildMessages] = {
     if (executionSettings.runPreImportTask) {
       val preImportTask = executionSettings.preImportTask
       val config = executionSettings.config
@@ -223,7 +223,7 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
     indicator: ProgressIndicator,
     preImportTask: PreImportConfig,
     bspServerConfig: BspProjectSettings.BspServerConfig
-  )(using reporter: BuildReporter, eelDescriptor: EelDescriptor): Try[BuildMessages] = {
+  )(using reporter: BuildReporter, platform: Platform): Try[BuildMessages] = {
     def isSbtProject(workspace: Path) = workspace.resolve("build.sbt").exists
 
     //`runBloopInstall` changes `importState` inside
@@ -288,8 +288,8 @@ class BspProjectResolver extends ExternalSystemProjectResolver[BspExecutionSetti
     }
   }
 
-  private def runBloopInstall(baseDir: Path, indicator: ProgressIndicator)(using reporter: BuildReporter, eelDescriptor: EelDescriptor): Try[BuildMessages] =
-    BspJdkUtil.findOrCreateBestJdkForProject(None, eelDescriptor) match {
+  private def runBloopInstall(baseDir: Path, indicator: ProgressIndicator)(using reporter: BuildReporter, platform: Platform): Try[BuildMessages] =
+    BspJdkUtil.findOrCreateBestJdkForProject(None, platform) match {
       case Some(sdk) =>
         val preImporter = BloopPreImporter(baseDir, sdk)
         importState = PreImportTask(preImporter)

@@ -1,7 +1,7 @@
 package org.jetbrains.bsp.protocol
 
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.platform.eel.EelDescriptor
+import consulo.platform.Platform
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.{BspBundle, BspJdkUtil}
 import org.jetbrains.bsp.project.importing.bspConfigSteps
 import org.jetbrains.bsp.project.importing.bspConfigSteps.{ConfigSetup, ScalaCliSetup}
@@ -26,7 +26,7 @@ private[protocol] object BspConfigRegeneration {
    * @return new hash calculated for the BSP connection files after regeneration (see [[BspConnectionConfig.workspaceBspConfigsHash]]),
    *         `None` if skipped
    */
-  def regenerateBspConfig(base: Path, reason: RegenerationReason)(using ctx: SessionContext)(using BuildReporter, EelDescriptor): Option[Int] = {
+  def regenerateBspConfig(base: Path, reason: RegenerationReason)(using ctx: SessionContext)(using BuildReporter, Platform): Option[Int] = {
     if (ctx.indicator.isEmpty || ctx.serverConfig == BspProjectSettings.BloopConfig) return None
 
     resolveSetup(base).map { (setupChoice, setup) =>
@@ -54,12 +54,12 @@ private[protocol] object BspConfigRegeneration {
    * Resolves the BSP config setup to use for generation.
    * Returns `None` if there isn't exactly one setup choice, no JDK is available, or the resolved setup is [[NoConfigSetup]].
    */
-  private def resolveSetup(base: Path)(using ctx: SessionContext, eelDescriptor: EelDescriptor): Option[(ConfigSetup, BspConfigSetup)] = {
+  private def resolveSetup(base: Path)(using ctx: SessionContext, platform: Platform): Option[(ConfigSetup, BspConfigSetup)] = {
     val setupChoices = bspConfigSteps.workspaceSetupChoices(base)
     if (setupChoices.size != 1) return None
 
     for {
-      jdk <- BspJdkUtil.findOrCreateBestJdkForProject(ctx.project, eelDescriptor)
+      jdk <- BspJdkUtil.findOrCreateBestJdkForProject(ctx.project, platform)
       setupChoice = setupChoices.head
       (setup, _) = bspConfigSteps.getBspConfigurationForRegeneration(jdk, base, setupChoice)
       if setup != NoConfigSetup

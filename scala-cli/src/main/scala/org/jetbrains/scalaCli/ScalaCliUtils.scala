@@ -1,13 +1,13 @@
 package org.jetbrains.scalaCli
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.platform.eel.EelPlatformKt
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import org.jetbrains.sbt.platform
+import consulo.application.util.function.ThrowableComputable
+import consulo.process.ProcessHandlerBuilder
+import consulo.process.cmd.GeneralCommandLine
+import consulo.process.util.CapturingProcessRunner
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
 import org.jetbrains.bsp.BspUtil
 
 import java.nio.file.Path
@@ -21,11 +21,11 @@ private[scalaCli] object ScalaCliUtils {
   /** Checks if Scala CLI is installed, showing a cancelable progress dialog. */
   def isScalaCliInstalled(workspace: Path): Boolean =
     ProgressManager.getInstance.runProcessWithProgressSynchronously(
-      () => {
+      (() => {
         val indicator = ProgressManager.getInstance.getProgressIndicator
         if (indicator == null) false
         else detectScalaCliInstallKind(workspace, indicator).nonEmpty
-      },
+      }): ThrowableComputable[Boolean, RuntimeException],
       ScalaCliBundle.message("scala.cli.detecting"),
       true,
       null
@@ -51,7 +51,7 @@ private[scalaCli] object ScalaCliUtils {
    * @param targetInstallKind preferred install kind; when `None`, detects any available kind
    * @return `Some` if the requested or detected installation is available, or `None` otherwise.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def detectScalaCliInstallKind(
     workspace: Path,
     indicator: ProgressIndicator,
@@ -108,7 +108,7 @@ private[scalaCli] object ScalaCliUtils {
     val command = if ApplicationManager.getApplication.isUnitTestMode then s"./$tool" else tool
 
     val prefix =
-      if EelPlatformKt.isWindows(EelProviderUtil.getEelDescriptor(workspace).getOsFamily) then Seq("cmd.exe", "/c")
+      if workspace.platform.os().isWindows then Seq("cmd.exe", "/c")
       else Seq.empty
 
     prefix :+ command
@@ -153,15 +153,15 @@ private[scalaCli] object ScalaCliUtils {
   /**
    * Executes 'scala -version' command and returns the output.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def executeScalaVersionCommand(directory: Path, indicator: ProgressIndicator): Try[String] =
     Try {
       val commandLine = new GeneralCommandLine((getScalaStandaloneCommand(directory):+ "-version")*)
         .withWorkDirectory(directory.toString)
 
       val timeout = 45.seconds
-      val handler = new CapturingProcessHandler(commandLine)
-      val output = handler.runProcessWithProgressIndicator(indicator, timeout.toMillis.toInt)
+      val handler = ProcessHandlerBuilder.create(commandLine).build()
+      val output = new CapturingProcessRunner(handler).runProcess(indicator, timeout.toMillis.toInt)
 
       if (output.isTimeout) {
         throw new TimeoutException(s"Command 'scala -version' timed out after $timeout")

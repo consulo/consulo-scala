@@ -1,7 +1,10 @@
 package org.jetbrains.bsp.project.test.environment
-import com.intellij.execution.application.ApplicationConfiguration
-import com.intellij.execution.configurations.RunConfiguration
 
+import consulo.annotation.component.ExtensionImpl
+import com.intellij.java.execution.impl.application.ApplicationConfiguration
+import consulo.execution.configuration.RunConfiguration
+
+@ExtensionImpl
 class BspEnvironmentApplicationRunnerExtension extends BspEnvironmentRunnerExtension {
   override def classes(config: RunConfiguration): Option[List[String]] = {
     config match {

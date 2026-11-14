@@ -1,12 +1,13 @@
 package org.jetbrains.scalaCli.project
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectId
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFileVisitor.skipTo
-import com.intellij.openapi.vfs.newvfs.events.{VFileCopyEvent, VFileCreateEvent, VFileDeleteEvent, VFileEvent}
-import com.intellij.openapi.vfs.{AsyncFileListener, VfsUtilCore, VirtualFile, VirtualFileVisitor}
+import consulo.logging.Logger
+import consulo.externalSystem.autoimport.{ExternalSystemProjectId, ExternalSystemProjectTracker}
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.event.{AsyncFileListener, VFileCopyEvent, VFileCreateEvent, VFileDeleteEvent, VFileEvent}
+import consulo.virtualFileSystem.util.VirtualFileVisitor.skipTo
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtilCore, VirtualFileVisitor}
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.bsp.{BSP, BspUtil}
 import org.jetbrains.bsp.settings.BspProjectSettings
 import org.jetbrains.plugins.scala.extensions.inReadAction
@@ -29,7 +30,8 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 class ScalaCliFileListener(project: Project) extends AsyncFileListener {
 
   private val fileIndex = ProjectRootManager.getInstance(project).getFileIndex
-  private val autoImportProjectTracker = AutoImportProjectTrackerCompanionProxy.autoImportProjectTracker(project)
+  // upstream: AutoImportProjectTracker.getInstance(project)
+  private val autoImportProjectTracker = ExternalSystemProjectTracker.getInstance(project)
 
   private val logger = Logger.getInstance(getClass)
 

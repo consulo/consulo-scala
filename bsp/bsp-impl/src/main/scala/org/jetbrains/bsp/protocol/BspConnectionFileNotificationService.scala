@@ -1,13 +1,16 @@
 package org.jetbrains.bsp.protocol
 
-import com.intellij.notification.{Notification, NotificationAction, NotificationType}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.{Inject, Singleton}
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.service.project.ExternalSystemProjectRefresher
+import consulo.localize.LocalizeValue
+import consulo.document.FileDocumentManager
+import consulo.project.Project
 import org.jetbrains.bsp.project.BspExternalSystemConfigurable
 import org.jetbrains.bsp.{BSP, BspBundle}
 import org.jetbrains.bsp.project.importing.experimental.GenerateBspConfig
@@ -25,8 +28,11 @@ import scala.ref.WeakReference
  *
  * See #SCL-20865, SCL-24961
  */
-@Service(Array(Service.Level.PROJECT))
-final class BspConnectionFileNotificationService(project: Project) {
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class BspConnectionFileNotificationService @Inject()(project: Project) {
 
   // The approach taken from org.jetbrains.plugins.scala.lang.formatting.scalafmt.ScalafmtNotifications
   private val notifications: ConcurrentHashMap[String, WeakReference[Notification]] =
@@ -39,21 +45,18 @@ final class BspConnectionFileNotificationService(project: Project) {
   def showRegenerateBspConnectionFileNotification(base: Path): Unit = {
     if (!canShow(RegenerateBspConnectionFileNotificationId)) return
 
-    val RegenerateFileAndReloadAction = new NotificationAction(BspBundle.message("regenerate.file.and.reload")) {
-      override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-        generateBspCommunicationFile(base)
-        refreshProject()
+    // upstream: notification.hideBalloon() - the notification is expired
+    val RegenerateFileAndReloadAction = NotificationAction.create(LocalizeValue.of(BspBundle.message("regenerate.file.and.reload")), (_, notification) => {
+      generateBspCommunicationFile(base)
+      refreshProject()
 
-        notification.hideBalloon()
-      }
-    }
-    val RegenerateFileAction = new NotificationAction(BspBundle.message("regenerate.file")) {
-      override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-        generateBspCommunicationFile(base)
+      notification.expire()
+    })
+    val RegenerateFileAction = NotificationAction.create(LocalizeValue.of(BspBundle.message("regenerate.file")), (_, notification) => {
+      generateBspCommunicationFile(base)
 
-        notification.hideBalloon()
-      }
-    }
+      notification.expire()
+    })
 
     val notification = BSP.NotificationGroup
       .createNotification(
@@ -73,22 +76,19 @@ final class BspConnectionFileNotificationService(project: Project) {
   def showConfigChangedNotification(workspace: Path, reason: RegenerationReason): Unit = {
     if (!canShow(ConfigChangedNotificationId)) return
 
-    val settingsAction = new NotificationAction(BspBundle.message("bsp.protocol.disable.in.settings")) {
-      override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-        ShowSettingsUtilImplExt.showSettingsDialog(
-          project,
-          classOf[BspExternalSystemConfigurable],
-          BspBundle.message("bsp.protocol.auto.generate.config")
-        )
-        notification.expire()
-      }
-    }
-    val dontAskAction = new NotificationAction(BspBundle.message("bsp.protocol.dont.show.again")) {
-      override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-        notification.setDoNotAskFor(project)
-        notification.expire()
-      }
-    }
+    val settingsAction = NotificationAction.create(LocalizeValue.of(BspBundle.message("bsp.protocol.disable.in.settings")), (_, notification) => {
+      ShowSettingsUtilImplExt.showSettingsDialog(
+        project,
+        classOf[BspExternalSystemConfigurable],
+        BspBundle.message("bsp.protocol.auto.generate.config")
+      )
+      notification.expire()
+    })
+    // upstream: notification.setDoNotAskFor(project) - not in Consulo, "don't show again" lasts until the IDE restart
+    val dontAskAction = NotificationAction.create(LocalizeValue.of(BspBundle.message("bsp.protocol.dont.show.again")), (_, notification) => {
+      dontShowAgain.add(ConfigChangedNotificationId)
+      notification.expire()
+    })
 
     val configFiles = BspConnectionConfig.workspaceConfigurationFiles(workspace)
     val changedFileNames =
@@ -113,10 +113,11 @@ final class BspConnectionFileNotificationService(project: Project) {
       .createNotification(
         BspBundle.message("bsp.protocol.config.file.regenerated"),
         contentMessage,
-        NotificationType.INFORMATION
+        NotificationType.INFORMATION,
+        null
       )
       .setDisplayId(ConfigChangedNotificationId)
-      .addActions(actions.asJava)
+      .addActions(actions*)
 
     notification.notify(project)
     registerNotification(ConfigChangedNotificationId, notification)
@@ -134,19 +135,19 @@ final class BspConnectionFileNotificationService(project: Project) {
 
     //can't call async version `confirmLoadingUntrustedProjectAsync` from Scala (or Java)
     //because it uses Kotlin coroutines
-    val confirmed = ExternalSystemTrustedProjectDialog.confirmLoadingUntrustedProject(project, systemId)
-    if (confirmed) {
-      ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, systemId))
-    }
+    // upstream: ExternalSystemTrustedProjectDialog.confirmLoadingUntrustedProject - Consulo has no trusted projects
+    ExternalSystemProjectRefresher.getInstance().refreshProjects(new ImportSpecBuilder(project, systemId))
   }
 
   /**
    * Checks if a notification with the given id can be shown.
    * Updates the cache by removing expired/disposed notifications.
    */
+  private val dontShowAgain = ConcurrentHashMap.newKeySet[String]()
+
   private def canShow(notificationId: String): Boolean = {
     updateCache(notificationId)
-    !notifications.containsKey(notificationId)
+    !notifications.containsKey(notificationId) && !dontShowAgain.contains(notificationId)
   }
 
   /** Registers a notification in the cache and sets up automatic cleanup. */
@@ -158,9 +159,9 @@ final class BspConnectionFileNotificationService(project: Project) {
   private def updateCache(notificationId: String): Unit = {
     val ref = notifications.get(notificationId)
     Option(ref).flatMap(_.get) match {
+      // upstream: also removed when the balloon is disposed (Consulo notifications expose no balloon)
       case Some(notification) =>
-        val balloon = notification.getBalloon
-        if (balloon == null || balloon.isDisposed) {
+        if (notification.isExpired) {
           notifications.remove(notificationId)
         }
       case None =>
@@ -171,5 +172,5 @@ final class BspConnectionFileNotificationService(project: Project) {
 
 object BspConnectionFileNotificationService {
   def getInstance(project: Project): BspConnectionFileNotificationService =
-    project.getService(classOf[BspConnectionFileNotificationService])
+    project.getInstance(classOf[BspConnectionFileNotificationService])
 }

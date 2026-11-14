@@ -1,5 +1,6 @@
 package org.jetbrains.bsp.project
 
-import com.intellij.ide.actions.OpenProjectFileChooserDescriptor
+import consulo.fileChooser.FileChooserDescriptor
 
-class BspOpenProjectDescriptor extends OpenProjectFileChooserDescriptor(false)
+// upstream: extends OpenProjectFileChooserDescriptor (internal in Consulo)
+class BspOpenProjectDescriptor extends FileChooserDescriptor(true, true, false, false, false, false)

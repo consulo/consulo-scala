@@ -1,17 +1,20 @@
 package org.jetbrains.scalaCli.actions
 
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.dataContext.DataContext
+import consulo.project.Project
 import org.jetbrains.bsp.BspUtil
 import org.jetbrains.plugins.scala.actions.NewScalaFileActionExtension
 
+@ExtensionImpl
 class ScalaCliNewScalaFileActionExtension extends NewScalaFileActionExtension {
 
   // Scala CLI doesn't have a concept of a source directory
   // BSP server reports individual files as source roots (even though it's a file)
   // So, we allow creating scala classes/files in any directory in Scala CLI projects
   override def isAvailable(dataContext: DataContext): Boolean = {
-    val project = dataContext.getData(CommonDataKeys.PROJECT)
+    val project = dataContext.getData(Project.KEY)
     project != null && isScalaCliProject(project)
   }
 

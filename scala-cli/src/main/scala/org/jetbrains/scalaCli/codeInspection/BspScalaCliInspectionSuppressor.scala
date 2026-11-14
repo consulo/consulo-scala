@@ -1,12 +1,19 @@
 package org.jetbrains.scalaCli.codeInspection
 
-import com.intellij.codeInspection.{InspectionSuppressor, SuppressQuickFix}
-import com.intellij.psi.PsiElement
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
+import consulo.language.editor.inspection.{InspectionSuppressor, SuppressQuickFix}
+import consulo.language.psi.PsiElement
 import org.jetbrains.bsp.BspUtil
 import org.jetbrains.plugins.scala.codeInspection.packageNameInspection.ScalaPackageNameInspection
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
+@ExtensionImpl
 final class BspScalaCliInspectionSuppressor extends InspectionSuppressor {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
 
   private val suppressedToolIds: Set[String] = Set(
     ScalaPackageNameInspection.ToolId

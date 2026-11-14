@@ -1,18 +1,18 @@
 package org.jetbrains.bsp.protocol.session
 
 import ch.epfl.scala.bsp4j.BspConnectionDetails
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.OSProcessHandler
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.platform.eel.provider.utils.EelPathUtils
+import consulo.process.cmd.GeneralCommandLine
+import consulo.application.progress.ProgressIndicator
+import consulo.application.util.SystemInfo
+import org.jetbrains.bsp.project.importing.setup.SbtOverBspVmOptions
 import org.jetbrains.bsp.protocol.session.BspServerConnector.{BspCapabilities, ProcessBsp}
 import org.jetbrains.bsp.protocol.session.BspSession.Builder
 import org.jetbrains.bsp.protocol.session.GenericConnector.RemoteProcessPid
 import org.jetbrains.bsp.{BspBundle, BspError, BspErrorMessage, BspSessionCreationError}
+import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.sbt.process.SbtRunner
 
 import java.nio.file.Path
@@ -35,13 +35,21 @@ class GenericConnector(base: Path, compilerOutput: Path, capabilities: BspCapabi
   }
 
   private def prepareBspSession(details: BspConnectionDetails): Builder = {
-    val commandLine = new GeneralCommandLine(details.getArgv)
+    val commandLine = new GeneralCommandLine(argv(details).asJava)
       .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
       .withWorkingDirectory(base)
-    // Add coursier environment variables when starting the sbt/BSP server in tests on Windows,
-    // because the same issue with hanging sbt processes has been observed during project import in sbt/BSP tests.
-    if isUnitTestMode && SystemInfo.isWindows then
-      commandLine.withEnvironment(SbtRunner.defaultCoursierDirectoriesAsEnvVariables().asJava)
+
+    if isUnitTestMode then
+      if SystemInfo.isWindows then
+        // Add coursier environment variables when starting the sbt/BSP server in tests on Windows,
+        // because the same issue with hanging sbt processes has been observed during project import in sbt/BSP tests.
+        commandLine.withEnvironment(SbtRunner.defaultCoursierDirectoriesAsEnvVariables().asJava)
+      end if
+      // In tests, BSP servers that resolve dependencies from coursier's default repositories (`ivy2Local|central`),
+      // e.g. Scala CLI when it fetches Bloop, use the JetBrains Maven Central mirror instead of Maven Central,
+      // to avoid HTTP Error 429 Too Many Requests in the CI (SCL-25750)
+      commandLine.withEnvironment("COURSIER_REPOSITORIES", s"ivy2Local|${Resolver.JetBrainsMavenCentralMirror.root}")
+    end if
 
     val process = commandLine.createProcess()
 
@@ -58,16 +66,37 @@ class GenericConnector(base: Path, compilerOutput: Path, capabilities: BspCapabi
       process.destroy()
     }
 
-    val rootUri = EelPathUtils.getUriLocalToEel(base.toCanonicalPath)
-    val compilerOutputUri = EelPathUtils.getUriLocalToEel(compilerOutput.toCanonicalPath)
+    val rootUri = base.toCanonicalPath.toUri
+    val compilerOutputUri = compilerOutput.toCanonicalPath.toUri
     val initializeBuildParams = BspServerConnector.createInitializeBuildParams(rootUri, compilerOutputUri, capabilities)
 
-    val isLocalProcess = OSProcessHandler.processCanBeKilledByOS(process)
-    val pid =
-      if (isLocalProcess) process.pid()
-      else RemoteProcessPid
+    // upstream: OSProcessHandler.processCanBeKilledByOS(process)
+    val pid = scala.util.Try(process.pid()).getOrElse(RemoteProcessPid)
 
     BspSession.builder(pid, process.getInputStream, process.getErrorStream, process.getOutputStream, initializeBuildParams, cleanup)
+  }
+
+  /**
+   * The command of the connection file, with the [[SbtOverBspVmOptions]] added for sbt.
+   *
+   * The command of sbt (`java ... xsbt.boot.Boot -bsp`) starts the sbt BSP client. The options are added twice:
+   *  - as JVM options of the client, before `xsbt.boot.Boot`, because the sbt launcher resolves the sbt version of the
+   *    project before the client reads its arguments
+   *  - as arguments of the client, which sets the `-Dkey=value` arguments as system properties and passes them on to
+   *    the sbt server that it starts, so they apply to the server as well
+   */
+  private def argv(details: BspConnectionDetails): Seq[String] = {
+    val argv = details.getArgv.asScala.toSeq
+    // The name that sbt writes to its connection file, see `sbt.internal.bsp.BuildServerConnection.name`
+    if (details.getName == "sbt") {
+      val options = SbtOverBspVmOptions.getInstance.vmOptions
+      val launcherMainClassIndex = argv.indexOf("xsbt.boot.Boot")
+      val argvWithJvmOptions =
+        if (launcherMainClassIndex < 0) argv
+        else argv.patch(launcherMainClassIndex, options, 0)
+      argvWithJvmOptions ++ options
+    }
+    else argv
   }
 }
 

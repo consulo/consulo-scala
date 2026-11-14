@@ -1,13 +1,14 @@
 package org.jetbrains.bsp.project.test
 
-import com.intellij.execution.configurations.{ModuleBasedConfiguration, RunConfiguration}
-import com.intellij.openapi.module.Module
+import consulo.execution.configuration.ModuleBasedConfiguration
+import consulo.execution.configuration.RunConfiguration
+import consulo.module.Module
 
 package object environment {
   object ModuleBasedConfiguration {
-    def unapply(configuration: RunConfiguration): Option[(ModuleBasedConfiguration[?, ?], Module)] = {
+    def unapply(configuration: RunConfiguration): Option[(ModuleBasedConfiguration[?], Module)] = {
       configuration match {
-        case config: ModuleBasedConfiguration[_, _] =>
+        case config: ModuleBasedConfiguration[?] =>
           val module = config.getConfigurationModule.getModule
           Some(config, module)
         case _ => None

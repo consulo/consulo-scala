@@ -1,8 +1,11 @@
 package org.jetbrains.bsp.project
 
-import com.intellij.openapi.module.Module
-import org.jetbrains.sbt.project.SbtVersionProvider
+import consulo.annotation.component.ExtensionImpl
 
+import consulo.module.Module
+import org.jetbrains.sbt.api.project.SbtVersionProvider
+
+@ExtensionImpl
 final class BspSbtVersionProvider extends SbtVersionProvider {
   override def getSbtVersion(module: Module): Option[String] = {
     val sbtBuildModuleData = BspExternalSystemUtil.getSbtBuildModuleDataBsp(module)

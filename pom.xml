@@ -91,6 +91,11 @@
         <module>scala/integration/gradle</module>
         <module>scala/integration/textAnalysis</module>
         <module>scala/test-integration/testing-support-munit</module>
+        <module>scala/integration/i18n</module>
+        <module>bsp/bsp-impl</module>
+        <module>bsp/bsp-junit</module>
+        <module>scala-cli</module>
+        <module>scala/integration/devKit</module>
         <module>plugin</module>
     </modules>
 

@@ -1,9 +1,9 @@
 package org.jetbrains.bsp.protocol.session
 
 import bloop.rifle.{BloopRifleConfig, BloopRifleLogger, BloopThreads}
-import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.projectRoots.Sdk
+import consulo.container.boot.ContainerPathManager
+import consulo.application.progress.ProgressIndicator
+import consulo.content.bundle.Sdk
 import org.jetbrains.bsp.protocol.session.BspServerConnector.BspCapabilities
 import org.jetbrains.bsp.protocol.session.BspSession.Builder
 import org.jetbrains.bsp.{BspBundle, BspError}
@@ -24,7 +24,8 @@ private[protocol] class BloopLocalLauncherConnector(
 ) extends BloopLauncherConnectorBase(compilerOutput, capabilities, jdk) {
 
   override def connect(using reporter: BuildReporter, indicator: Option[ProgressIndicator]): Either[BspError, Builder] = {
-    val bloopDataStore = PathManager.getCommonDataPath.resolve("bloop")
+    // upstream: PathManager.getCommonDataPath (shared by all JetBrains IDEs)
+    val bloopDataStore = ContainerPathManager.get().getSystemDir.resolve("bloop")
 
     val details = BloopRifleConfig.default(
       BloopRifleConfig.Address.DomainSocket(bloopDataStore),
@@ -47,6 +48,6 @@ private[protocol] class BloopLocalLauncherConnector(
 
     val pid = Try(Files.readString(bloopDataStore.resolve("pid"))).toOption.flatMap(_.toIntOption).getOrElse(-1)
 
-    Right(createBuilder(socket, connection, pid, base, Some(threads), None))
+    Right(createBuilder(socket, connection, pid, base, Some(threads)))
   }
 }

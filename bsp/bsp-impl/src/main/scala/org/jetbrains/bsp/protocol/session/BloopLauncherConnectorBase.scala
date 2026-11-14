@@ -1,9 +1,8 @@
 package org.jetbrains.bsp.protocol.session
 
 import bloop.rifle.{BloopRifleConfig, BloopThreads, BloopVersion, BspConnection}
-import com.intellij.openapi.projectRoots.{JavaSdk, Sdk}
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import org.apache.commons.io.input.ClosedInputStream
+import consulo.content.bundle.Sdk
+import org.jetbrains.bsp.BspJdkUtil
 import org.jetbrains.bsp.buildinfo.BuildInfo
 import org.jetbrains.bsp.protocol.session.BspServerConnector.BspCapabilities
 import org.jetbrains.bsp.protocol.session.BspSession.Builder
@@ -13,7 +12,6 @@ import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.net.Socket
 import java.nio.file.Path
-import kotlinx.coroutines.{CoroutineScope, CoroutineScopeKt}
 import scala.util.control.NonFatal
 
 private[protocol] abstract class BloopLauncherConnectorBase(
@@ -28,7 +26,7 @@ private[protocol] abstract class BloopLauncherConnectorBase(
     BloopRifleConfig.AtLeast(BloopVersion(bloopVersion))
 
   protected lazy val java: String =
-    JavaSdk.getInstance().getVMExecutablePath(jdk)
+    BspJdkUtil.vmExecutablePath(jdk).toString
 
   protected def bloopClasspath(version: String): Either[Throwable, Seq[Path]] = {
     val dependencies = Seq(
@@ -37,7 +35,7 @@ private[protocol] abstract class BloopLauncherConnectorBase(
     Right(DependencyManager.resolve(dependencies *).map(_.file))
   }
 
-  protected def createBuilder(socket: Socket, connection: BspConnection, pid: Long, base: Path, threads: Option[BloopThreads], scope: Option[CoroutineScope]): Builder = {
+  protected def createBuilder(socket: Socket, connection: BspConnection, pid: Long, base: Path, threads: Option[BloopThreads]): Builder = {
     def safeClose(close: => Unit): Unit =
       try {
         close
@@ -46,16 +44,15 @@ private[protocol] abstract class BloopLauncherConnectorBase(
       }
 
     val cleanup = () => {
-      scope.foreach(CoroutineScopeKt.cancel(_, null))
       safeClose(connection.stop())
       safeClose(socket.close())
       safeClose(threads.foreach(_.shutdown()))
     }
 
-    val rootUri = EelPathUtils.getUriLocalToEel(base.toCanonicalPath)
-    val compilerOutputUri = EelPathUtils.getUriLocalToEel(compilerOutput.toCanonicalPath)
+    val rootUri = base.toCanonicalPath.toUri
+    val compilerOutputUri = compilerOutput.toCanonicalPath.toUri
     val initializeBuildParams = BspServerConnector.createInitializeBuildParams(rootUri, compilerOutputUri, capabilities)
 
-    BspSession.builder(pid, socket.getInputStream, ClosedInputStream.INSTANCE, socket.getOutputStream, initializeBuildParams, cleanup)
+    BspSession.builder(pid, socket.getInputStream, _root_.java.io.InputStream.nullInputStream(), socket.getOutputStream, initializeBuildParams, cleanup)
   }
 }

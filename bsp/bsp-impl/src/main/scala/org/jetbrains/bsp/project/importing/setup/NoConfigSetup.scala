@@ -1,5 +1,5 @@
 package org.jetbrains.bsp.project.importing.setup
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 
 import scala.util.{Success, Try}

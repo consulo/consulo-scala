@@ -2,7 +2,7 @@ package org.jetbrains.bsp.protocol.session
 
 import ch.epfl.scala.bsp4j.{BspConnectionDetails, BuildClientCapabilities, InitializeBuildParams}
 import com.google.gson.{JsonArray, JsonObject}
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.BspError
 import org.jetbrains.bsp.protocol.session.BspSession.Builder
 import org.jetbrains.plugins.scala.build.BuildReporter

@@ -1,25 +1,26 @@
 package org.jetbrains.bsp.project.importing
 
 import ch.epfl.scala.bsp4j.BspConnectionDetails
-import com.intellij.ide.util.projectWizard.{ModuleWizardStep, WizardContext}
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, Sdk, SdkTypeId}
-import com.intellij.openapi.roots.ui.configuration.JdkComboBox
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
-import com.intellij.openapi.util.{Condition, NlsContexts}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.JBList
-import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager, Spacer}
-import com.intellij.util.ui.{JBUI, UI}
-import org.jetbrains.annotations.Nls
+import com.intellij.java.language.projectRoots.JavaSdkType
+import consulo.application.ApplicationManager
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.content.bundle.{Sdk, SdkTable}
+import consulo.disposer.Disposable
+import consulo.externalSystem.importing.ExternalModuleImportContext
+import consulo.localize.LocalizeValue
+import consulo.module.ui.{BundleBox, BundleBoxBuilder}
+import consulo.project.Project
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.wizard.{WizardStep, WizardStepValidationException}
+import consulo.ui.layout.{LabeledLayout, VerticalLayout}
+import consulo.ui.util.LabeledBuilder
+import consulo.ui.{Component, ListBox}
+import consulo.virtualFileSystem.LocalFileSystem
 import org.jetbrains.bsp.project.importing.BspSetupConfigStep.BspConfigSetupTask
 import org.jetbrains.bsp.project.importing.bspConfigSteps.*
 import org.jetbrains.bsp.project.importing.setup.{BspConfigSetup, BspSetupProvider, NoConfigSetup, SbtConfigSetup}
 import org.jetbrains.bsp.protocol.BspConnectionConfig
+import org.jetbrains.bsp.settings.BspProjectSettings
 import org.jetbrains.bsp.settings.BspProjectSettings.*
 import org.jetbrains.bsp.settings.PreImportConfig
 import org.jetbrains.bsp.settings.PreImportConfig.*
@@ -28,12 +29,11 @@ import org.jetbrains.plugins.scala.build.IndicatorReporter
 import org.jetbrains.plugins.scala.project.external.SdkUtils
 import org.jetbrains.sbt.SbtUtil.*
 import org.jetbrains.sbt.project.SbtProjectImportProvider
-import org.jetbrains.sbt.{SbtUtil, SbtVersion}
+import org.jetbrains.sbt.{SbtUtil, platform}
+import org.jetbrains.sbt.api.SbtVersion
 
-import java.awt.{GridBagConstraints, GridBagLayout}
 import java.nio.file.Path
-import javax.swing.{DefaultListModel, JComponent, JLabel, JPanel, ListSelectionModel}
-import scala.annotation.nowarn
+import java.util.concurrent.CompletableFuture
 
 object bspConfigSteps {
 
@@ -57,45 +57,16 @@ object bspConfigSteps {
   private[importing] def configName(config: BspConnectionDetails) =
     s"${config.getName} ${config.getVersion}"
 
-  private[importing] def withTooltip(component: JComponent, @Nls tooltip: String) =
-    UI.PanelFactory.panel(component).withTooltip(tooltip).createPanel(): @nowarn("cat=deprecation")
-
-  private[importing] def addTitledComponent(parent: JComponent, title: JComponent, component: JComponent, row: Int, shouldAddSpacer: Boolean): Int = {
-    val titleConstraints = new GridConstraints()
-    titleConstraints.setRow(row)
-    titleConstraints.setFill(GridConstraints.FILL_HORIZONTAL)
-    parent.add(title, titleConstraints)
-
-    val listConstraints = new GridConstraints()
-    listConstraints.setRow(row + 1)
-    listConstraints.setFill(GridConstraints.FILL_BOTH)
-    listConstraints.setIndent(1)
-    parent.add(component, listConstraints)
-    if (shouldAddSpacer) {
-      addSpacer(parent, row + 2)
-    } else {
-      row + 2
-    }
-  }
-
-  private[importing] def addSpacer(parent: JComponent, row: Int): Int = {
-    val spacer = new Spacer()
-    val spacerConstraints = new GridConstraints()
-    spacerConstraints.setRow(row)
-    spacerConstraints.setVSizePolicy(GridConstraints.SIZEPOLICY_WANT_GROW | GridConstraints.SIZEPOLICY_CAN_GROW)
-    parent.add(spacer, spacerConstraints)
-    row +1
-  }
-
   def configSetupChoices(workspace: Path): List[ConfigSetup] = {
     val workspaceConfigs = workspaceSetupChoices(workspace)
     if (workspaceConfigs.nonEmpty) workspaceConfigs
     else List(NoSetup)
   }
 
+  // upstream: configures BspProjectImportBuilder - the Consulo import wizard keeps these values in the imported project settings
   def configureBuilder(
     jdk: Sdk,
-    builder: BspProjectImportBuilder,
+    builder: BspProjectSettings,
     workspace: Path,
     configSetup: ConfigSetup
   ): BspConfigSetup = {
@@ -105,8 +76,8 @@ object bspConfigSteps {
       serverConfig: Option[BspServerConfig]
     ) = getBuilderConfigurationParameters(jdk, workspace, configSetup)
 
-    preImportConfig.foreach(builder.setPreImportConfig)
-    serverConfig.foreach(builder.setServerConfig)
+    preImportConfig.foreach(builder.preImportConfig = _)
+    serverConfig.foreach(builder.serverConfig = _)
 
     setup
   }
@@ -204,80 +175,96 @@ object bspConfigSteps {
   }
 }
 
-class BspSetupConfigStep(wizardContext: WizardContext, builder: BspProjectImportBuilder, setupTaskWorkspace: Path)
-  extends ModuleWizardStep {
+/**
+ * Chooses the tool generating the BSP connection file (and the JDK when there is none), then generates it.
+ *
+ * upstream: ModuleWizardStep of the IntelliJ import wizard (BspProjectImportBuilder keeps the choice, the setup task
+ * runs in onWizardFinished) - the Consulo wizard keeps the choice in the imported project settings and the setup task
+ * runs when the step is validated
+ */
+class BspSetupConfigStep extends WizardStep[ExternalModuleImportContext] {
 
-  private var runSetupTask: BspConfigSetup = NoConfigSetup
+  private var ui: Option[BspSetupConfigStepUi] = None
 
-  private val workspaceBspConfigs = BspConnectionConfig.workspaceBspConfigs(setupTaskWorkspace)
-  private lazy val workspaceSetupConfigs: List[ConfigSetup] = workspaceSetupChoices(setupTaskWorkspace)
-  private val existingJdk = BspJdkUtil.findOrCreateBestJdkForProject(Option(wizardContext.getProject), EelProviderUtil.getEelDescriptor(setupTaskWorkspace))
+  private def settings(context: ExternalModuleImportContext): BspProjectSettings =
+    context.getProjectSettings.asInstanceOf[BspProjectSettings]
 
-  private val configSetupChoices: List[ConfigSetup] = {
-    if (workspaceBspConfigs.size == 1) List(NoSetup)
+  private def workspace(context: ExternalModuleImportContext): Path =
+    Path.of(settings(context).getExternalProjectPath)
+
+  private def configSetupChoices(workspace: Path): List[ConfigSetup] = {
+    val workspaceSetupConfigs = workspaceSetupChoices(workspace)
+    if (BspConnectionConfig.workspaceBspConfigs(workspace).size == 1) List(NoSetup)
     else if (workspaceSetupConfigs.nonEmpty) workspaceSetupConfigs
     else List(NoSetup)
   }
 
-  private val bspSetupConfigStepUi = new BspSetupConfigStepUi(BspBundle.message("bsp.config.steps.setup.config.choose.tool"), configSetupChoices, existingJdk.isEmpty, Option(wizardContext.getProject))
+  private def existingJdk(context: ExternalModuleImportContext): Option[Sdk] =
+    BspJdkUtil.findOrCreateBestJdkForProject(Option(context.getProject), workspace(context).platform)
 
-  override def getComponent: JComponent = bspSetupConfigStepUi.mainComponent
-
-  override def getPreferredFocusedComponent: JComponent = bspSetupConfigStepUi.chooseBspSetupList
-
-  override def validate(): Boolean = {
-    (workspaceBspConfigs.nonEmpty ||
-      configSetupChoices.size == 1 ||
-      bspSetupConfigStepUi.chooseBspSetupList.getSelectedIndex >= 0 ) &&
-      bspSetupConfigStepUi.isJdkSelectedIfRequired
+  @RequiredUIAccess
+  override def getComponent(context: ExternalModuleImportContext, uiDisposable: Disposable): Component = {
+    val choices = configSetupChoices(workspace(context))
+    val stepUi = new BspSetupConfigStepUi(
+      BspBundle.message("bsp.config.steps.setup.config.choose.tool"),
+      choices,
+      existingJdk(context).isEmpty,
+      uiDisposable
+    )
+    stepUi.updateChooseBspSetupComponent(choices)
+    ui = Some(stepUi)
+    stepUi.mainComponent
   }
 
-  override def updateStep(): Unit = {
-    bspSetupConfigStepUi.updateChooseBspSetupComponent(configSetupChoices)
+  // upstream: isStepVisible also hides the step when there is only one choice and a JDK, the setup task still runs in
+  // onWizardFinished - here the step must be shown to run it
+  override def isVisible(context: ExternalModuleImportContext): Boolean = {
+    val path = settings(context).getExternalProjectPath
+    path != null &&
+      settings(context).preImportConfig == AutoPreImport &&
+      BspConnectionConfig.workspaceBspConfigs(Path.of(path)).isEmpty &&
+      configSetupChoices(Path.of(path)) != List(NoSetup)
   }
 
-  override def updateDataModel(): Unit = {
+  @RequiredUIAccess
+  override def validateStep(context: ExternalModuleImportContext): CompletableFuture[?] = {
+    val stepUi = ui.getOrElse(return CompletableFuture.completedFuture(null))
+    if (!stepUi.isJdkSelectedIfRequired)
+      return CompletableFuture.failedFuture(new WizardStepValidationException(LocalizeValue.of(BspBundle.message("jdkComboBox.validation.tooltip"))))
 
-    val configIndex =
-      if (configSetupChoices.size == 1) 0
-      else bspSetupConfigStepUi.chooseBspSetupList.getSelectedIndex
-
-    val jdkOpt = if (configSetupChoices.size > configIndex && configIndex >= 0) {
-      existingJdk.orElse(bspSetupConfigStepUi.getSelectedJdkIfRequired)
-    } else None
-
-    runSetupTask = jdkOpt match {
-      case Some(jdk) => configureBuilder(jdk, builder, setupTaskWorkspace, configSetupChoices(configIndex))
+    val projectSettings = settings(context)
+    val workspacePath = workspace(context)
+    val selectedJdk = stepUi.getSelectedJdkIfRequired
+    selectedJdk.foreach(SdkUtils.addJdkIfNotExists)
+    val runSetupTask = existingJdk(context).orElse(selectedJdk) match {
+      case Some(jdk) => configureBuilder(jdk, projectSettings, workspacePath, stepUi.selectedConfigSetup)
       case _ => NoConfigSetup
     }
 
-  }
+    val willGenerateConfig = runSetupTask != NoConfigSetup
+    projectSettings.bspConfigGenerated = willGenerateConfig
 
-  override def isStepVisible: Boolean = {
-    builder.preImportConfig == AutoPreImport &&
-      (configSetupChoices.size > 1 || existingJdk.isEmpty) &&
-      workspaceBspConfigs.isEmpty
-  }
+    if (!willGenerateConfig) CompletableFuture.completedFuture(null)
+    else {
+      val result = new CompletableFuture[AnyRef]()
+      new Task.Backgroundable(context.getProject, BspBundle.message("bsp.config.steps.setup.config.task.title"), true) {
+        override def run(indicator: ProgressIndicator): Unit = {
+          val reporter = new IndicatorReporter(indicator)
+          runSetupTask.run(indicator)(using reporter)
+        }
 
-  override def onWizardFinished(): Unit = {
-    // TODO this spawns an indicator window which is not nice.
-    // show a live log in the window or something?
-    if (wizardContext.getProjectBuilder.isInstanceOf[BspProjectImportBuilder]) {
-      bspSetupConfigStepUi.getSelectedJdkIfRequired.foreach(SdkUtils.addJdkIfNotExists)
-      updateDataModel() // without it runSetupTask is null
-      builder.prepare(wizardContext)
-      //this will use DefaultProject, which will lead to exception IDEA-289729
-      //builder.ensureProjectIsDefined(wizardContext)
+        override def onSuccess(): Unit = result.complete(null)
 
-      val willGenerateConfig = runSetupTask != NoConfigSetup
-      builder.setBspConfigGenerated(willGenerateConfig)
+        override def onCancel(): Unit = result.complete(null)
 
-      val task = new BspConfigSetupTask(runSetupTask)
-      task.queue()
+        override def onThrowable(error: Throwable): Unit =
+          result.completeExceptionally(new WizardStepValidationException(LocalizeValue.of(String.valueOf(error.getMessage))))
+      }.queue()
+      result
     }
   }
-
 }
+
 object BspSetupConfigStep {
 
   // When `BspConfigSetupTask` is changed to run in a non-blocking way, review
@@ -293,141 +280,105 @@ object BspSetupConfigStep {
   }
 }
 
+// upstream: Swing panel (GridLayoutManager, JBList, JdkComboBox)
 final class BspSetupConfigStepUi(
-  @NlsContexts.Separator title: String,
+  title: String,
   configSetups: Seq[ConfigSetup],
   showJdkComboBox: Boolean,
-  project: Option[Project]
+  uiDisposable: Disposable
 ) {
 
-  val mainComponent: JPanel = {
-    val manager = new GridLayoutManager(5, 1)
-    manager.setSameSizeHorizontally(false)
-    new JPanel(manager)
-  }
-  private val chooseBspSetupModel = new DefaultListModel[String]
-  val chooseBspSetupList = new JBList[String](chooseBspSetupModel)
-  private val model = new ProjectSdksModel()
+  private val choiceNames: Seq[String] = getConfigSetupChoicesStrings(configSetups)
 
-  val jdkComboBox: JdkComboBox = {
-    model.reset(project.orNull)
-    val jdkFilter: Condition[SdkTypeId] = (sdk: SdkTypeId) => sdk == JavaSdk.getInstance()
-    new JdkComboBox(project.orNull, model, jdkFilter, null, jdkFilter, null)
-  }
+  val chooseBspSetupList: ListBox[String] = ListBox.create(scala.jdk.CollectionConverters.SeqHasAsJava(choiceNames).asJava)
 
-  locally {
-    var row = 0
-    val titleWithTip = withTooltip(new TitledSeparator(title), BspBundle.message("bsp.config.steps.setup.config.choose.tool.tooltip"))
-    chooseBspSetupList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
-    row = addTitledComponent(mainComponent, titleWithTip, chooseBspSetupList, row, shouldAddSpacer = false)
-
-    if (showJdkComboBox) {
-      val panelForComboBox = new JPanel(new GridBagLayout)
-      val label = new JLabel("JDK")
-      panelForComboBox.add(label, new GridBagConstraints(0, 1, 1, 1, 0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, JBUI.insetsTop(8), 0, 0))
-      panelForComboBox.add(jdkComboBox, new GridBagConstraints(1, 1, 1, 1, 1.0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, JBUI.insets(2, 10, 10, 0), 0, 0))
-      val jdkTitleWithTip = withTooltip(new TitledSeparator(BspBundle.message("bsp.config.steps.setup.config.choose.jdk")), BspBundle.message("bsp.config.steps.setup.config.choose.jdk.tooltip"))
-      addTitledComponent(mainComponent, jdkTitleWithTip, panelForComboBox, row, shouldAddSpacer = true)
-    } else {
-      addSpacer(mainComponent, row)
+  val jdkComboBox: Option[BundleBox] =
+    Option.when(showJdkComboBox) {
+      BundleBoxBuilder.create(uiDisposable)
+        .withSdkTypeFilterByClass(classOf[JavaSdkType])
+        .build()
     }
+
+  val mainComponent: Component = {
+    chooseBspSetupList.setToolTipText(LocalizeValue.of(BspBundle.message("bsp.config.steps.setup.config.choose.tool.tooltip")))
+    val layout = VerticalLayout.create()
+    layout.add(LabeledLayout.create(LocalizeValue.of(title), chooseBspSetupList))
+    jdkComboBox.foreach { box =>
+      val jdkLayout = LabeledBuilder.sided(LocalizeValue.localizeTODO("JDK"), box)
+      layout.add(LabeledLayout.create(LocalizeValue.of(BspBundle.message("bsp.config.steps.setup.config.choose.jdk")), jdkLayout))
+    }
+    layout
   }
+
+  private def selectedIndex: Int =
+    Option(chooseBspSetupList.getValue).map(choiceNames.indexOf).getOrElse(-1)
 
   def selectedConfigSetup: ConfigSetup =
-    configSetups(chooseBspSetupList.getSelectedIndex)
+    configSetups(math.max(0, selectedIndex))
 
-  def updateChooseBspSetupComponent(configSetupChoices: Seq[ConfigSetup]): Unit = {
-    val setupChoicesStrings = getConfigSetupChoicesStrings(configSetupChoices)
-    chooseBspSetupModel.clear()
-    setupChoicesStrings.foreach(chooseBspSetupModel.addElement)
-    chooseBspSetupList.setSelectedIndex(0)
-  }
+  @RequiredUIAccess
+  def updateChooseBspSetupComponent(configSetupChoices: Seq[ConfigSetup]): Unit =
+    if (choiceNames.nonEmpty) chooseBspSetupList.setValueByIndex(0)
 
   private def getConfigSetupChoicesStrings(configSetupChoices: Seq[ConfigSetup]): Seq[String] = {
     val recommendedSuffix = BspBundle.message("bsp.config.steps.choose.config.recommended.suffix")
     val configChoiceName = configSetupChoices.map(bspConfigSteps.configChoiceName)
     configChoiceName match {
-      case Seq(head, tail@_*) =>
+      case Seq(head, tail*) =>
         s"$head ($recommendedSuffix)" +: tail
-      case Nil =>
+      case _ =>
         Nil
     }
   }
 
   def getSelectedJdkIfRequired: Option[Sdk] =
-    if (showJdkComboBox) Option(jdkComboBox.getSelectedJdk)
-    else None
-
+    jdkComboBox.flatMap(box => Option(box.getSelectedBundleName)).flatMap(name => Option(SdkTable.getInstance().findSdk(name)))
 
   def isJdkSelectedIfRequired: Boolean =
-    if (showJdkComboBox) jdkComboBox.getSelectedJdk != null
-    else true
+    jdkComboBox.forall(_ => getSelectedJdkIfRequired.isDefined)
 }
 
-class BspChooseConfigStep(context: WizardContext, builder: BspProjectImportBuilder)
-  extends ModuleWizardStep {
+/**
+ * Chooses the BSP connection file when the workspace has more than one.
+ *
+ * upstream: ModuleWizardStep of the IntelliJ import wizard
+ */
+class BspChooseConfigStep extends WizardStep[ExternalModuleImportContext] {
 
-  private val myComponent = {
-    val manager = new GridLayoutManager(5, 1)
-    manager.setSameSizeHorizontally(false)
-    new JPanel(manager)
-  }
-  private val chooseBspConfig = new JBList[String]()
-  private val chooseBspSetupModel = new DefaultListModel[String]
-  chooseBspConfig.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
-  chooseBspConfig.setModel(chooseBspSetupModel)
+  private var chooseBspConfig: Option[ListBox[String]] = None
 
-  private def bspConfigs = BspConnectionConfig.allBspConfigs(context.getProjectDirectory)
+  private def settings(context: ExternalModuleImportContext): BspProjectSettings =
+    context.getProjectSettings.asInstanceOf[BspProjectSettings]
 
-  {
-    val chooseSetupTitle = new TitledSeparator(BspBundle.message("bsp.config.steps.choose.config.title"))
-    val titleWithTip = withTooltip(chooseSetupTitle, BspBundle.message("bsp.config.steps.choose.config.title.tooltip"))
-    addTitledComponent(myComponent, titleWithTip, chooseBspConfig, 0, shouldAddSpacer = true)
-  }
+  private def bspConfigs(context: ExternalModuleImportContext) =
+    BspConnectionConfig.allBspConfigs(Path.of(settings(context).getExternalProjectPath))
 
-  override def getComponent: JComponent = myComponent
-
-  override def validate(): Boolean = {
-    // config already chosen in previous step
-    val alreadySet = builder.serverConfig != AutoConfig
-
-    // there should be at least one config at this point
-    val configsExist = !chooseBspConfig.isEmpty
-    val configSelected = chooseBspConfig.getItemsCount == 1 || chooseBspConfig.getSelectedIndex >= 0
-
-    alreadySet || (configsExist && configSelected)
+  @RequiredUIAccess
+  override def getComponent(context: ExternalModuleImportContext, uiDisposable: Disposable): Component = {
+    import scala.jdk.CollectionConverters.*
+    val names = bspConfigs(context).map { case (_, details) => configName(details) }
+    val list = ListBox.create(names.asJava)
+    if (names.nonEmpty) list.setValueByIndex(0)
+    list.setToolTipText(LocalizeValue.of(BspBundle.message("bsp.config.steps.choose.config.title.tooltip")))
+    chooseBspConfig = Some(list)
+    LabeledLayout.create(LocalizeValue.of(BspBundle.message("bsp.config.steps.choose.config.title")), list)
   }
 
-  override def updateStep(): Unit = {
-    chooseBspSetupModel.clear()
-    bspConfigs
-      .map { case (_,details) => configName(details) }
-      .foreach(chooseBspSetupModel.addElement)
-  }
+  override def isVisible(context: ExternalModuleImportContext): Boolean =
+    settings(context).getExternalProjectPath != null &&
+      settings(context).serverConfig == AutoConfig && bspConfigs(context).size > 1
 
-  override def updateDataModel(): Unit = {
+  @RequiredUIAccess
+  override def validateStep(context: ExternalModuleImportContext): CompletableFuture[?] = {
+    val configs = bspConfigs(context)
     val configIndex =
-      if (chooseBspConfig.getItemsCount == 1) 0
-      else chooseBspConfig.getSelectedIndex
+      if (configs.size == 1) 0
+      else chooseBspConfig.flatMap(list => Option(list.getValue)).map(name => configs.indexWhere { case (_, details) => configName(details) == name }).getOrElse(-1)
 
     if (configIndex >= 0) {
-      val (file,_) = bspConfigs(configIndex)
-      val config = BspConfigFile(file)
-      builder.setServerConfig(config)
+      val (file, _) = configs(configIndex)
+      settings(context).serverConfig = BspConfigFile(file)
     }
-  }
-
-  override def onWizardFinished(): Unit = {
-    updateStep()
-    if (builder.serverConfig == AutoConfig && chooseBspConfig.getItemsCount == 1) {
-      val (file,_) = bspConfigs.head
-      val config = BspConfigFile(file)
-      builder.setServerConfig(config)
-    }
-  }
-
-  override def isStepVisible: Boolean = {
-    updateStep()
-    builder.serverConfig == AutoConfig && chooseBspConfig.getItemsCount > 1
+    CompletableFuture.completedFuture(null)
   }
 }

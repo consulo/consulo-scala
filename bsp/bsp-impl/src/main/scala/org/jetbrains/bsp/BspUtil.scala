@@ -1,16 +1,19 @@
 package org.jetbrains.bsp
 
-import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.{Module, ModuleManager}
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
-import com.intellij.openapi.project.{Project, ProjectUtil}
-import com.intellij.openapi.roots.CompilerProjectExtension
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import consulo.application.Application
+import consulo.build.ui.event.BuildEventFactory
+import consulo.compiler.CompilerConfiguration
+import consulo.process.cmd.GeneralCommandLine
+import consulo.process.util.CapturingProcessRunner
+import consulo.process.ProcessHandlerBuilder
+import consulo.logging.Logger
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.{Module, ModuleManager}
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.project.ProjectLocator
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode
 import org.jetbrains.annotations.Nls
@@ -77,10 +80,10 @@ object BspUtil {
     val vfm = VirtualFileManager.getInstance()
     for {
       projectDir <- Option(vfm.findFileByUrl(base.toUri.toString)) // path.toUri is rendered with :// separator which findFileByUrl needs
-      project <- Option(ProjectUtil.guessProjectForFile(projectDir))
-      cpe = CompilerProjectExtension.getInstance(project)
-      output <- Option(cpe.getCompilerOutput)
-    } yield Path.of(output.getCanonicalPath)
+      project <- Option(ProjectLocator.getInstance.guessProjectForFile(projectDir))
+      // upstream: CompilerProjectExtension.getCompilerOutput
+      output <- Option(CompilerConfiguration.getInstance(project).getCompilerOutputPath)
+    } yield output.toCanonicalPath
   }
 
   implicit class ResponseErrorExceptionOps(err: ResponseErrorException) {
@@ -107,20 +110,21 @@ object BspUtil {
                        @Nls successMsg: String,
                        @Nls failMsg: String
                       ): CompletableFuture[T] = {
+      val factory = Application.get().getInstance(classOf[BuildEventFactory])
       cf.thenAccept {
         case Success(_) =>
-          reporter.finishTask(eventId, successMsg, new SuccessResultImpl(true))
+          reporter.finishTask(eventId, successMsg, factory.createSuccessResult(true))
         case Failure(BspResponseError(message, error)) =>
           if (error.getCode == ResponseErrorCode.MethodNotFound.getValue) {
-            reporter.finishTask(eventId, "unsupported method", new SkippedResultImpl)
+            reporter.finishTask(eventId, "unsupported method", factory.createSkippedResult())
           } else {
             val reportMsg = failMsg + "\n" + message
-            reporter.finishTask(eventId, reportMsg, new FailureResultImpl(reportMsg))
+            reporter.finishTask(eventId, reportMsg, factory.createFailureResult(reportMsg))
           }
         case Failure(x) =>
-          reporter.finishTask(eventId, failMsg, new FailureResultImpl(failMsg, x))
+          reporter.finishTask(eventId, failMsg, factory.createFailureResult(failMsg, x))
         case _ =>
-          reporter.finishTask(eventId, successMsg, new SuccessResultImpl(true))
+          reporter.finishTask(eventId, successMsg, factory.createSuccessResult(true))
       }
       cf
     }
@@ -159,7 +163,7 @@ object BspUtil {
    * @param directory directory in which the check will be executed
    * @param toolCommand executable name (e.g. "scala-cli", "mill")
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def isToolInstalledCheckViaVersion(directory: Path, indicator: ProgressIndicator, toolCommand: String*): Boolean = {
     val work = runCommand(directory, indicator, (toolCommand :+ "--version")*)
     work.fold(
@@ -174,16 +178,16 @@ object BspUtil {
   /**
    * @return Right, if the process exit value is 0; otherwise, return Left with the exception.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def runCommand(directory: Path, indicator: ProgressIndicator, command: String*): Either[Throwable, Int] = {
     val stderr = new StringBuilder
     val work = Try {
       val generalCommandLine = new GeneralCommandLine(command.asJava)
         .withWorkDirectory(directory.toString)
 
-      val handler = new CapturingProcessHandler(generalCommandLine)
+      val handler = ProcessHandlerBuilder.create(generalCommandLine).build()
       val timeout = 2.minute
-      val output = handler.runProcessWithProgressIndicator(indicator, timeout.toMillis.toInt)
+      val output = new CapturingProcessRunner(handler).runProcess(indicator, timeout.toMillis.toInt)
 
       stderr.append(output.getStderr.trim)
 

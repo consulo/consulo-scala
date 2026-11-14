@@ -4,11 +4,13 @@ package codeInspection
 package i18n
 package internal
 
-import com.intellij.codeInsight.AnnotationUtil
-import com.intellij.codeInspection.{LocalInspectionTool, ProblemsHolder}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.psi.{PsiElement, PsiElementVisitor, PsiReference}
+import com.intellij.java.language.codeInsight.AnnotationUtil
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.inspection.ProblemsHolder
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.project.Project
+import consulo.module.content.ProjectFileIndex
+import consulo.language.psi.{PsiElement, PsiElementVisitor, PsiReference}
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple}
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotationsHolder
@@ -21,16 +23,18 @@ import org.jetbrains.plugins.scala.scalai18n.codeInspection.i18n.internal.Refere
 
 import scala.collection.mutable
 
-class ReferencePassedToNlsInspection extends LocalInspectionTool {
+@ExtensionImpl
+class ReferencePassedToNlsInspection
+  extends ScalaI18nInternalInspection("internal.expression.without.nls.passed.to.nls", HighlightDisplayLevel.WARNING) {
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
+  override protected def buildInternalVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case element@(_: PsiReference | _: MethodInvocation) if isPassedToNls(element) =>
       resolveToNotNlsAnnotated(element).foreach {
         case Annotatable(ref) if isInProjectSource(ref) =>
-          holder.registerProblem(element, getDisplayName, new AnnotateWithNls(ref))
+          holder.registerProblem(element, getDisplayName.get, new AnnotateWithNls(ref))
 
         case _ =>
-          holder.registerProblem(element, getDisplayName)
+          holder.registerProblem(element, getDisplayName.get)
       }
     case _ =>
   }

@@ -1,6 +1,6 @@
 package org.jetbrains.scalaCli.project.importing
 
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.project.importing.setup.CommandBasedBspConfigSetup
 import org.jetbrains.scalaCli.ScalaCliUtils
 import org.jetbrains.scalaCli.ScalaCliUtils.{ScalaCliInstallKind, getScalaCliCommand}

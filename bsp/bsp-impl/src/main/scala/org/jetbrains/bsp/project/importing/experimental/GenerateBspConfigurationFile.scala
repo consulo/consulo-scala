@@ -1,16 +1,20 @@
 package org.jetbrains.bsp.project.importing.experimental
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.project.ProjectUtil
+import consulo.annotation.component.ActionImpl
+
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
+import consulo.localize.LocalizeValue
+import consulo.project.Project
 import org.jetbrains.bsp.{BspBundle, BspUtil}
 
 // TODO SCL-24897
+@ActionImpl(id = "BSP.RegenerateBspConfigurationFile")
 class GenerateBspConfigurationFile extends AnAction(
-  BspBundle.message("generate.bsp.configuration.file")
-) {
+  LocalizeValue.of(BspBundle.message("generate.bsp.configuration.file"))
+) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
     val isBspProject = project != null && BspUtil.isBspProject(project)
     if (!isBspProject) {
       e.getPresentation.setEnabledAndVisible(false)
@@ -20,11 +24,12 @@ class GenerateBspConfigurationFile extends AnAction(
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override def actionPerformed(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
     if (project == null)
       return
 
-    val projectDir = ProjectUtil.guessProjectDir(project)
+    // upstream: ProjectUtil.guessProjectDir
+    val projectDir = project.getBaseDir
     if (projectDir == null)
       return
 

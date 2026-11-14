@@ -1,12 +1,15 @@
 package org.jetbrains.bsp
 
-import com.intellij.openapi.externalSystem.service.task.ui.AbstractExternalSystemToolWindowFactory
-import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemSettings
-import com.intellij.openapi.project.Project
-import org.jetbrains.bsp.settings.BspSettings
+import consulo.annotation.component.ExtensionImpl
+import consulo.externalSystem.ui.AbstractExternalSystemToolWindowFactory
+import consulo.ui.ex.toolWindow.ToolWindowAnchor
+import consulo.ui.image.Image
 
+// upstream: getSettings(project) override - the Consulo factory resolves the settings by the system id
+@ExtensionImpl
 class BspToolWindowFactory extends AbstractExternalSystemToolWindowFactory(BSP.ProjectSystemId) {
 
-  override def getSettings(project: Project): AbstractExternalSystemSettings[?, ?, ?] =
-    BspSettings.getInstance(project)
+  override def getAnchor: ToolWindowAnchor = ToolWindowAnchor.RIGHT
+
+  override def getIcon: Image = Icons.BSP_TOOLWINDOW
 }

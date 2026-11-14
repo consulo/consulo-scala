@@ -1,8 +1,7 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.externalSystem.model.Key
-import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityData
-import com.intellij.serialization.PropertyMapping
+import consulo.externalSystem.model.Key
+import consulo.externalSystem.service.project.AbstractExternalEntityData
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.bsp.BSP
 import org.jetbrains.bsp.data.BspEntityData.datakey
@@ -21,12 +20,7 @@ import java.util.Objects
  * @param sbtVersion  indicates a version of SBT in case of SBT us used over BSP
  * @note for a SBT external build system entity see [[org.jetbrains.sbt.project.data.SbtBuildModuleData]]
  */
-case class SbtBuildModuleDataBsp @PropertyMapping(Array(
-  "id",
-  "childrenIds",
-  "imports",
-  "sbtVersion",
-))(
+case class SbtBuildModuleDataBsp(
   id: MyURI,
   childrenIds: util.List[MyURI],
   imports: util.List[String],

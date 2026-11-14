@@ -1,9 +1,11 @@
-package org.jetbrains.plugins.scala.compiler
+package org.jetbrains.plugins.scala.bsp.compiler
 
-import com.intellij.util.messages.Topic
+import consulo.annotation.component.{ComponentScope, TopicAPI}
+import org.jetbrains.plugins.scala.shared.compiler.CompilerEvent
 
 import java.util.EventListener
 
+@TopicAPI(ComponentScope.PROJECT)
 trait CompilerEventListener
   extends EventListener {
 
@@ -12,8 +14,5 @@ trait CompilerEventListener
 
 object CompilerEventListener {
 
-  final val topic = Topic.create(
-    "compiler events",
-    classOf[CompilerEventListener]
-  )
+  final val topic: Class[CompilerEventListener] = classOf[CompilerEventListener]
 }

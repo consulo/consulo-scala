@@ -1,8 +1,9 @@
 package org.jetbrains.bsp.project.importing.setup
 
-import com.intellij.build.events.EventResult
-import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator}
+import consulo.application.Application
+import consulo.build.ui.event.{BuildEventFactory, EventResult}
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.{BspBundle, BspUtil}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
@@ -78,7 +79,7 @@ abstract class CommandBasedBspConfigSetup(workspace: Path) extends BspConfigSetu
       errorMsg.filter(_.nonEmpty).foreach { msg =>
         val warningId = EventId(s"warning:${UUID.randomUUID()}")
         reporter.startTask(warningId, Some(dumpTaskId), msg)
-        reporter.finishTask(warningId, msg, new FailureResultImpl())
+        reporter.finishTask(warningId, msg, Application.get().getInstance(classOf[BuildEventFactory]).createFailureResult())
         buildMessages.addError(msg)
       }
       reporter.finishTask(dumpTaskId, BspBundle.message("bsp.resolver.installing.configuration", serverName), result)
@@ -88,11 +89,11 @@ abstract class CommandBasedBspConfigSetup(workspace: Path) extends BspConfigSetu
     val (errorMsg, eventResult, buildMessages) = work.fold(
       {
         case _: ProcessCanceledException =>
-          (None, new SkippedResultImpl(), BuildMessages.Canceled)
+          (None, Application.get().getInstance(classOf[BuildEventFactory]).createSkippedResult(), BuildMessages.Canceled)
         case exc =>
-          (Some(exc.getMessage), new SkippedResultImpl(), BuildMessages.Error)
+          (Some(exc.getMessage), Application.get().getInstance(classOf[BuildEventFactory]).createSkippedResult(), BuildMessages.Error)
       },
-      _ => (None, new SuccessResultImpl(true), BuildMessages.OK)
+      _ => (None, Application.get().getInstance(classOf[BuildEventFactory]).createSuccessResult(true), BuildMessages.OK)
     )
     finishInstallTask(errorMsg, eventResult, buildMessages)
   }

@@ -1,6 +1,6 @@
 package org.jetbrains.bsp.protocol.session
 
-import com.intellij.openapi.progress.ProcessCanceledException
+import consulo.component.ProcessCanceledException
 import org.jetbrains.annotations.Nls
 import org.jetbrains.bsp.protocol.BspJob
 import org.jetbrains.bsp.protocol.BspNotifications.BspNotification

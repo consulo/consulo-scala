@@ -1,18 +1,19 @@
 package org.jetbrains.bsp.project.importing.preimport
 
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.projectRoots.{JavaSdk, ProjectJdkTable, Sdk}
-import com.intellij.openapi.util.io.NioFiles
-import com.intellij.platform.eel.EelDescriptor
-import org.jetbrains.bsp.BspBundle
+import consulo.platform.Platform
+import consulo.application.progress.ProgressIndicator
+import consulo.content.bundle.Sdk
+import consulo.util.io.FileUtil
+import org.jetbrains.bsp.{BspBundle, BspJdkUtil}
 import org.jetbrains.bsp.buildinfo.BuildInfo
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter}
 import org.jetbrains.plugins.scala.extensions.invokeAndWait
 import org.jetbrains.sbt.SbtUtil.{detectSbtVersion, sbtVersionParam}
 import org.jetbrains.sbt.process.SbtRunner
 import org.jetbrains.sbt.project.settings.SbtExecutionSettings
-import org.jetbrains.sbt.project.{EelPathKotlinUtils, SbtExternalSystemManager}
-import org.jetbrains.sbt.{Sbt, SbtUtil, SbtVersion, normalizedLocalPath}
+import org.jetbrains.sbt.project.SbtExternalSystemManager
+import org.jetbrains.sbt.{Sbt, SbtUtil, normalizedLocalPath}
+import org.jetbrains.sbt.api.SbtVersion
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path}
@@ -25,19 +26,19 @@ class BloopPreImporter(runSbt: (SbtRunner, ProgressIndicator) => Try[BuildMessag
 }
 object BloopPreImporter {
   //noinspection ApiStatus
-  def apply(baseDir: Path, jdk: Sdk)(using reporter: BuildReporter, eelDescriptor: EelDescriptor): BloopPreImporter = {
-    invokeAndWait(ProjectJdkTable.getInstance.preconfigure())
-    val jdkType = JavaSdk.getInstance()
-    val jdkExe = Path.of(jdkType.getVMExecutablePath(jdk))
+  def apply(baseDir: Path, jdk: Sdk)(using reporter: BuildReporter, platform: Platform): BloopPreImporter = {
+    // upstream: ProjectJdkTable.preconfigure() - not in Consulo
+    val jdkExe = BspJdkUtil.vmExecutablePath(jdk)
     val jdkHome = Option(jdk.getHomePath).map(Path.of(_))
     val sbtLauncher = SbtUtil.defaultLauncherPath
 
     val injectedPlugins = s"""addSbtPlugin("ch.epfl.scala" % "sbt-bloop" % "${BuildInfo.bloopVersion}")"""
-    val pluginFile = SbtUtil.createTemporarySbtFile(injectedPlugins, eelDescriptor, projectOpt = None)
-    Runtime.getRuntime.addShutdownHook(Thread(() => NioFiles.deleteQuietly(pluginFile)))
+    val pluginFile = SbtUtil.createTemporarySbtFile(injectedPlugins, platform, projectOpt = None)
+    Runtime.getRuntime.addShutdownHook(Thread(() => FileUtil.delete(pluginFile): Unit))
 
     val injectedSettings = """bloopExportJarClassifiers in Global := Some(Set("sources"))"""
-    val settingsFile = EelPathKotlinUtils.createTemporaryFile("idea-bloop", Sbt.Extension, baseDir, eelDescriptor)
+    // upstream: EelPathKotlinUtils.createTemporaryFile(prefix, suffix, baseDir, eelDescriptor)
+    val settingsFile = platform.fs().createTempFile("idea-bloop", Sbt.Extension)
     Files.writeString(settingsFile, injectedSettings, StandardCharsets.UTF_8)
 
     val sbtLauncherArgs = List(
@@ -70,7 +71,7 @@ object BloopPreImporter {
       )
       new BloopPreImporter(runDump)
     } finally {
-      NioFiles.deleteQuietly(settingsFile)
+      FileUtil.delete(settingsFile)
     }
   }
 }

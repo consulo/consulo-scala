@@ -1,8 +1,12 @@
 package org.jetbrains.bsp.project
 
-import com.intellij.openapi.components.{PersistentStateComponent, Service, State, Storage, StoragePathMacros}
-import com.intellij.openapi.project.Project
-import com.intellij.util.xmlb.XmlSerializerUtil
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.component.persist.{PersistentStateComponent, State, Storage, StoragePathMacros}
+import consulo.project.Project
+import consulo.util.xml.serializer.XmlSerializerUtil
 
 import java.util.Collections
 import scala.beans.BeanProperty
@@ -11,7 +15,10 @@ import scala.beans.BeanProperty
   name = "BspTargetCanCompile",
   storages = Array(new Storage(StoragePathMacros.WORKSPACE_FILE))
 )
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class BspTargetCanCompile
   extends PersistentStateComponent[BspTargetCanCompile] {
 
@@ -25,6 +32,6 @@ final class BspTargetCanCompile
 
 object BspTargetCanCompile {
   def getInstance(project: Project): BspTargetCanCompile = {
-    project.getService(classOf[BspTargetCanCompile])
+    project.getInstance(classOf[BspTargetCanCompile])
   }
 }

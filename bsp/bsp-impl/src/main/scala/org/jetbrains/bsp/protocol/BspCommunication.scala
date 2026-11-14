@@ -1,15 +1,17 @@
 package org.jetbrains.bsp.protocol
 
+import consulo.platform.Platform
+import org.jetbrains.sbt.platform
 import com.google.gson.Gson
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager}
-import com.intellij.openapi.project.{Project, ProjectUtil}
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.{EelProviderUtil, LocalEelDescriptor}
+import consulo.disposer.Disposable
+import consulo.logging.Logger
+import consulo.externalSystem.importing.ImportSpecBuilder
+import consulo.externalSystem.service.project.ExternalSystemProjectRefresher
+import consulo.application.progress.{ProgressIndicator, ProgressManager}
+import consulo.project.Project
+import consulo.project.ProjectLocator
+import consulo.virtualFileSystem.LocalFileSystem
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.bsp.*
 import org.jetbrains.bsp.project.BspExternalSystemManager
@@ -25,7 +27,7 @@ import org.jetbrains.bsp.settings.BspProjectSettings.BspServerConfig
 import org.jetbrains.bsp.settings.{BspExecutionSettings, BspProjectSettings}
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.plugins.scala.isUnitTestMode
+import org.jetbrains.plugins.scala.api.isUnitTestMode
 
 import java.nio.file.Path
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
@@ -91,7 +93,7 @@ class BspCommunication private[protocol](base: Path, initialServerConfig: BspSer
     job: BspSessionJob[?,?],
     canGenerateBspConfigFile: Boolean
   )(using reporter: BuildReporter): Either[BspError, BspSession] = {
-    given EelDescriptor = EelProviderUtil.getEelDescriptor(base)
+    given Platform = base.platform
     val project = findProject
     given ctx: SessionContext = SessionContext(
       project,
@@ -155,7 +157,7 @@ class BspCommunication private[protocol](base: Path, initialServerConfig: BspSer
       settings.connectionFileHash = currentHash
     }
 
-  private def prepareSession(using ctx: SessionContext, reporter: BuildReporter, eelDescriptor: EelDescriptor): Either[BspError, Builder] = {
+  private def prepareSession(using ctx: SessionContext, reporter: BuildReporter, platform: Platform): Either[BspError, Builder] = {
     val bloopEnabled = BspUtil.bloopConfigDir(base).isDefined
 
     // TODO supported languages should be extendable
@@ -197,15 +199,14 @@ class BspCommunication private[protocol](base: Path, initialServerConfig: BspSer
   private def configureBloopLauncherIfJdkExists(
     compilerOutputDir: Path,
     capabilities: BspCapabilities
-  )(using eelDescriptor: EelDescriptor, ctx: SessionContext): Either[BspError, BloopLauncherConnectorBase] =
-    BspJdkUtil.findOrCreateBestJdkForProject(ctx.project, eelDescriptor) match {
+  )(using platform: Platform, ctx: SessionContext): Either[BspError, BloopLauncherConnectorBase] =
+    BspJdkUtil.findOrCreateBestJdkForProject(ctx.project, platform) match {
       case Some(jdk) =>
-        val connector =
-          if eelDescriptor == LocalEelDescriptor.INSTANCE then
-            BloopLocalLauncherConnector(base, compilerOutputDir, capabilities, jdk)
-          else
-            BloopRemoteLauncherConnector(base, compilerOutputDir, capabilities, jdk, eelDescriptor)
-        Right(connector)
+        // upstream: BloopRemoteLauncherConnector (Bloop in a remote Eel environment through Eel tunnels) - not ported
+        if platform == Platform.current() then
+          Right(BloopLocalLauncherConnector(base, compilerOutputDir, capabilities, jdk))
+        else
+          Left(BspErrorMessage(s"Bloop is supported only on the local machine, BSP workspace: $base"))
       case None => Left(BspNoJdkConfiguredError)
     }
 
@@ -224,8 +225,8 @@ class BspCommunication private[protocol](base: Path, initialServerConfig: BspSer
 
   private def findProject: Option[Project] =
     for {
-      vfsPath <- Option(VfsUtil.findFile(base, false))
-      project <- Option(ProjectUtil.guessProjectForFile(vfsPath))
+      vfsPath <- Option(LocalFileSystem.getInstance.findFileByNioFile(base))
+      project <- Option(ProjectLocator.getInstance.guessProjectForFile(vfsPath))
     } yield project
 
   private val projectCallback: NotificationCallback = {
@@ -238,7 +239,7 @@ class BspCommunication private[protocol](base: Path, initialServerConfig: BspSer
           projectCallbackInvocationCount.incrementAndGet()
 
         log.info("[BspCommunication] Got DidChangeBuildTarget notification. Project refresh is triggered")
-        ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, BSP.ProjectSystemId))
+        ExternalSystemProjectRefresher.getInstance().refreshProjects(new ImportSpecBuilder(project, BSP.ProjectSystemId))
       }
     case _ => // ignore
   }

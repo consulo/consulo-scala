@@ -2,10 +2,10 @@ package org.jetbrains.bsp.protocol
 
 import ch.epfl.scala.bsp4j.BspConnectionDetails
 import com.google.gson.Gson
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.text.StringUtil.defaultIfEmpty
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.SystemProperties
+import consulo.application.util.SystemInfo
+import consulo.util.lang.StringUtil.defaultIfEmpty
+import consulo.virtualFileSystem.VirtualFile
+import consulo.util.lang.SystemProperties
 import org.jetbrains.bsp.{BspBundle, BspErrorMessage}
 import org.jetbrains.plugins.scala.extensions.PathExt
 

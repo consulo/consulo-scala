@@ -1,10 +1,11 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.project.Project
-import org.jetbrains.annotations.ApiStatus
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.project.Project
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait BspVcsRootExtension {
   def onVcsRootAdded(project: Project): Unit
 }

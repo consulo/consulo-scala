@@ -1,12 +1,11 @@
 package org.jetbrains.bsp.data
 
-import com.intellij.openapi.externalSystem.model.project.{AbstractExternalEntityData, ModuleData}
-import com.intellij.openapi.externalSystem.model.{DataNode, Key, ProjectKeys}
-import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.pom.java.LanguageLevel
-import com.intellij.serialization.PropertyMapping
+import consulo.externalSystem.service.project.AbstractExternalEntityData
+import consulo.externalSystem.model.project.ModuleData
+import consulo.externalSystem.model.{DataNode, Key, ProjectKeys}
+import consulo.module.Module
+import consulo.project.Project
+import com.intellij.java.language.LanguageLevel
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.bsp.data.BspEntityData._
 import org.jetbrains.bsp.{BSP, BspBundle}
@@ -122,7 +121,7 @@ object BspProjectData {
     Some((data.jdkValue, data.vcsRootsCandidatesValue, data.serverDisplayName))
 }
 
-case class BspTargetCanCompileData @PropertyMapping(Array("compilableTargets"))(
+case class BspTargetCanCompileData(
   @NotNull compilableTargets: util.List[String]
 ) extends BspEntityData
 
@@ -130,7 +129,7 @@ object BspTargetCanCompileData {
   val Key: Key[BspTargetCanCompileData] = datakey(classOf[BspTargetCanCompileData])
 }
 
-case class JdkData @PropertyMapping(Array("javaHome", "javaVersion"))(
+case class JdkData(
   @Nullable javaHome: MyURI,
   @Nullable javaVersion: String
 ) extends BspEntityData
@@ -229,11 +228,7 @@ case class BspMetadataError(msg: String)
   * Metadata to about bsp targets that have been mapped to IntelliJ modules.
   * @param targetIds target ids mapped to module
   */
-case class BspMetadata @PropertyMapping(Array(
-  "targetIds",
-  "javaHome",
-  "javaVersion", "languageLevel"
-))(
+case class BspMetadata(
   @NotNull targetIds: util.List[MyURI],
   @Nullable javaHome: MyURI,
   @Nullable javaVersion: String,
@@ -242,21 +237,18 @@ case class BspMetadata @PropertyMapping(Array(
 
 object BspMetadata {
   val Key: Key[BspMetadata] = datakey(classOf[BspMetadata])
-  import com.intellij.openapi.externalSystem.util.{ExternalSystemApiUtil => ES}
+  import consulo.externalSystem.util.{ExternalSystemApiUtil => ES}
 
   def get(project: Project, module: Module): Either[BspMetadataError, BspMetadata] = {
-    val dataManager = ProjectDataManager.getInstance()
-
     val moduleId = ES.getExternalProjectId(module)
 
     def predicate(node: DataNode[ModuleData]) = node.getData.getId == moduleId
 
+    // upstream: ProjectDataManager.getExternalProjectData(...).getExternalProjectStructure
     val metadata = for {
-      projectInfo <- Option(dataManager.getExternalProjectData(project, BSP.ProjectSystemId, project.getBasePath))
+      projectStructure <- org.jetbrains.bsp.project.BspExternalSystemUtil.getProjectDataNode(project, None).toOption
         .toRight(BspMetadataError(BspBundle.message("bsp.metadata.error.project.info", project.getName)))
-      projectStructure <- Option(projectInfo.getExternalProjectStructure)
-        .toRight(BspMetadataError(BspBundle.message("bsp.metadata.error.project.structure", projectInfo.getExternalProjectPath)))
-      moduleDataNode <- Option(ES.findChild(projectStructure, ProjectKeys.MODULE, predicate))
+      moduleDataNode <- Option(org.jetbrains.bsp.project.BspExternalSystemUtil.findChild(projectStructure, ProjectKeys.MODULE, predicate))
         .toRight(BspMetadataError(BspBundle.message("bsp.metadata.error.data.node", project.getName)))
       metadata <- Option(ES.find(moduleDataNode, BspMetadata.Key))
         .toRight(BspMetadataError(BspBundle.message("bsp.metadata.error.module.metadata", module.getName)))

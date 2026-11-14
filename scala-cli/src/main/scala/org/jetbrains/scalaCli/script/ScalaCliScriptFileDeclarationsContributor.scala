@@ -1,8 +1,11 @@
 package org.jetbrains.scalaCli.script
 
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.{PsiElement, ResolveState}
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.module.content.ProjectRootManager
+import consulo.language.psi.resolve.PsiScopeProcessor
+import consulo.language.psi.PsiElement
+import consulo.language.psi.resolve.ResolveState
 import org.jetbrains.plugins.scala.caches.cachedInUserData
 import org.jetbrains.plugins.scala.lang.psi.api.{FileDeclarationsContributor, ScalaFile}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
@@ -13,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
  * @see https://scala-cli.virtuslab.org/docs/getting_started#scripting
  * @see https://scala-cli.virtuslab.org/docs/commands/run#passing-arguments
  */
+@ExtensionImpl
 final class ScalaCliScriptFileDeclarationsContributor extends FileDeclarationsContributor {
 
   override def accept(holder: PsiElement): Boolean =

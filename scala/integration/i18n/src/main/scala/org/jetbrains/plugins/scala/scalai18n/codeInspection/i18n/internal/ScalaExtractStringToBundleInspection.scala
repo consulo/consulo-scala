@@ -4,14 +4,19 @@ package codeInspection
 package i18n
 package internal
 
-import com.intellij.codeInsight.AnnotationUtil
-import com.intellij.codeInspection.{BatchQuickFix, CommonProblemDescriptor, LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.ui.Messages
-import com.intellij.psi.{PsiElement, PsiElementVisitor}
-import com.intellij.psi.util.PsiTreeUtil
+
+import org.jetbrains.plugins.scala.api.isUnitTestMode
+import com.intellij.java.language.codeInsight.AnnotationUtil
+import consulo.language.editor.intention.BatchQuickFix
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.inspection.{CommonProblemDescriptor, ProblemHighlightType, ProblemsHolder}
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.module.content.ProjectFileIndex
+import consulo.ui.ex.awt.Messages
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.codeInspection.{AbstractFixOnPsiElement, PsiElementVisitorSimple}
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.format.AnyTopmostStringParts
@@ -27,9 +32,11 @@ import java.util
 import scala.annotation.unused
 
 //noinspection ScalaExtractStringToBundle
-class ScalaExtractStringToBundleInspection extends LocalInspectionTool {
+@ExtensionImpl
+class ScalaExtractStringToBundleInspection
+  extends ScalaI18nInternalInspection("internal.string.should.be.in.bundle", HighlightDisplayLevel.WARNING) {
 
-  override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
+  override protected def buildInternalVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case element@AnyTopmostStringParts(parts) if !shouldBeIgnored(element) =>
       val isNaturalLang = containsNaturalLangString(element, parts)
 
@@ -37,7 +44,7 @@ class ScalaExtractStringToBundleInspection extends LocalInspectionTool {
         val highlight =
           if (isNaturalLang) ProblemHighlightType.GENERIC_ERROR_OR_WARNING
           else ProblemHighlightType.INFORMATION // make quickfix available for all strings
-        holder.registerProblem(element, getDisplayName, highlight, new ScalaMoveToBundleQuickFix(element))
+        holder.registerProblem(element, getDisplayName.get, highlight, new ScalaMoveToBundleQuickFix(element))
       }
     case _ =>
   }
@@ -91,7 +98,7 @@ object ScalaExtractStringToBundleInspection {
     element.asOptionOf[ScLiteral].exists(ScalaI18nUtil.mustBePropertyKey(_))
 
   private class ScalaMoveToBundleQuickFix(_element: ScExpression)
-    extends AbstractFixOnPsiElement("Extract to bundle", _element) with BatchQuickFix {
+    extends AbstractFixOnPsiElement("Extract to bundle", _element) with BatchQuickFix[CommonProblemDescriptor] {
     override def startInWriteAction(): Boolean = false
 
     override protected def doApplyFix(element: ScExpression)(implicit project: Project): Unit = {

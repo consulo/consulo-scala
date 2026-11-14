@@ -1,15 +1,19 @@
 package org.jetbrains.bsp.project.test.environment
 
-import com.intellij.execution.Executor
-import com.intellij.execution.configurations.{JavaParameters, RunProfile}
-import com.intellij.execution.runners.JavaProgramPatcher
-import com.intellij.openapi.util.UserDataHolderBase
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.execution.executor.Executor
+import com.intellij.java.execution.runners.JavaProgramPatcher
+import consulo.execution.configuration.RunProfile
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.util.dataholder.UserDataHolderBase
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class BspJvmEnvironmentProgramPatcher extends JavaProgramPatcher {
 
-  override def patchJavaParameters(executor: Executor, configuration: RunProfile, javaParameters: JavaParameters): Unit = {
+  override def patchJavaParameters(executor: Executor, configuration: RunProfile, javaParameters: OwnJavaParameters): Unit = {
     configuration match {
       case testConfig: UserDataHolderBase =>
         val env = testConfig.getUserData(BspFetchEnvironmentTask.jvmEnvironmentKey)

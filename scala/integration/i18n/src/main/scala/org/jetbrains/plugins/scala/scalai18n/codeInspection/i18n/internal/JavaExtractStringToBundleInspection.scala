@@ -4,8 +4,11 @@ package codeInspection
 package i18n
 package internal
 
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiBinaryExpression, PsiExpression, PsiImportHolder, PsiJavaFile, PsiLiteralExpression}
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.editor.intention.IntentionMetaData
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.language.psi.scope.GlobalSearchScope
 import org.jetbrains.plugins.scala.codeInsight.intention.AbstractIntention
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.scalai18n.codeInspection.i18n.internal.JavaExtractStringToBundleInspection._
@@ -15,6 +18,8 @@ import org.jetbrains.plugins.scala.project.ProjectExt
 import scala.annotation.tailrec
 
 //noinspection ScalaExtractStringToBundle
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "scala.JavaExtractStringToBundleInspection", fileExtensions = Array("java"), categories = Array("Scala", "Internal"))
 class JavaExtractStringToBundleInspection extends AbstractIntention(
   "Extract to Bundle",
   "Extract Java String to Intellj Bundle"
@@ -45,7 +50,7 @@ class JavaExtractStringToBundleInspection extends AbstractIntention(
   // Only show in our project
   override def checkFile(file: PsiFile): Boolean =
     super.checkFile(file) && (
-      file.getProject.isIntellijScalaPluginProject
+      ScalaI18nInternalInspection.isEnabledIn(file.getProject)
     )
 }
 

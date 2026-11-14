@@ -1,13 +1,15 @@
 package org.jetbrains.bsp.project.test.environment
 
 import ch.epfl.scala.bsp4j._
-import com.intellij.execution.configurations.{ModuleBasedConfiguration, RunConfiguration}
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.{JavaPsiFacade, PsiClass, PsiFile}
+import consulo.execution.configuration.ModuleBasedConfiguration
+import consulo.execution.configuration.RunConfiguration
+import consulo.application.ReadAction
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.scope.GlobalSearchScope
+import com.intellij.java.language.psi.{JavaPsiFacade, PsiClass}
+import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.Nls
 import org.jetbrains.bsp.BspBundle
 import org.jetbrains.bsp.BspUtil._
@@ -74,7 +76,7 @@ object BspJvmEnvironment {
   }
 
   def resolveForRun(
-    config: ModuleBasedConfiguration[?, ?],
+    config: ModuleBasedConfiguration[?],
     module: Module,
     holder: BspTargetIdHolder
   ): Result[JvmEnvironment] = {

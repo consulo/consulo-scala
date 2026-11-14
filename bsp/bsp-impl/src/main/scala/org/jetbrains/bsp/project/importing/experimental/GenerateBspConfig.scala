@@ -1,12 +1,11 @@
 package org.jetbrains.bsp.project.importing.experimental
 
-import com.intellij.CommonBundle
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.ui.{DialogWrapper, Messages, ValidationInfo}
-import com.intellij.platform.eel.provider.EelProviderUtil
-import org.jetbrains.annotations.ApiStatus
+import consulo.application.progress.ProgressManager
+import consulo.disposer.Disposer
+import consulo.project.Project
+import consulo.content.bundle.Sdk
+import consulo.ui.ex.awt.{DialogWrapper, Messages, ValidationInfo}
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.bsp.project.importing.bspConfigSteps.*
 import org.jetbrains.bsp.project.importing.experimental.GenerateBspConfig.{ConnectionFileSnapshot, GenerateBspConfigDialog}
 import org.jetbrains.bsp.project.importing.preimport.BloopPreImporter
@@ -34,8 +33,8 @@ import javax.swing.JComponent
  * It's a workaround for SCL-20865
  * (it's a workaround because I don't have much experience with BSP, so I am not sure what would the perfect solution look like)
  */
-@ApiStatus.Internal
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Internal
+// upstream: @ApiStatus.Experimental
 private[bsp] final class GenerateBspConfig(project: Project, workspace: Path) {
 
   def runSynchronously(): Unit = {
@@ -82,7 +81,7 @@ private[bsp] final class GenerateBspConfig(project: Project, workspace: Path) {
           ProgressManager.getInstance.runProcessWithProgressSynchronously((() => {
             val indicator = ProgressManager.getInstance().getProgressIndicator
             val buildReporter = new IndicatorReporter(indicator)
-            BloopPreImporter(workspace, sdk)(using buildReporter, EelProviderUtil.getEelDescriptor(project)).run(indicator)
+            BloopPreImporter(workspace, sdk)(using buildReporter, project.getPlatform).run(indicator)
             //NOTE: I am not sure whether this is the best name for the process
           }): Runnable, BspBundle.message("installing.bloop"), false, project)
         }
@@ -181,19 +180,23 @@ private[bsp] object GenerateBspConfig {
     shouldShowJdkComboBox: Boolean
   ) extends DialogWrapper(project) {
 
+    // upstream: the validation info points to the JDK combo box
     override def doValidateAll(): util.List[ValidationInfo] = {
       val validationInfo = super.doValidateAll()
       if (!configSetupUi.isJdkSelectedIfRequired) {
-        validationInfo.add(new ValidationInfo(BspBundle.message("jdkComboBox.validation.tooltip")).forComponent(configSetupUi.jdkComboBox))
+        validationInfo.add(new ValidationInfo(BspBundle.message("jdkComboBox.validation.tooltip")))
       }
       validationInfo
     }
+
+    private val uiDisposable = consulo.disposer.Disposable.newDisposable()
+    Disposer.register(getDisposable, uiDisposable)
 
     private val configSetupUi = new BspSetupConfigStepUi(
       BspBundle.message("choose.tool.to.generate.bsp.configuration"),
       configSetups,
       shouldShowJdkComboBox,
-      Some(project)
+      uiDisposable
     )
 
     def selectedConfigSetup: ConfigSetup =
@@ -206,12 +209,10 @@ private[bsp] object GenerateBspConfig {
       configSetupUi.updateChooseBspSetupComponent(configSetups)
 
       setTitle(BspBundle.message("generate.bsp.configuration"))
-      setOKButtonText(CommonBundle.getOkButtonText)
-      setCancelButtonText(CommonBundle.getCancelButtonText)
       init()
     }
 
-    override def createNorthPanel(): JComponent = configSetupUi.mainComponent
+    override def createNorthPanel(): JComponent = TargetAWT.to(configSetupUi.mainComponent).asInstanceOf[JComponent]
 
     override def createCenterPanel(): JComponent = null
   }

@@ -1,20 +1,23 @@
 package org.jetbrains.bsp.project
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.google.gson.Gson
-import com.intellij.execution.configurations.SimpleJavaParameters
-import com.intellij.openapi
-import com.intellij.openapi.externalSystem.model.project.{ExternalSystemSourceType, ProjectData}
-import com.intellij.openapi.externalSystem.model.{DataNode, ProjectKeys, ProjectSystemId}
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.{ExternalSystemConfigurableAware, ExternalSystemManager}
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.{Key, UserDataHolder}
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.util.Function
+import consulo.externalSystem.rt.model.ExternalSystemSourceType
+import consulo.externalSystem.service.project.{ExternalSystemProjectResolver, ProjectData}
+import consulo.externalSystem.model.{DataNode, ProjectKeys, ProjectSystemId}
+import consulo.externalSystem.task.ExternalSystemTaskManager
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.externalSystem.{ExternalSystemConfigurableAware, ExternalSystemManager}
+import consulo.fileChooser.FileChooserDescriptor
+import consulo.configurable.Configurable
+import consulo.project.Project
+import consulo.util.dataholder.{Key, UserDataHolder}
+import consulo.util.lang.Pair
+import consulo.virtualFileSystem.LocalFileSystem
+import java.util.function.{Function, Supplier}
 import org.jetbrains.bsp.*
-import org.jetbrains.bsp.project.BspExternalSystemManager.{DetectExternalProjectFiles, ScalaCliAffectedProjectFiles}
+import org.jetbrains.bsp.project.BspExternalSystemManager.DetectExternalProjectFiles
 import org.jetbrains.bsp.project.importing.BspProjectResolver
 import org.jetbrains.bsp.protocol.BspConnectionConfig
 import org.jetbrains.bsp.settings.*
@@ -27,6 +30,7 @@ import java.util.Collections
 import scala.jdk.CollectionConverters.*
 import scala.util.{Try, Using}
 
+@ExtensionImpl
 class BspExternalSystemManager extends ExternalSystemManager[BspProjectSettings, BspProjectSettingsListener, BspSettings, BspLocalSettings, BspExecutionSettings]
   with ExternalSystemConfigurableAware
   with ExternalSystemAutoImportAwareCompat
@@ -38,18 +42,20 @@ class BspExternalSystemManager extends ExternalSystemManager[BspProjectSettings,
 
   override def getLocalSettingsProvider: Function[Project, BspLocalSettings] = BspLocalSettings.getInstance(_)
 
-  override def getExecutionSettingsProvider: Function[openapi.util.Pair[Project, String], BspExecutionSettings] =
+  override def getExecutionSettingsProvider: Function[Pair[Project, String], BspExecutionSettings] =
     pair => BspExecutionSettings.executionSettingsFor(pair.first, Path.of(pair.second))
 
-  override def getProjectResolverClass: Class[BspProjectResolver] = classOf[BspProjectResolver]
+  override def getProjectResolverFactory: Supplier[? <: ExternalSystemProjectResolver[BspExecutionSettings]] =
+    () => new BspProjectResolver
 
-  override def getTaskManagerClass: Class[BspTaskManager] = classOf[BspTaskManager]
+  override def getTaskManagerFactory: Supplier[? <: ExternalSystemTaskManager[BspExecutionSettings]] =
+    () => new BspTaskManager
 
   override def getExternalProjectDescriptor: FileChooserDescriptor = new BspOpenProjectDescriptor
 
   override def getConfigurable(project: Project): Configurable = new BspExternalSystemConfigurable(project)
 
-  override def enhanceRemoteProcessing(parameters: SimpleJavaParameters): Unit = ()
+  // upstream: enhanceRemoteProcessing - Consulo resolves external projects in the IDE process
 
   override def getAffectedExternalProjectPath(changedFileOrDirPath: String, project: Project): String = {
     if (detectExternalProjectFiles(project)) {
@@ -89,11 +95,10 @@ class BspExternalSystemManager extends ExternalSystemManager[BspProjectSettings,
   }
 
   private def getScalaCliAffectedFiles(project: Project, projectPath: String): List[Path] = {
-    val projectNode = ExternalSystemApiUtil.findProjectNode(project, BSP.ProjectSystemId, projectPath)
+    val projectNode = BspExternalSystemUtil.findProjectNode(project, projectPath)
     if (projectNode == null) return List.empty
-    cached(ScalaCliAffectedProjectFiles, projectNode) {
-      getSourceRootFiles(projectNode)
-    }
+    // upstream: cached in the user data of the project node - Consulo data nodes hold no user data
+    getSourceRootFiles(projectNode)
   }
 
   private def getSourceRootFiles(structure: DataNode[ProjectData]): List[Path] = {
@@ -144,7 +149,6 @@ class BspExternalSystemManager extends ExternalSystemManager[BspProjectSettings,
 
 object BspExternalSystemManager {
   val DetectExternalProjectFiles: Key[Boolean] = Key.create[Boolean]("BSP.detectExternalProjectFiles")
-  val ScalaCliAffectedProjectFiles: Key[List[Path]] = Key.create("BSP.scalaCliAffectedProjectFiles")
 
   def parseAsMap(file: Path): Map[String, Any] = {
     val virtualFile = LocalFileSystem.getInstance.findFileByNioFile(file)

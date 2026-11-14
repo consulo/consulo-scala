@@ -1,12 +1,15 @@
 package org.jetbrains.bsp.project
 
-import com.intellij.openapi.module.Module
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.module.Module
 import org.jetbrains.plugins.scala.extensions.ObjectExt
-import org.jetbrains.sbt.project.SbtBuildModuleUriProvider
+import org.jetbrains.sbt.api.project.SbtBuildModuleUriProvider
 
 import java.net.URI
 import java.nio.file.Path
 
+@ExtensionImpl
 final class BspSbtBuildModuleUriProvider extends SbtBuildModuleUriProvider {
 
   override def getBuildModuleUri(module: Module): Option[URI] = {

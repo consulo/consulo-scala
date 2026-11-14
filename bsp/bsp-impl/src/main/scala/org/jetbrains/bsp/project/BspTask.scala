@@ -2,12 +2,13 @@ package org.jetbrains.bsp.project
 
 import ch.epfl.scala.bsp4j
 import ch.epfl.scala.bsp4j.*
-import com.intellij.build.FilePosition
-import com.intellij.build.events.impl.{FailureResultImpl, SkippedResultImpl, SuccessResultImpl}
-import com.intellij.openapi.progress.{ProcessCanceledException, ProgressIndicator, Task}
-import com.intellij.openapi.project.Project
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.provider.EelProviderUtil
+import consulo.application.Application
+import consulo.build.ui.FilePosition
+import consulo.build.ui.event.BuildEventFactory
+import consulo.component.ProcessCanceledException
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.platform.Platform
+import consulo.project.Project
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import org.jetbrains.bsp.BspUtil.*
 import org.jetbrains.bsp.project.BspTask.BspTarget
@@ -18,7 +19,9 @@ import org.jetbrains.jps.incremental.scala.tracing.BuildReason.*
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId
 import org.jetbrains.plugins.scala.build.BuildToolWindowReporter.CancelBuildAction
 import org.jetbrains.plugins.scala.build.*
-import org.jetbrains.plugins.scala.util.{CompilationId, ExternalSystemVfsUtil}
+import org.jetbrains.plugins.scala.bsp.build.CompilerEventReporter
+import org.jetbrains.plugins.scala.shared.util.CompilationId
+import org.jetbrains.plugins.scala.util.ExternalSystemVfsUtil
 import org.jetbrains.sbt.asPath
 
 import java.net.URI
@@ -273,7 +276,7 @@ class BspTask[T](project: Project,
 
     val uri = params.getTextDocument.getUri.toURI
 
-    given EelDescriptor = EelProviderUtil.getEelDescriptor(project)
+    given Platform = project.getPlatform
     val filePath = uri.asPath
 
     val uriDiagnostics = params.getDiagnostics.asScala.toList
@@ -348,15 +351,16 @@ class BspTask[T](project: Project,
     val time = Option(params.getEventTime.longValue()).getOrElse(System.currentTimeMillis())
     val msg = Option(params.getMessage).getOrElse("")
 
+    val factory = Application.get().getInstance(classOf[BuildEventFactory])
     val result = params.getStatus match {
       case StatusCode.OK =>
-        new SuccessResultImpl()
+        factory.createSuccessResult()
       case StatusCode.CANCELLED =>
-        new SkippedResultImpl
+        factory.createSkippedResult()
       case StatusCode.ERROR =>
-        new FailureResultImpl(params.getMessage, null)
+        factory.createFailureResult(params.getMessage, null)
       case null =>
-        new FailureResultImpl(BspBundle.message("bsp.task.unknown.status.code"), null)
+        factory.createFailureResult(BspBundle.message("bsp.task.unknown.status.code"), null)
     }
 
     reporter.finishTask(id, msg, result, time)

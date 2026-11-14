@@ -1,14 +1,16 @@
 package org.jetbrains.bsp.project.test.environment
 
 import ch.epfl.scala.bsp4j.BuildTargetIdentifier
-import com.intellij.CommonBundle
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{ComboBox, DialogWrapper}
+import consulo.project.Project
+import consulo.ui.ComboBox
+import consulo.ui.ex.awt.DialogWrapper
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.bsp.BspBundle
 
-import java.awt.{BorderLayout, Toolkit}
+import java.awt.{BorderLayout, Dimension, Toolkit}
 import java.net.URI
 import javax.swing.{JComponent, JPanel}
+import scala.jdk.CollectionConverters.*
 
 object BspSelectTargetDialog {
   def promptForBspTarget(
@@ -54,26 +56,29 @@ class BspSelectTargetDialog(
   targetIds: Seq[BuildTargetIdentifier],
   selected: Option[BuildTargetIdentifier]
 ) extends DialogWrapper(project, true) {
-  private val combo: ComboBox[String] = new ComboBox[String]()
+  // upstream: Swing ComboBox
+  private val visibleNames = BspSelectTargetDialog.visibleNames(targetIds)
+  private val combo: ComboBox[String] = ComboBox.create(visibleNames.asJava)
 
   locally {
     setTitle(BspBundle.message("bsp.task.choose.target.title"))
-    setOKButtonText(CommonBundle.getOkButtonText)
     init()
   }
 
-  def selectedItem: Option[BuildTargetIdentifier] = targetIds.lift(combo.getSelectedIndex)
+  def selectedItem: Option[BuildTargetIdentifier] =
+    Option(combo.getValue).map(visibleNames.indexOf(_)).flatMap(targetIds.lift)
 
   override def createCenterPanel(): JComponent = null
 
   override def createNorthPanel(): JComponent = {
     val selectedIndex = selected.map(targetIds.indexOf(_)).getOrElse(-1)
-    combo.setEditable(false)
-    BspSelectTargetDialog.visibleNames(targetIds).foreach(combo.addItem)
-    combo.setSelectedIndex(selectedIndex)
-    combo.setMinimumAndPreferredWidth(Toolkit.getDefaultToolkit.getScreenSize.width / 4)
+    if (selectedIndex >= 0) combo.setValueByIndex(selectedIndex)
+    val comboComponent = TargetAWT.to(combo)
+    val width = Toolkit.getDefaultToolkit.getScreenSize.width / 4
+    comboComponent.setMinimumSize(new Dimension(width, comboComponent.getPreferredSize.height))
+    comboComponent.setPreferredSize(new Dimension(width, comboComponent.getPreferredSize.height))
     val panel = new JPanel(new BorderLayout)
-    panel.add(combo)
+    panel.add(comboComponent)
     panel
   }
 }

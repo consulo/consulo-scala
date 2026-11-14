@@ -2,14 +2,13 @@ package org.jetbrains.bsp.protocol.session
 
 import ch.epfl.scala.bsp4j
 import ch.epfl.scala.bsp4j.{BuildServerCapabilities, InitializeBuildResult}
-import com.intellij.execution.process.OSProcessUtil
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.{ApplicationManager, PathManager}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.concurrency.AppExecutorUtil
+import consulo.project.ui.notification.NotificationType
+import consulo.application.ApplicationManager
+import consulo.container.boot.ContainerPathManager
+import consulo.logging.Logger
+import consulo.application.util.SystemInfo
+import consulo.application.util.concurrent.AppExecutorUtil
 import org.eclipse.lsp4j.jsonrpc.{Launcher, ResponseErrorException}
-import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.bsp.*
 import org.jetbrains.bsp.protocol.BspJob
 import org.jetbrains.bsp.protocol.BspNotifications.*
@@ -76,7 +75,7 @@ class BspSession private(bspPID: Long,
   private val queueProcessor = AppExecutorUtil.getAppScheduledExecutorService
     .scheduleWithFixedDelay(() => nextQueuedCommand(), queuePause.toMillis, queuePause.toMillis, TimeUnit.MILLISECONDS)
 
-  @VisibleForTesting
+  // upstream: @VisibleForTesting
   private[protocol] def notifications(notification: BspNotification): Unit =
     notificationCallbacks.foreach(_.apply(notification))
   
@@ -155,7 +154,7 @@ class BspSession private(bspPID: Long,
         .orElse(sys.props.get("BSP_TRACE_PATH"))
         .map(Path.of(_))
         .getOrElse({
-          val dirs = Paths.get(PathManager.getLogPath, "bsp")
+          val dirs = ContainerPathManager.get().getLogPath.toPath.resolve("bsp")
           Files.createDirectories(dirs)
           val stamp = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss")
             .format(LocalDateTime.now())
@@ -495,16 +494,12 @@ object BspSession {
   private case class ServerConnection(server: BspServer, cancelable: Cancelable, listening: java.util.concurrent.Future[Void])
 
   /**
-   * Calls [[com.intellij.execution.process.OSProcessUtil#terminateProcessGracefully(int)]]. Falls back to
-   * [[java.lang.ProcessHandle#destroy()]] if graceful termination cannot be attempted.
+   * Calls [[java.lang.ProcessHandle#destroy()]] (upstream: OSProcessUtil.terminateProcessGracefully, not in Consulo).
    *
    * Then waits for the process to exit until the supplied timeout argument.
    */
   private[session] def terminateProcessGracefully(handle: ProcessHandle, timeout: FiniteDuration): Unit = {
-    try OSProcessUtil.terminateProcessGracefully(handle.pid().toInt)
-    catch {
-      case _: UnsupportedOperationException => handle.destroy()
-    }
+    handle.destroy()
     handle.onExit().get(timeout.length, timeout.unit)
   }
 }

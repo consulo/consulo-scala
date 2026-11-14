@@ -1,13 +1,15 @@
 package org.jetbrains.bsp.project.importing.setup
 
-import com.intellij.openapi.project.Project
-import com.intellij.platform.eel.provider.EelProviderUtil
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.project.Project
 import org.jetbrains.bsp.project.importing.bspConfigSteps
 import org.jetbrains.bsp.project.importing.bspConfigSteps.ConfigSetup
 
 import java.nio.file.Path
 
 /** BSP setup provider for Mill build tool. */
+@ExtensionImpl
 class MillSetupProvider extends BspSetupProvider {
 
   override def configSetup: ConfigSetup =
@@ -20,5 +22,5 @@ class MillSetupProvider extends BspSetupProvider {
     new MillConfigSetup(workspace)
 
   override def bspBuildFileNames(project: Project): Seq[String] =
-    MillConfigSetup.buildFileNames(EelProviderUtil.getEelDescriptor(project))
+    MillConfigSetup.buildFileNames(project.getPlatform)
 }

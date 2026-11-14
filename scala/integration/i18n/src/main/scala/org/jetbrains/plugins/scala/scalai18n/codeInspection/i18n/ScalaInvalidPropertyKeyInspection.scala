@@ -1,9 +1,15 @@
 package org.jetbrains.plugins.scala.scalai18n.codeInspection.i18n
 
-import com.intellij.codeInsight.AnnotationUtil
-import com.intellij.codeInspection.*
-import com.intellij.java.i18n.JavaI18nBundle
-import com.intellij.psi.*
+import com.intellij.java.language.codeInsight.AnnotationUtil
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.inspection.localize.InspectionLocalize
+import consulo.language.editor.inspection.{LocalInspectionTool, ProblemHighlightType, ProblemsHolder}
+import consulo.language.editor.localize.CodeInsightLocalize
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel
+import consulo.localize.LocalizeValue
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import consulo.language.psi.{PsiElement, PsiElementVisitor}
 import org.jetbrains.plugins.scala.annotator.element.ScMethodInvocationAnnotator
 import org.jetbrains.plugins.scala.codeInspection.PsiElementVisitorSimple
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -12,8 +18,21 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.{ScAnnotation, ScParenthesi
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 
 //noinspection InstanceOf
+@ExtensionImpl
 class ScalaInvalidPropertyKeyInspection extends LocalInspectionTool {
+  override def getShortName: String = "ScalaUnresolvedPropertyKey"
 
+  override def getDisplayName: LocalizeValue = CodeInsightLocalize.inspectionUnresolvedPropertyKeyReferenceName()
+
+  override def getGroupDisplayName: LocalizeValue = InspectionLocalize.groupNamesPropertiesFiles()
+
+  override def getGroupPath: Array[LocalizeValue] = Array(LocalizeValue.of("Scala"), getGroupDisplayName)
+
+  override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.ERROR
+
+  override def isEnabledByDefault: Boolean = true
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = PsiElementVisitorSimple(holder) {
     case invoc@MethodInvocation(_, Seq(ScParenthesizedElement.InnermostElement(stringLit: ScStringLiteral), restArgs @ _*)) =>
@@ -23,7 +42,7 @@ class ScalaInvalidPropertyKeyInspection extends LocalInspectionTool {
 
       if (resolver.isPassedToPropertyKey) {
         if (!resolver.referenceIsValid) {
-          val description = JavaI18nBundle.message("inspection.unresolved.property.key.reference.message", key)
+          val description = CodeInsightLocalize.inspectionUnresolvedPropertyKeyReferenceMessage(key).get
           holder.registerProblem(stringLit, description, ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
         } else {
           // check if the correct number of parameters was passed
@@ -36,7 +55,7 @@ class ScalaInvalidPropertyKeyInspection extends LocalInspectionTool {
 
           if (methodCalledCorrectly && !possibleParamCounts.contains(msgArgCount)) {
             val msgParamCount = possibleParamCounts.max
-            val description = JavaI18nBundle.message("property.has.more.parameters.than.passed", key, msgParamCount, msgArgCount)
+            val description = CodeInsightLocalize.propertyHasMoreParametersThanPassed(key, msgParamCount, msgArgCount).get
             if (msgArgCount > msgParamCount) {
               for (arg <- restArgs.iterator.drop(msgParamCount)) {
                 holder.registerProblem(arg, description, ProblemHighlightType.GENERIC_ERROR)
@@ -59,7 +78,7 @@ class ScalaInvalidPropertyKeyInspection extends LocalInspectionTool {
           }
 
           if (!isValidBundle) {
-            val description = JavaI18nBundle.message("inspection.invalid.resource.bundle.reference", bundleName.getOrElse(bundleNameElement.getText))
+            val description = CodeInsightLocalize.inspectionInvalidResourceBundleReference(bundleName.getOrElse(bundleNameElement.getText)).get
             holder.registerProblem(bundleNameElement, description, ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
           }
         case null =>
