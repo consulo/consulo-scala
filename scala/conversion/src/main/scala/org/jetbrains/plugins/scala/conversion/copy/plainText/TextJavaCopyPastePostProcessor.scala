@@ -1,12 +1,17 @@
 package org.jetbrains.plugins.scala.conversion.copy.plainText
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.codeInsight.editorActions.TextBlockTransferableData
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.{Editor, RangeMarker}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Ref
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.application.ApplicationManager
+import consulo.codeEditor.Editor
+import consulo.document.RangeMarker
+import consulo.project.Project
+import consulo.util.lang.ref.Ref
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import com.intellij.psi.{PsiImportList, PsiPackageStatement}
+import com.intellij.java.language.psi.PsiJavaFile
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.conversion.ConverterUtil.ConvertedCode
 import org.jetbrains.plugins.scala.conversion.copy.ScalaPasteFromJavaDialog.CopyFrom
@@ -21,6 +26,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 
 import java.awt.datatransfer.{DataFlavor, Transferable}
 
+@ExtensionImpl
 final class TextJavaCopyPastePostProcessor extends SingularCopyPastePostProcessor[ConverterUtil.ConvertedCode](DataFlavor.stringFlavor) {
 
   override protected def collectTransferableData(

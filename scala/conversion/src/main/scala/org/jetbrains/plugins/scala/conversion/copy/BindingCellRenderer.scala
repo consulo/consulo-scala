@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.conversion.copy
 
-import com.intellij.openapi.editor.colors.{EditorColorsManager, EditorColorsScheme, EditorFontType}
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.ui.{SimpleColoredComponent, SimpleTextAttributes}
+import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, EditorFontType}
+import consulo.colorScheme.TextAttributes
+import consulo.project.Project
+import consulo.language.impl.psi.LeafPsiElement
+import com.intellij.ui.SimpleColoredComponent
+import consulo.ui.ex.SimpleTextAttributes
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.conversion.copy.BindingCellRenderer.renderImportStatementText
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}

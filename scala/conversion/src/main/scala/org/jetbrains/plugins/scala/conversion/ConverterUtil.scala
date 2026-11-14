@@ -1,11 +1,15 @@
 package org.jetbrains.plugins.scala
 package conversion
 
-import com.intellij.codeInspection.{InspectionManager, LocalQuickFixOnPsiElement, ProblemDescriptor, ProblemsHolder}
-import com.intellij.openapi.editor.{Editor, RangeMarker}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
+import consulo.language.editor.inspection.scheme.InspectionManager
+import consulo.language.editor.inspection.{LocalQuickFixOnPsiElement, ProblemDescriptor, ProblemsHolder}
+import consulo.codeEditor.Editor
+import consulo.document.RangeMarker
+import consulo.project.Project
+import consulo.document.util.TextRange
+import com.intellij.psi.JavaTokenType
+import com.intellij.java.language.psi.{PsiAnnotation, PsiCodeBlock, PsiJavaToken, PsiMethod, PsiModifierList}
+import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInsight.intention.RemoveBracesIntention
 import org.jetbrains.plugins.scala.codeInspection.parentheses.ScalaUnnecessaryParenthesesInspection
 import org.jetbrains.plugins.scala.codeInspection.prefixMutableCollections.ReferenceMustBePrefixedInspection

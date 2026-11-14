@@ -59,5 +59,8 @@
         <reference ref="Scala.XRayMode">
             <keyboard-shortcut first-keystroke="ctrl alt shift X" keymap="$default" />
         </reference>
+        <reference ref="Scala.RenameJavaToScala">
+            <keyboard-shortcut first-keystroke="control shift G" keymap="$default" />
+        </reference>
     </actions>
 </consulo-plugin>

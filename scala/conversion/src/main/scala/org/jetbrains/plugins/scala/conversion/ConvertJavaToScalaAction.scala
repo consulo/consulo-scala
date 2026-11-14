@@ -1,21 +1,32 @@
 package org.jetbrains.plugins.scala.conversion
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys, PlatformCoreDataKeys}
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiJavaFile}
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+
+import consulo.language.codeStyle.CodeStyle
+import consulo.project.ui.notification.NotificationType
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.util.lang.ControlFlowException
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
+import com.intellij.java.language.psi.PsiJavaFile
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.conversion.ConvertJavaToScalaAction.convertToScalaFile
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.executeWriteActionCommand
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 import org.jetbrains.plugins.scala.project._
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
+@ActionImpl(id = "Scala.RenameJavaToScala", parents = Array(new ActionParentRef(value = new ActionRef(id = "RefactoringMenu")), new ActionParentRef(value = new ActionRef(id = "EditorTabPopupMenu"))))
 class ConvertJavaToScalaAction extends AnAction(
   ScalaConversionBundle.message("convert.java.to.scala.action.text"),
   ScalaConversionBundle.message("convert.java.to.scala.action.description"),

@@ -2,13 +2,20 @@ package org.jetbrains.plugins.scala
 package conversion
 package copy
 
-import com.intellij.codeInsight.editorActions._
-import com.intellij.openapi.diagnostic.{Attachment, ControlFlowException, Logger}
-import com.intellij.openapi.editor.{Editor, RangeMarker}
-import com.intellij.openapi.project.{DumbService, Project, ProjectManager}
-import com.intellij.openapi.util.{Ref, TextRange}
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.annotation.component.ExtensionImpl
+
+import com.intellij.codeInsight.editorActions.{CopyPastePostProcessor, JavaCopyPasteReferenceProcessor, ReferenceData}
+import consulo.logging.attachment.Attachment
+import consulo.util.lang.ControlFlowException
+import consulo.logging.Logger
+import consulo.codeEditor.Editor
+import consulo.document.RangeMarker
+import consulo.project.{DumbService, Project, ProjectManager}
+import consulo.util.lang.ref.Ref
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiComment, PsiFile}
+import com.intellij.java.language.psi.PsiJavaFile
+import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.plugins.scala.conversion.ast.{IntermediateNode, LiteralExpression, MainConstruction, TypedElement}
 import org.jetbrains.plugins.scala.conversion.copy.ScalaPasteFromJavaDialog.CopyFrom
 import org.jetbrains.plugins.scala.editor.copy.Scala3IndentationBasedSyntaxCopyPastePreProcessor.AfterIndentOffsetAdjuster
@@ -17,9 +24,11 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.refactoring._
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings._
+import org.jetbrains.plugins.scala.compilersettings.settings._
 
 import scala.collection.mutable
 
+@ExtensionImpl
 class JavaCopyPastePostProcessor extends SingularCopyPastePostProcessor[ConverterUtil.ConvertedCode](ConverterUtil.ConvertedCode.flavor) {
 
   import ConverterUtil._

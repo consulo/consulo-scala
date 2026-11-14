@@ -63,6 +63,7 @@
         <module>scala/scala-impl</module>
         <module>scala/codeInsight</module>
         <module>scala/structure-view</module>
+        <module>scala/conversion</module>
         <module>plugin</module>
     </modules>
 

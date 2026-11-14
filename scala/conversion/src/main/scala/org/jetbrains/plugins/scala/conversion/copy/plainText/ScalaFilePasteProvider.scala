@@ -1,20 +1,26 @@
 package org.jetbrains.plugins.scala.conversion.copy.plainText
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.core.CoreBundle
-import com.intellij.ide.{IdeBundle, IdeView, PasteProvider}
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, DataContext, LangDataKeys, PlatformCoreDataKeys}
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.ide.CopyPasteManager
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
+import consulo.ide.IdeBundle
+import com.intellij.ide.{IdeView, PasteProvider}
+import consulo.ui.ex.action.ActionUpdateThread
+import consulo.dataContext.DataContext
+import consulo.language.editor.LangDataKeys
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.navigation.OpenFileDescriptor
+import consulo.ui.ex.CopyPasteManager
+import consulo.module.Module
+import consulo.project.Project
+import consulo.module.content.ModuleRootManager
 import com.intellij.openapi.ui.MessageDialogBuilder
-import com.intellij.openapi.ui.Messages.showErrorDialog
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.psi._
-import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.annotations.ApiStatus.Internal
+import consulo.ui.ex.awt.Messages.showErrorDialog
+import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
+import com.intellij.java.language.psi.JavaDirectoryService
+import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.util.IncorrectOperationException
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.conversion.ScalaConversionBundle
 import org.jetbrains.plugins.scala.conversion.copy.plainText.ScalaFilePasteProvider._
@@ -40,6 +46,7 @@ import scala.util.control.NonFatal
  * @note for a similar Java implementation see [[com.intellij.ide.JavaFilePasteProvider]]
  * @note the provider is used from [[com.intellij.ide.CopyPasteDelegator]]
  */
+@ExtensionImpl(id = "scalaFilePasteProvider", order = "first")
 final class ScalaFilePasteProvider extends PasteProvider {
 
   import ScalaFilePasteProvider.PasteActionIntention._
@@ -80,7 +87,7 @@ final class ScalaFilePasteProvider extends PasteProvider {
     } yield (pasteActionOutcome, module.getProject)
   }
 
-  @Internal
+  // upstream: @Internal
   @TestOnly
   def calculatePasteActionOutcome(
     pastedText: String,

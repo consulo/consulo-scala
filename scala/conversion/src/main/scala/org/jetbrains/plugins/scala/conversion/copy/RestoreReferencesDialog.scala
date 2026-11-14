@@ -1,16 +1,16 @@
 package org.jetbrains.plugins.scala.conversion.copy
 
-import com.intellij.CommonBundle
-import com.intellij.java.JavaBundle
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.{DialogWrapper, VerticalFlowLayout}
-import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.components.{JBLabel, JBList}
-import com.intellij.util.ui.UIUtil
-import com.intellij.util.ui.UIUtil.ComponentStyle.SMALL
-import com.intellij.util.ui.UIUtil.FontColor.BRIGHTER
+import consulo.application.CommonBundle
+import consulo.java.impl.JavaBundle
+import consulo.application.ApplicationManager
+import consulo.colorScheme.EditorColorsScheme
+import consulo.project.Project
+import consulo.ui.ex.awt.{DialogWrapper, VerticalFlowLayout}
+import consulo.ui.ex.awt.ScrollPaneFactory
+import consulo.ui.ex.awt.{JBLabel, JBList}
+import consulo.ui.ex.awt.UIUtil
+import consulo.ui.ex.awt.UIUtil.ComponentStyle.SMALL
+import consulo.ui.ex.awt.UIUtil.FontColor.BRIGHTER
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.lang.refactoring.Associations
 import org.jetbrains.plugins.scala.project.ScalaFeatures

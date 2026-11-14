@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.conversion.ast
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiType
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiType
 import org.jetbrains.plugins.scala.extensions.PsiTypeExt
 import org.jetbrains.plugins.scala.lang.psi.types.api.{JavaArrayType, ParameterizedType, PsiTypeBridge}
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt, TypePresentationContext}

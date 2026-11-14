@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.conversion.visitors
 
-import com.intellij.openapi.util._
-import com.intellij.openapi.util.text.StringUtil
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.conversion.ast._
 import org.jetbrains.plugins.scala.extensions.IterableOnceExt
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil.escapeKeyword

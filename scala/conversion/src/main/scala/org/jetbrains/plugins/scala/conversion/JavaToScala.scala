@@ -1,13 +1,17 @@
 package org.jetbrains.plugins.scala.conversion
 
-import com.intellij.codeInsight.AnnotationUtil
+import com.intellij.java.language.codeInsight.AnnotationUtil
 import com.intellij.codeInsight.editorActions.ReferenceData
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.search.{GlobalSearchScope, LocalSearchScope}
-import com.intellij.psi.util.{JavaPsiPatternUtil, PsiTreeUtil, PsiUtil}
+import com.intellij.java.language.JavaLanguage
+import consulo.project.Project
+import com.intellij.psi.{JavaTokenType, PsiAnonymousClass, PsiArrayAccessExpression, PsiArrayInitializerMemberValue, PsiAssertStatement, PsiAssignmentExpression, PsiBinaryExpression, PsiBreakStatement, PsiCatchSection, PsiClassObjectAccessExpression, PsiConditionalExpression, PsiContinueStatement, PsiDeclarationStatement, PsiDoWhileStatement, PsiEmptyStatement, PsiExpressionListStatement, PsiForStatement, PsiForeachPatternStatement, PsiForeachStatement, PsiForeachStatementBase, PsiIfStatement, PsiImplicitClass, PsiImportList, PsiImportStatement, PsiImportStatementBase, PsiImportStaticStatement, PsiInstanceOfExpression, PsiLabeledStatement, PsiLambdaExpression, PsiLambdaParameterType, PsiLiteralExpression, PsiLocalVariable, PsiPackageStatement, PsiParenthesizedExpression, PsiPolyadicExpression, PsiPostfixExpression, PsiPrefixExpression, PsiReferenceParameterList, PsiResourceVariable, PsiReturnStatement, PsiSwitchBlock, PsiSwitchExpression, PsiSwitchLabelStatement, PsiSwitchLabelStatementBase, PsiSwitchLabeledRuleStatement, PsiSwitchStatement, PsiSynchronizedStatement, PsiThisExpression, PsiThrowStatement, PsiTryStatement, PsiTypeCastExpression, PsiTypeTestPattern, PsiWhileStatement, PsiYieldStatement}
+import com.intellij.java.language.psi.{PsiAnnotation, PsiAnnotationMemberValue, PsiArrayInitializerExpression, PsiArrayType, PsiBlockStatement, PsiClass, PsiClassInitializer, PsiClassOwner, PsiClassType, PsiCodeBlock, PsiDisjunctionType, PsiEnumConstant, PsiExpression, PsiExpressionList, PsiExpressionStatement, PsiField, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMember, PsiMethod, PsiMethodCallExpression, PsiModifier, PsiModifierListOwner, PsiNameValuePair, PsiNewExpression, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiReferenceExpression, PsiStatement, PsiSuperExpression, PsiType, PsiTypeElement, PsiTypeParameter}
+import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiReference, PsiWhiteSpace}
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
+import com.intellij.psi.util.JavaPsiPatternUtil
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.util.PsiUtil
 import com.siyeh.ig.psiutils.{ControlFlowUtils, CountingLoop, ExpressionUtils}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.conversion.ast.CommentsCollector.UsedComments

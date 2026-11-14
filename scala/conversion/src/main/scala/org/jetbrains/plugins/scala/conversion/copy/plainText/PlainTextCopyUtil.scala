@@ -1,19 +1,21 @@
 package org.jetbrains.plugins.scala.conversion.copy.plainText
 
 import com.intellij.codeInsight.daemon.JavaErrorBundle
-import com.intellij.ide.highlighter.JavaFileType
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.tree.TokenSet
+import com.intellij.java.language.impl.JavaFileType
+import consulo.module.Module
+import consulo.project.Project
+import consulo.language.psi.{PsiErrorElement, PsiFile, PsiFileFactory}
+import com.intellij.java.language.psi.PsiJavaFile
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.ast.TokenSet
 import org.jetbrains.plugins.scala.editor.ScalaEditorUtils
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.{ScalaTokenType, ScalaTokenTypes}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.project.ModuleExt
-import org.jetbrains.plugins.scala.{ScalaBundle, ScalaLanguage}
+import org.jetbrains.plugins.scala.ScalaBundle
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 /**
  * This code assume that Scala files don't have semicolon at the end of line at all and

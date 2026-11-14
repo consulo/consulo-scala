@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.conversion.copy;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.conversion.ScalaConversionBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 
@@ -56,7 +55,6 @@ public class ScalaPasteFromJavaDialog extends DialogWrapper {
     }
 
     @Override
-    @NotNull
     protected Action[] createActions() {
         return new Action[]{getOKAction(), getCancelAction()};
     }
@@ -106,7 +104,7 @@ public class ScalaPasteFromJavaDialog extends DialogWrapper {
         try {
             Class<?> thisClass = this.getClass();
             if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
                 $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
             }
             bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
