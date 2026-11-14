@@ -39,7 +39,7 @@ abstract class ScalaRuntimeTypeEvaluator(@Nullable editor: Editor, expression: P
 
     val evaluator: ExpressionEvaluator = nonBlocking {
       val textWithImports = new TextWithImportsImpl(CodeFragmentKind.CODE_BLOCK, expression.getText)
-      val codeFragment = new ScalaCodeFragmentFactory().createPsiCodeFragment(textWithImports, expression, project)
+      val codeFragment = new ScalaCodeFragmentFactory().createCodeFragment(textWithImports, expression, project)
       ScalaEvaluatorBuilder.build(codeFragment, ContextUtil.getSourcePosition(evaluationContext))
     }
     val value: Value = evaluator.evaluate(evaluationContext)

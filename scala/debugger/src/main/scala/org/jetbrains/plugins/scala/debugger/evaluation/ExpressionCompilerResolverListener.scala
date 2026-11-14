@@ -1,27 +1,29 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
 import com.intellij.java.debugger.impl.{DebuggerManagerListener, DebuggerSession}
+import consulo.annotation.component.{ComponentScope, TopicImpl}
 import consulo.application.progress.{ProgressIndicator, Task}
 import consulo.project.Project
 import consulo.util.dataholder.Key
-import com.intellij.platform.eel.provider.EelProviderUtil
+import jakarta.inject.Inject
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
-import org.jetbrains.plugins.scala.{EelAwareDependencyManager, ScalaVersion}
+import org.jetbrains.plugins.scala.{DependencyManagerBase, ScalaVersion}
 
 import java.nio.file.Path
 import scala.util.control.NonFatal
 
-private final class ExpressionCompilerResolverListener(project: Project) extends DebuggerManagerListener {
+@TopicImpl(ComponentScope.PROJECT)
+private final class ExpressionCompilerResolverListener @Inject()(project: Project) extends DebuggerManagerListener {
 
   import ExpressionCompilerResolverListener._
 
   override def sessionCreated(session: DebuggerSession): Unit = {
     if (project.isDisposed) return
 
-    new Task.Backgroundable(project, DebuggerBundle.message("resolving.expression.compiler"), true, () => false) {
+    new Task.Backgroundable(project, DebuggerBundle.message("resolving.expression.compiler"), true) {
       override def run(indicator: ProgressIndicator): Unit = {
         if (project.isDisposed) return
 
@@ -45,15 +47,13 @@ private final class ExpressionCompilerResolverListener(project: Project) extends
     }.queue()
   }
 
-  //noinspection ApiStatus
+  // upstream: transfers the jar to the eel of the project, the expression is compiled in the IDE process here
   private def resolveExpressionCompilerJar(scalaVersion: ScalaVersion, indicator: ProgressIndicator): Option[Path] = {
     val dep = "ch.epfl.scala" % s"scala-expression-compiler_${scalaVersion.minor}" % ScalaExpressionCompilerVersion
-    //noinspection ApiStatus
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-    val manager = new EelAwareDependencyManager {
+    val manager = new DependencyManagerBase {
       override protected def progressIndicator: Option[ProgressIndicator] = Some(indicator)
     }
-    manager.resolveSafeAndTransferToRemoteEel(eelDescriptor, dep).headOption
+    manager.resolveSafe(dep).toOption.flatMap(_.headOption).map(_.file)
   }
 }
 

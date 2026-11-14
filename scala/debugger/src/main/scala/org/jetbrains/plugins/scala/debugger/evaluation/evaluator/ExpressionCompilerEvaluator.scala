@@ -4,40 +4,32 @@ import com.intellij.java.debugger.SourcePosition
 import com.intellij.java.debugger.impl.engine.JVMNameUtil
 import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, IdentityEvaluator, UnBoxingEvaluator}
 import com.intellij.java.debugger.engine.evaluation.expression.{ExpressionEvaluator, Modifier}
-import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
+import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.DebuggerUtilsEx
 import consulo.language.util.ModuleUtilCore
-import consulo.project.Project
 import consulo.module.content.layer.OrderEnumerator
-import com.intellij.platform.eel.provider.utils.EelPathUtils
 import consulo.language.psi.PsiElement
-import consulo.internal.com.sun.jdi.{ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
-import org.jetbrains.jps.incremental.scala.shared.remote.CommandIds
-import org.jetbrains.jps.incremental.scala.shared.{Client, DummyClient, MessageKind}
-import org.jetbrains.plugins.scala.api.NlsString
+import consulo.internal.com.sun.jdi.{ArrayReference, ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
 import org.jetbrains.plugins.scala.compiler.data.ExpressionEvaluationArguments
-import org.jetbrains.plugins.scala.server.compiler.{CompileServerLauncher, CompilerManagerUtil, RemoteServerRunner}
-import org.jetbrains.plugins.scala.compiler.EelPathTranslator
+import consulo.compiler.CompilerPaths
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ExpressionCompilerEvaluator.filteredScalacOptions
-import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, ExpressionCompilerResolverListener}
+import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, EvaluatorCompiler, ExpressionCompilerResolverListener}
 import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaPositionManager}
 import org.jetbrains.plugins.scala.extensions.{PathExt, inReadAction}
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
-import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 
 import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
-import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
 
 private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiElement, position: SourcePosition) extends ExpressionEvaluator {
   override def getModifier: Modifier = null
 
-  override def evaluate(context: EvaluationContext): Value = withCompileServer(context.getProject) {
+  override def evaluate(context: EvaluationContext): Value = {
     val moduleForPsiElement = inReadAction {
       ModuleUtilCore.findModuleForPsiElement(codeFragment)
     }
@@ -49,7 +41,7 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
 
     val module = moduleForPsiElement.findRepresentativeModuleForSharedSourceModuleOrSelf
 
-    val outDir = createOutputDirectory(CompilerManagerUtil.javacCompilerWorkingDir(context.getProject))
+    val outDir = createOutputDirectory(CompilerPaths.getCompilerSystemDirectory(context.getProject).toPath)
 
     val scalaVersion = module.scalaMinorVersion match {
       case Some(version) => version
@@ -96,27 +88,8 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
       val packageName = inReadAction(ScalaPositionManager.findPackageName(position.getElementAt)).getOrElse("")
       val arguments = ExpressionEvaluationArguments(useBuiltInExpressionCompiler, outDir, classpath, scalacOptions, source, line, expression, localVariableNames.toSet, packageName)
 
-      val errors = Seq.newBuilder[NlsString]
-      val client = new DummyClient() {
-        override def message(msg: Client.ClientMsg): Unit = {
-          if (msg.kind == MessageKind.Error) {
-            errors += NlsString(msg.text)
-          }
-        }
-      }
-
-      val process = new RemoteServerRunner(context.getProject).buildProcess(CommandIds.EvaluateExpression, arguments.asStrings(EelPathTranslator), client)
-
-      var result: Either[Seq[NlsString], Unit] = Right(())
-      process.addTerminationCallback { _ =>
-        val foundErrors = errors.result()
-        if (foundErrors.nonEmpty) {
-          result = Left(foundErrors)
-        }
-      }
-      process.run()
-
-      result match {
+      // upstream: evaluated by the Scala compile server
+      EvaluatorCompiler.evaluateExpression(arguments) match {
         case Left(errors) =>
           val message = DebuggerBundle.message("expression.compilation.failed", errors.mkString(System.lineSeparator()))
           throw EvaluationException(message)
@@ -133,7 +106,7 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
       val localVariableNamesEvaluator: Evaluator = new Evaluator {
         override def evaluate(ctx: EvaluationContextImpl): AnyRef = {
           val arrayType = ctx.getDebugProcess.findClass(ctx, "java.lang.String[]", ctx.getClassLoader).asInstanceOf[ArrayType]
-          val array = DebuggerUtilsEx.mirrorOfArray(arrayType, localVariableNames.length, ctx)
+          val array = mirrorOfArray(arrayType, localVariableNames.length, ctx)
           array.setValues(localVariableNames.map(DebuggerUtilsEx.mirrorOfString(_, ctx)).asJava)
           array
         }
@@ -142,7 +115,7 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
       val localVariableValuesEvaluator: Evaluator = new Evaluator {
         override def evaluate(ctx: EvaluationContextImpl): AnyRef = {
           val arrayType = ctx.getDebugProcess.findClass(ctx, "java.lang.Object[]", ctx.getClassLoader).asInstanceOf[ArrayType]
-          val array = DebuggerUtilsEx.mirrorOfArray(arrayType, localVariableValues.length, ctx)
+          val array = mirrorOfArray(arrayType, localVariableValues.length, ctx)
           array.setValues(localVariableValues.map(ScalaBoxingEvaluator.box(_, ctx).asInstanceOf[Value]).asJava)
           array
         }
@@ -176,17 +149,6 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
     }
   }
 
-  private def withCompileServer[A](project: Project)(thunk: => A): A = {
-    if (!CompileServerLauncher.ensureServerRunning(project))
-      throw new EvaluateException("Could not start compile server")
-
-    try thunk
-    finally {
-      if (!ScalaCompileServerSettings.getInstance().COMPILE_SERVER_ENABLED)
-        CompileServerLauncher.stopServerAndWaitFor(Duration.Zero)
-    }
-  }
-
   private def createOutputDirectory(workingDir: Path): Path = {
     val path = workingDir.resolve("scala-debugger").resolve("out")
     if (!path.exists) {
@@ -199,22 +161,29 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
     val process = context.getDebugProcess
     val thread = context.getFrameProxy.getStackFrame.thread()
     val classLoader = context.getClassLoader
-    val uriString = targetEelUriString(outDir)
+    val uriString = directoryUriString(outDir)
     val pathURL = DebuggerUtilsEx.mirrorOfString(uriString, context)
     val urlType = process.findClass(context, "java.net.URL", classLoader).asInstanceOf[ClassType]
     val urlConstructor = urlType.concreteMethodByName("<init>", "(Ljava/lang/String;)V")
     val url = urlType.newInstance(thread, urlConstructor, List(pathURL).asJava, ObjectReference.INVOKE_SINGLE_THREADED)
     val urlArrayType = process.findClass(context, "java.net.URL[]", classLoader).asInstanceOf[ArrayType]
-    val array = DebuggerUtilsEx.mirrorOfArray(urlArrayType, 1, context)
+    val array = mirrorOfArray(urlArrayType, 1, context)
     array.setValue(0, url)
     val urlClassLoaderType = process.findClass(context, "java.net.URLClassLoader", classLoader).asInstanceOf[ClassType]
     val urlClassLoaderConstructor = urlClassLoaderType.concreteMethodByName("<init>", "([Ljava/net/URL;Ljava/lang/ClassLoader;)V")
     urlClassLoaderType.newInstance(thread, urlClassLoaderConstructor, List(array, classLoader).asJava, ObjectReference.INVOKE_SINGLE_THREADED).asInstanceOf[ClassLoaderReference]
   }
 
-  //noinspection ApiStatus,UnstableApiUsage
-  private def targetEelUriString(directory: Path): String =
-    EelPathUtils.getUriLocalToEel(directory).toURL.toString + "/"
+  // upstream: the URI of the directory on the eel of the debuggee
+  private def directoryUriString(directory: Path): String =
+    directory.toUri.toURL.toString + "/"
+
+  // upstream: DebuggerUtilsEx.mirrorOfArray
+  private def mirrorOfArray(arrayType: ArrayType, dimension: Int, context: EvaluationContextImpl): ArrayReference = {
+    val array = context.getDebugProcess.newInstance(arrayType, dimension)
+    DebuggerUtilsEx.keep(array, context)
+    array
+  }
 }
 
 private object ExpressionCompilerEvaluator {

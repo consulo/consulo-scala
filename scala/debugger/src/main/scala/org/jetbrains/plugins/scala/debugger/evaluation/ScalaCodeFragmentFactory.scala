@@ -13,8 +13,7 @@ import consulo.project.Project
 import consulo.util.lang.StringUtil
 import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass, PsiClassType, PsiCodeBlock, PsiType}
 import consulo.language.psi.PsiElement
-import com.intellij.util.concurrency.Semaphore
-import com.intellij.xdebugger.impl.XDebugSessionImpl
+import consulo.application.util.Semaphore
 import consulo.execution.debug.ui.ValueMarkup
 import consulo.execution.debug.{XDebugSession, XDebuggerManager}
 import consulo.internal.com.sun.jdi.{ObjectReference, Value}
@@ -33,7 +32,7 @@ import scala.jdk.CollectionConverters._
 
 @ExtensionImpl
 class ScalaCodeFragmentFactory extends CodeFragmentFactory {
-  override def createPsiCodeFragment(item: TextWithImports, context: PsiElement, project: Project): ScalaCodeFragment = {
+  override def createCodeFragment(item: TextWithImports, context: PsiElement, project: Project): ScalaCodeFragment = {
     implicit val p: Project = project
     val fragment = createCodeFragmentInner(item, wrapContext(context))
 
@@ -89,8 +88,8 @@ class ScalaCodeFragmentFactory extends CodeFragmentFactory {
     fragment
   }
 
-  override def createPresentationPsiCodeFragment(item: TextWithImports, context: PsiElement, project: Project): ScalaCodeFragment = {
-    createPsiCodeFragment(item, context, project)
+  override def createPresentationCodeFragment(item: TextWithImports, context: PsiElement, project: Project): ScalaCodeFragment = {
+    createCodeFragment(item, context, project)
   }
 
   override def isContextAccepted(contextElement: PsiElement): Boolean = {
@@ -112,9 +111,9 @@ class ScalaCodeFragmentFactory extends CodeFragmentFactory {
     var context: PsiElement = originalContext
     val session: XDebugSession = XDebuggerManager.getInstance(project).getCurrentSession
     if (session != null) {
-      val markers = session.asInstanceOf[XDebugSessionImpl].getValueMarkers
-      val markupMap = if (markers != null) markers.getAllMarkers.asScala.toMap else null
-      if (markupMap != null && markupMap.nonEmpty) {
+      val markers = session.getValueMarkers
+      val markupMap: Map[Any, ValueMarkup] = if (markers != null) markers.getAllMarkers.asScala.toMap else Map.empty
+      if (markupMap.nonEmpty) {
         val (variablesText, reverseMap) = markupVariablesText(markupMap)
         val offset: Int = variablesText.length - 1
         val textWithImports: TextWithImportsImpl = new TextWithImportsImpl(CodeFragmentKind.CODE_BLOCK, variablesText, "", getFileType)

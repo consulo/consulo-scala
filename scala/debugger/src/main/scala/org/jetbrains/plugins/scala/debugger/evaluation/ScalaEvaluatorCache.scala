@@ -9,7 +9,6 @@ import jakarta.inject.Singleton
 import consulo.language.editor.PsiEquivalenceUtil
 import com.intellij.java.debugger.SourcePosition
 import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
-import com.intellij.java.debugger.impl.{DebuggerManagerListener, DebuggerSession}
 import consulo.disposer.Disposable
 import consulo.project.Project
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -19,16 +18,10 @@ import scala.collection.mutable
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-class ScalaEvaluatorCache
-  extends Disposable
-    with DebuggerManagerListener {
+class ScalaEvaluatorCache extends Disposable {
 
   private val cachedEvaluators = mutable.HashMap[(PsiFile, Int), mutable.HashMap[PsiElement, Evaluator]]()
   private val cachedStamp = mutable.HashMap[PsiFile, Long]()
-
-  override def sessionDetached(session: DebuggerSession): Unit = {
-    clear()
-  }
 
   override def dispose(): Unit = clear()
 

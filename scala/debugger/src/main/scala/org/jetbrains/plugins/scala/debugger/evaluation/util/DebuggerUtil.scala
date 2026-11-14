@@ -7,7 +7,7 @@ import com.intellij.java.debugger.{NoDataException, SourcePosition}
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiParameter}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
-import com.intellij.psi.PsiLocalVariable
+import com.intellij.java.language.psi.PsiLocalVariable
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.internal.com.sun.jdi.{Field, ObjectReference, ReferenceType}

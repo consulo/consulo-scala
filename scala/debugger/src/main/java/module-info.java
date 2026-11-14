@@ -112,8 +112,9 @@ open module org.intellij.scala.debugger {
     requires org.intellij.scala.compiler.settings.definition;
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
-    requires org.intellij.scala.compiler.integration.server.management;
     requires org.intellij.scala.compile.server;
+    requires consulo.internal.jdi;
+    requires consulo.execution.debug.api;
     requires consulo.java.debugger.impl;
 
 
@@ -127,5 +128,4 @@ open module org.intellij.scala.debugger {
     exports org.jetbrains.plugins.scala.debugger.filters;
     exports org.jetbrains.plugins.scala.debugger.smartStepInto;
     exports org.jetbrains.plugins.scala.debugger.ui;
-    exports org.jetbrains.plugins.scala.debugger.ui.util;
 }

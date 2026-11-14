@@ -65,7 +65,7 @@ class ScalaCompilingEvaluator(psiContext: PsiElement, fragment: ScalaCodeFragmen
     val process = context.getDebugProcess
     ReadActions.inNonBlockingReadAction(expireWhen = () => !process.isAttached) {
       val callCode = new TextWithImportsImpl(CodeFragmentKind.CODE_BLOCK, generatedClass.callText)
-      val codeFragment = new ScalaCodeFragmentFactory().createPsiCodeFragment(callCode, generatedClass.newContext, project)
+      val codeFragment = new ScalaCodeFragmentFactory().createCodeFragment(callCode, generatedClass.newContext, project)
       ScalaEvaluatorBuilder.build(codeFragment, SourcePosition.createFromElement(generatedClass.newContext))
     }
   }

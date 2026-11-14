@@ -39,6 +39,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>consulo</groupId>
+            <artifactId>consulo-execution-debug-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>consulo.internal</groupId>
+            <artifactId>jdi</artifactId>
+            <version>4.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>consulo.plugin</groupId>
             <artifactId>org.intellij.scala-compile.server</artifactId>
             <version>${project.version}</version>
@@ -545,12 +557,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>consulo.java-java.execution.impl</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>consulo.plugin</groupId>
-            <artifactId>org.intellij.scala-compiler.integration.server.management</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

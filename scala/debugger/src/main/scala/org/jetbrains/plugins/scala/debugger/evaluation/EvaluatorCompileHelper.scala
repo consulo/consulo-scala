@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
 import consulo.module.Module
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
@@ -16,6 +17,7 @@ import java.nio.file.Path
  * NOTE: only single implementation will be used (first found implementation)
  */
 // upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait EvaluatorCompileHelper {
 
   /**
@@ -28,7 +30,4 @@ trait EvaluatorCompileHelper {
 object EvaluatorCompileHelper
   extends ExtensionPointDeclaration[EvaluatorCompileHelper](
     "org.intellij.scala.evaluatorCompileHelper"
-  ) {
-
-  def needCompileServer: Boolean = implementations.isEmpty
-}
+  )
