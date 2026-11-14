@@ -1,26 +1,20 @@
 package org.jetbrains.plugins.scala.debugger.ui
 
 import com.intellij.java.debugger.DebuggerContext
-import com.intellij.java.debugger.impl.engine.DebugProcessImpl
 import com.intellij.java.debugger.engine.evaluation.EvaluateException
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.jdi.LocalVariableProxyImpl
 import com.intellij.java.debugger.impl.ui.impl.watch.{ArrayElementDescriptorImpl, LocalVariableDescriptorImpl, ValueDescriptorImpl}
-import com.intellij.java.debugger.impl.ui.tree.render.{NodeRenderer, OnDemandRenderer}
-import com.intellij.debugger.ui.tree.DescriptorWithParentObject
+import com.intellij.java.debugger.impl.ui.tree.render.OnDemandRenderer
 import com.intellij.java.debugger.ui.tree.NodeDescriptor
-import consulo.application.AllIcons
 import consulo.project.Project
 import com.intellij.java.language.psi.PsiExpression
-import consulo.desktop.awt.ui.impl.image.LayeredIcon
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException
 
 import java.util.Collections
-import java.util.concurrent.CompletableFuture
-import javax.swing.Icon
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -52,7 +46,7 @@ private object LazyValDescriptor {
     val isInitialized = (bitmapValue & bitmapMask) != 0
     val init = findInitializerScala2(field, allMethods)
     if (isInitialized) new FieldLazyValDescriptor(project, ref, init)
-    else new NotInitializedFieldLazyValDescriptor(project, ref, init, showInitializeAction = true)
+    else new NotInitializedFieldLazyValDescriptor(project, ref, init)
   }
 
   private def createLazyValDescriptorScala3(
@@ -78,7 +72,7 @@ private object LazyValDescriptor {
         val bitmapMask = (1L << bitmapExponent) + (1L << (bitmapExponent + 1))
         val isInitialized = (bitmapValue & bitmapMask) == bitmapMask
         if (isInitialized) new FieldLazyValDescriptor(project, ref, init)
-        else new NotInitializedFieldLazyValDescriptor(project, ref, init, showInitializeAction = true)
+        else new NotInitializedFieldLazyValDescriptor(project, ref, init)
       case None =>
         // New lazy val encoding, Scala 3.3+
         ref.getValue(field) match {
@@ -93,7 +87,8 @@ private object LazyValDescriptor {
                   !methodName.contains("$lzyINIT")
                 }
 
-            new NotInitializedFieldLazyValDescriptor(project, ref, init, showInitializeAction = isInitializable)
+            if (isInitializable) new NotInitializedFieldLazyValDescriptor(project, ref, init)
+            else new IntermediateStateFieldLazyValDescriptor(project, ref, init, DebuggerBundle.message("lazy.val.not.initialized"))
           case obj: ObjectReference =>
             val name = obj.referenceType().name()
             name match {
@@ -118,14 +113,11 @@ private object LazyValDescriptor {
 }
 
 private class FieldLazyValDescriptor(project: Project, ref: ObjectReference, init: Method)
-  extends ValueDescriptorImpl(project) with DescriptorWithParentObject {
+  extends ValueDescriptorImpl(project) {
 
   override def getName: String = init.name()
 
   override def getType: Type = init.returnType()
-
-  override def getRenderer(process: DebugProcessImpl): CompletableFuture[NodeRenderer] =
-    getRenderer(getType, process)
 
   override def calcValue(evaluationContext: EvaluationContextImpl): Value =
     evaluationContext.getDebugProcess.invokeMethod(evaluationContext, ref, init, Collections.emptyList())
@@ -133,30 +125,22 @@ private class FieldLazyValDescriptor(project: Project, ref: ObjectReference, ini
   override def getDescriptorEvaluation(context: DebuggerContext): PsiExpression =
     throw new EvaluateException("Lazy val evaluation is not supported")
 
-  override def getObject: ObjectReference = ref
+  def getObject: ObjectReference = ref
 }
 
-private final class NotInitializedFieldLazyValDescriptor(project: Project, ref: ObjectReference, init: Method, showInitializeAction: Boolean)
+// upstream: a custom on-demand presentation ("lazy val not initialized" with an "initialize" link); Consulo shows
+// the generic on-demand "evaluate" link
+private final class NotInitializedFieldLazyValDescriptor(project: Project, ref: ObjectReference, init: Method)
   extends FieldLazyValDescriptor(project, ref, init) {
 
   OnDemandRenderer.ON_DEMAND_CALCULATED.set(this, false)
-  setOnDemandPresentationProvider { node =>
-    val typeName = init.returnTypeName()
-    node.setPresentation(AllIcons.Debugger.Value, typeName, DebuggerBundle.message("lazy.val.not.initialized"), false)
-    if (showInitializeAction) {
-      node.setFullValueEvaluator(OnDemandRenderer.createFullValueEvaluator(node, this, DebuggerBundle.message("initialize.lazy.val")))
-    }
-  }
 }
 
 private final class IntermediateStateFieldLazyValDescriptor(project: Project, ref: ObjectReference, init: Method, @Nls presentation: String)
   extends FieldLazyValDescriptor(project, ref, init) {
 
-  OnDemandRenderer.ON_DEMAND_CALCULATED.set(this, false)
-  setOnDemandPresentationProvider { node =>
-    val typeName = init.returnTypeName()
-    node.setPresentation(AllIcons.Debugger.Value, typeName, presentation, false)
-  }
+  override def calcValue(evaluationContext: EvaluationContextImpl): Value =
+    throw new EvaluateException(presentation)
 }
 
 private[debugger] class LocalLazyValDescriptor(project: Project, proxy: LocalVariableProxyImpl, lazyRefType: Type, init: Method)
@@ -187,32 +171,16 @@ private[debugger] class LocalLazyValDescriptor(project: Project, proxy: LocalVar
 private[debugger] final class NotInitializedLocalLazyValDescriptor(project: Project, proxy: LocalVariableProxyImpl, lazyRefType: Type, init: Method)
   extends LocalLazyValDescriptor(project, proxy, lazyRefType, init) {
 
+  // upstream: a custom on-demand presentation with the lazy type; Consulo shows the generic on-demand "evaluate" link
   OnDemandRenderer.ON_DEMAND_CALCULATED.set(this, false)
-  setOnDemandPresentationProvider { node =>
-    node.setFullValueEvaluator(OnDemandRenderer.createFullValueEvaluator(node, this, DebuggerBundle.message("initialize.lazy.val")))
-    node.setPresentation(icon, typeString, DebuggerBundle.message("lazy.val.not.initialized"), false)
-  }
-
-  private val icon: Icon = LayeredIcon.layeredIcon(Array(AllIcons.Nodes.Variable, AllIcons.Nodes.FinalMark))
-
-  private val typeString: String = getType.name() match {
-    case "scala.runtime.LazyRef" => "lazy AnyRef reference"
-    case "scala.runtime.LazyBoolean" => "lazy Boolean"
-    case "scala.runtime.LazyByte" => "lazy Byte"
-    case "scala.runtime.LazyChar" => "lazy Char"
-    case "scala.runtime.LazyShort" => "lazy Short"
-    case "scala.runtime.LazyInt" => "lazy Int"
-    case "scala.runtime.LazyLong" => "lazy Long"
-    case "scala.runtime.LazyFloat" => "lazy Float"
-    case "scala.runtime.LazyDouble" => "lazy Double"
-    case "scala.runtime.LazyUnit" => "lazy Unit"
-  }
 }
 
 private final class CollectionElementDescriptor(project: Project, index: Int, value: Value)
   extends ArrayElementDescriptorImpl(project, null, index) {
 
-  setValue(value)
+  override def calcValue(evaluationContext: EvaluationContextImpl): Value = value
+
+  override def canSetValue: Boolean = false
 
   override def getDescriptorEvaluation(context: DebuggerContext): PsiExpression =
     throw EvaluationException(DebuggerBundle.message("collection.element.descriptors.evaluation.not.supported"))

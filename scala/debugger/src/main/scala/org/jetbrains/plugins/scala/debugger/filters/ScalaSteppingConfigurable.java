@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.debugger.filters;
 
-import com.intellij.openapi.options.ConfigurableUi;
+import consulo.configurable.IdeaConfigurableUi;
 import consulo.configurable.ConfigurationException;
+import consulo.disposer.Disposable;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -11,31 +12,27 @@ import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
-public class ScalaSteppingConfigurable implements ConfigurableUi<ScalaDebuggerSettings> {
-    private JCheckBox myAlwaysSmartStepInto;
+public class ScalaSteppingConfigurable implements IdeaConfigurableUi<ScalaDebuggerSettings> {
     private JCheckBox myIgnoreScalaMethods;
     private JPanel myPanel;
 
     @Override
     public void reset(ScalaDebuggerSettings settings) {
         myIgnoreScalaMethods.setSelected(settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS);
-        myAlwaysSmartStepInto.setSelected(settings.ALWAYS_SMART_STEP_INTO);
     }
 
     @Override
     public boolean isModified(ScalaDebuggerSettings settings) {
-        return settings.ALWAYS_SMART_STEP_INTO != myAlwaysSmartStepInto.isSelected() ||
-                settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS != myIgnoreScalaMethods.isSelected();
+        return settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS != myIgnoreScalaMethods.isSelected();
     }
 
     @Override
     public void apply(ScalaDebuggerSettings settings) throws ConfigurationException {
-        settings.ALWAYS_SMART_STEP_INTO = myAlwaysSmartStepInto.isSelected();
         settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS = myIgnoreScalaMethods.isSelected();
     }
 
     @Override
-    public JComponent getComponent() {
+    public JComponent getComponent(Disposable disposable) {
         return myPanel;
     }
 
@@ -55,17 +52,14 @@ public class ScalaSteppingConfigurable implements ConfigurableUi<ScalaDebuggerSe
      */
     private void $$$setupUI$$$() {
         myPanel = new JPanel();
-        myPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        myPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         myPanel.setEnabled(true);
-        myAlwaysSmartStepInto = new JCheckBox();
-        this.$$$loadButtonText$$$(myAlwaysSmartStepInto, this.$$$getMessageFromBundle$$$("messages/JavaDebuggerBundle", "label.debugger.general.configurable.always.smart.step.into"));
-        myPanel.add(myAlwaysSmartStepInto, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        myPanel.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        myPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         myIgnoreScalaMethods = new JCheckBox();
         myIgnoreScalaMethods.setSelected(false);
-        this.$$$loadButtonText$$$(myIgnoreScalaMethods, this.$$$getMessageFromBundle$$$("messages/DebuggerBundle", "scala.debug.disable.specific.methods"));
-        myPanel.add(myIgnoreScalaMethods, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(myIgnoreScalaMethods, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/debugger/DebuggerBundle", "scala.debug.disable.specific.methods"));
+        myPanel.add(myIgnoreScalaMethods, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;

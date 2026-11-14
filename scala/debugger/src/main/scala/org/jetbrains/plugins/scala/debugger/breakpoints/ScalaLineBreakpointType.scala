@@ -36,12 +36,14 @@ import consulo.ui.image.Image
 
 import java.util.Collections
 
-@ExtensionImpl
+@ExtensionImpl(order = "last")
 class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", DebuggerBundle.message("line.breakpoints.tab.title")) {
 
   override def getDisplayName: String = DebuggerBundle.message("line.breakpoints.tab.title")
 
-  override def canPutAt(@NotNull file: VirtualFile, line: Int, @NotNull project: Project): Boolean = {
+  // upstream: overrides `canPutAt`, in Consulo it is called by ScalaLineBreakpointTypeResolver
+  @RequiresReadLock
+  def canPutAt(@NotNull file: VirtualFile, line: Int, @NotNull project: Project): Boolean = {
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null) return false
     if (!psiFile.getLanguage.isKindOf(ScalaLanguage.INSTANCE)) return false

@@ -59,6 +59,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>consulo.internal</groupId>
+            <artifactId>jdi</artifactId>
+            <version>4.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-util-nodep</artifactId>
             <version>${project.version}</version>

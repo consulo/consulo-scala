@@ -6,26 +6,22 @@ import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
 import com.intellij.java.debugger.engine.DebugProcess
 import com.intellij.java.debugger.impl.engine.DebugProcessImpl
-import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
+import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener, NodeRenderer}
 import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import com.intellij.java.debugger.impl.ui.tree.ValueDescriptor
-import consulo.execution.debug.ui.XDebuggerUIConstants
+import com.intellij.java.debugger.impl.settings.NodeRendererSettings
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.debugger.filters.ScalaDebuggerSettings
-import org.jetbrains.plugins.scala.debugger.ui.util._
 
-import java.util.concurrent.CompletableFuture
+import scala.jdk.CollectionConverters._
 
-@ExtensionImpl
+@ExtensionImpl(id = "scalaRuntimeRefRenderer", order = "before scalaCollectionRenderer")
 class ScalaRuntimeRefRenderer extends ScalaClassRenderer {
   import ScalaRuntimeRefRenderer._
 
   override def getName: String = DebuggerBundle.message("scala.runtime.ref.renderer")
-
-  //noinspection ApiStatus,UnstableApiUsage
-  setIsApplicableChecker(tpe => CompletableFuture.completedFuture(isApplicableFor(tpe)))
 
   // most Scala runtime refs are defined as Java classes
   override def isApplicableFor(tpe: Type): Boolean = tpe match {
@@ -35,41 +31,32 @@ class ScalaRuntimeRefRenderer extends ScalaClassRenderer {
 
   override def shouldDisplay(context: EvaluationContext, objInstance: ObjectReference, field: Field): Boolean = false
 
-  override def calcLabel(descriptor: ValueDescriptor, context: EvaluationContext, listener: DescriptorLabelListener): String = {
-    onDebuggerManagerThread(context)(unwrapValue(descriptor.getValue).toString).attempt.flatTap {
-      case Left(t) =>
-        onDebuggerManagerThread(context) {
-          descriptor.setValueLabelFailed(evaluationExceptionFromThrowable(t))
-          listener.labelChanged()
-        }
-      case Right(label) =>
-        onDebuggerManagerThread(context) {
-          descriptor.setValueLabel(label)
-          listener.labelChanged()
-        }
-    }.rethrow.getNow(XDebuggerUIConstants.getCollectingDataMessage)
+  // upstream: the renderer API is asynchronous, consulo-java renderers are called on the debugger manager thread
+  override def calcLabel(descriptor: ValueDescriptor, context: EvaluationContext, listener: DescriptorLabelListener): String =
+    unwrapValue(descriptor.getValue).toString
+
+  override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+    val unwrapped = unwrapValue(value)
+    rendererFor(unwrapped).buildChildren(unwrapped, builder, context)
   }
 
-  override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit =
-    for {
-      unwrapped <- onDebuggerManagerThread(context)(unwrapValue(value))
-      renderer <- onDebuggerManagerThread(context)(context.getDebugProcess.asInstanceOf[DebugProcessImpl].getAutoRendererAsync(unwrapped.`type`())).flatten
-      _ <- onDebuggerManagerThread(context)(renderer.buildChildren(unwrapped, builder, context))
-    } yield ()
+  override def isExpandable(value: Value, context: EvaluationContext, descriptor: NodeDescriptor): Boolean = {
+    val unwrapped = unwrapValue(value)
+    rendererFor(unwrapped).isExpandable(unwrapped, context, descriptor)
+  }
 
-  override def isExpandableAsync(value: Value, context: EvaluationContext, descriptor: NodeDescriptor): CompletableFuture[java.lang.Boolean] =
-    for {
-      unwrapped <- onDebuggerManagerThread(context)(unwrapValue(value))
-      renderer <- onDebuggerManagerThread(context)(context.getDebugProcess.asInstanceOf[DebugProcessImpl].getAutoRendererAsync(unwrapped.`type`())).flatten
-      result <- onDebuggerManagerThread(context)(renderer.isExpandableAsync(unwrapped, context, descriptor)).flatten
-    } yield result
-
-  override def calcIdLabel(descriptor: ValueDescriptor, process: DebugProcess, labelListener: DescriptorLabelListener): String =
-    descriptor.getType match {
-      case RefType(refType) =>
+  override def getIdLabel(value: Value, process: DebugProcess): String =
+    value match {
+      case null => super.getIdLabel(value, process)
+      case _ =>
+        val RefType(refType) = value.`type`(): @unchecked
         s"unwrapped Scala runtime $refType reference"
-      case null => super.calcIdLabel(descriptor, process, labelListener)
     }
+
+  private def rendererFor(value: Value): NodeRenderer =
+    NodeRendererSettings.getInstance().getAllRenderers.asScala
+      .find(r => r.isEnabled && r.isApplicable(value.`type`()))
+      .getOrElse(DebugProcessImpl.getDefaultRenderer(value))
 
   private def unwrapValue(ref: Value): Value = {
     ref match {

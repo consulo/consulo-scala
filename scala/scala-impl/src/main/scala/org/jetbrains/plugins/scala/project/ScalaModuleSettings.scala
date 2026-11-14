@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.project
 
 
+import consulo.language.util.ModuleUtilCore
+import org.jetbrains.plugins.scala.project.extension.ScalaModuleExtension
 import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.rt.project.Version
 import consulo.logging.Logger
@@ -241,6 +243,10 @@ object ScalaModuleSettings {
     if (module.isBuildModule) {
       // build module doesn't have Scala SDK
       forSbtBuildModule(module)
+    }
+    else if (ModuleUtilCore.getExtension(module, classOf[ScalaModuleExtension]) == null) {
+      // Consulo: Scala is enabled by the module extension
+      None
     }
     else {
       val processor: FindProcessor[Library] = _.isScalaSdk

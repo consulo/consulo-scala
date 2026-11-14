@@ -3,7 +3,8 @@ package org.jetbrains.plugins.scala.debugger.filters;
 import consulo.annotation.component.ExtensionImpl;
 
 import consulo.configurable.Configurable;
-import consulo.configurable.SimpleConfigurable;
+import consulo.configurable.IdeaSimpleConfigurable;
+import consulo.localize.LocalizeValue;
 import consulo.util.xml.serializer.XmlSerializerUtil;
 import consulo.execution.debug.setting.DebuggerSettingsCategory;
 import consulo.execution.debug.setting.XDebuggerSettings;
@@ -32,8 +33,8 @@ public class ScalaDebuggerSettings extends XDebuggerSettings<ScalaDebuggerSettin
   public Collection<? extends Configurable> createConfigurables(DebuggerSettingsCategory category) {
     //todo: split settings configurables somehow
     return switch (category) {
-      case GENERAL -> singletonList(new ScalaDebuggerSettingsConfigurable(this));
-      case STEPPING -> singletonList(SimpleConfigurable.create("scala.debugger.stepping", DebuggerBundle.message("scala.debug.caption"), ScalaSteppingConfigurable.class, this));
+      case GENERAL -> singletonList(IdeaSimpleConfigurable.create("scala.debugger.general", LocalizeValue.of(DebuggerBundle.message("scala.debug.caption")), ScalaDebuggerSettingsConfigurable.class, this));
+      case STEPPING -> singletonList(IdeaSimpleConfigurable.create("scala.debugger.stepping", LocalizeValue.of(DebuggerBundle.message("scala.debug.caption")), ScalaSteppingConfigurable.class, this));
       default -> Collections.emptyList();
     };
   }

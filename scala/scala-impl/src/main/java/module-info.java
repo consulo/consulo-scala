@@ -46,6 +46,7 @@ open module org.intellij.scala {
     requires consulo.java.analysis.impl;
     requires consulo.java.compiler.impl;
     requires consulo.java.debugger.api;
+    requires consulo.internal.jdi;
     requires consulo.java.execution.api;
     requires consulo.java.execution.impl;
     requires consulo.java.indexing.api;

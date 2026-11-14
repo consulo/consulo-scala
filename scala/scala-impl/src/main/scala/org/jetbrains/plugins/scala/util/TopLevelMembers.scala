@@ -8,7 +8,7 @@ import consulo.language.psi.search.FilenameIndex
 import consulo.language.psi.scope.GlobalSearchScope
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile}
-import com.sun.jdi.ReferenceType
+import consulo.internal.com.sun.jdi.ReferenceType
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScPackaging

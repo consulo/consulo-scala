@@ -17,6 +17,7 @@ import consulo.application.progress.ProgressManager
 import consulo.project.{DumbService, Project}
 import consulo.module.content.layer.{ModifiableRootModel, OrderEnumerator}
 import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
+import consulo.component.util.ModificationTracker
 import consulo.module.content.{ModuleRootManager, ProjectFileIndex, ProjectRootManager}
 import consulo.content.base.BinariesOrderRootType
 import consulo.content.library.{Library, LibraryTablesRegistrar}
@@ -133,9 +134,16 @@ package object project {
     // Bailing out early also avoids the project-service lookups that `cachedInUserData` performs.
     private def scalaModuleSettings: Option[ScalaModuleSettings] =
       if (module.isDisposed) None
-      else cachedInUserData("scalaModuleSettings", module, ScalaCompilerConfiguration.modTracker(module.getProject)) {
+      else cachedInUserData("scalaModuleSettings", module, scalaModuleSettingsTracker) {
         ScalaModuleSettings(module)
       }
+
+    // Consulo: the Scala module extension and libraries are module roots
+    private def scalaModuleSettingsTracker: ModificationTracker = {
+      val configuration = ScalaCompilerConfiguration.modTracker(module.getProject)
+      val roots = ProjectRootManager.getInstance(module.getProject)
+      () => configuration.getModificationCount + roots.getModificationCount
+    }
 
     /**
      * @return true if module "looks like" a build module (if module name has `-build` suffux)

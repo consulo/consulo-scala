@@ -3,7 +3,6 @@ package org.jetbrains.plugins.scala.debugger
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.engine.evaluation.expression.IdentityEvaluator
 import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, JVMNameUtil, JavaStackFrame, JavaValue}
-import com.intellij.java.debugger.impl.jdi.LocalVariableProxyImpl
 import com.intellij.java.debugger.impl.ui.impl.watch.{NodeManagerImpl, StackFrameDescriptorImpl}
 import consulo.execution.debug.frame.XValueChildrenList
 import consulo.internal.com.sun.jdi.{BooleanValue, ObjectReference}
@@ -21,12 +20,9 @@ private final class ScalaStackFrame(descriptor: StackFrameDescriptorImpl, update
 
   private val nodeManager: NodeManagerImpl = debugProcess.getXdebugProcess.getNodeManager
 
-  override def buildLocalVariables(
-    evaluationContext: EvaluationContextImpl,
-    children: XValueChildrenList,
-    localVariables: java.util.List[LocalVariableProxyImpl]): Unit = {
-
-    localVariables.forEach { variable =>
+  // upstream: overrides `buildLocalVariables`, consulo-java builds local variables in `superBuildVariables`
+  override protected def superBuildVariables(evaluationContext: EvaluationContextImpl, children: XValueChildrenList): Unit = {
+    getVisibleVariables.forEach { variable =>
       val variableName = variable.name()
 
       val descriptor =

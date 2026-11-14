@@ -6,7 +6,7 @@ import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 import consulo.util.collection.primitive.ints.IntMaps
 import com.intellij.java.debugger.engine.{DebugProcess, DebugProcessListener}
-import com.intellij.java.debugger.impl.engine.{DebuggerManagerThreadImpl, JVMNameUtil, PositionManagerEx, PositionManagerImpl}
+import com.intellij.java.debugger.impl.engine.{DebugProcessImpl, DebuggerManagerThreadImpl, JVMNameUtil, PositionManagerEx, PositionManagerImpl}
 import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.DebuggerUtilsEx
 import com.intellij.java.debugger.impl.jdi.{StackFrameProxyImpl, VirtualMachineProxyImpl}
@@ -211,10 +211,10 @@ class ScalaPositionManager(val debugProcess: DebugProcess) extends PositionManag
   override def evaluateCondition(context: EvaluationContext, frame: StackFrameProxyImpl, location: Location, expression: String): ThreeState =
     ThreeState.UNSURE
 
-  override def createStackFrame(descriptor: StackFrameDescriptorImpl): XStackFrame =
-    Option(descriptor.getLocation)
+  override def createStackFrame(frame: StackFrameProxyImpl, debugProcess: DebugProcessImpl, location: Location): XStackFrame =
+    Option(location)
       .filter(isInScalaFile)
-      .map(_ => new ScalaStackFrame(descriptor, true))
+      .map(_ => new ScalaStackFrame(new StackFrameDescriptorImpl(frame), true))
       .orNull
 
   private def isInScalaFile(location: Location): Boolean = {

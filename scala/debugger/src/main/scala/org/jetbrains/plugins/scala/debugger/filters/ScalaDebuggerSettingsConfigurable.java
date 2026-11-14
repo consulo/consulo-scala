@@ -1,73 +1,47 @@
 package org.jetbrains.plugins.scala.debugger.filters;
 
-import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
+import consulo.configurable.IdeaConfigurableUi;
+import consulo.disposer.Disposable;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.plugins.scala.debugger.DebuggerBundle;
-import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider$;
-import org.jetbrains.plugins.scala.icons.Icons;
 
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
-public class ScalaDebuggerSettingsConfigurable implements Configurable {
+public class ScalaDebuggerSettingsConfigurable implements IdeaConfigurableUi<ScalaDebuggerSettings> {
     private JPanel myPanel;
     private JCheckBox friendlyDisplayOfScalaCheckBox;
     private JCheckBox dontShowRuntimeRefs;
     private JCheckBox showOuterVariables;
-    private final ScalaDebuggerSettings mySettings;
 
-    public ScalaDebuggerSettingsConfigurable(final ScalaDebuggerSettings settings) {
-        mySettings = settings;
+    @Override
+    public void reset(ScalaDebuggerSettings settings) {
         friendlyDisplayOfScalaCheckBox.setSelected(settings.FRIENDLY_COLLECTION_DISPLAY_ENABLED);
         dontShowRuntimeRefs.setSelected(settings.DONT_SHOW_RUNTIME_REFS);
         showOuterVariables.setSelected(settings.SHOW_VARIABLES_FROM_OUTER_SCOPES);
     }
 
     @Override
-    @Nls
-    public String getDisplayName() {
-        return DebuggerBundle.message("scala.debug.caption");
+    public boolean isModified(ScalaDebuggerSettings settings) {
+        return settings.FRIENDLY_COLLECTION_DISPLAY_ENABLED != friendlyDisplayOfScalaCheckBox.isSelected() ||
+                settings.DONT_SHOW_RUNTIME_REFS != dontShowRuntimeRefs.isSelected() ||
+                settings.SHOW_VARIABLES_FROM_OUTER_SCOPES != showOuterVariables.isSelected();
     }
 
     @Override
-    public String getHelpTopic() {
-        return ScalaWebHelpProvider$.MODULE$.HelpPrefix() + "run-debug-configuration-scala.html";
+    public void apply(ScalaDebuggerSettings settings) throws ConfigurationException {
+        settings.FRIENDLY_COLLECTION_DISPLAY_ENABLED = friendlyDisplayOfScalaCheckBox.isSelected();
+        settings.DONT_SHOW_RUNTIME_REFS = dontShowRuntimeRefs.isSelected();
+        settings.SHOW_VARIABLES_FROM_OUTER_SCOPES = showOuterVariables.isSelected();
     }
 
     @Override
-    public JComponent createComponent() {
+    public JComponent getComponent(Disposable disposable) {
         return myPanel;
-    }
-
-    @Override
-    public boolean isModified() {
-        return mySettings.FRIENDLY_COLLECTION_DISPLAY_ENABLED != friendlyDisplayOfScalaCheckBox.isSelected() ||
-                mySettings.DONT_SHOW_RUNTIME_REFS != dontShowRuntimeRefs.isSelected() ||
-                mySettings.SHOW_VARIABLES_FROM_OUTER_SCOPES != showOuterVariables.isSelected();
-    }
-
-    @Override
-    public void apply() throws ConfigurationException {
-        mySettings.FRIENDLY_COLLECTION_DISPLAY_ENABLED = friendlyDisplayOfScalaCheckBox.isSelected();
-        mySettings.DONT_SHOW_RUNTIME_REFS = dontShowRuntimeRefs.isSelected();
-        mySettings.SHOW_VARIABLES_FROM_OUTER_SCOPES = showOuterVariables.isSelected();
-    }
-
-    @Override
-    public void reset() {
-        friendlyDisplayOfScalaCheckBox.setSelected(mySettings.FRIENDLY_COLLECTION_DISPLAY_ENABLED);
-        dontShowRuntimeRefs.setSelected(mySettings.DONT_SHOW_RUNTIME_REFS);
-        showOuterVariables.setSelected(mySettings.SHOW_VARIABLES_FROM_OUTER_SCOPES);
-    }
-
-    @Override
-    public void disposeUIResources() {
     }
 
     {
@@ -90,13 +64,13 @@ public class ScalaDebuggerSettingsConfigurable implements Configurable {
         final Spacer spacer1 = new Spacer();
         myPanel.add(spacer1, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         friendlyDisplayOfScalaCheckBox = new JCheckBox();
-        this.$$$loadButtonText$$$(friendlyDisplayOfScalaCheckBox, this.$$$getMessageFromBundle$$$("messages/DebuggerBundle", "friendly.collection.display.enabled"));
+        this.$$$loadButtonText$$$(friendlyDisplayOfScalaCheckBox, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/debugger/DebuggerBundle", "friendly.collection.display.enabled"));
         myPanel.add(friendlyDisplayOfScalaCheckBox, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dontShowRuntimeRefs = new JCheckBox();
-        this.$$$loadButtonText$$$(dontShowRuntimeRefs, this.$$$getMessageFromBundle$$$("messages/DebuggerBundle", "dont.show.runtime.refs"));
+        this.$$$loadButtonText$$$(dontShowRuntimeRefs, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/debugger/DebuggerBundle", "dont.show.runtime.refs"));
         myPanel.add(dontShowRuntimeRefs, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         showOuterVariables = new JCheckBox();
-        this.$$$loadButtonText$$$(showOuterVariables, this.$$$getMessageFromBundle$$$("messages/DebuggerBundle", "show.variables.from.outer.scopes.in.variables.view"));
+        this.$$$loadButtonText$$$(showOuterVariables, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/debugger/DebuggerBundle", "show.variables.from.outer.scopes.in.variables.view"));
         myPanel.add(showOuterVariables, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

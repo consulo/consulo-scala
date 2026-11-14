@@ -1,26 +1,26 @@
 package org.jetbrains.plugins.scala.debugger
 package ui
 
+import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.DebuggerContext
 import com.intellij.java.debugger.engine.DebuggerUtils
 import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
-import com.intellij.java.debugger.impl.DebuggerUtilsAsync
 import com.intellij.java.debugger.impl.settings.NodeRendererSettings
 import com.intellij.java.debugger.impl.ui.impl.watch.FieldDescriptorImpl
 import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, ClassRenderer, DescriptorLabelListener}
-import com.intellij.java.debugger.impl.ui.tree.{DebuggerTreeNode, ValueDescriptor}
-import com.intellij.debugger.ui.tree.DescriptorWithParentObject
+import com.intellij.java.debugger.impl.ui.tree.{DebuggerTreeNode, FieldDescriptor, ValueDescriptor}
+import com.intellij.java.debugger.localize.JavaDebuggerLocalize
 import consulo.language.psi.PsiElement
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
-import org.jetbrains.plugins.scala.debugger.ui.util._
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 
-import java.util.concurrent.CompletableFuture
+import java.util.Collections
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
+@ExtensionImpl(id = "scalaClassRenderer")
 class ScalaClassRenderer extends ClassRenderer {
 
   import ScalaClassRenderer._
@@ -47,35 +47,30 @@ class ScalaClassRenderer extends ClassRenderer {
     renderer.calcLabel(descriptor, context, labelListener)
   }
 
+  override def isApplicable(tpe: Type): Boolean = isApplicableFor(tpe)
+
+  // upstream: fields are collected asynchronously, consulo-java renderers are synchronous
   override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
     val ref = value.asInstanceOf[ObjectReference]
     val project = context.getProject
-
-    def buildFields(fields: Seq[Field]): CompletableFuture[Unit] = onDebuggerManagerThread(context) {
-      val toShow = fields.filter(shouldDisplay(context, ref, _))
-      val nodeManager = builder.getNodeManager
-      if (toShow.isEmpty) {
-        setClassHasNoFieldsToDisplayMessage(builder, nodeManager)
-      } else {
-        val nodes = toShow.map { field =>
-          val desc =
-            if (isLazyVal(ref, field)) LazyValDescriptor.create(project, ref, field, context.asInstanceOf[EvaluationContextImpl])
-            else new FieldDescriptorImpl(project, ref, field)
-          nodeManager.createNode(desc, context)
-        }
-        builder.setChildren(nodes.asJava)
+    val toShow = ref.referenceType().allFields().asScala.filter(shouldDisplay(context, ref, _))
+    val nodeManager = builder.getNodeManager
+    if (toShow.isEmpty) {
+      builder.setChildren(Collections.singletonList(nodeManager.createMessageNode(JavaDebuggerLocalize.messageNodeClassNoFieldsToDisplay())))
+    } else {
+      val nodes = toShow.map { field =>
+        val desc =
+          if (isLazyVal(ref, field)) LazyValDescriptor.create(project, ref, field, context.asInstanceOf[EvaluationContextImpl])
+          else new FieldDescriptorImpl(project, ref, field)
+        nodeManager.createNode(desc, context)
       }
+      builder.setChildren(nodes.asJava)
     }
-
-    for {
-      fields <- DebuggerUtilsAsync.allFields(ref.referenceType())
-      _ <- buildFields(fields.asScala.toSeq)
-    } yield ()
   }
 
   override def getChildValueExpression(node: DebuggerTreeNode, context: DebuggerContext): PsiElement =
     node.getDescriptor match {
-      case _: DescriptorWithParentObject => super.getChildValueExpression(node, context)
+      case _: FieldDescriptor => super.getChildValueExpression(node, context)
       case _ => null
     }
 }

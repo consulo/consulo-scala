@@ -39,7 +39,7 @@
             </constraints>
             <properties>
               <labelFor value="3bd0"/>
-              <text resource-bundle="messages/SbtBundle" key="sbt.settings.maxHeapSize"/>
+              <text resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.maxHeapSize"/>
             </properties>
           </component>
           <component id="2ec67" class="javax.swing.JLabel" binding="vmParametersLabel">
@@ -47,7 +47,7 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/SbtBundle" key="sbt.settings.vmParams"/>
+              <text resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.vmParams"/>
             </properties>
           </component>
           <component id="3bd0" class="javax.swing.JTextField" binding="maximumHeapSize">
@@ -70,7 +70,7 @@
               </grid>
             </constraints>
             <properties>
-              <dialogCaption resource-bundle="messages/SbtBundle" key="sbt.settings.sbtOptions"/>
+              <dialogCaption resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.sbtOptions"/>
               <enabled value="true"/>
             </properties>
           </component>
@@ -79,7 +79,7 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/SbtBundle" key="sbt.settings.sbtLauncher"/>
+              <text resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.sbtLauncher"/>
             </properties>
           </component>
           <component id="a364d" class="com.intellij.openapi.roots.ui.distribution.DistributionComboBox" binding="sbtLauncherChooser" custom-create="true">
@@ -108,7 +108,7 @@
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/SbtBundle" key="sbt.settings.sbtOptions"/>
+              <text resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.sbtOptions"/>
             </properties>
           </component>
           <component id="e5e6e" class="javax.swing.JLabel" binding="envVarLabel">
@@ -116,7 +116,7 @@
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/SbtBundle" key="sbt.settings.env.variables"/>
+              <text resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.env.variables"/>
             </properties>
           </component>
           <component id="2a9be" class="com.intellij.execution.configuration.EnvironmentVariablesComponent" binding="sbtEnvironment">
@@ -139,7 +139,7 @@
               </grid>
             </constraints>
             <properties>
-              <dialogCaption resource-bundle="messages/SbtBundle" key="sbt.settings.vmParams"/>
+              <dialogCaption resource-bundle="org/jetbrains/sbt/SbtBundle" key="sbt.settings.vmParams"/>
               <enabled value="true"/>
             </properties>
           </component>

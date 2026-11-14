@@ -7,9 +7,8 @@ import com.intellij.java.debugger.engine.evaluation.{EvaluationContext, TextWith
 import com.intellij.java.debugger.impl.engine.evaluation.TextWithImportsImpl
 import com.intellij.java.debugger.engine.DebuggerUtils
 import com.intellij.java.debugger.impl.engine.FrameExtraVariablesProvider
-import consulo.language.impl.internal.psi.search.PsiSearchHelperImpl
 import consulo.language.psi.scope.LocalSearchScope
-import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.search.{PsiSearchHelper, TextOccurenceProcessor, UsageSearchContext}
 import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
 import consulo.language.psi.resolve.ResolveState
@@ -124,7 +123,7 @@ class ScalaFrameExtraVariablesProvider extends FrameExtraVariablesProvider {
     val location = evaluationContext.getFrameProxy.location()
     val evaluator = nonBlocking(evaluationContext) {
       val twi = toTextWithImports(name)
-      val codeFragment = new ScalaCodeFragmentFactory().createPsiCodeFragment(twi, place, evaluationContext.getProject)
+      val codeFragment = new ScalaCodeFragmentFactory().createCodeFragment(twi, place, evaluationContext.getProject)
       val sourcePosition = ScalaPositionManager.instance(evaluationContext.getDebugProcess).map(_.getSourcePosition(location))
       if (sourcePosition.isEmpty) throw EvaluationException(DebuggerBundle.message("debug.process.is.detached"))
       // a variable that can only be evaluated by compiling the expression is not worth the time it takes to find out
@@ -162,7 +161,7 @@ class ScalaFrameExtraVariablesProvider extends FrameExtraVariablesProvider {
       if (placesToSearch.isEmpty) true
       else {
         val scopes = placesToSearch.map(new LocalSearchScope(_))
-        val helper = new PsiSearchHelperImpl(place.getProject)
+        val helper = PsiSearchHelper.getInstance(place.getProject)
         var used = false
         val processor = new TextOccurenceProcessor {
           override def execute(element: PsiElement, offsetInElement: Int): Boolean = {

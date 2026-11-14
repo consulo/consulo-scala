@@ -10,4 +10,7 @@ private abstract class AbstractScalaSourcePosition(delegate: SourcePosition) ext
   override def getLine: Int = delegate.getLine
   override def getOffset: Int = delegate.getOffset
   override def openEditor(requestFocus: Boolean): Editor = delegate.openEditor(requestFocus)
+  override def navigate(requestFocus: Boolean): Unit = delegate.navigate(requestFocus)
+  override def canNavigate: Boolean = delegate.canNavigate
+  override def canNavigateToSource: Boolean = delegate.canNavigateToSource
 }
