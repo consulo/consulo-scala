@@ -118,4 +118,6 @@ open module org.intellij.scala.compile.server {
     exports org.jetbrains.jps.incremental.scala;
     exports org.jetbrains.jps.incremental.scala.local;
     exports org.jetbrains.jps.incremental.scala.local.zinc;
+
+    uses org.jetbrains.jps.incremental.scala.local.CompilerFactoryService;
 }

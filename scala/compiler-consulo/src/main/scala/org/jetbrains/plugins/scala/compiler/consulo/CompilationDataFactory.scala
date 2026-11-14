@@ -1,134 +1,125 @@
-package org.jetbrains.jps.incremental.scala.data
+package org.jetbrains.plugins.scala.compiler.consulo
 
-import org.jetbrains.jps.builders.java.{JavaBuilderUtil, JavaModuleBuildTargetType}
-import org.jetbrains.jps.incremental.scala.{ChunkExclusionService, JpsBundle, ModuleBuildTargetUtil, SettingsManager}
-import org.jetbrains.jps.incremental.{CompileContext, ModuleBuildTarget}
-import org.jetbrains.jps.model.java.JpsJavaExtensionService
-import org.jetbrains.jps.{ModuleChunk, ProjectPaths}
-import org.jetbrains.plugins.scala.compiler.data.{CompilationData, ZincData}
+import com.intellij.java.compiler.impl.javaCompiler.javac.{JavacCompilerConfiguration, JavacSettingsBuilder}
+import consulo.compiler.{CompileContext, CompileContextEx, CompilerEncodingService, CompilerPaths}
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
+import consulo.util.collection.Chunk
+import org.jetbrains.plugins.scala.compiler.data.{CompilationData, IncrementalityType, ZincData}
+import org.jetbrains.plugins.scala.project.ModuleExt
+import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 
 import java.io.IOException
 import java.nio.file.{Files, Path}
-import java.util.Collections
-import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
-trait CompilationDataFactory {
+/**
+ * upstream: org.jetbrains.jps.incremental.scala.data.CompilationDataFactory (JPS model -> Consulo project model)
+ */
+private object CompilationDataFactory {
 
-  def from(sources: Seq[Path],
-           allSources: Seq[Path],
+  def from(project: Project,
            context: CompileContext,
-           chunk: ModuleChunk): Either[String, CompilationData]
-}
+           target: BuildTarget,
+           incrementality: IncrementalityType,
+           sources: Seq[Path],
+           allSources: Seq[Path]): Either[String, CompilationData] = {
+    val module = target.representativeModule
 
-object CompilationDataFactory
-  extends CompilationDataFactory {
+    for {
+      output <- target.outputDir(context).toRight(s"Output directory not specified for module ${module.getName}")
+      _ <- outputClash(context, target, output).toLeft(())
+    } yield {
+      checkOrCreate(output)
 
-  private val compilationStamp = System.nanoTime()
+      val classpath = target.classpath
+      val compilerSettings = ScalaCompilerSettings.forModule(module)
+      val preferredEncoding = target.modules.iterator
+        .flatMap(m => Option(CompilerEncodingService.getInstance(project).getPreferredModuleEncoding(m)))
+        .nextOption()
+        .map(_.name())
 
-  // This is an escape hatch from the current Either[String, CompilationData] API, for a recoverable error.
-  // The factory needs to be refactored in the future.
-  private[scala] final val NoCompilationData = "No compilation data. Skip target."
-
-  override def from(sources: Seq[Path],
-                    allSources: Seq[Path],
-                    context: CompileContext,
-                    chunk: ModuleChunk): Either[String, CompilationData] = {
-    val target = chunk.representativeTarget
-    val module = target.getModule
-
-    outputsNotSpecified(chunk) match {
-      case Some(message) => return Left(message)
-      case None =>
-    }
-    // outputDir is not null here, it has already been checked in `outputsNotSpecified`
-    val output = ModuleBuildTargetUtil.outputDir(target).toAbsolutePath.normalize()
-    checkOrCreate(output)
-
-    val classpath = ProjectPaths.getCompilationClasspathFiles(chunk, chunk.containsTests, false, true).asScala
-    val compilerSettings = SettingsManager.getProjectSettings(module.getProject).getCompilerSettings(chunk)
-    val sourcePathOptions = sourcePathOptionsFor(context, chunk)
-    val scalaOptions = CompilerDataFactory.scalaOptionsFor(compilerSettings, chunk) ++ sourcePathOptions
-    val order = compilerSettings.getCompileOrder
-
-    createOutputToCacheMap(context).flatMap {
-      outputToCacheMap =>
-        outputToCacheMap.get(output)
-          .zip(Some(outputToCacheMap))
-          .toRight(NoCompilationData)
-    }.map { (cacheFile, outputToCacheMap) =>
-      val classpathSet = classpath.toSet
-      val relevantOutputToCacheMap = (outputToCacheMap - output).filter(p => classpathSet.contains(p._1.toFile))
-
-      val preferredEncoding: Option[String] =
-        Option(context.getProjectDescriptor.getEncodingConfiguration.getPreferredModuleChunkEncoding(chunk))
-
-      def ensureEncodingIsExplicitlySet(compilerOptions: Seq[String]): Seq[String] = {
+      def ensureEncodingIsExplicitlySet(compilerOptions: Seq[String]): Seq[String] =
         compilerOptions.find {
           case "-encoding" | "--encoding" => true
           case s"-encoding:${_}" | s"--encoding:${_}" => true
           case _ => false
         } match {
           case Some(_) => compilerOptions
-          case None =>
-            val encodingOption = preferredEncoding.toSeq.flatMap(Seq("-encoding", _))
-            encodingOption ++ compilerOptions
+          case None => preferredEncoding.toSeq.flatMap(Seq("-encoding", _)) ++ compilerOptions
         }
+
+      val scalaOptions = compilerSettings.getOptionsAsStrings(module.hasScala3)
+      val javaOptions = javaOptionsFor(project, target)
+
+      val classpathSet = classpath.toSet
+      val outputToCacheMap = createOutputToCacheMap(project).filter { case (dir, _) => dir != output && classpathSet.contains(dir) }
+
+      val outputGroups = target.sourceRoots.filter(Files.exists(_)).map(_ -> output)
+
+      val compiledSources = incrementality match {
+        // upstream: the IDEA incrementality type passes the java sources only with the Mixed compile order, scalac only parses them
+        case IncrementalityType.IDEA => (sources.filter(_.getFileName.toString.endsWith(ScalaCompiler.ScalaExtension)) ++
+          allSources.filter(_.getFileName.toString.endsWith(ScalaCompiler.JavaExtension))).distinct
+        case IncrementalityType.SBT => sources
       }
 
-      def filterOutPipeliningOptions(compilerOptions: Seq[String]): Seq[String] = {
-        val withoutBooleans = compilerOptions.to(mutable.ArrayBuffer).filter {
-          case "-Xjava-tasty" | "-Xpickle-java" | "-Yjava-tasty" | "-Ypickle-java" => false
-          case "-Xallow-outline-from-tasty" | "-Yallow-outline-from-tasty" => false
-          case "-Ypickle-write-api-only" => false
-          case _ => true
-        }
-
-        def remove(option: String): Unit = {
-          var index = -1
-          while ({
-            index = withoutBooleans.indexOf(option)
-            index != -1
-          }) {
-            withoutBooleans.remove(index, 2)
-          }
-        }
-
-        List("-Xearly-tasty-output", "-Xpickle-write", "-Yearly-tasty-output", "-Ypickle-write").foreach(remove)
-        withoutBooleans.toSeq
-      }
-
-      val javaOptions = CompilerDataFactory.javaOptionsFor(context, chunk) ++ sourcePathOptions
-
-      val outputGroups = createOutputGroups(chunk)
-
-      val canonicalSources = sources.map(_.toAbsolutePath.normalize())
-
-      val isCompile =
-        !JavaBuilderUtil.isCompileJavaIncrementally(context) &&
-          !JavaBuilderUtil.isForcedRecompilationAllJavaModules(context)
+      // upstream: !JavaBuilderUtil.isCompileJavaIncrementally && !JavaBuilderUtil.isForcedRecompilationAllJavaModules
+      val isCompile = !context.isMake && !context.isRebuild
 
       CompilationData(
-        sources = canonicalSources,
-        classpath = classpath.map(_.toPath).toSeq,
+        sources = compiledSources,
+        classpath = classpath,
         output = output,
         scalaOptions = filterOutPipeliningOptions(ensureEncodingIsExplicitlySet(scalaOptions)),
         javaOptions = ensureEncodingIsExplicitlySet(javaOptions),
-        order = order,
-        cacheFile = cacheFile,
-        outputToCacheMap = relevantOutputToCacheMap,
+        order = compilerSettings.compileOrder,
+        cacheFile = target.cacheFile(project),
+        outputToCacheMap = outputToCacheMap,
         outputGroups = outputGroups,
-        zincData = ZincData(allSources, compilationStamp, isCompile)
+        zincData = ZincData(
+          allSources = if (incrementality == IncrementalityType.SBT) allSources else Seq.empty,
+          compilationStartDate = context.asInstanceOf[CompileContextEx].getStartCompilationStamp,
+          isCompile = isCompile
+        )
       )
     }
   }
 
-  private def sourcePathOptionsFor(context: CompileContext, chunk: ModuleChunk): Seq[String] = {
-    val index = context.getProjectDescriptor.getBuildRootIndex
-    val target = chunk.representativeTarget()
-    val paths = index.getTempTargetRoots(target, context).asScala.map(_.getRootFile).mkString(java.io.File.pathSeparator)
-    if (paths.isEmpty) Seq.empty else Seq("-sourcepath", paths)
+  private def filterOutPipeliningOptions(compilerOptions: Seq[String]): Seq[String] = {
+    val withoutBooleans = compilerOptions.to(mutable.ArrayBuffer).filter {
+      case "-Xjava-tasty" | "-Xpickle-java" | "-Yjava-tasty" | "-Ypickle-java" => false
+      case "-Xallow-outline-from-tasty" | "-Yallow-outline-from-tasty" => false
+      case "-Ypickle-write-api-only" => false
+      case _ => true
+    }
+
+    def remove(option: String): Unit = {
+      var index = -1
+      while ({
+        index = withoutBooleans.indexOf(option)
+        index != -1
+      }) {
+        withoutBooleans.remove(index, 2)
+      }
+    }
+
+    List("-Xearly-tasty-output", "-Xpickle-write", "-Yearly-tasty-output", "-Ypickle-write").foreach(remove)
+    withoutBooleans.toSeq
+  }
+
+  /**
+   * upstream: CompilerDataFactory.javaOptionsFor (JavacOptionsProvider + JavaBuilder.addCompilationOptions),
+   * here the options of the consulo-java javac settings and of the module java extension
+   */
+  private def javaOptionsFor(project: Project, target: BuildTarget): Seq[String] = {
+    val chunk = new Chunk[Module](target.modules.toSet.asJava)
+    val settings = new JavacSettingsBuilder(JavacCompilerConfiguration.getInstance(project)).getOptions(chunk).asScala.toSeq
+    val extensionOptions = CompilerDataFactory.javaExtension(target.representativeModule).toSeq.flatMap { extension =>
+      Option(extension.getBytecodeVersion).toSeq.flatMap(Seq("--release", _)) ++ extension.getCompilerArguments.asScala
+    }
+    settings ++ extensionOptions
   }
 
   private def checkOrCreate(output: Path): Unit = {
@@ -140,72 +131,21 @@ object CompilationDataFactory
     }
   }
 
-  private def outputsNotSpecified(chunk: ModuleChunk): Option[String] = {
-    val moduleNames = chunk.getTargets.asScala.filter(ModuleBuildTargetUtil.outputDir(_) == null).map(_.getModule.getName)
-    moduleNames.toSeq match {
-      case Seq() => None
-      case Seq(name) => Some(JpsBundle.message("output.directory.not.specified.for.module.name", name))
-      case names => Some(names.mkString(JpsBundle.message("output.directory.not.specified.for.modules"), ", ", ""))
-    }
+  private def outputClash(context: CompileContext, target: BuildTarget, output: Path): Option[String] = {
+    val other = target.copy(isTests = !target.isTests)
+    if (other.outputDir(context).contains(output) && other.sourceRoots.nonEmpty && target.sourceRoots.nonEmpty)
+      Some(s"Output path $output is shared between production and test sources of ${target.representativeModule.getName}\n" +
+        "Configure separate output paths to proceed with the compilation.")
+    else None
   }
 
-  private def createOutputToCacheMap(context: CompileContext): Either[String, Map[Path, Path]] = {
-    val targetToOutput = targetsIn(context).flatMap { target =>
-      Option(ModuleBuildTargetUtil.outputDir(target)).map((target, _))
-    }
-
-    outputClashesIn(targetToOutput).toLeft {
-      val paths = context.getProjectDescriptor.dataManager.getDataPaths
-
-      for ((target, output) <- targetToOutput.toMap)
-        yield (
-          output.toAbsolutePath.normalize(),
-          paths.getTargetDataRootDir(target).resolve(s"cache-${target.getPresentableName}.zip")
-        )
-    }
-  }
-
-  private def createOutputGroups(chunk: ModuleChunk): Seq[(Path, Path)] =
-    for {
-      target <- chunk.getTargets.asScala.toSeq
-      outputDir <- Option(ModuleBuildTargetUtil.outputDir(target)).toSeq
-      module = target.getModule
-      output = outputDir.toAbsolutePath.normalize()
-      sourceRoot <- module.getSourceRoots.asScala if sourceRoot.getRootType.isForTests == target.isTests
-      sourceRootFile = sourceRoot.getPath.toAbsolutePath.normalize() if Files.exists(sourceRootFile)
-    } yield (sourceRootFile, output)
-
-  private def targetsIn(context: CompileContext): Seq[ModuleBuildTarget] = {
-    def isExcluded(target: ModuleBuildTarget): Boolean =
-      ChunkExclusionService.isExcluded(chunk(target))
-
-    def isProductionTargetOfTestModule(target: ModuleBuildTarget): Boolean = {
-      target.getTargetType == JavaModuleBuildTargetType.PRODUCTION &&
-        JpsJavaExtensionService.getInstance.getTestModuleProperties(target.getModule) != null
-    }
-
-    val buildTargetIndex = context.getProjectDescriptor.getBuildTargetIndex
-    val targets = JavaModuleBuildTargetType.ALL_TYPES.iterator.asScala.flatMap(buildTargetIndex.getAllTargets(_).asScala)
-
-    targets.distinct
-      .filterNot(target => buildTargetIndex.isDummy(target) || isExcluded(target) || isProductionTargetOfTestModule(target))
-      .to(ArraySeq)
-  }
-
-  private def chunk(target: ModuleBuildTarget): ModuleChunk =
-    new ModuleChunk(Collections.singleton(target))
-
-  private def outputClashesIn(targetToOutput: Seq[(ModuleBuildTarget, Path)]): Option[String] = {
-    val outputToTargetsMap = targetToOutput.groupBy(_._2).view.mapValues(_.map(_._1))
-
-    val errors = outputToTargetsMap.collect {
-      case (output, targets) if output != null && targets.length > 1 =>
-        val targetNames = targets.map(_.getPresentableName).mkString(", ")
-        JpsBundle.message("output.path.shared.between", output, targetNames)
-    }
-
-    if (errors.isEmpty) None else Some(
-      (errors.toSeq :+ JpsBundle.message("configure.separate.output.paths")).mkString("\n")
-    )
-  }
+  /**
+   * zinc analysis files of the other targets, used to look up the classes of their output directories
+   */
+  private def createOutputToCacheMap(project: Project): Map[Path, Path] =
+    (for {
+      module <- ModuleManager.getInstance(project).getModules.toSeq if module.hasScala
+      isTests <- Seq(false, true)
+      output <- Option(CompilerPaths.getModuleOutputDirectory(module, isTests))
+    } yield output.toAbsolutePath.normalize() -> BuildTarget.cacheFile(project, module, isTests)).toMap
 }

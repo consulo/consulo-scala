@@ -1,255 +1,86 @@
-package org.jetbrains.jps.incremental.scala
+package org.jetbrains.plugins.scala.compiler.consulo
 
-import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.diagnostic.{Logger => JpsLogger}
-import com.intellij.openapi.util.Key
-import org.jetbrains.jps.ModuleChunk
-import org.jetbrains.jps.incremental.CompileContext
-import org.jetbrains.jps.incremental.messages.{BuildMessage, CompilerMessage, ProgressMessage}
-import org.jetbrains.jps.incremental.scala.Server.ServerError
+import consulo.component.ProcessCanceledException
+import consulo.compiler.{CompileContext, TranslatingCompiler}
+import consulo.container.boot.ContainerPathManager
+import consulo.localize.LocalizeValue
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.util.dataholder.Key
 import org.jetbrains.jps.incremental.scala.local.LocalServer
-import org.jetbrains.jps.model.JpsProject
-import org.jetbrains.jps.model.module.{JpsModule, JpsModuleDependency}
-import org.jetbrains.plugins.scala.compiler.MissingScalaSdk
-import org.jetbrains.plugins.scala.compiler.data.{CompilationData, SbtData}
-import org.jetbrains.plugins.scala.server.{CompileServerPort, CompileServerProperties}
+import org.jetbrains.plugins.scala.compiler.data.{IncrementalityType, SbtData}
+import org.jetbrains.plugins.scala.extensions.inReadAction
+import org.jetbrains.plugins.scala.util.ScalaPluginJars
 
-import java.net.InetAddress
-import java.nio.file.{Path, Paths}
-import java.util.concurrent.atomic.AtomicBoolean
-import scala.concurrent.duration.DurationInt
-import scala.jdk.CollectionConverters._
+import java.nio.file.{Files, Path}
+import java.util.concurrent.ConcurrentHashMap
+import scala.util.control.NonFatal
 
-// TODO: use a proper naming. Scala builder of what? Strings? Code? Psi trees?
-object ScalaBuilder {
+/**
+ * upstream: org.jetbrains.jps.incremental.scala.ScalaBuilder without the compile server: zinc always runs in the IDE
+ * process (upstream LocalServer fallback)
+ */
+private object ScalaBuilder {
+
+  private val Log = Logger.getInstance(classOf[ScalaCompiler])
+
+  /** zinc analysis files already reset in the current rebuild */
+  private val ResetCacheFiles = Key.create[java.util.Set[Path]]("scala.compiler.reset.cache.files")
+
+  private lazy val localServer = new LocalServer
+
+  // upstream: the plugin jps directory is the directory of the compiler-jps jar, the bridges are compiled into the compile server system directory
+  private lazy val sbtData: Either[String, SbtData] =
+    SbtData.from(ScalaPluginJars.jpsRoot, System.getProperty("java.class.version"), ContainerPathManager.get.getSystemDir.resolve("scala-compiler"))
 
   /**
-   * If there is some error during connection to the Compile Server,
-   * remember it and do not try using CS when building subsequent module chunks
+   * @return true if some class files were generated
    */
-  private val DisableScalaCompileServerForContextKey = Key.create[Boolean]("DisableScalaCompileServerForContextKey")
+  def compile(project: Project,
+              context: CompileContext,
+              target: BuildTarget,
+              incrementality: IncrementalityType,
+              sources: Seq[Path],
+              allSources: Seq[Path],
+              sink: TranslatingCompiler.OutputSink): Boolean = {
+    context.getProgressIndicator.setText(LocalizeValue.localizeTODO(s"Reading compilation settings of ${target.presentableName}"))
 
-  import data._
+    val data = for {
+      sbtData         <- sbtData
+      compilerData    <- inReadAction(CompilerDataFactory.from(target.representativeModule, incrementality))
+      compilationData <- inReadAction(CompilationDataFactory.from(project, context, target, incrementality, sources, allSources))
+    } yield (sbtData, compilerData, compilationData)
 
-  def compile(
-    context: CompileContext,
-    chunk: ModuleChunk,
-    sources: Seq[Path],
-    allSources: Seq[Path],
-    modules: Set[JpsModule],
-    client: Client
-  ): Either[String, ExitCode] = {
-    context.processMessage(new ProgressMessage(JpsBundle.message("reading.compilation.settings.0", chunk.getPresentableShortName)))
-
-    for {
-      sbtData         <-  sbtData
-      dataFactory     = DataFactoryService.instance(context)
-      compilerData    <- dataFactory.getCompilerDataFactory.from(context, chunk)
-      compilationData <- dataFactory.getCompilationDataFactory.from(sources, allSources, context,  chunk)
-    } yield {
-      Log.info(s"Compiling ${compilationData.sources.size} files; module: ${chunk.getPresentableShortName}; compiler: ${compilerData.compilerJars.map(_.compilerJar).orNull}")
-      scalaLibraryWarning(modules, compilationData, client)
-
-      // TODO: ensure Scala Compile server is stopped in order it doesn't eventually
-      //  do any compilation in parallel with local compilation
-      def fallbackToLocalServer(reasonMessage: String, e: Exception): ExitCode = {
-        context.putUserData(DisableScalaCompileServerForContextKey, true)
-        val message = reasonMessage + s" [${chunk.getPresentableShortName}]\n" + JpsBundle.message("trying.to.compile.without.it")
-        client.warning(message)
-        Log.warn(message, e)
-
-        localServer.doCompile(sbtData, compilerData, compilationData, client)
-      }
-
-      val server = getServer(context)
-      server.compile(sbtData, compilerData, compilationData, client) match {
-        case Left(error) =>
-          import ScalaCompileServerJpsMessages._
-          import ServerError._
-          error match {
-            case SocketConnectTimeout(address, port, timeout, cause) =>
-              fallbackToLocalServer(cantConnectToCompileServerErrorMessage(address, port, reason = Some(socketConnectTimeout(timeout))), cause)
-            case ConnectionError(address, port, cause)               =>
-              fallbackToLocalServer(cantConnectToCompileServerErrorMessage(address, port, reason = Option(cause.getMessage).filter(_.trim.nonEmpty)), cause)
-            case UnknownHost(address, cause)               =>
-              val message = unknownHostErrorMessage(address)
-              client.error(message)
-              Log.error(message, cause)
-              ExitCode.Abort
-            case MissingScalaCompileServerSystemDirectory(cause) =>
-              fallbackToLocalServer(missingScalaCompileServerSystemDir(), cause)
-          }
-        case Right(exitCode) =>
-          exitCode
-      }
-    }
-  }
-
-  def computeStamps(context: CompileContext, chunk: ModuleChunk, outputFiles: Seq[Path], analysisFile: Path, client: Client): ExitCode = {
-
-    // TODO: ensure Scala Compile server is stopped in order it doesn't eventually
-    //  do any compilation in parallel with local compilation
-    def fallbackToLocalServer(reasonMessage: String, e: Exception): ExitCode = {
-      context.putUserData(DisableScalaCompileServerForContextKey, true)
-      val message = reasonMessage + s" [${chunk.getPresentableShortName}]\n" + JpsBundle.message("trying.to.compute.zinc.stamps.without.it")
-      client.warning(message)
-      Log.warn(message, e)
-
-      localServer.computeStamps(outputFiles, analysisFile, client).value
-    }
-
-    val server = getServer(context)
-    server.computeStamps(outputFiles, analysisFile, client) match {
+    data match {
       case Left(error) =>
-        import ScalaCompileServerJpsMessages._
-        import ServerError._
-        error match {
-          case SocketConnectTimeout(address, port, timeout, cause) =>
-            fallbackToLocalServer(cantConnectToCompileServerErrorMessage(address, port, reason = Some(socketConnectTimeout(timeout))), cause)
-          case ConnectionError(address, port, cause) =>
-            fallbackToLocalServer(cantConnectToCompileServerErrorMessage(address, port, reason = Option(cause.getMessage).filter(_.trim.nonEmpty)), cause)
-          case UnknownHost(address, cause) =>
-            val message = unknownHostErrorMessage(address)
-            client.error(message)
-            Log.error(message, cause)
-            ExitCode.Abort
-          case MissingScalaCompileServerSystemDirectory(cause) =>
-            fallbackToLocalServer(missingScalaCompileServerSystemDir(), cause)
+        context.newError(LocalizeValue.of(error)).add()
+        false
+      case Right((sbtData, compilerData, compilationData)) =>
+        Log.info(s"Compiling ${compilationData.sources.size} files; target: ${target.presentableName}; compiler: ${compilerData.compilerJars.map(_.compilerJar).orNull}")
+
+        if (context.isRebuild) {
+          resetCacheFile(context, compilationData.cacheFile)
         }
 
-      case Right(code) => code
+        val client = new ConsuloClient(context, target)
+        try localServer.doCompile(sbtData, compilerData, compilationData, client)
+        catch {
+          case e: ProcessCanceledException => throw e
+          case NonFatal(e) if !client.isCanceled => client.trace(e)
+          case NonFatal(_) =>
+        }
+        client.registerOutputs(compilationData.output, sources, sink)
     }
   }
 
-  def hasBuildModules(chunk: ModuleChunk): Boolean = {
-    chunk.getModules.asScala.exists(_.getName.endsWith("-build")) // gen-idea doesn't use the sbt module type
-  }
-
-  def projectSettings(context: CompileContext): model.ProjectSettings =
-    projectSettings(context.getProjectDescriptor.getProject)
-
-  def projectSettings(project: JpsProject): model.ProjectSettings =
-    SettingsManager.getProjectSettings(project)
-
-  val Log: JpsLogger = JpsLogger.getInstance(ScalaBuilder.getClass.getName)
-
-  // Cached local localServer
-  private var cachedLocalServer: Option[LocalServer] = None
-
-  private val lock = new Object()
-
-  private def localServer: LocalServer = {
-    lock.synchronized {
-      val server = cachedLocalServer.getOrElse(new local.LocalServer())
-      cachedLocalServer = Some(server)
-      server
+  private def resetCacheFile(context: CompileContext, cacheFile: Path): Unit = {
+    var reset = context.getUserData(ResetCacheFiles)
+    if (reset == null) {
+      reset = ConcurrentHashMap.newKeySet[Path]()
+      context.putUserData(ResetCacheFiles, reset)
     }
-  }
-
-  private def cleanLocalServerCache(): Unit =
-    lock.synchronized {
-      cachedLocalServer = None
-    }
-
-  private lazy val sbtData: Either[String, SbtData] = {
-    val pluginJpsRoot = PathManager.getJarForClass(getClass).getParent
-    val javaClassVersion = System.getProperty("java.class.version")
-    compileServerSystemDir
-      .toRight("Scala compile server system directory not provided")
-      .flatMap(SbtData.from(pluginJpsRoot, javaClassVersion, _))
-  }
-
-  /**
-   * This is a heuristic which avoids issuing missing scala-library warnings in the Scala 2 compiler repository.
-   * In that repository, the Scala Standard Library is not missing, it is instead compiled from sources in the repository.
-   *
-   * @see [[https://github.com/scala/scala Scala 2]]
-   */
-  private def isScala2Repository(modules: Set[JpsModule]): Boolean = {
-    def isScalaLibraryModule(module: JpsModule): Boolean = {
-      val name = module.getName
-      name.endsWith("scala-library.main") || name.endsWith("scala-library")
-    }
-
-    def dependsOnScalaLibraryCompiledFromSource(module: JpsModule): Boolean =
-      module.getDependenciesList.getDependencies.asScala.exists {
-        case dep: JpsModuleDependency => isScalaLibraryModule(dep.getModule)
-        case _ => false
-      }
-
-    modules.exists { m =>
-      isScalaLibraryModule(m) || dependsOnScalaLibraryCompiledFromSource(m)
-    }
-  }
-
-  private def scalaLibraryWarning(modules: Set[JpsModule], compilationData: CompilationData, client: Client): Unit = {
-    // At this point, we know that the modules contain a Scala SDK. The builder would have exited before this point otherwise.
-    def classpathContainsScalaLibraryJar: Boolean =
-      compilationData.classpath.exists(_.getFileName.toString.startsWith("scala-library"))
-
-    if (!classpathContainsScalaLibraryJar) {
-      def hasScalaSources = compilationData.sources.exists(_.getFileName.toString.endsWith(".scala"))
-
-      if (hasScalaSources && !isScala2Repository(modules)) {
-        val names = modules.map(_.getName).mkString(", ")
-        client.warning(JpsBundle.message("no.scala.library.jar.in.module.dependencies", names))
-      }
-    }
-  }
-
-  private def getServer(implicit context: CompileContext): Server = {
-    lazy val remoteServerPort = readCompileServerPort()
-
-    val useRemoteServer = isCompileServerEnabled &&
-      !CompileServerProperties.isMyselfScalaCompileServer &&
-      !context.getUserData(DisableScalaCompileServerForContextKey) &&
-      remoteServerPort.isDefined
-
-    if (useRemoteServer) {
-      cleanLocalServerCache()
-      val port = remoteServerPort.get
-      Log.info(s"Using remote server with port: $port")
-      val socketConnectTimeout = Option(System.getProperty("scala.compile.server.socket.connect.timeout.milliseconds")).map(_.toInt.milliseconds).getOrElse(10.milliseconds)
-      new remote.RemoteServer(InetAddress.getByName(null), CompileServerPort.Local(port), socketConnectTimeout)
-    } else {
-      Log.info("Using local server")
-      localServer
-    }
-  }
-
-  private def compileServerSystemDir: Option[Path] =
-    Option(System.getProperty(CompileServerProperties.SystemDirectoryProperty)).map(Paths.get(_))
-
-  private def readCompileServerPort(): Option[Int] =
-    compileServerSystemDir.flatMap(CompileServerPort.readPortFile)
-
-  def isCompileServerEnabled(implicit context: CompileContext): Boolean =
-    globalSettings.isCompileServerEnabled
-
-  private def globalSettings(implicit context: CompileContext) =
-    SettingsManager.getGlobalSettings(context.getProjectDescriptor.getModel.getGlobal)
-
-  import org.jetbrains.jps.incremental.ModuleLevelBuilder.{ExitCode => JpsExitCode}
-
-  private[scala] def exitCode(code: ExitCode): JpsExitCode = code match {
-    case ExitCode.NothingDone => JpsExitCode.NOTHING_DONE
-    case ExitCode.Ok => JpsExitCode.OK
-    case ExitCode.Abort => JpsExitCode.ABORT
-    case ExitCode.AdditionalPassRequired => JpsExitCode.ADDITIONAL_PASS_REQUIRED
-    case ExitCode.ChunkRebuildRequired => JpsExitCode.CHUNK_REBUILD_REQUIRED
-  }
-
-  private[scala] def warnChunkHasNoScalaSdk(context: CompileContext, chunk: ModuleChunk): Unit = {
-    // This message doesn't need to be localised because it is not presented to the user.
-    // It is instead handled by MissingScalaSdkBuildIssueContributor.
-    val message = MissingScalaSdk.skippedModuleMessage(chunk.getPresentableShortName)
-    //noinspection ReferencePassedToNls
-    context.processMessage(new CompilerMessage(MissingScalaSdk.MessagePrefix, BuildMessage.Kind.WARNING, message))
-  }
-
-  private[scala] def logSearchingForCompilableFiles(context: CompileContext, presentableName: String, loggedMessageOnce: AtomicBoolean): Unit = {
-    if (loggedMessageOnce.compareAndSet(false, true)) {
-      context.processMessage(new ProgressMessage(JpsBundle.message("searching.for.compilable.files.0", presentableName)))
+    if (reset.add(cacheFile)) {
+      Files.deleteIfExists(cacheFile)
     }
   }
 }
