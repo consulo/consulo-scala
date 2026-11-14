@@ -5,7 +5,7 @@ import consulo.annotation.component.ExtensionImpl
 import consulo.content.library.Library
 import consulo.externalSystem.model.{DataNode, ProjectKeys}
 import consulo.externalSystem.util.{DisposeAwareProjectChange, ExternalSystemApiUtil}
-import consulo.gradle.GradleConstants
+import consulo.gradle.{GradleConstants, GradleNotificationGroups}
 import consulo.module.Module
 import consulo.module.content.ModuleRootManager
 import consulo.module.content.layer.ModifiableRootModel
@@ -15,7 +15,6 @@ import consulo.project.content.library.ProjectLibraryTable
 import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.project.*
 import org.jetbrains.plugins.scala.project.external.{ScalaAbstractProjectDataService, ScalaSdkUtils}
-import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
 import java.util
 import scala.jdk.CollectionConverters.*
@@ -32,7 +31,8 @@ class ScalaGradleDataService extends ScalaAbstractProjectDataService[ScalaModelD
   ): Unit = {
     // upstream: ScalaSdkUtils.revertScalaSdkFromLibraries - migration of projects imported by older IntelliJ Scala plugin versions
 
-    // upstream: the Scala SDK is configured for all Gradle source set modules, Consulo Gradle imports one module per Gradle project
+    // upstream: the same Scala SDK and compiler options (of compileScala) are set for all Gradle source set modules,
+    // Consulo Gradle imports one module per Gradle project (main and test source roots)
     val modules = toImport.asScala.toSeq.flatMap { scalaNode =>
       Option(scalaNode.getData(ProjectKeys.MODULE))
         .flatMap(project.findIdeModuleOpt)
@@ -92,8 +92,7 @@ class ScalaGradleDataService extends ScalaAbstractProjectDataService[ScalaModelD
   override def removeData(toRemove: util.Collection[? <: Library], project: Project, synchronous: Boolean): Unit = ()
 
   private val Title: NlsString = NlsString(ScalaGradleBundle.message("gradle.sync"))
-  // upstream: the "Gradle" notification group of the IntelliJ Gradle plugin
-  private val BalloonGroup = ScalaNotificationGroups.scalaGeneral
+  private val BalloonGroup = GradleNotificationGroups.GRADLE
   private val SystemId = GradleConstants.SYSTEM_ID
 
   private def showWarning(message: NlsString)(implicit project: Project): Unit =

@@ -43,6 +43,20 @@ for module in java.language.api java.compiler.impl; do
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
 done
 
+# overlay: consulo-gradle modules changed locally for the port (Scala compiler plugins in the tooling ScalaModel,
+# GradleNotificationGroups in gradle-api); build them with `mvn install -DskipTests` in consulo-gradle (plugin with -o)
+GRADLE_M2=~/.m2/repository/consulo/plugin
+for module in "" -gradle.api -tooling.extension.api; do
+  jar=org.jetbrains.plugins.gradle$module-3-SNAPSHOT.jar
+  cp "$GRADLE_M2/org.jetbrains.plugins.gradle$module/3-SNAPSHOT/$jar" "$DEPS/org.jetbrains.plugins.gradle/lib/$jar"
+  python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/org.jetbrains.plugins.gradle" "$jar"
+done
+# the jars injected into the Gradle daemon by the import init script
+cp "$GRADLE_M2/org.jetbrains.plugins.gradle-tooling.extension.api/3-SNAPSHOT/org.jetbrains.plugins.gradle-tooling.extension.api-3-SNAPSHOT.jar" \
+  "$DEPS/org.jetbrains.plugins.gradle/gradle-rt/gradle-ext-api.jar"
+cp "$GRADLE_M2/org.jetbrains.plugins.gradle-tooling-extension.impl/3-SNAPSHOT/org.jetbrains.plugins.gradle-tooling-extension.impl-3-SNAPSHOT.jar" \
+  "$DEPS/org.jetbrains.plugins.gradle/gradle-rt/gradle-ext-impl.jar"
+
 # modules online; the plugin packaging offline - its dependency workspace would ask the hub for the platform build number
 # of the local platform jars (may be a local 9999 build), the dependencies are fetched above instead
 (cd "$REPO" && mvn -q install -pl '!plugin' -DskipTests -Dmaven.build.cache.enabled=false)

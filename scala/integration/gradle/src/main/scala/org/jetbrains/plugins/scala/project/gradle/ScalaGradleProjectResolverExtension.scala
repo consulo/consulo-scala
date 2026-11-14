@@ -39,7 +39,10 @@ final class ScalaGradleProjectResolverExtension extends AbstractProjectResolverE
     // Gradle's ScalaModel#getScalaClasspath only exposes java.io.File; there is no nio.Path-based alternative.
     //noinspection SSBasedInspection
     val classpath = Option(model.getScalaClasspath).map(_.asScala.toSeq).getOrElse(Seq.empty)
-    val compilerOptions = Option(model.getScalaCompileOptions).toSeq.flatMap(compilerOptionsFrom)
+    // Gradle's ScalaModel#getScalaCompilerPlugins only exposes java.io.File; there is no nio.Path-based alternative.
+    //noinspection SSBasedInspection
+    val compilerPlugins = Option(model.getScalaCompilerPlugins).map(_.asScala.toSeq).getOrElse(Seq.empty)
+    val compilerOptions = Option(model.getScalaCompileOptions).toSeq.flatMap(compilerOptionsFrom(_, compilerPlugins))
     val scalaVersion = compilerVersionOf(classpath)
 
     // Only resolve the compiler bridge for Scala 3. Gradle reports a compiler classpath that doesn't work with
@@ -68,8 +71,7 @@ final class ScalaGradleProjectResolverExtension extends AbstractProjectResolverE
     scalaLibrariesInCompilerClasspath.flatMap(runtimeVersion).headOption
   }
 
-  // upstream: also -Xplugin options from ScalaModel#getScalaCompilerPlugins, Consulo's ScalaModel has no compiler plugins
-  private def compilerOptionsFrom(options: ScalaCompileOptions): Seq[String] = {
+  private def compilerOptionsFrom(options: ScalaCompileOptions, compilerPlugins: Seq[File]): Seq[String] = {
     val presentations = Seq(
       options.isDeprecation -> "-deprecation",
       options.isUnchecked -> "-unchecked",
@@ -81,10 +83,12 @@ final class ScalaGradleProjectResolverExtension extends AbstractProjectResolverE
       !isEmpty(options.getEncoding) -> options.getEncoding
     )
 
+    val scalaCompilerPlugins = compilerPlugins.map(f => s"-Xplugin:${f.getPath}")
+
     val additionalOptions =
       if (options.getAdditionalParameters != null) options.getAdditionalParameters.asScala else Seq.empty
 
-    presentations.flatMap(include.tupled) ++ additionalOptions
+    presentations.flatMap(include.tupled) ++ scalaCompilerPlugins ++ additionalOptions
   }
 
   private def isEmpty(s: String) = s == null || s.isEmpty
