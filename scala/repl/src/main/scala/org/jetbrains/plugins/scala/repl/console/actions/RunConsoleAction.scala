@@ -3,13 +3,13 @@ package org.jetbrains.plugins.scala.repl.console.actions
 import consulo.annotation.component.ActionImpl
 import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
-import com.intellij.execution.{ExecutionBundle, RunManager, RunManagerEx, RunnerAndConfigurationSettings}
+import consulo.execution.{ProgramRunnerUtil, RunManager, RunnerAndConfigurationSettings}
+import consulo.execution.localize.ExecutionLocalize
 import consulo.process.ExecutionException
-import com.intellij.execution.configurations.{ConfigurationType, ConfigurationTypeUtil, RunConfiguration}
+import consulo.execution.configuration.{ConfigurationType, ConfigurationTypeUtil, RunConfiguration}
 import consulo.execution.executor.DefaultRunExecutor
-import consulo.execution.runner.{ExecutionEnvironmentBuilder, ProgramRunner}
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
-import consulo.language.editor.CommonDataKeys
+import consulo.execution.runner.ExecutionEnvironmentBuilder
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.project.Project
 import consulo.ui.ex.awt.Messages
 import consulo.language.psi.PsiFile
@@ -27,15 +27,16 @@ class RunConsoleAction extends AnAction(
   ScalaReplBundle.message("scalarepl.menu.action.text"),
   ScalaReplBundle.message("scalarepl.menu.action.description"),
   Icons.SCALA_CONSOLE
-) with RunConsoleAction.RunActionBase[ScalaConsoleConfigurationType] {
+) with AnActionWithSyncUpdate with RunConsoleAction.RunActionBase[ScalaConsoleConfigurationType] {
 
   override protected def getNewSettingName: String = ScalaReplBundle.message("scala.console.actions.scala.repl")
 
   override def update(e: AnActionEvent): Unit = {
-    if (e.getProject == null || e.getProject.isDisposed)
+    val project = e.getData(Project.KEY)
+    if (project == null || project.isDisposed)
       return
 
-    val isEnabledAndVisible = e.getProject.hasScala
+    val isEnabledAndVisible = project.hasScala
     e.getPresentation.setEnabledAndVisible(isEnabledAndVisible)
   }
 
@@ -50,11 +51,13 @@ class RunConsoleAction extends AnAction(
 
 object RunConsoleAction {
 
-  private def runFromSetting(setting: RunnerAndConfigurationSettings, runManagerEx: RunManagerEx, project: Project): Unit = {
-    val configuration = setting.getConfiguration
-    runManagerEx.setTemporaryConfiguration(setting)
+  private def runFromSetting(setting: RunnerAndConfigurationSettings, runManager: RunManager, project: Project): Unit = {
+    // upstream: RunManagerEx.setTemporaryConfiguration
+    setting.setTemporary(true)
+    runManager.addConfiguration(setting)
+    runManager.setSelectedConfiguration(setting)
     val runExecutor = DefaultRunExecutor.getRunExecutorInstance
-    val runner = ProgramRunner.getRunner(runExecutor.getId, configuration)
+    val runner = ProgramRunnerUtil.getRunner(runExecutor.getId, setting)
     if (runner != null) {
       try {
         val builder: ExecutionEnvironmentBuilder = new ExecutionEnvironmentBuilder(project, runExecutor)
@@ -64,23 +67,23 @@ object RunConsoleAction {
       catch {
         case e: ExecutionException =>
           //noinspection ReferencePassedToNls
-          Messages.showErrorDialog(project, e.getMessage, ExecutionBundle.message("error.common.title"))
+          Messages.showErrorDialog(project, e.getMessage, ExecutionLocalize.errorCommonTitle.get)
       }
     }
   }
 
-  def runExisting(setting: RunnerAndConfigurationSettings, runManagerEx: RunManagerEx, project: Project): Unit =
+  def runExisting(setting: RunnerAndConfigurationSettings, runManager: RunManager, project: Project): Unit =
     inReadAction {
-      runFromSetting(setting, runManagerEx, project)
+      runFromSetting(setting, runManager, project)
     }
 
-  def createAndRun(configurationType: ConfigurationType, runManagerEx: RunManagerEx,
+  def createAndRun(configurationType: ConfigurationType, runManager: RunManager,
                    project: Project, name: String, handler: RunConfiguration => Unit): Unit =
     inReadAction {
       val factory  = configurationType.getConfigurationFactories.apply(0)
-      val setting = RunManager.getInstance(project).createConfiguration(name, factory)
+      val setting = runManager.createRunConfiguration(name, factory)
       handler(setting.getConfiguration)
-      runFromSetting(setting, runManagerEx, project)
+      runFromSetting(setting, runManager, project)
     }
 
   trait RunActionBase[T <: ConfigurationType] {
@@ -94,20 +97,20 @@ object RunConsoleAction {
 
     protected final def doRunAction(e: AnActionEvent): Unit = {
       val dataContext = e.getDataContext
-      val file = CommonDataKeys.PSI_FILE.getData(dataContext)
-      val project = CommonDataKeys.PROJECT.getData(dataContext)
+      val file = dataContext.getData(PsiFile.KEY)
+      val project = dataContext.getData(Project.KEY)
 
       if (project == null || !checkFile(file)) return
 
-      val runManagerEx = RunManagerEx.getInstanceEx(project)
+      val runManager = RunManager.getInstance(project)
       val configurationType = getMyConfigurationType
-      val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
+      val settings = runManager.getConfigurationSettingsList(configurationType).asScala
 
       settings.headOption match {
         case Some(setting) =>
-          RunConsoleAction.runExisting(setting, runManagerEx, project)
+          RunConsoleAction.runExisting(setting, runManager, project)
         case _ =>
-          RunConsoleAction.createAndRun(configurationType, runManagerEx, project, getNewSettingName, getRunConfigurationHandler)
+          RunConsoleAction.createAndRun(configurationType, runManager, project, getNewSettingName, getRunConfigurationHandler)
       }
     }
   }

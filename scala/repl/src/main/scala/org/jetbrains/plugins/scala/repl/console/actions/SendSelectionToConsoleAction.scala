@@ -3,8 +3,9 @@ package org.jetbrains.plugins.scala.repl.console.actions
 import consulo.annotation.component.ActionImpl
 import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
-import consulo.language.editor.CommonDataKeys
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
+import consulo.codeEditor.Editor
+import consulo.project.Project
 import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaLanguageConsole, ScalaReplBundle}
@@ -20,13 +21,13 @@ class SendSelectionToConsoleAction extends AnAction(
   ScalaReplBundle.message("send.selection.to.scala.repl.menu.action.text"),
   ScalaReplBundle.message("send.selection.to.scala.repl.menu.action.description"),
   Icons.SCALA_CONSOLE
-) {
+) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
     val isVisibleAndEnabled = (for {
       scalaFile <- ScalaActionUtil.getFileFrom(e).filterByType[ScalaFile]
 
-      editor <- Option(CommonDataKeys.EDITOR.getData(e.getDataContext))
+      editor <- Option(e.getData(Editor.KEY))
       if editor.getSelectionModel.hasSelection
 
       console <- Option(ScalaConsoleInfo.getConsole(scalaFile.getProject))
@@ -43,8 +44,8 @@ class SendSelectionToConsoleAction extends AnAction(
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     val context = e.getDataContext
-    val editor = CommonDataKeys.EDITOR.getData(context)
-    val project = CommonDataKeys.PROJECT.getData(context)
+    val editor = context.getData(Editor.KEY)
+    val project = context.getData(Project.KEY)
 
     if (editor == null || project == null) return
     val selectedText = editor.getSelectionModel.getSelectedText

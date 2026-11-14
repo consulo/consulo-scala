@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.repl.console
-import com.intellij.execution.console.{ConsoleHistoryController, ConsoleRootType, LanguageConsoleImpl}
-import com.intellij.execution.filters.TextConsoleBuilderImpl
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.ui.ConsoleViewContentType
+import consulo.ide.impl.idea.execution.console.{ConsoleHistoryControllerImpl, LanguageConsoleImpl}
+import consulo.ide.impl.idea.execution.filters.TextConsoleBuilderImpl
+import consulo.execution.ui.console.{ConsoleRootType, ConsoleViewContentType}
+import consulo.process.ProcessHandler
 import consulo.language.Language
 import consulo.ui.ex.action.ActionManager
 import consulo.application.ApplicationManager
@@ -17,7 +17,8 @@ import consulo.document.util.TextRange
 import consulo.util.lang.StringUtil
 import consulo.language.file.light.LightVirtualFile
 import consulo.ui.ex.{Gray, JBColor}
-import com.intellij.ui.SideBorder
+import consulo.ui.ex.awt.SideBorder
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.repl.console.ScalaLanguageConsole.*
 import org.jetbrains.plugins.scala.repl.console.actions.ScalaConsoleExecuteAction
 import org.jetbrains.plugins.scala.extensions.invokeAndWait
@@ -51,7 +52,7 @@ class ScalaLanguageConsole(module: Module, language: Language)
 
   override def attachToProcess(processHandler: ProcessHandler): Unit = {
     super.attachToProcess(processHandler)
-    val controller = new ConsoleHistoryController(ScalaConsoleRootType, null, this)
+    val controller = new ConsoleHistoryControllerImpl(ScalaConsoleRootType, null, this)
     controller.install()
 
     ScalaConsoleInfo.addConsole(this, controller, processHandler)
@@ -159,14 +160,14 @@ class ScalaLanguageConsole(module: Module, language: Language)
 
   private val EditorPlaceholderAttributes: TextAttributes ={
     val attrs = new TextAttributes
-    attrs.setForegroundColor(JBColor.LIGHT_GRAY)
+    attrs.setForegroundColor(TargetAWT.from(JBColor.LIGHT_GRAY))
     attrs.setFontType(Font.ITALIC)
     attrs
   }
 
   private val TransparentAttributes: TextAttributes = {
     val attrs = new TextAttributes()
-    attrs.setForegroundColor(Gray.TRANSPARENT)
+    attrs.setForegroundColor(TargetAWT.from(Gray.TRANSPARENT))
     attrs
   }
 

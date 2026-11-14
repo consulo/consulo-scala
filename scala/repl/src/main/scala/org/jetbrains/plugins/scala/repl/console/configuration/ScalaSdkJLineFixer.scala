@@ -2,10 +2,8 @@ package org.jetbrains.plugins.scala.repl.console.configuration
 import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
 import consulo.module.Module
-import com.intellij.openapi.options.ex.SingleConfigurableEditor
-import com.intellij.openapi.options.newEditor.SettingsDialog
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
-import consulo.ui.ex.awt.DialogWrapper.DialogStyle
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.localize.LocalizeValue
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.repl.console.ScalaReplBundle
 import org.jetbrains.plugins.scala.project.*
@@ -57,18 +55,17 @@ object ScalaSdkJLineFixer {
     val message: String =
       ScalaReplBundle.message("subsystem.requires.jline", subsystemName, JLineFinder.JLineJarName).replaceAll("\n", "<br>")
 
-    val goToSdkSettingsAction = new NotificationAction(ScalaReplBundle.message("scala.console.configure.scala.sdk.classpath")) {
+    val goToSdkSettingsAction = new NotificationAction(LocalizeValue.of(ScalaReplBundle.message("scala.console.configure.scala.sdk.classpath"))) {
       override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
         notification.expire()
-        val configurable = ProjectStructureConfigurable.getInstance(project)
-        val editor = new SingleConfigurableEditor(project, configurable, SettingsDialog.DIMENSION_KEY) {
-          override protected def getStyle = DialogStyle.COMPACT
-        }
-        module.scalaSdk match {
-          case Some(sdk) => configurable.selectProjectOrGlobalLibrary(sdk, true)
-          case None      => configurable.selectGlobalLibraries(true)
-        }
-        editor.show()
+        // upstream: opens a compact single-configurable dialog, selects global libraries if there is no Scala SDK
+        ShowSettingsUtil.getInstance.showProjectStructureDialog(project, selector => {
+          module.scalaSdk match {
+            case Some(sdk) => selector.selectProjectOrGlobalLibrary(sdk, true)
+            case None      => selector.select(module, true)
+          }
+          ()
+        })
       }
     }
 
@@ -129,18 +126,20 @@ object ScalaSdkJLineFixer {
       jLineJar <- (jLineFolder / JLineJarName).maybeFile
     } yield jLineJar
 
-    extension (path: Path)
+    extension (path: Path) {
       private def parent: Option[Path] = Option(path.getParent)
 
-      private def parent(level: Int): Option[Path] =
+      private def parent(level: Int): Option[Path] = {
         @tailrec
         def loop(file: Path | Null, level: Int): Path | Null =
-          if level > 0 && (file ne null) then loop(file.getParent, level - 1)
+          if (level > 0 && (file ne null)) loop(file.nn.getParent, level - 1)
           else file
 
-        path match
+        path match {
           case null => None
           case f => Option(loop(f, level))
+        }
+      }
 
       @targetName("separator")
       private def /(child: String): Path = path.resolve(child)
@@ -148,5 +147,6 @@ object ScalaSdkJLineFixer {
       private def maybeDir: Option[Path] = Option(path).filter(Files.isDirectory(_))
 
       private def maybeFile: Option[Path] = Option(path).filter(Files.isRegularFile(_))
+    }
   }
 }

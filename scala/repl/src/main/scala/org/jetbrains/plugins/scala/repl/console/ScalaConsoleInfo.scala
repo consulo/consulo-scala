@@ -1,9 +1,10 @@
 package org.jetbrains.plugins.scala.repl.console
-import com.intellij.execution.console.ConsoleHistoryController
-import com.intellij.execution.process.ProcessHandler
+import consulo.execution.ui.console.ConsoleHistoryController
+import consulo.process.ProcessHandler
 import consulo.codeEditor.Editor
 import consulo.project.Project
 import consulo.language.psi.PsiFile
+import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 
 import java.util
 import scala.annotation.unused

@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.repl.console.configuration
-import consulo.execution.configuration.ConfigurationFactory
-import com.intellij.execution.configurations.{ConfigurationType, RunConfiguration}
+import consulo.execution.configuration.{ConfigurationFactory, ConfigurationType, RunConfiguration}
 import consulo.project.Project
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.*

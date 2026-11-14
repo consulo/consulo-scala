@@ -12,7 +12,6 @@ open module org.intellij.scala.repl {
     requires scala.collection.compat;
     requires org.apache.ivy;
     requires coursier.paths;
-    requires forms.rt;
     requires jakarta.inject;
     requires com.intellij.xml;
     requires com.intellij.xml.api;
@@ -40,6 +39,7 @@ open module org.intellij.scala.repl {
     requires consulo.find.api;
     requires consulo.http.api;
     requires consulo.ide.api;
+    requires consulo.ide.impl;
     requires consulo.index.io;
     requires consulo.java;
     requires consulo.java.analysis.impl;

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.repl.console.actions
 
 import consulo.annotation.component.ActionImpl
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.language.editor.CommonDataKeys
 import consulo.logging.Logger
 import consulo.codeEditor.EditorEx
@@ -18,7 +18,7 @@ class ScalaConsoleExecuteAction extends AnAction(
   ScalaReplBundle.message("execute.scala.repl.statement.menu.action.text"),
   ScalaReplBundle.message("execute.scala.repl.statement.menu.action.description"),
   /* icon = */ null
-) with DumbAware {
+) with AnActionWithSyncUpdate with DumbAware {
 
   override def update(e: AnActionEvent): Unit = {
     val editor = e.getData(CommonDataKeys.EDITOR)

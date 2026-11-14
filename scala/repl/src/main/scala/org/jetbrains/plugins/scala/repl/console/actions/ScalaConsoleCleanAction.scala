@@ -2,12 +2,16 @@ package org.jetbrains.plugins.scala.repl.console.actions
 
 import consulo.annotation.component.ActionImpl
 import consulo.dataContext.DataContext
-import com.intellij.openapi.editor.actionSystem.{EditorAction, EditorWriteActionHandler}
+import consulo.localize.LocalizeValue
 import consulo.codeEditor.{Caret, Editor}
+import consulo.codeEditor.action.{EditorAction, EditorWriteActionHandler}
 import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaReplBundle}
 
 @ActionImpl(id = "ScalaConsole.Clean")
-class ScalaConsoleCleanAction extends EditorAction(new EditorWriteActionHandler(false) {
+class ScalaConsoleCleanAction extends EditorAction(
+  LocalizeValue.of(ScalaReplBundle.message("clean.scala.repl.content.menu.action.text")),
+  LocalizeValue.of(ScalaReplBundle.message("clean.scala.repl.content.menu.action.description")),
+  new EditorWriteActionHandler(false) {
 
   override def isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext): Boolean =
     ScalaConsoleInfo.isConsole(editor)
@@ -17,10 +21,4 @@ class ScalaConsoleCleanAction extends EditorAction(new EditorWriteActionHandler(
       case null =>
       case console => console.clear()
     }
-}) {
-  locally {
-    val presentation = getTemplatePresentation
-    presentation.setText(ScalaReplBundle.message("clean.scala.repl.content.menu.action.text"))
-    presentation.setDescription(ScalaReplBundle.message("clean.scala.repl.content.menu.action.description"))
-  }
-}
+})

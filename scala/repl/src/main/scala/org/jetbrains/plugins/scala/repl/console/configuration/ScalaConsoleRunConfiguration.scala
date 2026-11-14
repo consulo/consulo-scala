@@ -1,21 +1,19 @@
 package org.jetbrains.plugins.scala.repl.console.configuration
-import consulo.execution.CantRunException
-import com.intellij.execution.{DefaultExecutionResult, EnvFilesOptions, ExecutionResult, ShortenCommandLine}
+import com.intellij.java.execution.{CommonJavaRunConfigurationParameters, ShortenCommandLine}
+import com.intellij.java.execution.impl.util.JavaParametersUtil
+import consulo.execution.{DefaultExecutionResult, ExecutionResult}
 import consulo.process.ExecutionException
 import consulo.execution.executor.Executor
-import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
-import com.intellij.execution.configurations.{JavaParameters, RunConfiguration}
+import consulo.execution.configuration.{ConfigurationFactory, LegacyRunConfigurationConverter, ModuleBasedConfiguration, RunConfigurationModule, RunConfigurationOptions, RunProfileState}
+import consulo.execution.configuration.fragment.{EnvironmentFragmentState, ProgramParametersFragmentState, WorkingDirectoryFragmentState}
 import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
-import com.intellij.execution.util.EnvFilesUtilKt.configureEnvsFromFiles
+import consulo.java.execution.configurations.OwnJavaParameters
+import consulo.java.execution.configurations.fragment.VmParametersFragmentState
+import consulo.java.execution.projectRoots.OwnJdkUtil
 import consulo.module.Module
-import consulo.execution.configuration.ui.SettingsEditor
 import consulo.project.Project
-import com.intellij.openapi.projectRoots.JavaSdkType
-import consulo.process.cmd.JdkUtil
 import consulo.content.bundle.Sdk
-import consulo.module.content.ModuleRootManager
 import consulo.virtualFileSystem.util.PathsList
-import consulo.util.xml.serializer.XmlSerializer
 import org.jdom.Element
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaVersion
@@ -30,7 +28,6 @@ import org.jetbrains.plugins.scala.runner.{ScalaTargetAwareCommandLineState, Sca
 import org.jetbrains.plugins.scala.util.JdomExternalizerMigrationHelper
 
 import java.nio.file.Path
-import scala.beans.BeanProperty
 import scala.jdk.CollectionConverters.*
 import scala.util.chaining.scalaUtilChainingOps
 
@@ -40,6 +37,9 @@ import scala.util.chaining.scalaUtilChainingOps
  * The class is not intended to be reused/extended in other plugins.
  * If you want to reuse some of the class functionality, please contact Scala Plugin team
  * via https://gitter.im/JetBrains/intellij-scala and we will extract some proper abstract base class.
+ *
+ * upstream: settings editor form; in Consulo the settings are edited by the platform run configuration fragments
+ * (module, program arguments = console arguments, VM options, working directory, environment variables)
  */
 // upstream: @ApiStatus.Experimental
 class ScalaConsoleRunConfiguration(
@@ -50,28 +50,20 @@ class ScalaConsoleRunConfiguration(
   name,
   new RunConfigurationModule(project),
   configurationFactory
-) with EnvFilesOptions {
+) with CommonJavaRunConfigurationParameters {
 
   //language=Scala
   private val Scala2MainClass = "scala.tools.nsc.MainGenericRunner"
   //language=Scala
   private val Scala3MainClass = "dotty.tools.repl.Main"
 
-  private val DefaultJavaOptions = ""
   private val UseJavaCp = "-usejavacp"
 
-  @BeanProperty var myConsoleArgs: String = ""
-  @BeanProperty var workingDirectory: String = Option(getProject.baseDir).map(_.getPath).getOrElse("")
-  @BeanProperty var javaOptions: String = DefaultJavaOptions
+  def consoleArgs: String = ensureUsesJavaCpByDefault(getProgramParameters)
 
-  @BeanProperty var environmentVariables: java.util.Map[String, String] = new java.util.HashMap()
+  def workingDirectory: String = Option(getWorkingDirectory).getOrElse(Option(getProject.baseDir).map(_.getPath).getOrElse(""))
 
-  @BeanProperty
-  var envFilePaths: java.util.List[String] = new java.util.ArrayList()
-
-  def consoleArgs: String = ensureUsesJavaCpByDefault(this.myConsoleArgs)
-
-  def consoleArgs_=(s: String): Unit = this.myConsoleArgs = ensureUsesJavaCpByDefault(s)
+  def javaOptions: String = Option(getVMParameters).getOrElse("")
 
   private def ensureUsesJavaCpByDefault(args: String): String =
     if (args == null || args.isEmpty) UseJavaCp
@@ -81,45 +73,53 @@ class ScalaConsoleRunConfiguration(
 
   private def requireModule: Module = getModule.getOrElse(throw new ExecutionException(ScalaReplBundle.message("scala.console.config.module.is.not.specified")))
 
-  override def getValidModules: java.util.List[Module] = getProject.modulesWithScala.toList.asJava
+  override def getValidModules: java.util.Collection[Module] = getProject.modulesWithScala.toList.asJava
 
-  def apply(params: ScalaConsoleRunConfigurationForm): Unit = {
-    javaOptions = params.getJavaOptions
-    consoleArgs = params.getConsoleArgs
-    workingDirectory = params.getWorkingDirectory
-    environmentVariables = params.getEnvironmentVariables
-    envFilePaths = params.getEnvFilePaths
-    setModule(params.getModule)
-  }
+  override def getRunClass: String = null
 
-  override def getConfigurationEditor: SettingsEditor[? <: RunConfiguration] =
-    new ScalaConsoleRunConfigurationEditor(project, this)
+  override def getPackage: String = null
 
-  override def writeExternal(element: Element): Unit = {
-    super.writeExternal(element)
-    XmlSerializer.serializeInto(this, element)
-  }
+  override protected def getOptionsClass: Class[? <: RunConfigurationOptions] = classOf[RunConfigurationOptions]
 
-  override def readExternal(element: Element): Unit = {
-    super.readExternal(element)
-    readModule(element)
-    XmlSerializer.deserializeInto(this, element)
-    migrate(element)
-  }
+  override protected def convertLegacyState(converter: LegacyRunConfigurationConverter): Unit = {
+    super.convertLegacyState(converter)
+    val element = converter.getElement
 
-  private def migrate(element: Element): Unit = JdomExternalizerMigrationHelper(element) { helper =>
-    helper.migrateString("consoleArgs")(consoleArgs = _)
-    helper.migrateString("workingDirectory")(workingDirectory = _)
-    helper.migrateString("javaOptions")(javaOptions = _)
-    // see revision 8a3f9d28c, some time ago javaOptions was serialized as "vmparams4"
-    helper.migrateString("vmparams4")(javaOptions = _)
+    def option(name: String): Option[String] =
+      element.getChildren("option").asScala
+        .find(o => name == o.getAttributeValue("name"))
+        .flatMap(o => Option(o.getAttributeValue("value")))
+
+    var consoleArgs = option("myConsoleArgs")
+    var workingDirectory = option("workingDirectory")
+    var javaOptions = option("javaOptions")
+    JdomExternalizerMigrationHelper(element) { helper =>
+      helper.migrateString("consoleArgs")(v => consoleArgs = Some(v))
+      helper.migrateString("workingDirectory")(v => workingDirectory = Some(v))
+      helper.migrateString("javaOptions")(v => javaOptions = Some(v))
+      // see revision 8a3f9d28c, some time ago javaOptions was serialized as "vmparams4"
+      helper.migrateString("vmparams4")(v => javaOptions = Some(v))
+    }
+
+    val envs = new java.util.LinkedHashMap[String, String]()
+    for {
+      envOption <- element.getChildren("option").asScala.find(o => "environmentVariables" == o.getAttributeValue("name"))
+      map <- Option(envOption.getChild("map"))
+      entry <- map.getChildren("entry").asScala
+      key <- Option(entry.getAttributeValue("key"))
+    } envs.put(key, Option(entry.getAttributeValue("value")).getOrElse(""))
+
+    converter.addFragment(new ProgramParametersFragmentState(ensureUsesJavaCpByDefault(consoleArgs.orNull)))
+    converter.addFragment(new WorkingDirectoryFragmentState(workingDirectory.orNull))
+    converter.addFragment(new VmParametersFragmentState(javaOptions.orNull))
+    converter.addFragment(new EnvironmentFragmentState(envs, true))
   }
 
   override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState =
     new ScalaCommandLineState(env)
 
   //overriding the method as a workaround for https://github.com/lampepfl/dotty/issues/19007
-  override def clone(): ModuleBasedConfiguration[? <: RunConfigurationModule, ?] = super.clone()
+  override def clone(): ModuleBasedConfiguration[?] = super.clone()
 
   private class ScalaCommandLineState(env: ExecutionEnvironment) extends ScalaTargetAwareCommandLineState(env) {
     getModule match {
@@ -128,7 +128,7 @@ class ScalaConsoleRunConfiguration(
       case None =>
     }
 
-    override protected def createJavaParameters: JavaParameters = {
+    override protected def createJavaParameters: OwnJavaParameters = {
       val params = createParams
       val module = requireModule
       params.getProgramParametersList.addParametersString(consoleArgs)
@@ -149,7 +149,7 @@ class ScalaConsoleRunConfiguration(
      * @note Written according to [[com.intellij.execution.JavaTestFrameworkRunnableState#execute]].
      */
     override def execute(executor: Executor, runner: ProgramRunner[?]): ExecutionResult = {
-      val params: JavaParameters = getJavaParameters
+      val params: OwnJavaParameters = getJavaParameters
       val classPath = params.getClassPath
 
       val module = requireModule
@@ -174,7 +174,7 @@ class ScalaConsoleRunConfiguration(
         case JlineResolveResult.NotRequired =>
           true
         case JlineResolveResult.RequiredFound(file) =>
-          classPathList.add(file)
+          classPathList.add(file.toFile)
           true
         case JlineResolveResult.RequiredNotFound =>
           showJLineMissingNotification(module, subsystemName)
@@ -199,33 +199,29 @@ class ScalaConsoleRunConfiguration(
     classPath.addAll(compilerClasspath.asJava)
   }
 
-  private def createParams: JavaParameters = {
+  private def createParams: OwnJavaParameters = {
     val module = requireModule
 
-    val rootManager = ModuleRootManager.getInstance(module)
-    val sdk = rootManager.getSdk
-    if (sdk == null || !sdk.getSdkType.isInstanceOf[JavaSdkType]) {
-      throw CantRunException.noJdkForModule(module)
-    }
+    // upstream: always uses the module SDK (no alternative JRE)
+    val jdk = JavaParametersUtil.createModuleJdk(module, false, getAlternativeJrePath)
 
-    new JavaParameters().tap { params =>
+    new OwnJavaParameters().tap { params =>
       addScalaCompilerClassPath(params.getClassPath, module)
       module.replClasspath match {
         case ReplClasspath.Bundled =>
         case ReplClasspath.Provided(classpath) =>
-          params.getClassPath.addAllPaths(classpath.asJava)
+          params.getClassPath.addAll(classpath.map(_.toString).asJava)
       }
 
-      params.configureByModule(module, JavaParameters.JDK_AND_CLASSES_AND_TESTS)
+      params.configureByModule(module, OwnJavaParameters.JDK_AND_CLASSES_AND_TESTS, jdk)
 
       params.getVMParametersList.addParametersString(javaOptions)
       params.setShortenCommandLine(getShortenCommandLineMethod(Option(params.getJdk)), project)
       params.setWorkingDirectory(workingDirectory)
 
-      val envVars = new java.util.HashMap(environmentVariables)
-      //noinspection ApiStatus,UnstableApiUsage
-      envVars.putAll(configureEnvsFromFiles(this, true))
-      params.setEnv(envVars)
+      // upstream: also reads environment variables from env files
+      params.setEnv(new java.util.HashMap(getEnvs))
+      params.setPassParentEnvs(isPassParentEnvs)
 
       val mainClass = if (module.hasScala3) Scala3MainClass else Scala2MainClass
       params.setMainClass(mainClass)
@@ -235,12 +231,12 @@ class ScalaConsoleRunConfiguration(
   /** ShortenCommandLine.ARGS_FILE is intentionally not used even if JdkUtil.useClasspathJar is true
    * Scala REPL does not work in JDK 8 with manifest classpath
    *
+   * upstream: uses ShortenCommandLine.NONE when dynamic classpath is disabled for the project
+   *
    * @see [[com.intellij.execution.ShortenCommandLine.getDefaultMethod]]
    */
   private def getShortenCommandLineMethod(jdk: Option[Sdk]): ShortenCommandLine =
-    if (!JdkUtil.useDynamicClasspath(getProject)) {
-      ShortenCommandLine.NONE
-    } else if (safeMap(jdk)(_.getHomePath).exists(JdkUtil.isModularRuntime)) {
+    if (safeMap(jdk)(_.getHomePath).exists(OwnJdkUtil.isModularRuntime(_: String))) {
       ShortenCommandLine.ARGS_FILE
     } else {
       ShortenCommandLine.CLASSPATH_FILE
