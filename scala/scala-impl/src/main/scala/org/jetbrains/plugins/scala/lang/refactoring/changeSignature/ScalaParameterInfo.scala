@@ -15,15 +15,14 @@ import org.jetbrains.plugins.scala.lang.psi.types.api.FunctionType
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.refactoring._
 
-import scala.beans.{BeanProperty, BooleanBeanProperty}
 
-class ScalaParameterInfo(@BeanProperty var name: String,
-                         @BeanProperty val oldIndex: Int,
+class ScalaParameterInfo(var name: String,
+                         val oldIndex: Int,
                          var scType: ScType,
                          val project: Project,
                          var isRepeatedParameter: Boolean,
                          var isByName: Boolean,
-                         @BeanProperty var defaultValue: String = "",
+                         var defaultValue: String = "",
                          var keywordsAndAnnotations: String = "",
                          val isIntroducedParameter: Boolean = false)
         extends JavaParameterInfo {
@@ -35,8 +34,20 @@ class ScalaParameterInfo(@BeanProperty var name: String,
 
   var defaultForJava: String = defaultValue
 
-  @BooleanBeanProperty
   var useAnySingleVariable: Boolean = false
+
+  // explicit instead of @BeanProperty: Scala 3 bean accessors are not visible to separately compiled Scala code
+  override def getName: String = name
+
+  override def setName(name: String): Unit = this.name = name
+
+  override def getOldIndex: Int = oldIndex
+
+  override def getDefaultValue: String = defaultValue
+
+  override def isUseAnySingleVariable: Boolean = useAnySingleVariable
+
+  override def setUseAnySingleVariable(b: Boolean): Unit = useAnySingleVariable = b
 
   override val isVarargType = false //overriders in java of method with repeated parameters are not varargs
 
