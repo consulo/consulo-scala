@@ -1,23 +1,31 @@
-package org.jetbrains.plugins.scala.console.configuration
-
-import com.intellij.execution.*
-import com.intellij.execution.configurations.*
-import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
+package org.jetbrains.plugins.scala.repl.console.configuration
+import consulo.execution.CantRunException
+import com.intellij.execution.{DefaultExecutionResult, EnvFilesOptions, ExecutionResult, ShortenCommandLine}
+import consulo.process.ExecutionException
+import consulo.execution.executor.Executor
+import consulo.execution.configuration.{ConfigurationFactory, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
+import com.intellij.execution.configurations.{JavaParameters, RunConfiguration}
+import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
 import com.intellij.execution.util.EnvFilesUtilKt.configureEnvsFromFiles
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdkType, JdkUtil, Sdk}
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.util.PathsList
-import com.intellij.util.xmlb.XmlSerializer
+import consulo.module.Module
+import consulo.execution.configuration.ui.SettingsEditor
+import consulo.project.Project
+import com.intellij.openapi.projectRoots.JavaSdkType
+import consulo.process.cmd.JdkUtil
+import consulo.content.bundle.Sdk
+import consulo.module.content.ModuleRootManager
+import consulo.virtualFileSystem.util.PathsList
+import consulo.util.xml.serializer.XmlSerializer
 import org.jdom.Element
-import org.jetbrains.annotations.{ApiStatus, Nls}
+import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.ScalaVersion
-import org.jetbrains.plugins.scala.console.configuration.ScalaSdkJLineFixer.{JlineResolveResult, showJLineMissingNotification}
-import org.jetbrains.plugins.scala.console.{ScalaLanguageConsole, ScalaReplBundle}
+import org.jetbrains.plugins.scala.repl.console.configuration.ScalaSdkJLineFixer.{JlineResolveResult, showJLineMissingNotification}
+import org.jetbrains.plugins.scala.repl.console.{ScalaLanguageConsole, ScalaReplBundle}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.*
+import org.jetbrains.plugins.scala.rt.project.*
+import org.jetbrains.plugins.scala.shared.project.*
 import org.jetbrains.plugins.scala.runner.{ScalaTargetAwareCommandLineState, ScalaTargetAwareRunConfiguration}
 import org.jetbrains.plugins.scala.util.JdomExternalizerMigrationHelper
 
@@ -33,7 +41,7 @@ import scala.util.chaining.scalaUtilChainingOps
  * If you want to reuse some of the class functionality, please contact Scala Plugin team
  * via https://gitter.im/JetBrains/intellij-scala and we will extract some proper abstract base class.
  */
-@ApiStatus.Experimental
+// upstream: @ApiStatus.Experimental
 class ScalaConsoleRunConfiguration(
   project: Project,
   configurationFactory: ConfigurationFactory,

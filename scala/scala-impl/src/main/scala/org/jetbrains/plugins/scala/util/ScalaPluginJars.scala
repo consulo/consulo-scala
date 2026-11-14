@@ -19,10 +19,11 @@ object ScalaPluginJars {
 
   val jpsRoot: Path = libRoot / "jps"
 
-  val scalaLibraryJar: Path = libRoot / "scala-library.jar"
+  // upstream: libRoot / "scala-library.jar" - Consulo plugin lib keeps maven jar names (scala-library-<version>.jar)
+  val scalaLibraryJar: Path = Path.of(getJarPathForClass(classOf[scala.Option[?]]))
   val compileServerScalaLibraryJar: Path = jpsRoot / "compile-server-scala-library.jar"
   val compileServerScala3LibraryJar: Path = jpsRoot / "compile-server-scala3-library_3.jar"
-  val scalaReflectJar: Path = libRoot / "scala-reflect.jar"
+  val scalaReflectJar: Path = Path.of(getJarPathForClass(classOf[scala.reflect.api.Universe]))
   val scalaNailgunRunnerJar: Path = libRoot / "scala-nailgun-runner.jar"
   val compilerSharedJar: Path = libRoot / "compiler-shared.jar"
   val scalaJpsJar: Path = libRoot / "scala-jps.jar"

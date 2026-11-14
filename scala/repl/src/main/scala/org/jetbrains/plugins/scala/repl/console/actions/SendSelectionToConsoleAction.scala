@@ -1,9 +1,13 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
-import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.util.TextRange
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.document.util.TextRange
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
-import org.jetbrains.plugins.scala.console.{ScalaConsoleInfo, ScalaLanguageConsole, ScalaReplBundle}
+import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaLanguageConsole, ScalaReplBundle}
 import org.jetbrains.plugins.scala.extensions
 import org.jetbrains.plugins.scala.extensions.OptionExt
 import org.jetbrains.plugins.scala.icons.Icons
@@ -11,6 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 import java.io.{IOException, OutputStream}
 
+@ActionImpl(id = "Scala.SendSelectionToConsole", parents = Array(new ActionParentRef(value = new ActionRef(id = "RunContextPopupGroup"))))
 class SendSelectionToConsoleAction extends AnAction(
   ScalaReplBundle.message("send.selection.to.scala.repl.menu.action.text"),
   ScalaReplBundle.message("send.selection.to.scala.repl.menu.action.description"),

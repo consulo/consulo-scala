@@ -11,4 +11,5 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.meta;
     requires transitive org.intellij.scala.copyright;
     requires transitive org.intellij.scala.intellilang;
+    requires transitive org.intellij.scala.repl;
 }

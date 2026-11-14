@@ -1,10 +1,14 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
-import com.intellij.openapi.actionSystem.{DataContext, IdeActions}
-import com.intellij.openapi.editor.actionSystem.{EditorAction, EditorActionHandler, EditorActionManager, EditorWriteActionHandler}
-import com.intellij.openapi.editor.{Caret, Editor}
-import org.jetbrains.plugins.scala.console.{ScalaConsoleInfo, ScalaReplBundle}
+import consulo.annotation.component.ActionImpl
+import consulo.dataContext.DataContext
+import consulo.ui.ex.action.IdeActions
+import com.intellij.openapi.editor.actionSystem.{EditorAction, EditorWriteActionHandler}
+import consulo.codeEditor.action.{EditorActionHandler, EditorActionManager}
+import consulo.codeEditor.{Caret, Editor}
+import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaReplBundle}
 
+@ActionImpl(id = "ScalaConsole.NewLine")
 class ScalaConsoleNewLineAction extends EditorAction(new EditorWriteActionHandler(true) {
 
   override def isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext): Boolean =

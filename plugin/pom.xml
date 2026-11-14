@@ -42,6 +42,13 @@
                     <packaging>
                         <skip>${dev.mode}</skip>
                         <version>${build.number}</version>
+                        <copies>
+                            <!-- loaded with the Scala 3 compiler in its own class loader (Decompiler.classLoader) -->
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-semantic.decompiler:${project.version}</artifact>
+                                <path>lib/semantic/decompiler.jar</path>
+                            </copy>
+                        </copies>
                     </packaging>
                 </configuration>
                 <executions>
@@ -58,6 +65,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-semantic.decompiler</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- the packaging reads the platform version from it -->
         <dependency>
             <groupId>consulo</groupId>
@@ -66,6 +79,11 @@
             <scope>provided</scope>
         </dependency>
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-repl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-java.decompiler</artifactId>

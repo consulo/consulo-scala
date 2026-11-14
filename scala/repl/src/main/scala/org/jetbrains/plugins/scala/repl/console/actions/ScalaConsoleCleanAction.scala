@@ -1,10 +1,12 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
-import com.intellij.openapi.actionSystem.DataContext
+import consulo.annotation.component.ActionImpl
+import consulo.dataContext.DataContext
 import com.intellij.openapi.editor.actionSystem.{EditorAction, EditorWriteActionHandler}
-import com.intellij.openapi.editor.{Caret, Editor}
-import org.jetbrains.plugins.scala.console.{ScalaConsoleInfo, ScalaReplBundle}
+import consulo.codeEditor.{Caret, Editor}
+import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaReplBundle}
 
+@ActionImpl(id = "ScalaConsole.Clean")
 class ScalaConsoleCleanAction extends EditorAction(new EditorWriteActionHandler(false) {
 
   override def isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext): Boolean =

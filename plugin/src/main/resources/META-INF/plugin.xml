@@ -64,5 +64,28 @@
         <reference ref="Scala.RenameJavaToScala">
             <keyboard-shortcut first-keystroke="control shift G" keymap="$default" />
         </reference>
+        <reference ref="Scala.RunConsole">
+            <keyboard-shortcut first-keystroke="control shift D" keymap="$default" />
+        </reference>
+        <reference ref="Scala.SendSelectionToConsole">
+            <keyboard-shortcut first-keystroke="control shift X" keymap="$default" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ctrl shift X" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift X" remove="true" />
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="ctrl shift X" />
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift X" remove="true" />
+        </reference>
+        <reference ref="ScalaConsole.Execute">
+            <keyboard-shortcut keymap="$default" first-keystroke="ENTER" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ENTER" />
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" />
+        </reference>
+        <reference ref="ScalaConsole.NewLine">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift ENTER" />
+        </reference>
+        <reference ref="ScalaConsole.Clean">
+            <keyboard-shortcut keymap="$default" first-keystroke="control L" />
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L" />
+        </reference>
     </actions>
 </consulo-plugin>

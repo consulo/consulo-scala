@@ -1,22 +1,28 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
-import com.intellij.execution.*
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import com.intellij.execution.{ExecutionBundle, RunManager, RunManagerEx, RunnerAndConfigurationSettings}
+import consulo.process.ExecutionException
 import com.intellij.execution.configurations.{ConfigurationType, ConfigurationTypeUtil, RunConfiguration}
-import com.intellij.execution.executors.DefaultRunExecutor
-import com.intellij.execution.runners.{ExecutionEnvironmentBuilder, ProgramRunner}
-import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.psi.PsiFile
+import consulo.execution.executor.DefaultRunExecutor
+import consulo.execution.runner.{ExecutionEnvironmentBuilder, ProgramRunner}
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.console.ScalaReplBundle
-import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleConfigurationType
+import org.jetbrains.plugins.scala.repl.console.ScalaReplBundle
+import org.jetbrains.plugins.scala.repl.console.configuration.ScalaConsoleConfigurationType
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.ProjectExt
 
 import scala.jdk.CollectionConverters.*
 
+@ActionImpl(id = "Scala.RunConsole", parents = Array(new ActionParentRef(value = new ActionRef(id = "ToolsMenu"))))
 class RunConsoleAction extends AnAction(
   ScalaReplBundle.message("scalarepl.menu.action.text"),
   ScalaReplBundle.message("scalarepl.menu.action.description"),

@@ -1,31 +1,32 @@
-package org.jetbrains.plugins.scala.console
-
+package org.jetbrains.plugins.scala.repl.console
 import com.intellij.execution.console.{ConsoleHistoryController, ConsoleRootType, LanguageConsoleImpl}
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.lang.Language
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.openapi.module.{Module, ModuleUtilCore}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.testFramework.LightVirtualFile
-import com.intellij.ui.{Gray, JBColor, SideBorder}
-import org.jetbrains.plugins.scala.console.ScalaLanguageConsole.*
-import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction
+import consulo.language.Language
+import consulo.ui.ex.action.ActionManager
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.codeEditor.EditorEx
+import consulo.colorScheme.TextAttributes
+import consulo.ui.ex.keymap.util.KeymapUtil
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.util.lang.StringUtil
+import consulo.language.file.light.LightVirtualFile
+import consulo.ui.ex.{Gray, JBColor}
+import com.intellij.ui.SideBorder
+import org.jetbrains.plugins.scala.repl.console.ScalaLanguageConsole.*
+import org.jetbrains.plugins.scala.repl.console.actions.ScalaConsoleExecuteAction
 import org.jetbrains.plugins.scala.extensions.invokeAndWait
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScTypeAlias, ScValue, ScVariable}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScObject, ScTrait}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.project.ModuleExt
-import org.jetbrains.plugins.scala.{Scala3Language, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 
 import java.awt.Font
 import scala.collection.mutable

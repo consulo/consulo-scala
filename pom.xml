@@ -70,6 +70,8 @@
         <module>scala/integration/markdown</module>
         <module>scala/integration/intellilang</module>
         <module>scala/integration/java-decompiler</module>
+        <module>scala/semantic-decompiler</module>
+        <module>scala/repl</module>
         <module>plugin</module>
     </modules>
 

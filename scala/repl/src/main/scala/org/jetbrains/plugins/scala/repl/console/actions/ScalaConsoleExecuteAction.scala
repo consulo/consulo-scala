@@ -1,16 +1,19 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.util.TextRange
-import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction.*
-import org.jetbrains.plugins.scala.console.{ScalaConsoleInfo, ScalaReplBundle}
+import consulo.annotation.component.ActionImpl
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.logging.Logger
+import consulo.codeEditor.EditorEx
+import consulo.application.dumb.DumbAware
+import consulo.document.util.TextRange
+import org.jetbrains.plugins.scala.repl.console.actions.ScalaConsoleExecuteAction.*
+import org.jetbrains.plugins.scala.repl.console.{ScalaConsoleInfo, ScalaReplBundle}
 import org.jetbrains.plugins.scala.extensions.inWriteAction
 
 import java.io.{IOException, OutputStream}
 
+@ActionImpl(id = "ScalaConsole.Execute")
 class ScalaConsoleExecuteAction extends AnAction(
   ScalaReplBundle.message("execute.scala.repl.statement.menu.action.text"),
   ScalaReplBundle.message("execute.scala.repl.statement.menu.action.description"),

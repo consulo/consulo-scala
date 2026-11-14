@@ -1,13 +1,17 @@
-package org.jetbrains.plugins.scala.console.actions
+package org.jetbrains.plugins.scala.repl.console.actions
 
+import consulo.annotation.component.ExtensionImpl
 import com.intellij.codeInsight.lookup.impl.actions.ChooseItemAction
-import com.intellij.openapi.actionSystem.{ActionPromoter, AnAction, CommonDataKeys, DataContext}
-import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
+import consulo.ui.ex.action.{ActionPromoter, AnAction}
+import consulo.language.editor.CommonDataKeys
+import consulo.dataContext.DataContext
+import org.jetbrains.plugins.scala.repl.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 import java.util
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl
 class ScalaConsoleActionsPromoter extends ActionPromoter {
   //noinspection ScalaRedundantCast
   override def promote(actions: util.List[? <: AnAction], context: DataContext): util.List[AnAction] = {

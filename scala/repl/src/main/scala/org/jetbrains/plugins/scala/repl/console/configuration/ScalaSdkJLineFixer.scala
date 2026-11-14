@@ -1,15 +1,17 @@
-package org.jetbrains.plugins.scala.console.configuration
-
-import com.intellij.notification.{Notification, NotificationAction, NotificationType}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.module.Module
+package org.jetbrains.plugins.scala.repl.console.configuration
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.module.Module
 import com.intellij.openapi.options.ex.SingleConfigurableEditor
 import com.intellij.openapi.options.newEditor.SettingsDialog
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
-import com.intellij.openapi.ui.DialogWrapper.DialogStyle
+import consulo.ui.ex.awt.DialogWrapper.DialogStyle
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.console.ScalaReplBundle
+import org.jetbrains.plugins.scala.repl.console.ScalaReplBundle
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.*
+import org.jetbrains.plugins.scala.rt.project.*
+import org.jetbrains.plugins.scala.shared.project.*
 import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
 import java.nio.file.{Files, Path}

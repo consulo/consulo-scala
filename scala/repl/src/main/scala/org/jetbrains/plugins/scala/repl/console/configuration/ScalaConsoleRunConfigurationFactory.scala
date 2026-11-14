@@ -1,9 +1,12 @@
-package org.jetbrains.plugins.scala.console.configuration
-
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, RunConfiguration}
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.repl.console.configuration
+import consulo.execution.configuration.ConfigurationFactory
+import com.intellij.execution.configurations.{ConfigurationType, RunConfiguration}
+import consulo.project.Project
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.plugins.scala.api.project.*
+import org.jetbrains.plugins.scala.rt.project.*
+import org.jetbrains.plugins.scala.shared.project.*
 
 class ScalaConsoleRunConfigurationFactory(val typez: ConfigurationType) extends ConfigurationFactory(typez) {
 

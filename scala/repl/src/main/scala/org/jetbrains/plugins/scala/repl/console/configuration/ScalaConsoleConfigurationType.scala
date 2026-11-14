@@ -1,12 +1,15 @@
-package org.jetbrains.plugins.scala.console.configuration
+package org.jetbrains.plugins.scala.repl.console.configuration
 
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType}
-import com.intellij.openapi.project.DumbAware
-import org.jetbrains.plugins.scala.console.ScalaReplBundle
+import consulo.annotation.component.ExtensionImpl
+import consulo.execution.configuration.ConfigurationFactory
+import com.intellij.execution.configurations.ConfigurationType
+import consulo.application.dumb.DumbAware
+import org.jetbrains.plugins.scala.repl.console.ScalaReplBundle
 import org.jetbrains.plugins.scala.icons.Icons
 
 import javax.swing.Icon
 
+@ExtensionImpl
 class ScalaConsoleConfigurationType extends ConfigurationType with DumbAware {
   private val confFactory = new ScalaConsoleRunConfigurationFactory(this)
 
