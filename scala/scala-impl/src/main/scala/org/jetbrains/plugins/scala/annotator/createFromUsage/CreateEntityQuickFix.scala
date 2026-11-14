@@ -79,9 +79,9 @@ abstract class CreateEntityQuickFix(ref: ScReferenceExpression, keyword: String)
     val text = s"$keyword $methodName$params$typeAnnotation$unimplementedBody"
 
     val block = ref match {
-      case it if it.isQualified       => ref.qualifier.flatMap(tryToFindBlock)
-      case Parent(infix: ScInfixExpr) => tryToFindBlock(infix.getBaseExpr)
-      case _                          => None
+      case it if it.isQualified => ref.qualifier.flatMap(tryToFindBlock)
+      case exp@Parent(infix: ScInfixExpr) if infix.operation == exp => tryToFindBlock(infix.getBaseExpr)
+      case _ => None
     }
 
     val canWriteToFile = IntentionPreviewUtils.prepareElementForWrite(block.map(_.getContainingFile).getOrElse(file))
