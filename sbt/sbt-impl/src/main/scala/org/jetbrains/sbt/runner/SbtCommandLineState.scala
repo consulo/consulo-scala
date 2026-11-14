@@ -1,12 +1,14 @@
 package org.jetbrains.sbt.runner
 
 import com.intellij.java.execution.configurations.JavaCommandLineState
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import consulo.java.execution.configurations.OwnJavaParameters
 import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
 import com.intellij.java.execution.impl.util.JavaParametersUtil
 import com.intellij.java.language.projectRoots.JavaSdkType
 import consulo.execution.ExecutionResult
 import consulo.execution.executor.Executor
+import consulo.execution.ui.console.ConsoleView
 import consulo.project.Project
 import consulo.content.bundle.{Sdk, SdkTable}
 import org.jetbrains.plugins.scala.extensions.PathExt
@@ -59,10 +61,7 @@ private final class SbtCommandLineState(
     result
   }
 
-  /*
-   * upstream: createConsole decorates the console through JavaRunConfigurationExtensionManager.decorateExecutionConsole
-   * (no counterpart in consulo-java)
-   *
+  /**
    * Decorates the console for the separate-process SBT run configuration path.
    *
    * This state extends the plain [[JavaCommandLineState]], whose default console creation is inherited from
@@ -75,6 +74,19 @@ private final class SbtCommandLineState(
    * because that path creates a remote attach console through [[com.intellij.debugger.engine.RemoteStateState]]
    * instead of using this state to create the execution console.
    */
+  override protected def createConsole(executor: Executor): ConsoleView = {
+    val console = super.createConsole(executor)
+    if (console == null)
+      null
+    else
+      // Use the same Java console extension pipeline as regular Java run/debug configurations.
+      JavaRunConfigurationExtensionManager.getInstance.decorateExecutionConsole(
+        configuration,
+        getRunnerSettings,
+        console,
+        executor
+      )
+  }
 
   override def createJavaParameters(): OwnJavaParameters = {
     val params = createJavaParametersImpl
@@ -93,7 +105,6 @@ private final class SbtCommandLineState(
     val jdk = getJdk(project, sbtExecutionSettings)
     params.configureByProject(project, OwnJavaParameters.JDK_ONLY, jdk)
 
-    // upstream: also loads variables from configuration env files
     val environmentVariables = new util.HashMap(configuration.environmentVariables)
     params.setEnv(environmentVariables)
 

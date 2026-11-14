@@ -49,6 +49,8 @@ final class SbtSettings @Inject()(project: Project)
   @BeanProperty @Nullable var customSbtStructurePath: String = null
   @BeanProperty var sbtEnvironment: j.Map[String, String] = j.Collections.emptyMap
   @BeanProperty var sbtPassParentEnvironment: Boolean = true
+  // upstream: the `sbt.new.shell` registry key - the terminal-based sbt shell (sbt >= 1.4), used by new shell instances
+  @BeanProperty var useTerminalShell: Boolean = false
 
   override def getState: SbtSettings.State = {
     val state = new SbtSettings.State
@@ -62,6 +64,7 @@ final class SbtSettings @Inject()(project: Project)
     state.sbtOptions = Option(sbtOptions).getOrElse("")
     state.sbtEnvironment = sbtEnvironment
     state.sbtPassParentEnvironment = sbtPassParentEnvironment
+    state.useTerminalShell = useTerminalShell
 
     state
   }
@@ -77,6 +80,7 @@ final class SbtSettings @Inject()(project: Project)
     customSbtStructurePath = state.customSbtStructurePath
     sbtEnvironment = state.sbtEnvironment
     sbtPassParentEnvironment = state.sbtPassParentEnvironment
+    useTerminalShell = state.useTerminalShell
   }
 
   override def subscribe(listener: ExternalSystemSettingsListener[SbtProjectSettings]): Unit =
@@ -97,6 +101,7 @@ final class SbtSettings @Inject()(project: Project)
     customSbtStructurePath = settings.customSbtStructurePath
     sbtEnvironment = settings.sbtEnvironment
     sbtPassParentEnvironment = settings.sbtPassParentEnvironment
+    useTerminalShell = settings.useTerminalShell
   }
 
   def getLinkedProjectSettings(module: Module): Option[SbtProjectSettings] =
@@ -130,6 +135,7 @@ object SbtSettings {
     @BeanProperty @Nullable var customSbtStructurePath: String = null
     @BeanProperty var sbtEnvironment: j.Map[String, String] = j.Collections.emptyMap()
     @BeanProperty var sbtPassParentEnvironment: Boolean = true
+    @BeanProperty var useTerminalShell: Boolean = false
 
     private val linkedProjectSettings: j.TreeSet[SbtProjectSettings] = new j.TreeSet[SbtProjectSettings]
 

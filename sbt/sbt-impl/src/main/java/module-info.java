@@ -118,6 +118,7 @@ open module org.intellij.scala.sbt.impl {
     requires consulo.ide.impl;
     requires consulo.build.ui.api;
     requires pty4j;
+    requires jediterm.core;
 
 
 

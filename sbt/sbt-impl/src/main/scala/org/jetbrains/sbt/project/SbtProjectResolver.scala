@@ -1,5 +1,6 @@
 package org.jetbrains.sbt.project
 
+import com.intellij.java.compiler.impl.javaCompiler.javac.JavacCompilerConfiguration
 import consulo.build.ui.issue.{BuildIssue, BuildIssueQuickFix}
 import consulo.project.ui.notification.NotificationType
 import consulo.dataContext.DataProvider
@@ -95,6 +96,8 @@ class SbtProjectResolver extends ExternalSystemProjectResolver[SbtExecutionSetti
 
     if (isPreview) dummyProject(projectRoot, settings).toDataNode
     else {
+      // a storable service changed by SbtProjectDataService, which must not be created inside the write action that imports the data
+      if (ideaProject != null) JavacCompilerConfiguration.getInstance(ideaProject)
       // An indicator will always exist (be not null) when using the External System machinery.
       // Gradle also relies on this.
       val indicator = ProgressManager.getInstance().getProgressIndicator

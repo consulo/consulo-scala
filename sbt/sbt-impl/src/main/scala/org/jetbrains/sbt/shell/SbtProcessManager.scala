@@ -42,8 +42,16 @@ import org.jetbrains.sbt.shell.optionsWarn.SbtShellOptionsWarningService
 import org.jetbrains.sbt.shell.process.utils.{SbtSettingsInjector, SbtShellJdkSelector, SbtShellRunId, SbtShellVmOptionsBuilder}
 import org.jetbrains.sbt.{SbtBundle, SbtUtil, SbtVersionDetector, normalizedLocalPath}
 import org.jetbrains.sbt.api.{SbtVersion, SbtVersionCapabilities}
+import org.jetbrains.sbt.settings.SbtSettings
+import org.jetbrains.sbt.shell.action.{DebugShellAction, EOFAction, StartAction, StopAction}
+import com.jediterm.terminal.emulator.JediEmulator
+import consulo.execution.ui.terminal.{JediTerminalConsole, TerminalConsoleFactory}
+import consulo.ui.ex.action.{ActionGroup, DefaultActionGroup}
+import consulo.ui.layout.DockLayout
+import consulo.ui.{Component, Space}
 
 import java.io.{OutputStreamWriter, PrintWriter}
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit, TimeoutException}
 import scala.jdk.CollectionConverters.*
@@ -86,11 +94,12 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
   /**
    * @return A tuple containing:
    *         - `NativeProcessHandler`: the configured process handler instance for the sbt shell.
+   *         - `Charset`: the charset of the process input/output.
    *         - `Option[RemoteConnection]`: debug connection information if the shell debug mode is enabled; otherwise, None.
    *         - `SbtVersion`: detected sbt version used in the project.
    *         - `Boolean`: A flag indicating whether the "new sbt shell" is being used.
    */
-  private def createShellProcessHandler: (NativeProcessHandler, Option[RemoteConnection], SbtVersion, Boolean) = {
+  private def createShellProcessHandler: (NativeProcessHandler, Charset, Option[RemoteConnection], SbtVersion, Boolean) = {
     log.debug("createShellProcessHandler")
     val workingDirPath = SbtUtil.getWorkingDirPath(project)
     val workingDir = Path.of(workingDirPath)
@@ -112,9 +121,8 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
     // Allow using the "new shell" only with sbt >= 1.4, because starting from this version, JLine 3 is utilized within the "shell" command.
     // This provides better completion support and is used for detecting when the shell is ready
     // (see org.jetbrains.sbt.shell.communication.SbtShellOutputRecognizer.isPromptReady).
-    // upstream: Registry.is("sbt.new.shell") && projectSbtVersion >= 1.4 - the new shell runs in a TerminalExecutionConsole,
-    // Consulo has no terminal execution console, so only the old shell (language console) is used
-    val useNewShell = false
+    // upstream: Registry.is("sbt.new.shell") - here an sbt setting (SbtSettings.useTerminalShell)
+    val useNewShell = SbtSettings.getInstance(project).useTerminalShell && projectSbtVersion >= SbtVersion("1.4")
 
     val optionsReporter = new WarningsCollectingBuildReporter
     val shellSbtProcessOptions: SbtProcessOptions =
@@ -159,14 +167,16 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
 
     // upstream: PtyCommandLine with initial PTY window size and console mode settings - the console mode can't be set in Consulo,
     // the window size is set right after the start (see patchInitialPtyWindowSize)
-    val processHandler: NativeProcessHandler =
+    // the terminal gets the raw output (with ANSI escapes), the console of the old shell the colored one
+    val processHandlerBuilder =
       ProcessHandlerBuilder.create(commandLine)
         .killable()
-        .colored()
         .consoleType(ProcessConsoleType.EXTERNAL_EMULATION)
         .shouldKillProcessSoftly(true)
-        .build()
-        .asInstanceOf[NativeProcessHandler]
+    if (!useNewShell)
+      processHandlerBuilder.colored()
+    val processHandler: NativeProcessHandler =
+      processHandlerBuilder.build().asInstanceOf[NativeProcessHandler]
     patchInitialPtyWindowSize(processHandler, useNewShell)
 
     SbtProcessOutputDiagnosticsCollector.collectProcessOutputFrom(
@@ -174,7 +184,7 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
       processTitle = s"SBT shell process output (${if (useNewShell) "new-shell" else "old-shell"})",
     )
 
-    (processHandler, vmOptionsData.debugConnection, projectSbtVersion, useNewShell)
+    (processHandler, commandLine.getCharset, vmOptionsData.debugConnection, projectSbtVersion, useNewShell)
   }
 
   /**
@@ -401,6 +411,17 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
     _processData match {
       case pd: AbstractConsoleProcessData =>
         pd.runner.initAndRun()
+      case pd: TerminalConsoleProcessData =>
+        initTerminalConsole(pd)
+        ConsoleViewsRegistry.set(project, pd.console)
+        SbtShellRunner.openShellOnStartup(
+          activateSbtShellToolWindowOnStartup,
+          // Mirrors `AbstractConsoleRunnerWithHistory.isAutoFocusContent`,
+          // which is used in `SbtShellRunner#showConsole` in the old shell and returns `true`.
+          focus = true,
+          openShell = focus => SbtShellRunner.openShell(focus, project),
+        )
+        installTerminalWarningsHost(pd)
     }
 
     log.debug(s"updateProcessData finish (sbtVersion=${_processData.sbtVersion}, isNewShell=${_processData.isNewShell})")
@@ -409,11 +430,34 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
   }
 
   private def createProcessData(activateSbtShellToolWindowOnStartup: Boolean): ProcessData = {
-    val (handler, debugConnection, sbtVersion, useNewShell) = createShellProcessHandler
+    val (handler, charset, debugConnection, sbtVersion, useNewShell) = createShellProcessHandler
 
-    val title = project.getName
-    val runner = new SbtShellRunner(project, title, debugConnection, activateSbtShellToolWindowOnStartup)
-    AbstractConsoleProcessData(handler, sbtVersion, debugConnection, runner, useNewShell, activateSbtShellToolWindowOnStartup)
+    if (useNewShell) {
+      val console = createTerminalConsole(handler, charset)
+      TerminalConsoleProcessData(handler, sbtVersion, debugConnection, console, useNewShell, activateSbtShellToolWindowOnStartup)
+    } else {
+      val title = project.getName
+      val runner = new SbtShellRunner(project, title, debugConnection, activateSbtShellToolWindowOnStartup)
+      AbstractConsoleProcessData(handler, sbtVersion, debugConnection, runner, useNewShell, activateSbtShellToolWindowOnStartup)
+    }
+  }
+
+  /**
+   * Creates the terminal of the terminal-based sbt shell, connected to the sbt shell process by [[SbtShellTtyConnector]].
+   */
+  // upstream: TerminalExecutionConsole (TerminalExecutionConsoleBuilder.keepLastLineOnClear) attached to the process
+  // with a custom ProcessHandlerTtyConnector
+  private def createTerminalConsole(handler: NativeProcessHandler, charset: Charset): TerminalShellConsole = {
+    // the connector listens to the process output from the start
+    val ttyConnector = new SbtShellTtyConnector(handler, charset)
+    invokeAndWait {
+      val disposable = Disposable.newDisposable("sbt shell terminal")
+      val terminal = project.getInstance(classOf[TerminalConsoleFactory])
+        .createCustom(disposable, (dataStream, terminal) => new JediEmulator(dataStream, terminal), ttyConnector)
+      Disposer.register(disposable, terminal)
+      Disposer.register(disposable, () => ttyConnector.close())
+      TerminalShellConsole(terminal, disposable)
+    }
   }
 
   /** Supply a PrintWriter that writes to the current process. */
@@ -493,6 +537,7 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
    *         None if sbt shell is not running
    */
   def shellRunner: Option[SbtShellRunner] = processData.collect { case x: AbstractConsoleProcessData => x.runner }
+  def terminalConsole: Option[JediTerminalConsole] = processData.collect { case x: TerminalConsoleProcessData => x.console.terminal }
   def debugConnection: Option[RemoteConnection] = processData.flatMap(_.debugConnection)
 
   // upstream: @RequiresBackgroundThread
@@ -635,6 +680,7 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
         log.trace("destroyProcess: emit ProcessTerminated...")
         request.shell.emitShellStateEvent(ShellStateEvent.ProcessTerminated)
       }
+      uninstallTerminalWarningsHost(request.pd)
 
       processData match {
         case Some(currentPd) if currentPd eq request.pd =>
@@ -721,6 +767,47 @@ final class SbtProcessManager @Inject()(project: Project) extends Disposable {
         false
     }
 
+  private def createActionGroupForTerminalConsole(console: TerminalShellConsole): ActionGroup = {
+    // upstream: also the ScrollToTheEnd and Clear actions of TerminalExecutionConsole.createConsoleActions - the Consulo
+    // terminal has no such actions (its own context menu has Clear Buffer)
+    // The "Toggle Soft Wrap" action is not needed in the terminal, soft wrapping happens automatically when the terminal is resized.
+    val startAction = new StartAction(project)
+    val stopAction = new StopAction(project)
+    val debugShellAction = new DebugShellAction(project, debugConnection)
+
+    // copying, find and escape work within the terminal
+    val eofAction = new EOFAction(project)
+
+    val allActions = List(startAction, stopAction, debugShellAction, eofAction)
+    invokeLater {
+      allActions.foreach { act =>
+        act.registerCustomShortcutSet(act.getShortcutSet, console.component)
+      }
+    }
+
+    val group = new DefaultActionGroup()
+    group.addAll(startAction, stopAction, debugShellAction)
+    group
+  }
+
+  private def initTerminalConsole(processData: TerminalConsoleProcessData): Unit =
+    executeOnPooledThread {
+      processData.processHandler.startNotify()
+
+      val actionGroup = createActionGroupForTerminalConsole(processData.console)
+      SbtShellToolWindowFactory.initUi(project, actionGroup, processData.console.component)
+    }
+
+  private def installTerminalWarningsHost(processData: TerminalConsoleProcessData): Unit =
+    SbtShellOptionsWarningService.instance(project).installWarningsSlot(processData.console.warningsSlot)
+
+  private def uninstallTerminalWarningsHost(processData: ProcessData): Unit =
+    processData match {
+      case terminalData: TerminalConsoleProcessData =>
+        SbtShellOptionsWarningService.instance(project).uninstallWarningsSlot(terminalData.console.warningsSlot)
+      case _ =>
+    }
+
   private[shell] def isRunWithNewShell: Boolean =
     processData.exists(_.isNewShell)
 }
@@ -784,5 +871,39 @@ object SbtProcessManager {
 
     @RequiredUIAccess
     override def flushText(): Unit = runner.getConsoleView.flushDeferredText()
+  }
+
+  /**
+   * The terminal of the terminal-based sbt shell with the options warning banner above it.
+   *
+   * @param disposable disposes the terminal and disconnects it from the process
+   */
+  // upstream: the options warnings are shown by TerminalWidget.addNotification
+  // must be created on the UI thread
+  private final case class TerminalShellConsole(terminal: JediTerminalConsole, disposable: Disposable) extends Disposable {
+    val warningsSlot: DockLayout = DockLayout.create(Space.NONE)
+
+    val component: Component = {
+      val layout = DockLayout.create(Space.NONE)
+      layout.top(warningsSlot)
+      layout.center(terminal.getUIComponent)
+      layout
+    }
+
+    override def dispose(): Unit = Disposer.dispose(disposable)
+  }
+
+  private case class TerminalConsoleProcessData(
+    processHandler: NativeProcessHandler,
+    sbtVersion: SbtVersion,
+    debugConnection: Option[RemoteConnection],
+    console: TerminalShellConsole,
+    isNewShell: Boolean,
+    activateSbtShellToolWindowOnStartup: Boolean,
+  ) extends ProcessData {
+
+    // upstream: TerminalExecutionConsole.flushImmediately - the terminal reads the output as it arrives
+    @RequiredUIAccess
+    override def flushText(): Unit = ()
   }
 }

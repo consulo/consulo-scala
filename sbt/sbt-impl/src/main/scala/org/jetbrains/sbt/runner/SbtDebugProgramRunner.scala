@@ -256,15 +256,19 @@ class SbtDebugProgramRunner extends GenericDebuggerRunner with SbtProgramRunnerB
   }
 
   //See SCL-24434
-  // upstream: compares the configuration with RunToolbarProcessData.RW_MAIN_CONFIGURATION_ID of the environment,
-  // Consulo doesn't track the main configuration of a "Before launch" run
-  private def isRunConfigurationExecutedAsPartOfBeforeLaunchStep(environment: ExecutionEnvironment): Boolean =
-    false
+  private def isRunConfigurationExecutedAsPartOfBeforeLaunchStep(environment: ExecutionEnvironment): Boolean = {
+    val config = environment.getRunnerAndConfigurationSettings
+    val mainConfigurationId = environment.getUserData(ExecutionEnvironment.MAIN_CONFIGURATION_ID)
+    if (config == null || mainConfigurationId == null)
+      false
+    else
+      config.getUniqueID != mainConfigurationId
+  }
 
   private def isDebuggingInSbtShellInstanceOrSettingsEnabled(environment: ExecutionEnvironment): Boolean = {
     val project = environment.getProject
     val manager = SbtProcessManager.forProject(project)
-    val isShellInitialized = manager.shellRunner.isDefined
+    val isShellInitialized = manager.shellRunner.isDefined || manager.terminalConsole.isDefined
     val isDebuggingEnabled =
       if (isShellInitialized)
         manager.debugConnection.isDefined

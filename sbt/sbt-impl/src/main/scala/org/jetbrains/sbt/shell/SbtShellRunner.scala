@@ -15,6 +15,7 @@ import consulo.codeEditor.util.EditorUtil
 import consulo.project.Project
 import consulo.ui.ex.content.ContentFactory
 import consulo.localize.LocalizeValue
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.image.Image
 import consulo.ui.{HorizontalAlignment, Label, LabelOptions}
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, invokeLater}
@@ -112,7 +113,7 @@ final class SbtShellRunner(
     SbtShellToolWindowFactory.initUi(
       project,
       actionGroup = consoleView.createActionGroup(),
-      component = consoleView.getComponent
+      component = TargetAWT.wrap(consoleView.getComponent)
     )
   }
 

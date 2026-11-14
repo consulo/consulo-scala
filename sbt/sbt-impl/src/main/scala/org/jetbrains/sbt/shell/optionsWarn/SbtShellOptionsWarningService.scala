@@ -27,7 +27,7 @@ import scala.concurrent.Promise
  * [[com.intellij.openapi.vfs.VirtualFile]].
  * The sbt shell history is an editor inside [[com.intellij.execution.console.LanguageConsoleImpl]],
  * not a file editor, so the service attaches the banner directly to the history viewer via [[EditorEx.setPermanentHeaderComponent]].
- * upstream: for the terminal-based sbt shell, the service uses TerminalWidget.addNotification (no terminal shell in Consulo).
+ * For the terminal-based sbt shell the banner is put into a slot above the terminal (upstream: TerminalWidget.addNotification).
  *
  * IMPLEMENTATION NOTE:<br>
  * Warning data can arrive before the shell UI is created. For that reason the service stores the latest warning state
@@ -55,6 +55,12 @@ private[shell] final class SbtShellOptionsWarningService @Inject()(project: Proj
 
   def uninstallHistoryViewer(editor: EditorEx): Unit =
     uninstallHost(_.isForHistoryViewer(editor))
+
+  def installWarningsSlot(slot: DockLayout): Unit =
+    installHost(new LayoutSlotWarningsHost(slot))
+
+  def uninstallWarningsSlot(slot: DockLayout): Unit =
+    uninstallHost(_.isForSlot(slot))
 
   private def installHost(host: SbtShellWarningsHost): Unit =
     invokeLater {
@@ -147,6 +153,8 @@ private[shell] object SbtShellOptionsWarningService {
     def clear(): Unit = update(None)
 
     def isForHistoryViewer(editor: EditorEx): Boolean = false
+
+    def isForSlot(slot: DockLayout): Boolean = false
   }
 
   // Legacy sbt shell: LanguageConsoleImpl exposes the console output as an EditorEx history viewer.
@@ -162,6 +170,19 @@ private[shell] object SbtShellOptionsWarningService {
 
     override def isForHistoryViewer(other: EditorEx): Boolean =
       editor == other
+  }
+
+  // Terminal-based sbt shell: the banner is shown in a slot above the terminal.
+  private final class LayoutSlotWarningsHost(slot: DockLayout) extends SbtShellWarningsHost {
+    @RequiredUIAccess
+    override def update(component: Option[Component]): Unit = {
+      slot.removeAll()
+      component.foreach(slot.center)
+      slot.setVisible(component.nonEmpty)
+    }
+
+    override def isForSlot(other: DockLayout): Boolean =
+      slot eq other
   }
 
   private val NotificationText: String =

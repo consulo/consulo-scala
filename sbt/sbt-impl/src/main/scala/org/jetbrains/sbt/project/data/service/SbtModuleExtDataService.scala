@@ -3,7 +3,6 @@ package project
 package data
 package service
 
-import com.intellij.java.compiler.impl.javaCompiler.javac.JavacCompilerConfiguration
 import consulo.annotation.component.ExtensionImpl
 import consulo.externalSystem.model.DataNode
 import consulo.externalSystem.util.{ExternalSystemConstants, Order}
@@ -35,7 +34,7 @@ final class SbtModuleExtDataService extends ScalaAbstractProjectDataService[SbtM
       module.configureScalaCompilerSettingsFrom("sbt", scalacOptions.asScala, project, compileOrder)
       SbtModuleExtensions.modifyModel(module) { model =>
         configureOrInheritSdk(model, Option(sdk), projectJdks.jdkFor(dataNode), project)
-        importJavacOptions(model, javacOptions.asScala.toSeq, project)
+        importJavacOptions(model, javacOptions.asScala.toSeq)
       }
       // upstream: kotlinc options are imported with SbtKotlinCompilerOptionsImporter (kotlin plugin), not available in Consulo
       // upstream: packagePrefix is set to the source folders, Consulo source folders have no package prefixes
@@ -51,10 +50,10 @@ final class SbtModuleExtDataService extends ScalaAbstractProjectDataService[SbtM
     SbtModuleExtensions.configureJava(model, moduleSdk.orElse(projectJdk), languageLevel = None)
   }
 
-  private def importJavacOptions(model: ModifiableRootModel, javacOptions: Seq[String], project: Project): Unit = {
+  private def importJavacOptions(model: ModifiableRootModel, javacOptions: Seq[String]): Unit = {
     configureLanguageLevel(model, javacOptions)
     configureTargetBytecodeLevel(model, javacOptions)
-    configureJavacOptions(model, javacOptions, project)
+    configureJavacOptions(model, javacOptions)
   }
 
   private def configureLanguageLevel(model: ModifiableRootModel, javacOptions: Seq[String]): Unit = {
@@ -71,21 +70,15 @@ final class SbtModuleExtDataService extends ScalaAbstractProjectDataService[SbtM
     SbtModuleExtensions.enableJava(model).setBytecodeVersion(targetValueFromJavac.orNull)
   }
 
-  private def configureJavacOptions(model: ModifiableRootModel, javacOptions0: Seq[String], project: Project): Unit = {
+  private def configureJavacOptions(model: ModifiableRootModel, javacOptions0: Seq[String]): Unit = {
     val javacOptions = JavacOptionsUtils.withoutExplicitlyHandledOptions(javacOptions0)
 
     val extension = SbtModuleExtensions.enableJava(model)
 
-    val moduleCurrentOptions0 = Option(extension.getCompilerArguments).map(_.asScala.toSeq).getOrElse(Nil)
-    val moduleCurrentOptions: Seq[String] = {
-      val moduleCurrentStr = moduleCurrentOptions0.mkString(" ")
-      val projectCurrentStr = JavacCompilerConfiguration.getInstance(project).ADDITIONAL_OPTIONS_STRING
-
-      // NOTE: getAdditionalOptions fallbacks to project options if module options are empty
-      // so we assume if they are equal then current module additional options are empty
-      if (moduleCurrentStr == projectCurrentStr) Nil
-      else moduleCurrentOptions0
-    }
+    // upstream: module options equal to the project javac options (JavacCompilerConfiguration) are treated as empty, because
+    // IntelliJ falls back to the project options for a module without own options; the arguments of the Consulo Java module
+    // extension have no such fallback (javac gets both), so they are compared as they are
+    val moduleCurrentOptions = Option(extension.getCompilerArguments).map(_.asScala.toSeq).getOrElse(Nil)
 
     if (javacOptions != moduleCurrentOptions) {
       extension.setCompilerArguments(javacOptions.asJava)

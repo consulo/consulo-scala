@@ -4,6 +4,7 @@ import com.intellij.java.debugger.DebuggerManager
 import com.intellij.java.debugger.impl.engine.DebugProcessImpl
 import com.intellij.java.debugger.impl.engine.RemoteStateState
 import com.intellij.java.execution.configurations.RemoteConnection
+import com.intellij.java.execution.impl.JavaRunConfigurationExtensionManager
 import consulo.process.ProcessHandler
 import consulo.execution.runner.{ExecutionEnvironment, ProgramRunner}
 import consulo.execution.ui.console.{ConsoleView, TextConsoleBuilderFactory}
@@ -50,13 +51,26 @@ private[runner] final class MyTrojanRemoteState(
 
   private def executeImpl(executor: Executor): DefaultExecutionResult = {
     val processHandler = new SbtRemoteDebugProcessHandler(environment.getProject)
-    // upstream: no console in DAP mode; the console is decorated by Java run configuration extensions
-    // (JavaRunConfigurationExtensionManager.decorateExecutionConsole, no counterpart in consulo-java)
+    // upstream: no console in DAP mode
     val consoleView = TextConsoleBuilderFactory.getInstance.createBuilder(environment.getProject).getConsole
-    consoleView.attachToProcess(processHandler)
 
-    new DefaultExecutionResult(consoleView, processHandler)
+    // ATTENTION: the most important difference with `super.execute`.
+    // Platform `RemoteStateState.execute` attaches a plain `ConsoleViewImpl` before it returns.
+    // SBT shell debug needs Java console decorators installed before `attachToProcess`,
+    // otherwise wrappers such as LogCapture can observe debugger session creation before their own `attachToProcess` call.
+    val decoratedConsoleView = decorateExecutionConsole(consoleView, executor)
+    decoratedConsoleView.attachToProcess(processHandler)
+
+    new DefaultExecutionResult(decoratedConsoleView, processHandler)
   }
+
+  private def decorateExecutionConsole(consoleView: ConsoleView, executor: Executor): ConsoleView =
+    JavaRunConfigurationExtensionManager.getInstance.decorateExecutionConsole(
+      configuration,
+      environment.getRunnerSettings,
+      consoleView,
+      executor
+    )
 
   def detach(): Unit = {
     val processHandler = execResult.flatMap(r => Option(r.getProcessHandler))

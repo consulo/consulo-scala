@@ -27,7 +27,6 @@ import org.jetbrains.sbt.{SbtBundle, SbtUtil, shell}
 
 import java.awt.{Component, Container, FocusTraversalPolicy}
 import java.util.concurrent.TimeUnit
-import javax.swing.JComponent
 
 /**
   * Creates the sbt shell toolwindow, which is docked at the bottom of sbt projects.
@@ -162,12 +161,14 @@ object SbtShellToolWindowFactory {
       // default implementation focuses the toolwindow frame, but we want the editor to be directly focused to edit it directly
       val sbtManager = SbtProcessManager.forProject(project)
 
-      def getShellComponent: Option[JComponent] =
-        for {
-          shellRunner <- sbtManager.shellRunner
-          view <- Option(shellRunner.getConsoleView)
-          editor <- Option(view.getConsoleEditor)
-        } yield editor.getContentComponent
+      def getShellComponent: Option[Component] =
+        sbtManager.terminalConsole.map(terminal => TargetAWT.to(terminal.getUIComponent)).orElse {
+          for {
+            shellRunner <- sbtManager.shellRunner
+            view <- Option(shellRunner.getConsoleView)
+            editor <- Option(view.getConsoleEditor)
+          } yield editor.getContentComponent
+        }
 
       val shellComponent =
         if (!sbtManager.isAlive) None
@@ -180,7 +181,7 @@ object SbtShellToolWindowFactory {
   private[shell] def initUi(
     project: Project,
     actionGroup: ActionGroup,
-    component: => JComponent,
+    component: => consulo.ui.Component,
   ): Unit =
     SbtShellToolWindowFactory.instance(using project).foreach { toolWindow =>
       invokeLater {
@@ -199,7 +200,7 @@ object SbtShellToolWindowFactory {
   @RequiredUIAccess
   private def createToolWindowContent(
     actionGroup: ActionGroup,
-    component: JComponent,
+    component: consulo.ui.Component,
     @Nls projectName: String
   ): Content = {
     Log.debug("createToolWindowContent")
@@ -208,7 +209,7 @@ object SbtShellToolWindowFactory {
 
     val mainPanel = DockLayout.create()
     mainPanel.left(actionToolBar.getUIComponent)
-    mainPanel.center(TargetAWT.wrap(component))
+    mainPanel.center(component)
     actionToolBar.setTargetUIComponent(mainPanel)
 
     //noinspection ScalaExtractStringToBundle

@@ -124,6 +124,7 @@ open module org.intellij.scala.bsp.impl {
 
     exports consulo.scala.bsp.icon;
     exports org.jetbrains.bsp;
+    exports org.jetbrains.bsp.actions;
     exports org.jetbrains.bsp.data;
     exports org.jetbrains.bsp.project;
     exports org.jetbrains.bsp.project.importing;

@@ -12,7 +12,7 @@ import consulo.platform.base.icon.PlatformIconGroup
 import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.layout.{HorizontalLayout, VerticalLayout}
 import consulo.ui.util.LabeledBuilder
-import consulo.ui.{Component, RadioGroup, TextBox}
+import consulo.ui.{CheckBox, Component, RadioGroup, TextBox}
 import consulo.util.io.FileUtil
 import org.jetbrains.sbt.SbtBundle
 
@@ -33,6 +33,7 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
   private var sbtOptions: TextBox = _
   private var launcherPath: FileChooserTextBoxBuilder.Controller = _
   private var sbtEnvironment: EnvironmentVariablesTextFieldWithBrowseButton = _
+  private var useTerminalShell: CheckBox = _
 
   @RequiredUIAccess
   override def createUIComponent(uiDisposable: Disposable): Component = {
@@ -61,6 +62,10 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
     launcherKind.addValueListener(_ => refreshEnabled())
     sbtEnvironment = new EnvironmentVariablesTextFieldWithBrowseButton()
     sbtOptions.setToolTipText(LocalizeValue.of(SbtBundle.message("sbt.settings.sbtOptions.tooltip")))
+    useTerminalShell = CheckBox.create(LocalizeValue.localizeTODO("Use terminal for the sbt shell (sbt 1.4+)"))
+    useTerminalShell.setToolTipText(LocalizeValue.localizeTODO(
+      "The sbt shell runs in a terminal (sbt's own shell with JLine completion) instead of the console with an input field. Applies to new sbt shell instances."
+    ))
 
     reset()
 
@@ -73,6 +78,7 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
     layout.add(LabeledBuilder.filled(label("sbt.settings.env.variables"), sbtEnvironment.getComponent))
     layout.add(LabeledBuilder.filled(label("sbt.settings.sbtLauncher"), launcherKindLayout))
     layout.add(LabeledBuilder.filled(LocalizeValue.localizeTODO("Launcher path:"), launcherPath))
+    layout.add(useTerminalShell)
     layout
   }
 
@@ -113,7 +119,8 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
         Option(sbtOptions.getValue).getOrElse("") == settings.sbtOptions &&
         selectedVMPath == settings.customVMPath &&
         sbtEnvironment.getEnvs == settings.sbtEnvironment &&
-        sbtEnvironment.isPassParentEnvs == settings.sbtPassParentEnvironment
+        sbtEnvironment.isPassParentEnvs == settings.sbtPassParentEnvironment &&
+        useTerminalShell.getValue.booleanValue == settings.useTerminalShell
     }
 
   @RequiredUIAccess
@@ -126,6 +133,7 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
       settings.customVMPath = selectedVMPath
       settings.sbtEnvironment = sbtEnvironment.getEnvs
       settings.sbtPassParentEnvironment = sbtEnvironment.isPassParentEnvs
+      settings.useTerminalShell = useTerminalShell.getValue
     }
 
   @RequiredUIAccess
@@ -143,6 +151,7 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
       }
       sbtEnvironment.setEnvs(settings.sbtEnvironment)
       sbtEnvironment.setPassParentEnvs(settings.sbtPassParentEnvironment)
+      useTerminalShell.setValue(settings.useTerminalShell)
       refreshEnabled()
     }
 }

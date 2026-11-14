@@ -67,7 +67,6 @@ class SbtRunConfiguration(
 
   /**
    * Environment variables.
-   * upstream: also env files (EnvFilesOptions), no Consulo counterpart
    */
   def environmentVariables: java.util.Map[String, String] = getEnvs
 
