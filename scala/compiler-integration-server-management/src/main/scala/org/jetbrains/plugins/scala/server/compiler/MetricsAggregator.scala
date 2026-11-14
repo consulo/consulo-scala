@@ -1,6 +1,5 @@
-package org.jetbrains.plugins.scala.compiler
-
-import org.jetbrains.jps.incremental.scala.remote.{CompileServerMeteringInfo, CompileServerMetrics}
+package org.jetbrains.plugins.scala.server.compiler
+import org.jetbrains.jps.incremental.scala.shared.remote.{CompileServerMeteringInfo, CompileServerMetrics}
 
 /**
  * Simple thread-safe class which aggregates instances of

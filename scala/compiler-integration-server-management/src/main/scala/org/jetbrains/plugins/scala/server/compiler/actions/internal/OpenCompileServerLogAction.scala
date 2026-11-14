@@ -1,16 +1,23 @@
-package org.jetbrains.plugins.scala.compiler.actions.internal
+package org.jetbrains.plugins.scala.server.compiler.actions.internal
 
-import com.intellij.ide.util.PsiNavigationSupport
-import com.intellij.notification.{Notification, NotificationType, Notifications}
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.ScrollType
-import com.intellij.openapi.fileEditor.{FileEditorManager, FileEditorOpenRequest, TextEditor}
-import com.intellij.openapi.project.{DumbAwareAction, Project}
-import com.intellij.openapi.util.{Condition, NlsSafe}
-import com.intellij.openapi.vfs.{LocalFileSystem, VfsUtil}
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+import consulo.language.psi.PsiNavigationSupport
+import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import consulo.application.ApplicationManager
+import consulo.codeEditor.ScrollType
+import consulo.fileEditor.{FileEditorManager, TextEditor}
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
+import com.intellij.openapi.project.DumbAwareAction
+import consulo.project.Project
+import consulo.util.lang.function.Condition
+import consulo.virtualFileSystem.LocalFileSystem
+import consulo.virtualFileSystem.util.VirtualFileUtil
 import org.jetbrains.annotations.NotNull
-import org.jetbrains.plugins.scala.compiler.{CompileServerLauncher, ServerManagementBundle}
+import org.jetbrains.plugins.scala.server.compiler.{CompileServerLauncher, ServerManagementBundle}
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, executeOnPooledThread, invokeLater}
 import org.jetbrains.plugins.scala.server.CompileServerLog
 
@@ -21,6 +28,7 @@ import scala.jdk.CollectionConverters._
 /**
  * Similar to [[com.intellij.internal.OpenLogAction]].
  */
+@ActionImpl(id = "Scala.OpenCompileServerLog", parents = Array(new ActionParentRef(value = new ActionRef(id = "HelpMenu"), anchor = ActionRefAnchor.BEFORE, relatedToAction = new ActionRef(id = "Scala.ShowCompileServerLog"))))
 final class OpenCompileServerLogAction extends DumbAwareAction {
 
   // Called in the constructor
@@ -59,8 +67,8 @@ final class OpenCompileServerLogAction extends DumbAwareAction {
           }
       }
     } else {
-      @NlsSafe val title = s"Cannot find '$logFilePath'"
-      @NlsSafe val empty = ""
+      val title = s"Cannot find '$logFilePath'"
+      val empty = ""
       Notifications.Bus.notify(
         new Notification(Notifications.SYSTEM_MESSAGES_GROUP_ID, title, empty, NotificationType.INFORMATION): @nowarn("cat=deprecation"),
         project

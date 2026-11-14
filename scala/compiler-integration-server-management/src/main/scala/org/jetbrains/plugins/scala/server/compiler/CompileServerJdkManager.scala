@@ -1,9 +1,9 @@
-package org.jetbrains.plugins.scala.compiler
-
+package org.jetbrains.plugins.scala.server.compiler
 import com.intellij.compiler.server.BuildManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion, Sdk}
-import com.intellij.openapi.roots.ProjectRootManager
+import consulo.project.Project
+import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion}
+import consulo.content.bundle.Sdk
+import consulo.module.content.ProjectRootManager
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 
 object CompileServerJdkManager {

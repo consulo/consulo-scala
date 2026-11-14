@@ -1,37 +1,45 @@
 //noinspection ApiStatus,UnstableApiUsage
-package org.jetbrains.plugins.scala.compiler
-
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
 import com.intellij.compiler.server.impl.BuildProcessClasspathManager
 import com.intellij.compiler.server.{BuildManager, BuildProcessParametersProvider}
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.{ProcessEvent, ProcessListener}
-import com.intellij.notification.{Notification, NotificationType, Notifications}
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.{ApplicationInfo, ApplicationManager, PathManager}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
+import consulo.disposer.Disposable
+import com.intellij.openapi.application.{ApplicationInfo, PathManager}
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
 import com.intellij.openapi.options.advanced.AdvancedSettings
-import com.intellij.openapi.project.{Project, ProjectManager, ProjectUtil}
-import com.intellij.openapi.projectRoots.{JavaSdkVersion, ProjectJdkTable, Sdk}
-import com.intellij.openapi.util.Disposer
+import consulo.project.{Project, ProjectManager}
+import consulo.project.util.ProjectUtil
+import com.intellij.openapi.projectRoots.{JavaSdkVersion, ProjectJdkTable}
+import consulo.content.bundle.Sdk
+import consulo.disposer.Disposer
 import com.intellij.platform.eel.path.EelPath
 import com.intellij.platform.eel.provider.utils.{EelPathUtils, EelProjectUtils, EelSystemFolderUtils}
 import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor}
 import com.intellij.platform.eel.{EelDescriptor, EelPlatformKt}
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.{Nls, Nullable, TestOnly}
 import org.jetbrains.jps.api.GlobalOptions
 import org.jetbrains.jps.cmdline.ClasspathBootstrap
-import org.jetbrains.plugins.scala.compiler.EelCompilerUtils.asTargetLocalPathString
+import org.jetbrains.plugins.scala.server.compiler.EelCompilerUtils.asTargetLocalPathString
 import org.jetbrains.plugins.scala.compiler.buildinfo.BuildInfo
 import org.jetbrains.plugins.scala.eel.tunnels.EelTunnels
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
 import org.jetbrains.plugins.scala.server.{CompileServerPort, CompileServerProperties, CompileServerToken}
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 import org.jetbrains.plugins.scala.util.*
+import org.jetbrains.plugins.scala.api.util.*
+import org.jetbrains.plugins.scala.language.util.*
+import org.jetbrains.plugins.scala.rt.util.*
+import org.jetbrains.plugins.scala.shared.util.*
 import org.jetbrains.plugins.scala.util.teamcity.TeamcityUtils
 
 import java.io.{BufferedReader, IOException, InputStream, InputStreamReader}
@@ -678,7 +686,7 @@ object CompileServerLauncher {
    *
    * @note This method is blocking. It should not be called on the UI thread.
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   def ensureServerRunning(project: Project): Boolean = {
     CompileServerShutdown.registerShutdownTask()
     serverStartLock.synchronized {
@@ -748,7 +756,7 @@ object CompileServerLauncher {
    * @param is the input stream of the nailgun process
    * @return the TCP port number on which the server is listening
    */
-  @RequiresBackgroundThread
+  // upstream: @RequiresBackgroundThread
   private def waitUntilNailgunServerIsReady(compileServerSystemDir: Path, is: InputStream): Option[Int] = {
     val bufferedReader = new BufferedReader(new InputStreamReader(is))
     while (true) {
@@ -880,11 +888,14 @@ object CompileServerLauncher {
       Seq("--add-opens", s"$modulePackage=ALL-UNNAMED")
     }
 
-  @Service(Array(Service.Level.PROJECT))
+  // upstream: @Service(Array(Service.Level.PROJECT))
+  @Singleton
+  @ServiceAPI(ComponentScope.PROJECT)
+  @ServiceImpl
   private final class CoroutineScopeProvider(private val scope: CoroutineScope)
 
   private object CoroutineScopeProvider {
     def scope(project: Project): CoroutineScope =
-      project.getService(classOf[CoroutineScopeProvider]).scope
+      project.getInstance(classOf[CoroutineScopeProvider]).scope
   }
 }

@@ -1,13 +1,13 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.execution.process._
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.util.Key
+package org.jetbrains.plugins.scala.server.compiler
+import com.intellij.execution.process.{OSProcessHandler, ProcessOutputTypes}
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.project.ProjectManager
+import consulo.util.dataholder.Key
 import com.intellij.util.io.BaseOutputReader
 import org.jetbrains.jps.incremental.scala.utils.CompileServerSharedMessages
-import org.jetbrains.plugins.scala.compiler.ProcessWatcher.Log
+import org.jetbrains.plugins.scala.server.compiler.ProcessWatcher.Log
 import org.jetbrains.plugins.scala.extensions.invokeLater
 
 /**

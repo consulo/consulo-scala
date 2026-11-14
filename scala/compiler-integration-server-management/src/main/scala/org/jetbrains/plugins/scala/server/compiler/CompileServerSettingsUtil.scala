@@ -1,7 +1,7 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.openapi.project.Project
-import org.jetbrains.plugins.scala.settings.{ScalaCompileServerSettings, ShowSettingsUtilImplExt}
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.project.Project
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.settings.ShowSettingsUtilImplExt
 
 object CompileServerSettingsUtil {
   def showCompileServerSettingsDialog(project: Project, filter: String = ""): Unit =

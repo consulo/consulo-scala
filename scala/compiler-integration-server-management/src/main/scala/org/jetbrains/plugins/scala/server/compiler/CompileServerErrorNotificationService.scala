@@ -1,15 +1,19 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.util.NlsSafe
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.project.ui.notification.NotificationType
+import consulo.disposer.Disposable
+import consulo.application.ApplicationManager
 import com.intellij.util.ui.update.{MergingUpdateQueue, Update}
 
 import java.util.concurrent.locks.{Lock, ReentrantLock}
 
-@Service(Array(Service.Level.APP))
+// upstream: @Service(Array(Service.Level.APP))
+@Singleton
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
 private final class CompileServerErrorNotificationService extends Disposable {
 
   private val errorNotificationUpdateQueue: MergingUpdateQueue =
@@ -30,7 +34,7 @@ private final class CompileServerErrorNotificationService extends Disposable {
         errorsBufferLock.unlock()
       }
 
-      @NlsSafe
+      // upstream: @NlsSafe
       val message = text.replace(System.lineSeparator(), "<br/>")
       CompileServerNotifications.showNotification(message, NotificationType.ERROR, project = None)
     }
@@ -48,5 +52,5 @@ private final class CompileServerErrorNotificationService extends Disposable {
 
 private object CompileServerErrorNotificationService {
   def instance(): CompileServerErrorNotificationService =
-    ApplicationManager.getApplication.getService(classOf[CompileServerErrorNotificationService])
+    ApplicationManager.getApplication.getInstance(classOf[CompileServerErrorNotificationService])
 }

@@ -1,8 +1,7 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.notification.{Notification, NotificationAction}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.project.ui.notification.{Notification, NotificationAction}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.project.Project
 
 private final class OpenScalaCompileServerSettingsAction(project: Project, filter: String) extends NotificationAction(ServerManagementBundle.message("wrong.jdk.action.open.compile.server.settings")) {
   override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {

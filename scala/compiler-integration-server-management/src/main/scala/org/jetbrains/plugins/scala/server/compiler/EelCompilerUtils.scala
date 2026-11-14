@@ -1,5 +1,4 @@
-package org.jetbrains.plugins.scala.compiler
-
+package org.jetbrains.plugins.scala.server.compiler
 import com.intellij.platform.eel.EelDescriptor
 import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, LocalEelDescriptor}
 

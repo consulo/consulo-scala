@@ -1,7 +1,6 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.roots.OrderEnumerator
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.module.Module
+import consulo.module.content.layer.OrderEnumerator
 import org.jetbrains.plugins.scala.compiler.data._
 import org.jetbrains.plugins.scala.compiler.data.worksheet.WorksheetArgs
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PathExt}

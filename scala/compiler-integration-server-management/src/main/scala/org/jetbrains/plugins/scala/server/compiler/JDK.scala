@@ -1,7 +1,7 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion, Sdk}
-import org.jetbrains.plugins.scala.compiler.CompileServerLauncher.CompileServerProblem
+package org.jetbrains.plugins.scala.server.compiler
+import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion}
+import consulo.content.bundle.Sdk
+import org.jetbrains.plugins.scala.server.compiler.CompileServerLauncher.CompileServerProblem
 
 import java.nio.file.Path
 

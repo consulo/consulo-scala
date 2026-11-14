@@ -1,7 +1,6 @@
-package org.jetbrains.plugins.scala.compiler
-
+package org.jetbrains.plugins.scala.server.compiler
 import com.intellij.compiler.server.BuildManager
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 
 import java.nio.file.{Files, Path}
 

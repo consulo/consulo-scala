@@ -1,14 +1,15 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.icons.AllIcons
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup, Separator}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.{DumbAware, Project}
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.wm.{StatusBar, StatusBarWidget}
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.Consumer
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.application.AllIcons
+import consulo.dataContext.DataManager
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, DefaultActionGroup}
+import com.intellij.openapi.actionSystem.Separator
+import consulo.application.ApplicationManager
+import consulo.application.dumb.DumbAware
+import consulo.project.Project
+import consulo.ui.ex.popup.JBPopupFactory
+import consulo.project.ui.wm.{StatusBar, StatusBarWidget}
+import consulo.ui.ex.RelativePoint
+import java.util.function.Consumer
 import com.intellij.util.messages.MessageBusConnection
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread

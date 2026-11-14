@@ -1,10 +1,13 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.{Project, ProjectCloseListener}
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.disposer.Disposable
+import consulo.application.ApplicationManager
+import consulo.logging.Logger
+import consulo.project.Project
+import com.intellij.openapi.project.ProjectCloseListener
 import com.intellij.platform.eel.provider.utils.EelProjectUtils
 import org.jetbrains.plugins.scala.util.ScalaShutDownTracker
 
@@ -14,7 +17,10 @@ private object CompileServerShutdown {
 
   private final val Log: Logger = Logger.getInstance(classOf[CompileServerShutdown.type])
 
-  @Service(Array(Service.Level.APP))
+  // upstream: @Service(Array(Service.Level.APP))
+  @Singleton
+  @ServiceAPI(ComponentScope.APPLICATION)
+  @ServiceImpl
   private final class RegisterShutdownTaskService extends Disposable {
     // Guaranteed to run at most-once, when the service is initialized.
     ScalaShutDownTracker.registerShutdownTask(() => {
@@ -38,5 +44,5 @@ private object CompileServerShutdown {
   }
 
   def registerShutdownTask(): Unit =
-    ApplicationManager.getApplication.getService(classOf[RegisterShutdownTaskService])
+    ApplicationManager.getApplication.getInstance(classOf[RegisterShutdownTaskService])
 }

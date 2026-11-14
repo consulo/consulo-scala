@@ -1,17 +1,16 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.notification.{Notification, NotificationType, Notifications}
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
+import consulo.project.Project
 import com.intellij.openapi.ui.MessageType
-import com.intellij.openapi.ui.popup.Balloon.Position
-import com.intellij.openapi.ui.popup.{Balloon, JBPopupFactory}
-import com.intellij.openapi.wm.WindowManager
+import consulo.ui.ex.popup.Balloon.Position
+import consulo.ui.ex.popup.{Balloon, JBPopupFactory}
+import consulo.project.ui.wm.WindowManager
 import com.intellij.openapi.wm.impl.status.IdeStatusBarImpl
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.concurrency.annotations.RequiresEdt
+import consulo.ui.ex.RelativePoint
+import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import com.intellij.util.ui.PositionTracker
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.plugins.scala.api.NlsString
 
 import java.awt.Point
 

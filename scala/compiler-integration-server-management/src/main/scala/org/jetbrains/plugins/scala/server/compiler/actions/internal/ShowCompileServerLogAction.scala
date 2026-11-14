@@ -1,16 +1,22 @@
-package org.jetbrains.plugins.scala.compiler.actions.internal
+package org.jetbrains.plugins.scala.server.compiler.actions.internal
 
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
 import com.intellij.ide.actions.RevealFileAction
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent}
-import com.intellij.openapi.project.{DumbAwareAction, Project}
+import consulo.ui.ex.action.{ActionUpdateThread, AnActionEvent}
+import com.intellij.openapi.project.DumbAwareAction
+import consulo.project.Project
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.compiler.{CompileServerLauncher, ServerManagementBundle}
+import org.jetbrains.plugins.scala.server.compiler.{CompileServerLauncher, ServerManagementBundle}
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.plugins.scala.server.CompileServerLog
 
 /**
  * Similar to [[com.intellij.ide.actions.ShowLogAction]].
  */
+@ActionImpl(id = "Scala.ShowCompileServerLog", parents = Array(new ActionParentRef(value = new ActionRef(id = "HelpMenu"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ShowLog"))))
 final class ShowCompileServerLogAction extends DumbAwareAction {
 
   // Called in the constructor

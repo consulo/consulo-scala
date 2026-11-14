@@ -1,15 +1,17 @@
-package org.jetbrains.plugins.scala.compiler
+package org.jetbrains.plugins.scala.server.compiler
 
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+import consulo.project.Project
 import com.intellij.openapi.util.IconLoader
-import com.intellij.openapi.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
+import consulo.project.ui.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
 import com.intellij.util.messages.Topic
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.ProjectExt
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 
 import javax.swing.Icon
 
+@ExtensionImpl(id = "ScalaCompileServer", order = "before ScalaHighlightingMode")
 private final class CompileServerWidgetFactory extends StatusBarWidgetFactory {
   override def getId: String = CompileServerWidgetFactory.ID
 

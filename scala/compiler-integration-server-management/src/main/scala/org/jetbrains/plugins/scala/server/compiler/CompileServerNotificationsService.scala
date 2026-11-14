@@ -1,18 +1,23 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.notification.{Notification, NotificationAction, NotificationType, Notifications}
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType, Notifications}
+import consulo.ui.ex.action.AnActionEvent
+import consulo.application.ApplicationManager
+import consulo.project.Project
+import consulo.module.content.ProjectRootManager
 import com.intellij.openapi.util.CompositeModificationTracker
 import org.jetbrains.plugins.scala.caches.cached
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.plugins.scala.project.ProjectExt
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 
-@Service(Array(Service.Level.PROJECT))
+// upstream: @Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class CompileServerNotificationsService(project: Project) {
 
   private val title = ServerManagementBundle.message("scala.compile.server.title")
@@ -69,5 +74,5 @@ final class CompileServerNotificationsService(project: Project) {
 object CompileServerNotificationsService {
   
   def get(project: Project): CompileServerNotificationsService =
-    project.getService(classOf[CompileServerNotificationsService])
+    project.getInstance(classOf[CompileServerNotificationsService])
 }

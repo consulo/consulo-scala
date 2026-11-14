@@ -1,26 +1,28 @@
-package org.jetbrains.plugins.scala.compiler;
+package org.jetbrains.plugins.scala.server.compiler;
+
+import consulo.annotation.component.ExtensionImpl;
 
 import com.intellij.compiler.server.BuildManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.project.Project;
+import consulo.application.ApplicationManager;
+import consulo.configurable.Configurable;
+import consulo.project.Project;
 import com.intellij.openapi.projectRoots.JavaSdkVersion;
-import com.intellij.openapi.projectRoots.Sdk;
+import consulo.content.bundle.Sdk;
 import com.intellij.openapi.roots.ui.configuration.JdkComboBox;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.RawCommandLineEditor;
-import com.intellij.ui.TitledSeparator;
-import com.intellij.ui.components.fields.IntegerField;
+import consulo.ui.ex.JBColor;
+import consulo.execution.ui.awt.RawCommandLineEditor;
+import consulo.ui.ex.awt.TitledSeparator;
+import consulo.ui.ex.awt.IntegerField;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.containers.ComparatorUtil;
 import com.intellij.util.ui.UI;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider$;
 import org.jetbrains.plugins.scala.project.external.SdkUtils;
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings;
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings;
 import scala.Some;
 import scala.concurrent.duration.Duration;
 
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 @SuppressWarnings("deprecation")
+@ExtensionImpl
 public class ScalaCompileServerForm implements Configurable {
     private JPanel myJvmSettingsPanel;
     private RawCommandLineEditor myCompilationServerJvmParameters;
@@ -360,7 +363,7 @@ public class ScalaCompileServerForm implements Configurable {
         try {
             Class<?> thisClass = this.getClass();
             if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
                 $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
             }
             bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);

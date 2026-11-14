@@ -1,11 +1,10 @@
-package org.jetbrains.plugins.scala.compiler
-
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
+package org.jetbrains.plugins.scala.server.compiler
+import consulo.logging.Logger
+import consulo.project.Project
 import com.intellij.openapi.util.registry.RegistryManager
-import org.jetbrains.jps.incremental.scala.Client
-import org.jetbrains.jps.incremental.scala.remote.RemoteResourceOwner
-import org.jetbrains.plugins.scala.compiler.RemoteServerRunner.*
+import org.jetbrains.jps.incremental.scala.shared.Client
+import org.jetbrains.jps.incremental.scala.shared.remote.RemoteResourceOwner
+import org.jetbrains.plugins.scala.server.compiler.RemoteServerRunner.*
 import org.jetbrains.plugins.scala.server.{CompileServerPort, CompileServerToken}
 
 import java.net.{ConnectException, InetAddress, UnknownHostException}

@@ -1,14 +1,19 @@
-package org.jetbrains.plugins.scala.compiler
+package org.jetbrains.plugins.scala.server.compiler
 
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.compiler.CompileContext
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.module.Module
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.annotation.component.ExtensionImpl
+import consulo.application.ReadAction
+import consulo.compiler.CompileContext
+import consulo.logging.Logger
+import consulo.module.Module
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jetbrains.plugins.scala.project._
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.api.project._
+import org.jetbrains.plugins.scala.rt.project._
+import org.jetbrains.plugins.scala.shared.project._
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
 
+@ExtensionImpl
 private final class PrepareCompileServerTask extends ScalaCompileTask {
   import PrepareCompileServerTask.Log
 
