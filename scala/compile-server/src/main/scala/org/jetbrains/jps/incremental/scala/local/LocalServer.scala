@@ -116,7 +116,7 @@ final class LocalServer extends Server {
     compilerData: CompilerData,
     client: Client
   ): CompilerFactory = cachedCompilerFactory.getOrElse {
-    val cf = ServiceLoader.load(classOf[CompilerFactoryService])
+    val cf = ServiceLoader.load(classOf[CompilerFactoryService], classOf[CompilerFactoryService].getClassLoader)
     val registeredCompilerFactories = cf.iterator().asScala.toList
     client.internalInfo(s"Registered factories of ${classOf[CompilerFactoryService].getName}: $registeredCompilerFactories")
     val firstEnabledCompilerFactory = registeredCompilerFactories.find(_.isEnabled(compilerData))

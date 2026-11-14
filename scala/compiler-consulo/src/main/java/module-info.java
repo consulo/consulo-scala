@@ -112,7 +112,6 @@ open module org.intellij.scala.compiler.consulo {
     requires org.intellij.scala.compiler.settings.definition;
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
-    requires org.intellij.scala.compile.server;
 
 
 

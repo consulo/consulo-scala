@@ -7,7 +7,7 @@ import consulo.localize.LocalizeValue
 import consulo.logging.Logger
 import consulo.project.Project
 import consulo.util.dataholder.Key
-import org.jetbrains.jps.incremental.scala.local.LocalServer
+import org.jetbrains.jps.incremental.scala.shared.CompileEngine
 import org.jetbrains.plugins.scala.compiler.data.{IncrementalityType, SbtData}
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.util.ScalaPluginJars
@@ -18,7 +18,7 @@ import scala.util.control.NonFatal
 
 /**
  * upstream: org.jetbrains.jps.incremental.scala.ScalaBuilder without the compile server: zinc always runs in the IDE
- * process (upstream LocalServer fallback)
+ * process (upstream LocalServer fallback), see [[CompileEngine]]
  */
 private object ScalaBuilder {
 
@@ -26,8 +26,6 @@ private object ScalaBuilder {
 
   /** zinc analysis files already reset in the current rebuild */
   private val ResetCacheFiles = Key.create[java.util.Set[Path]]("scala.compiler.reset.cache.files")
-
-  private lazy val localServer = new LocalServer
 
   // upstream: the plugin jps directory is the directory of the compiler-jps jar, the bridges are compiled into the compile server system directory
   private lazy val sbtData: Either[String, SbtData] =
@@ -63,7 +61,7 @@ private object ScalaBuilder {
         }
 
         val client = new ConsuloClient(context, target)
-        try localServer.doCompile(sbtData, compilerData, compilationData, client)
+        try CompileEngine.fromJpsDirectory(ScalaPluginJars.jpsRoot).compile(sbtData, compilerData, compilationData, client)
         catch {
           case e: ProcessCanceledException => throw e
           case NonFatal(e) if !client.isCanceled => client.trace(e)

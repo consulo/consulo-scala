@@ -1,6 +1,5 @@
 package org.jetbrains.plugins.scala.server.compiler
 
-import consulo.annotation.component.ExtensionImpl
 import consulo.application.ReadAction
 import consulo.compiler.{BeforeCompileTask, CompileContext}
 import consulo.logging.Logger
@@ -13,7 +12,8 @@ import org.jetbrains.plugins.scala.shared.project._
 import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
 
-@ExtensionImpl
+// upstream: registered as a compile task - not registered here, Scala is compiled in the IDE process (CompileEngine),
+// there is no compile server to start
 private final class PrepareCompileServerTask extends ScalaCompileTask with BeforeCompileTask {
   import PrepareCompileServerTask.Log
 

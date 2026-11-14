@@ -52,12 +52,6 @@
         </dependency>
         <dependency>
             <groupId>consulo.plugin</groupId>
-            <artifactId>org.intellij.scala-compile.server</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>consulo.plugin</groupId>
             <artifactId>org.intellij.scala-scala.impl</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

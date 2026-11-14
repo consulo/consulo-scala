@@ -48,7 +48,17 @@
                                 <artifact>${project.groupId}:org.intellij.scala-semantic.decompiler:${project.version}</artifact>
                                 <path>lib/semantic/decompiler.jar</path>
                             </copy>
-                            <!-- zinc (compile-server module) needs the interface jars and compiler bridges as files: SbtData.Jars -->
+                            <!-- upstream layout: compile-server.jar, zinc assembly and the interface jars are loaded in
+                                 their own class loader (CompileEngine), zinc also needs the interface jars and compiler bridges
+                                 as files: SbtData.Jars -->
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-compile.server:${project.version}</artifact>
+                                <path>lib/jps/compile-server.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>${project.groupId}:org.intellij.scala-incremental.compiler:${project.version}</artifact>
+                                <path>lib/jps/incremental-compiler.jar</path>
+                            </copy>
                             <copy>
                                 <artifact>org.scala-sbt:compiler-interface:1.12.1</artifact>
                                 <path>lib/jps/compiler-interface.jar</path>
@@ -97,6 +107,67 @@
                                 <artifact>org.scala-lang:scala3-sbt-bridge:3.4.0</artifact>
                                 <path>lib/jps/scala3-sbt-bridge_3.4.jar</path>
                             </copy>
+                            <!-- sbt: launcher and the sbt plugins injected into imported builds / the sbt shell (local repo) -->
+                            <copy>
+                                <artifact>org.scala-sbt:sbt-launch:1.13.0</artifact>
+                                <path>launcher/sbt-launch.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.10_0.13:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.10_0.13/2026.2.7/sbt-structure-extractor_2.10_0.13-2026.2.7.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.10_0.13:pom:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.10_0.13/2026.2.7/sbt-structure-extractor_2.10_0.13-2026.2.7.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.12_1.0:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.12_1.0/2026.2.7/sbt-structure-extractor_2.12_1.0-2026.2.7.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.12_1.0:pom:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.12_1.0/2026.2.7/sbt-structure-extractor_2.12_1.0-2026.2.7.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.12_1.3:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.12_1.3/2026.2.7/sbt-structure-extractor_2.12_1.3-2026.2.7.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_2.12_1.3:pom:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_2.12_1.3/2026.2.7/sbt-structure-extractor_2.12_1.3-2026.2.7.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_sbt2_3:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_sbt2_3/2026.2.7/sbt-structure-extractor_sbt2_3-2026.2.7.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-structure-extractor_sbt2_3:pom:2026.2.7</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-structure-extractor_sbt2_3/2026.2.7/sbt-structure-extractor_sbt2_3-2026.2.7.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_2.10_0.13:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_2.10_0.13/2025.3.0/sbt-idea-shell_2.10_0.13-2025.3.0.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_2.10_0.13:pom:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_2.10_0.13/2025.3.0/sbt-idea-shell_2.10_0.13-2025.3.0.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_2.12_1.0:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_2.12_1.0/2025.3.0/sbt-idea-shell_2.12_1.0-2025.3.0.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_2.12_1.0:pom:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_2.12_1.0/2025.3.0/sbt-idea-shell_2.12_1.0-2025.3.0.pom</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_sbt2_3:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_sbt2_3/2025.3.0/sbt-idea-shell_sbt2_3-2025.3.0.jar</path>
+                            </copy>
+                            <copy>
+                                <artifact>org.jetbrains.scala:sbt-idea-shell_sbt2_3:pom:2025.3.0</artifact>
+                                <path>repo/org/jetbrains/scala/sbt-idea-shell_sbt2_3/2025.3.0/sbt-idea-shell_sbt2_3-2025.3.0.pom</path>
+                            </copy>
                         </copies>
                     </packaging>
                 </configuration>
@@ -117,6 +188,19 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-semantic.decompiler</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- not plugin modules: lib/jps jars of CompileEngine (provided - only for the build order of the copies) -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-compile.server</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-incremental.compiler</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -141,11 +225,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-debugger</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>org.intellij.scala-compile.server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

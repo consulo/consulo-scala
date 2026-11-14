@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2013-2026 consulo.io
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  - http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>consulo.plugin</groupId>
+        <artifactId>org.intellij.scala.parent</artifactId>
+        <version>3-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <!--
+      upstream: repackagedZinc - zinc assembled with its runtime dependencies into lib/jps/incremental-compiler.jar.
+      Not a plugin module: loaded together with lib/jps/compile-server.jar in its own class loader
+      (CompileEngine), scala-parallel-collections defines classes in packages of the scala.library module
+    -->
+    <artifactId>org.intellij.scala-incremental.compiler</artifactId>
+    <packaging>jar</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>assemble-zinc</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludes>META-INF/**,module-info.class</excludes>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- upstream: Dependencies.zinc exclusions; compiler-interface and util-interface are lib/jps/compiler-interface.jar
+             and lib/jps/sbt-interface.jar -->
+        <dependency>
+            <groupId>org.scala-sbt</groupId>
+            <artifactId>zinc_2.13</artifactId>
+            <version>1.12.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.scala-sbt</groupId>
+                    <artifactId>compiler-bridge_2.13</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.lmax</groupId>
+                    <artifactId>disruptor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.scala-sbt</groupId>
+                    <artifactId>compiler-interface</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.scala-sbt</groupId>
+                    <artifactId>util-interface</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

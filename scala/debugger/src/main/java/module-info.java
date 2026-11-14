@@ -112,7 +112,6 @@ open module org.intellij.scala.debugger {
     requires org.intellij.scala.compiler.settings.definition;
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
-    requires org.intellij.scala.compile.server;
     requires consulo.internal.jdi;
     requires consulo.execution.debug.api;
     requires consulo.java.debugger.impl;
