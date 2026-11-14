@@ -1,12 +1,19 @@
-package org.jetbrains.plugins.scala.intelliLang.injection
+package org.jetbrains.plugins.scala.regexp
 
+import consulo.annotation.component.ExtensionImpl
+
+import org.jetbrains.plugins.scala.lang.psi.impl.base.ScStringLiteralImpl
 import org.intellij.lang.regexp.psi.{RegExpChar, RegExpGroup, RegExpNamedGroupRef}
 import org.intellij.lang.regexp.{DefaultRegExpPropertiesProvider, RegExpLanguageHost}
 
 /** @see [[org.intellij.lang.regexp.RegExpLanguageHosts]]  */
+@ExtensionImpl
 class ScalaRegExpHost extends RegExpLanguageHost {
 
   private val defaultProvider = DefaultRegExpPropertiesProvider.getInstance()
+
+  // upstream: regExpLanguageHost forClass="...ScStringLiteralImpl"
+  override def getHostClass: Class[?] = classOf[ScStringLiteralImpl]
 
   override def characterNeedsEscaping(c: Char): Boolean = false
 

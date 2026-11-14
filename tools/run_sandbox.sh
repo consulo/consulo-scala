@@ -30,6 +30,7 @@ fetch_plugin() {
 }
 fetch_plugin consulo.java
 fetch_plugin org.jetbrains.fernflower
+fetch_plugin com.intellij.regexp
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
 for module in java.language.api; do

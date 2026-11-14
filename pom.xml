@@ -72,6 +72,7 @@
         <module>scala/integration/java-decompiler</module>
         <module>scala/semantic-decompiler</module>
         <module>scala/repl</module>
+        <module>scala/integration/regexp</module>
         <module>plugin</module>
     </modules>
 

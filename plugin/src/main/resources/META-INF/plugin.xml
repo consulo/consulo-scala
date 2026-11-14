@@ -24,6 +24,7 @@
     <depends>consulo.java</depends>
     <depends optional="true">consulo.markdown</depends>
     <depends optional="true">org.jetbrains.fernflower</depends>
+    <depends optional="true">com.intellij.regexp</depends>
 
     <tags>
         <tag>custom.language</tag>
