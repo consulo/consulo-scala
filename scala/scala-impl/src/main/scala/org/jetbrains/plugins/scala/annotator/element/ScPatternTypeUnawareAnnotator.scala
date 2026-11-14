@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -75,7 +76,7 @@ object ScPatternTypeUnawareAnnotator extends ElementAnnotator[ScPattern] with Du
       case _                          => None
     }
 
-  private final class ReplaceNamingPatternBindingElementInScala2Fix(binder: PsiElement) extends IntentionAction with DumbAware {
+  private final class ReplaceNamingPatternBindingElementInScala2Fix(binder: PsiElement) extends SyntheticIntentionAction with DumbAware {
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.type", "@"))
 
     def getFamilyName: String = ScalaBundle.message("family.name.replace.type.with.type.in.vararg.pattern")
@@ -95,7 +96,7 @@ object ScPatternTypeUnawareAnnotator extends ElementAnnotator[ScPattern] with Du
       new ReplaceNamingPatternBindingElementInScala2Fix(PsiTreeUtil.findSameElementInCopy(binder, target))
   }
 
-  private final class ReplaceNamingPatternBindingElementInScala3Fix(namingPattern: ScNamingPattern) extends IntentionAction with DumbAware {
+  private final class ReplaceNamingPatternBindingElementInScala3Fix(namingPattern: ScNamingPattern) extends SyntheticIntentionAction with DumbAware {
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.type", namingPattern.name + "*"))
 
     def getFamilyName: String = ScalaBundle.message("family.name.replace.with.scala3.vararg.pattern")

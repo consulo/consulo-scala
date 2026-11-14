@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -8,7 +9,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScPattern
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
-class CreateUnapplyQuickFix(clazz: ScTypeDefinition, pattern: ScPattern) extends CreateApplyOrUnapplyQuickFix(clazz) {
+class CreateUnapplyQuickFix(clazz: ScTypeDefinition, pattern: ScPattern) extends CreateApplyOrUnapplyQuickFix(clazz) with SyntheticIntentionAction {
   def getFamilyName: String = ScalaBundle.message("family.name.create.unapply.method")
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.unapply.method.in", clazz.shortDefinition))

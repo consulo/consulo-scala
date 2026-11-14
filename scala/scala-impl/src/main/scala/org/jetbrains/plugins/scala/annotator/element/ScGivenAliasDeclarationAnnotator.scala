@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
@@ -61,7 +62,7 @@ object ScGivenAliasDeclarationAnnotator extends ElementAnnotator[ScGivenAliasDec
 
   private class ReplaceWithDeferredGivenQuickFix(
     decl: ScGivenAliasDeclaration
-  ) extends IntentionAction with DumbAware {
+  ) extends SyntheticIntentionAction with DumbAware {
     override def startInWriteAction(): Boolean = true
     override def getText: LocalizeValue        = LocalizeValue.of(fixDescription)
 
@@ -107,7 +108,7 @@ private[element] abstract class AnonymousGivenAliasDeclarationQuickFix(declarati
 
 private[element] final class ImplementAnonymousAbstractGivenFix(declaration: ScGivenAliasDeclaration)
   extends AnonymousGivenAliasDeclarationQuickFix(declaration)
-    with DumbAware {
+    with DumbAware with SyntheticIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.implement.anonymous.abstract.given")
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =
@@ -131,7 +132,7 @@ private[element] final class ImplementAnonymousAbstractGivenFix(declaration: ScG
 }
 
 private[element] final class NameAnonymousAbstractGivenFix(declaration: ScGivenAliasDeclaration)
-  extends AnonymousGivenAliasDeclarationQuickFix(declaration) {
+  extends AnonymousGivenAliasDeclarationQuickFix(declaration) with SyntheticIntentionAction {
   override def getFamilyName: String = ScalaBundle.message("family.name.give.a.name.to.anonymous.abstract.given")
 
   override def getFileModifierForPreview(target: PsiFile): FileModifier =

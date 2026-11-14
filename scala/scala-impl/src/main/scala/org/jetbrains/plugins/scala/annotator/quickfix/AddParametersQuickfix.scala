@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
@@ -24,7 +25,7 @@ import org.jetbrains.plugins.scala.project.ProjectContext
 import scala.annotation.tailrec
 import scala.collection.mutable
 
-final class AddParametersQuickfix(argExprList: SmartPsiElementPointer[ScArgumentExprList]) extends BaseIntentionAction {
+final class AddParametersQuickfix(argExprList: SmartPsiElementPointer[ScArgumentExprList]) extends BaseIntentionAction with SyntheticIntentionAction {
   // We calculate _isAvailable when creating the quickfix because we need to search for the function definition,
   // which is not superfast. And isAvailable is supposed to run on the edt
   private val (_isAvailable, text) = {

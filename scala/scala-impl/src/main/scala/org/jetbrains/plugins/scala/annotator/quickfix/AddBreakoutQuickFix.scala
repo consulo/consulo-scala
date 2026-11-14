@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -15,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScParameter
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
-final class AddBreakoutQuickFix(expr: ScExpression) extends IntentionAction {
+final class AddBreakoutQuickFix(expr: ScExpression) extends SyntheticIntentionAction {
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("add.collection.breakout.argument"))
 
   def getFamilyName: String = ScalaBundle.message("family.name.add.collection.breakout")

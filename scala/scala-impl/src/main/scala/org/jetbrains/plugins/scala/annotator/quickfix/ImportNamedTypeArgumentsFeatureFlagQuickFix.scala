@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -11,7 +12,7 @@ import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
 import org.jetbrains.plugins.scala.lang.psi.ScImportsHolder
 
 final class ImportNamedTypeArgumentsFeatureFlagQuickFix(element: PsiElement)
-  extends IntentionAction {
+  extends SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(ImportNamedTypeArgumentsFeatureFlagQuickFix.Text)
 

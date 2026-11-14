@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import consulo.codeEditor.Editor
@@ -12,7 +13,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createMethodFromText
 
 class CreateExtractorObjectQuickFix(ref: ScReference, p: ScPattern)
-  extends CreateTypeDefinitionQuickFix(ref, Object) {
+  extends CreateTypeDefinitionQuickFix(ref, Object) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.extractor.object.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.extractor.object")

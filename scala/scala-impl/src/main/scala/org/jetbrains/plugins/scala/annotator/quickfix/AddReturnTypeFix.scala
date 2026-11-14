@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -12,7 +13,7 @@ import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOnlyStrategy
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScType
 
-final class AddReturnTypeFix(fun: ScFunctionDefinition, tp: ScType) extends IntentionAction {
+final class AddReturnTypeFix(fun: ScFunctionDefinition, tp: ScType) extends SyntheticIntentionAction {
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("add.return.type"))
 
   def getFamilyName: String = getText.get

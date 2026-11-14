@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.localize.LocalizeValue
@@ -32,7 +33,7 @@ import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import scala.jdk.CollectionConverters._
 
 private class ScalaImportGlobalMemberFix(computation: MemberToImportComputation,
-                                         ref: ScReferenceExpression) extends ScalaImportElementFix[MemberToImport](ref) {
+                                         ref: ScReferenceExpression) extends ScalaImportElementFix[MemberToImport](ref) with SyntheticIntentionAction {
 
   override def createAddImportAction(editor: Editor): ScalaAddImportAction[?, ?] =
     ScalaAddImportAction(editor, ref, elements)
@@ -58,7 +59,7 @@ private class ScalaImportGlobalMemberFix(computation: MemberToImportComputation,
 }
 
 private class ScalaImportGlobalMemberWithPrefixFix(computation: MemberToImportComputation,
-                                                   ref: ScReferenceExpression) extends ScalaImportElementFix[MemberToImport](ref) {
+                                                   ref: ScReferenceExpression) extends ScalaImportElementFix[MemberToImport](ref) with SyntheticIntentionAction {
   override def createAddImportAction(editor: Editor): ScalaAddImportAction[?, ?] =
     ScalaAddImportAction.importWithPrefix(editor, elements, ref)
 

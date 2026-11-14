@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.ScalaBundle
 
 final class ImportCBHSuggestionFix private(variants: Seq[CBHSuggestionToImport], place: PsiElement)
-  extends ScalaImportElementFix[CBHSuggestionToImport](place)
+  extends ScalaImportElementFix[CBHSuggestionToImport](place) with SyntheticIntentionAction
 {
   override protected def findElementsToImport(): Seq[CBHSuggestionToImport] = variants
 

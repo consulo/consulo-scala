@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import consulo.dataContext.DataContext
@@ -14,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass
 import org.jetbrains.plugins.scala.lang.refactoring.introduceParameter.ScalaIntroduceParameterHandler
 
-final class CreateParameterQuickFix(ref: ScReferenceExpression) extends CreateFromUsageQuickFixBase(ref) {
+final class CreateParameterQuickFix(ref: ScReferenceExpression) extends CreateFromUsageQuickFixBase(ref) with SyntheticIntentionAction {
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.parameter.named", ref.nameId.getText))
 
   override def getFamilyName: String = ScalaBundle.message("family.name.create.parameter")

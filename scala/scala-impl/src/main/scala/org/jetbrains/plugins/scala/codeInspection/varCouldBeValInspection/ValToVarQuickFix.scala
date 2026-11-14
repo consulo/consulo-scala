@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.varCouldBeValInspection
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -13,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScValue
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory.createVarFromValDeclaration
 
-final class ValToVarQuickFix(value: ScValue) extends IntentionAction {
+final class ValToVarQuickFix(value: ScValue) extends SyntheticIntentionAction {
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
     file.is[ScalaFile]

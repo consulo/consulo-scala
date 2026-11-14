@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.localize.LocalizeValue
@@ -33,7 +34,7 @@ import org.jetbrains.plugins.scala.settings._
 import org.jetbrains.plugins.scala.compilersettings.settings._
 
 final class ScalaImportTypeFix private (ref: ScReference)
-  extends ScalaImportElementFix[ElementToImport](ref) {
+  extends ScalaImportElementFix[ElementToImport](ref) with SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(textString)
 

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -25,7 +26,7 @@ object ScEnumeratorsAnnotator extends ElementAnnotator[ScEnumerators] with DumbA
   }
 
   private final class RemoveErrorSemicolonIntentionAction(enumerators: ScEnumerators)
-    extends IntentionAction
+    extends SyntheticIntentionAction
       with DumbAware {
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("remove.all.erroneous.semicolons.from.forexpression"))
 

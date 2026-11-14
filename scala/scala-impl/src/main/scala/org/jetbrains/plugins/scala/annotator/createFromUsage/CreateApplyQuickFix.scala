@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.template.TemplateBuilder
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -11,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunction
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 class CreateApplyQuickFix(td: ScTypeDefinition, call: ScMethodCall)
-  extends CreateApplyOrUnapplyQuickFix(td) {
+  extends CreateApplyOrUnapplyQuickFix(td) with SyntheticIntentionAction {
 
   def getFamilyName: String = ScalaBundle.message("family.name.create.apply.method")
 

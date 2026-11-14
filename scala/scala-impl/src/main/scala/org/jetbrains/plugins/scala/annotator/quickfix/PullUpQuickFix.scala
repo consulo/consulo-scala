@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import org.jetbrains.plugins.scala.util.WriteActionWithProgress
 import consulo.language.editor.intention.AbstractIntentionAction
 import consulo.application.Application
@@ -26,7 +27,7 @@ import org.jetbrains.plugins.scala.api.isUnitTestMode
 import java.util.function.Supplier
 import java.{util => ju}
 
-final class PullUpQuickFix private(member: ScMember, text: String) extends AbstractIntentionAction {
+final class PullUpQuickFix private(member: ScMember, text: String) extends AbstractIntentionAction with SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(text)
 

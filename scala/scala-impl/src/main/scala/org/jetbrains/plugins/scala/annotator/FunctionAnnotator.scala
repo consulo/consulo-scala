@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -126,7 +127,7 @@ object FunctionAnnotator {
       _.typeElement.`type`().exists(_.canonicalText == "_root_." + TailrecAnnotationFQN)
     }
 
-  private final class RemoveAnnotationQuickFix(annotation: ScAnnotation) extends IntentionAction {
+  private final class RemoveAnnotationQuickFix(annotation: ScAnnotation) extends SyntheticIntentionAction {
     def getFamilyName: String = ScalaBundle.message("family.name.remove.tailrec.annotation")
 
     override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)

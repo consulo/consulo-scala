@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.createFromUsage
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.language.editor.template.TemplateBuilder
 import consulo.language.editor.template.TemplateBuilderFactory
 import consulo.language.editor.CodeInsightUtilCore
@@ -248,7 +249,7 @@ abstract class CreateTypeDefinitionQuickFix(ref: ScReference, kind: ClassKind)
 }
 
 class CreateObjectQuickFix(ref: ScReference)
-  extends CreateTypeDefinitionQuickFix(ref, Object) {
+  extends CreateTypeDefinitionQuickFix(ref, Object) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.object.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.object")
@@ -256,7 +257,7 @@ class CreateObjectQuickFix(ref: ScReference)
 
 
 class CreateTraitQuickFix(ref: ScReference)
-  extends CreateTypeDefinitionQuickFix(ref, Trait) {
+  extends CreateTypeDefinitionQuickFix(ref, Trait) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.trait.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.trait")
@@ -267,14 +268,14 @@ class CreateTraitQuickFix(ref: ScReference)
 }
 
 class CreateClassQuickFix(ref: ScReference)
-  extends CreateTypeDefinitionQuickFix(ref, Class) {
+  extends CreateTypeDefinitionQuickFix(ref, Class) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.class")
 }
 
 class CreateCaseClassQuickFix(ref: ScReference)
-  extends CreateTypeDefinitionQuickFix(ref, Class) {
+  extends CreateTypeDefinitionQuickFix(ref, Class) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.case.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.case.class")
@@ -286,7 +287,7 @@ class CreateCaseClassQuickFix(ref: ScReference)
 }
 
 final class CreateAnnotationClassQuickFix(ref: ScReference)
-  extends CreateTypeDefinitionQuickFix(ref, Class) {
+  extends CreateTypeDefinitionQuickFix(ref, Class) with SyntheticIntentionAction {
 
   override val getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("create.annotation.class.named", ref.nameId.getText))
   override val getFamilyName: String = ScalaBundle.message("family.name.create.annotation.class")

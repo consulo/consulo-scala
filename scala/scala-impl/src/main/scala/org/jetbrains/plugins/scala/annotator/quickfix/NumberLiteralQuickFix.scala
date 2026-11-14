@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
@@ -50,7 +51,7 @@ sealed abstract class NumberLiteralQuickFix[L <: Numeric](private val literal: L
 
 object NumberLiteralQuickFix {
 
-  final class ConvertToLong(literal: ScIntegerLiteral) extends NumberLiteralQuickFix(literal) {
+  final class ConvertToLong(literal: ScIntegerLiteral) extends NumberLiteralQuickFix(literal) with SyntheticIntentionAction {
 
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.to.long.fix"))
 
@@ -79,7 +80,7 @@ object NumberLiteralQuickFix {
   }
 
   final class ConvertOctToHex(literal: Numeric,
-                              isLong: Boolean) extends NumberLiteralQuickFix(literal) {
+                              isLong: Boolean) extends NumberLiteralQuickFix(literal) with SyntheticIntentionAction {
 
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.octal.to.hex.fix"))
 
@@ -91,7 +92,7 @@ object NumberLiteralQuickFix {
   }
 
   final class ConvertBinaryToHex(literal: Numeric,
-                                 isLong: Boolean) extends NumberLiteralQuickFix(literal) {
+                                 isLong: Boolean) extends NumberLiteralQuickFix(literal) with SyntheticIntentionAction {
 
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("convert.binary.to.hex.fix"))
 
@@ -102,7 +103,7 @@ object NumberLiteralQuickFix {
       }
   }
 
-  final class ConvertMarker(literal: ScLongLiteral) extends NumberLiteralQuickFix(literal) {
+  final class ConvertMarker(literal: ScLongLiteral) extends NumberLiteralQuickFix(literal) with SyntheticIntentionAction {
 
     override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("lowercase.long.marker.fix"))
 

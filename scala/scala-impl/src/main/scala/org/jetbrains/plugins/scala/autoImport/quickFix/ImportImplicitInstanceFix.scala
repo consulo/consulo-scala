@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import consulo.language.psi.scope.GlobalSearchScope
@@ -24,7 +25,7 @@ import org.jetbrains.plugins.scala.language.util.CommonQualifiedNames.{AnyFqn, A
 final class ImportImplicitInstanceFix private (notFoundImplicitParams: () => Seq[ScalaResolveResult],
                                                owner: ImplicitArgumentsOwner,
                                                popupPosition: PopupPosition)
-  extends ScalaImportElementFix[ImplicitToImport](owner) {
+  extends ScalaImportElementFix[ImplicitToImport](owner) with SyntheticIntentionAction {
 
   override protected def findElementsToImport(): Seq[ImplicitToImport] = implicitsToImport(notFoundImplicitParams(), owner)
 

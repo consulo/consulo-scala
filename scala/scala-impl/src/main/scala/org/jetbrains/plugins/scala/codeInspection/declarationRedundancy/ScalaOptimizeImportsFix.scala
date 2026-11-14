@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.declarationRedundancy
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.java.analysis.impl.localize.JavaQuickFixLocalize
 import consulo.language.editor.localize.CodeInsightLocalize
 import consulo.language.editor.refactoring.ImportOptimizer
@@ -47,7 +48,7 @@ sealed abstract class ScalaOptimizeImportsFixBase extends IntentionAction {
   }
 }
 
-final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with HighPriorityAction {
+final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with HighPriorityAction with SyntheticIntentionAction {
 
   override def getText: LocalizeValue = JavaQuickFixLocalize.optimizeImportsFix()
 
@@ -55,7 +56,7 @@ final class ScalaOptimizeImportsFix extends ScalaOptimizeImportsFixBase with Hig
     IntentionPreviewInfo.EMPTY
 }
 
-final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFixBase {
+final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFixBase with SyntheticIntentionAction {
 
   override def getText: LocalizeValue = JavaQuickFixLocalize.enableOptimizeImportsOnTheFly()
 
@@ -72,7 +73,7 @@ final class ScalaEnableOptimizeImportsOnTheFlyFix extends ScalaOptimizeImportsFi
     IntentionPreviewInfo.EMPTY
 }
 
-final class MarkImportAsAlwaysUsed(importText: String) extends IntentionAction with LowPriorityAction {
+final class MarkImportAsAlwaysUsed(importText: String) extends SyntheticIntentionAction with LowPriorityAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("mark.import.as.always.used.in.this.project"))
 

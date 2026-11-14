@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.codeEditor.Editor
@@ -9,7 +10,7 @@ import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.overrideImplement.ScalaOIUtil
 
-final class ImplementMembersQuickFix(clazz: ScTemplateDefinition) extends IntentionAction {
+final class ImplementMembersQuickFix(clazz: ScTemplateDefinition) extends SyntheticIntentionAction {
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("implement.members.fix"))
   override def startInWriteAction: Boolean = false
 

@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.intention.IntentionAction
 import consulo.webBrowser.BrowserUtil
@@ -10,7 +11,7 @@ import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 
-object ReportHighlightingErrorQuickFix extends IntentionAction {
+object ReportHighlightingErrorQuickFix extends SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("report.highlighting.error.fix"))
 

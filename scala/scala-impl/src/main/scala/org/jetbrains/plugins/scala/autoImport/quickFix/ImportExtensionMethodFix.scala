@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.ScalaBundle
@@ -7,7 +8,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 
 class ImportExtensionMethodFix(ref: ScReferenceExpression,
-                               computation: ConversionToImportComputation) extends ScalaImportElementFix[ExtensionMethodToImport](ref) {
+                               computation: ConversionToImportComputation) extends ScalaImportElementFix[ExtensionMethodToImport](ref) with SyntheticIntentionAction {
   override protected def findElementsToImport(): Seq[ExtensionMethodToImport] = computation.extensionMethods
 
   override def createAddImportAction(editor: Editor): ScalaAddImportAction[?, ?] =

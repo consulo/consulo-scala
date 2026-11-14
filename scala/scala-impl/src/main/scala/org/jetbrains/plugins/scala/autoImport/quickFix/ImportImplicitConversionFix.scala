@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.autoImport.quickFix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.localize.LocalizeValue
@@ -27,7 +28,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class ImportImplicitConversionFix private (ref: ScReferenceExpression,
                                            computation: ConversionToImportComputation)
-  extends ScalaImportElementFix[MemberToImport](ref) {
+  extends ScalaImportElementFix[MemberToImport](ref) with SyntheticIntentionAction {
 
   override protected def findElementsToImport(): Seq[MemberToImport] =
     computation.conversions

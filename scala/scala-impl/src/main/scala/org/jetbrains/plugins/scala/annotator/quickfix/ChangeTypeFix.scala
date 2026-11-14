@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.util.LanguageUndoUtil
 import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
@@ -24,7 +25,7 @@ final class ChangeTypeFix(
   typeElement: ScTypeElement,
   newTypeOriginal: ScType,
   widenNewType: Boolean = true
-) extends IntentionAction {
+) extends SyntheticIntentionAction {
 
   private lazy val newType: ScType =
     if (widenNewType) newTypeOriginal.widen

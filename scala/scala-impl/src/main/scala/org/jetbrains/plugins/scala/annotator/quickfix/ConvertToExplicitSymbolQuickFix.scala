@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -13,7 +14,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScSymbolLiteral
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 
 final class ConvertToExplicitSymbolQuickFix(symbolLiteral: ScSymbolLiteral)
-  extends IntentionAction
+  extends SyntheticIntentionAction
     with DumbAware {
   private val symbolText = symbolLiteral.contentText
 

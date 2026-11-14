@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.quickfix
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -15,7 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScTypeExt}
 import org.jetbrains.plugins.scala.lang.psi.types.api.ParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
 
-final class WrapInOptionQuickFix(expr: ScExpression, expectedType: TypeResult, exprType: TypeResult) extends IntentionAction {
+final class WrapInOptionQuickFix(expr: ScExpression, expectedType: TypeResult, exprType: TypeResult) extends SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaBundle.message("wrap.in.option.hint"))
 

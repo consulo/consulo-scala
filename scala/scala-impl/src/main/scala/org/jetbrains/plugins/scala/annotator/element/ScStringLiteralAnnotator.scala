@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.element
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -238,7 +239,7 @@ object ScStringLiteralAnnotator extends ElementAnnotator[ScStringLiteral] {
     segment: Segment,
     unicodeSequenceChar: Char,
     isInterpolated: Boolean,
-  ) extends IntentionAndQuickFixAction with DumbAware {
+  ) extends IntentionAndQuickFixAction with DumbAware with SyntheticIntentionAction {
 
     override def getName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("replace.with.literal.character", unicodeSequenceChar))
 

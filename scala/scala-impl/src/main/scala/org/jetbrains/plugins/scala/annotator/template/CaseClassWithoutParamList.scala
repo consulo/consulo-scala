@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.annotator.template
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -43,7 +44,7 @@ object CaseClassWithoutParamList extends AnnotatorPart[ScClass] with DumbAware {
   }
 }
 
-final class AddEmptyParenthesesToPrimaryConstructorFix(c: ScClass) extends IntentionAction with DumbAware {
+final class AddEmptyParenthesesToPrimaryConstructorFix(c: ScClass) extends SyntheticIntentionAction with DumbAware {
 
   def getFamilyName: String = ScalaBundle.message("family.name.add.empty.parentheses")
 
@@ -61,7 +62,7 @@ final class AddEmptyParenthesesToPrimaryConstructorFix(c: ScClass) extends Inten
     new AddEmptyParenthesesToPrimaryConstructorFix(PsiTreeUtil.findSameElementInCopy(c, target))
 }
 
-final class ConvertToObjectFix(c: ScClass) extends IntentionAction with DumbAware {
+final class ConvertToObjectFix(c: ScClass) extends SyntheticIntentionAction with DumbAware {
   def getFamilyName: String = ScalaBundle.message("family.name.convert.to.object")
 
   override def getText: LocalizeValue = LocalizeValue.of(getFamilyName)

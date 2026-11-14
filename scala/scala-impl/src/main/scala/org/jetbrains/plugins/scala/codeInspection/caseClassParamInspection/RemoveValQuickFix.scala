@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.scala.codeInspection.caseClassParamInspection
 
+import consulo.language.editor.intention.SyntheticIntentionAction
 import consulo.localize.LocalizeValue
 import consulo.language.editor.inspection.FileModifier
 import consulo.language.editor.intention.IntentionAction
@@ -27,7 +28,7 @@ final class RemoveValQuickFix(param: ScClassParameter)
   }
 }
 
-final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) extends IntentionAction with DumbAware {
+final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) extends SyntheticIntentionAction with DumbAware {
   override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("remove.unnecessary.val"))
 
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = true
@@ -45,7 +46,7 @@ final class RemoveValFromForBindingIntentionAction(forBinding: ScForBinding) ext
     new RemoveValFromForBindingIntentionAction(PsiTreeUtil.findSameElementInCopy(forBinding, target))
 }
 
-final class RemoveValFromGeneratorIntentionAction(generator: ScGenerator) extends IntentionAction {
+final class RemoveValFromGeneratorIntentionAction(generator: ScGenerator) extends SyntheticIntentionAction {
 
   override def getText: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("remove.unnecessary.val"))
 
