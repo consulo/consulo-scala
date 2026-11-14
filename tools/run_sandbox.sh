@@ -33,7 +33,7 @@ fetch_plugin org.jetbrains.fernflower
 fetch_plugin com.intellij.regexp
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
-for module in java.language.api; do
+for module in java.language.api java.compiler.impl; do
   local_jar=$(ls ~/.m2/repository/consulo/plugin/consulo.java-$module/3-SNAPSHOT/consulo.java-$module-3-SNAPSHOT.jar)
   cp "$local_jar" "$DEPS/consulo.java/lib/consulo.java-$module-3-SNAPSHOT.jar"
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
