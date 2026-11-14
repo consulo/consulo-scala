@@ -5,13 +5,17 @@ package ui
 
 import consulo.project.Project
 import consulo.language.editor.refactoring.classMember.AbstractMemberInfoModel
+import consulo.localize.LocalizeValue
+import consulo.ui.CheckBox
+import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.ex.awt.DialogWrapper
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
 import java.awt.BorderLayout
-import javax.swing.{JCheckBox, JComponent}
+import javax.swing.JComponent
 
 /**
   * Dialog to select class members for generation of toString method.
@@ -56,15 +60,17 @@ object ScalaGenerateToStringWizard {
       new AbstractMemberInfoModel[ScNamedElement, ScalaMemberInfo] {}
     ) {
 
-    private val checkBox = new JCheckBox(ScalaCodeInsightBundle.message("generate.ui.toString.withNames"))
+    private val checkBox = CheckBox.create(LocalizeValue.of(ScalaCodeInsightBundle.message("generate.ui.toString.withNames")))
 
-    add(checkBox, BorderLayout.SOUTH)
+    add(TargetAWT.to(checkBox), BorderLayout.SOUTH)
 
-    def isSelected: Boolean = checkBox.isSelected
+    @RequiredUIAccess
+    def isSelected: Boolean = checkBox.getValueOrError
 
     //noinspection AccessorLikeMethodIsUnit
+    @RequiredUIAccess
     def isSelected_=(isSelected: Boolean): Unit = {
-      checkBox.setSelected(isSelected)
+      checkBox.setValue(isSelected)
     }
   }
 }

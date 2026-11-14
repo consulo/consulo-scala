@@ -15,12 +15,8 @@ import consulo.execution.ui.awt.ExecutionErrorDialog
 import consulo.process.ExecutionException
 import consulo.project.Project
 import consulo.ui.annotation.RequiredUIAccess
-import consulo.ui.ex.awt.event.DocumentAdapter
-import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.layout.VerticalLayout
 import org.jetbrains.plugins.scala.ScalaBundle
-
-import javax.swing.event.DocumentEvent
 
 @ActionImpl(id = "Scala.GenerateScaladoc", parents = Array(new ActionParentRef(value = new ActionRef(id = "ToolsMenu"))))
 class ScaladocAction extends BaseAnalysisAction(
@@ -60,13 +56,9 @@ class ScaladocAction extends BaseAnalysisAction(
   @RequiredUIAccess
   override protected def extendMainLayout(dialog: BaseAnalysisActionDialog, layout: VerticalLayout, project: Project): Unit = {
     configurationDialog = new ScaladocConsoleRunConfigurationForm(project)
-    configurationDialog.getOutputDirChooser.getDocument.addDocumentListener(new DocumentAdapter() {
-      override def textChanged(e: DocumentEvent): Unit = {
-        updateAvailability(dialog)
-      }
-    })
+    configurationDialog.getOutputDirChooser.addValueListener(_ => updateAvailability(dialog))
     updateAvailability(dialog)
-    layout.add(TargetAWT.wrap(configurationDialog.createCenterPanel()))
+    layout.add(configurationDialog.createCenterPanel())
   }
 
   private def updateAvailability(dialog: BaseAnalysisActionDialog): Unit = {

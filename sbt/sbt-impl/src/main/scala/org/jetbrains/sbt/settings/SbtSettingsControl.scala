@@ -71,8 +71,8 @@ class SbtSettingsControl(settings: SbtSettings) extends ExternalSystemSettingsCo
     customVMPath != null && ! {
       nonEmpty(launcherPath.getValue) == settings.customLauncherPath &&
         heapSize == settings.maximumHeapSize &&
-        vmParameters.getValue == settings.vmParameters &&
-        sbtOptions.getValue == settings.sbtOptions &&
+        Option(vmParameters.getValue).getOrElse("") == settings.vmParameters &&
+        Option(sbtOptions.getValue).getOrElse("") == settings.sbtOptions &&
         nonEmpty(customVMPath.getValue) == settings.customVMPath &&
         sbtEnvironment.getEnvs == settings.sbtEnvironment &&
         sbtEnvironment.isPassParentEnvs == settings.sbtPassParentEnvironment

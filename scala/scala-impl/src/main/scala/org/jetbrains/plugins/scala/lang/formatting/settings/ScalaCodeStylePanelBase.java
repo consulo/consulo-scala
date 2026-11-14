@@ -7,7 +7,14 @@ import consulo.virtualFileSystem.fileType.FileType;
 import consulo.language.editor.highlight.EditorHighlighterProvider;
 import consulo.language.codeStyle.CodeStyleSettings;
 import consulo.localize.LocalizeValue;
-import consulo.ui.ex.awt.ScrollPaneFactory;
+import consulo.ui.Component;
+import consulo.ui.Label;
+import consulo.ui.Space;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.ui.layout.HorizontalLayout;
+import consulo.ui.layout.ScrollableLayout;
+import consulo.platform.base.icon.PlatformIconGroup;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.api.ScalaFileType;
 
@@ -58,13 +65,24 @@ abstract public class ScalaCodeStylePanelBase extends CodeStyleAbstractPanel {
     }
 
     @Override
+    @RequiredUIAccess
     public final JComponent getPanel() {
         if (myPanel == null) {
-            JComponent contentPanel = getPanelInner();
-            myPanel = ScrollPaneFactory.createScrollPane(contentPanel, true);
+            Component contentPanel = getPanelInner();
+            myPanel = (JComponent) TargetAWT.to(ScrollableLayout.create(contentPanel));
         }
         return myPanel;
     }
 
-    abstract protected JComponent getPanelInner();
+    @RequiredUIAccess
+    abstract protected Component getPanelInner();
+
+    // upstream: com.intellij.ui.ContextHelpLabel
+    @RequiredUIAccess
+    protected static Component withContextHelp(Component component, String description) {
+        Label helpLabel = Label.create();
+        helpLabel.setImage(PlatformIconGroup.generalContexthelp());
+        helpLabel.setToolTipText(LocalizeValue.of(description));
+        return HorizontalLayout.create(Space.X_SMALL).add(component).add(helpLabel);
+    }
 }

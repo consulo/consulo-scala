@@ -386,7 +386,7 @@ object ScalaLanguageCodeStyleSettingsProvider {
 
   private val Log = Logger.getInstance(getClass)
 
-  private class ScalaCodeStyleAbstractConfigurable(settings: CodeStyleSettings, cloneSettings: CodeStyleSettings)
+  private[settings] class ScalaCodeStyleAbstractConfigurable(settings: CodeStyleSettings, cloneSettings: CodeStyleSettings)
     extends CodeStyleAbstractConfigurable(settings, cloneSettings, LocalizeValue.of("Scala")) {
 
     override def getHelpTopic: String =

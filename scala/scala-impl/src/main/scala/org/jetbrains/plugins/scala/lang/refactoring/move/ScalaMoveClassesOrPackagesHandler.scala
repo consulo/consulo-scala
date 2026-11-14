@@ -17,8 +17,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaFileImpl
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 
+import consulo.localize.LocalizeValue
+import consulo.ui.CheckBox
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+
 import java.awt.BorderLayout
-import java.awt.event.ActionEvent
 import java.{util => ju}
 import javax.swing._
 import scala.annotation.nowarn
@@ -135,6 +139,7 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
     }
   }
 
+  @RequiredUIAccess
   private def addMoveCompanionChb(@Nullable panel: JComponent, elements: Array[PsiElement]): JComponent = {
     val companionsExist = elements.exists {
       case definition: ScTypeDefinition => definition.baseCompanion.isDefined
@@ -145,14 +150,13 @@ final class ScalaMoveClassesOrPackagesHandler extends JavaMoveClassesOrPackagesH
       val result = new JPanel(new BorderLayout())
       if (panel != null) result.add(panel, BorderLayout.NORTH)
 
-      val chbMoveCompanion = new JCheckBox(ScalaBundle.message("move.with.companion"))
+      val chbMoveCompanion = CheckBox.create(LocalizeValue.of(ScalaBundle.message("move.with.companion")))
       val applicationSettings = ScalaApplicationSettings.getInstance()
-      chbMoveCompanion.setSelected(applicationSettings.MOVE_COMPANION)
-      chbMoveCompanion.addActionListener((_: ActionEvent) => {
-        applicationSettings.MOVE_COMPANION = chbMoveCompanion.isSelected
+      chbMoveCompanion.setValue(applicationSettings.MOVE_COMPANION)
+      chbMoveCompanion.addValueListener(_ => {
+        applicationSettings.MOVE_COMPANION = chbMoveCompanion.getValueOrError.booleanValue
       })
-      chbMoveCompanion.setMnemonic('t')
-      result.add(chbMoveCompanion, BorderLayout.WEST)
+      result.add(TargetAWT.to(chbMoveCompanion), BorderLayout.WEST)
       result
     }
     else panel

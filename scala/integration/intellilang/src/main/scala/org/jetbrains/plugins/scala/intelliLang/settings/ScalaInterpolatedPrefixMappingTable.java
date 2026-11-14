@@ -33,8 +33,11 @@ public class ScalaInterpolatedPrefixMappingTable extends JBTable implements Depe
     column.setCellEditor(ComboBoxTableCellEditor.INSTANCE);
   }
 
+  // upstream: mappings to languages which are not installed were lost (and the settings page was always modified)
+  private final Map<String, String> unavailableMapping = new HashMap<>();
+
   public Map<String, String> getMapping() {
-    final Map<String, String> mapping = new HashMap<>();
+    final Map<String, String> mapping = new HashMap<>(unavailableMapping);
     for (PrefixLanguagePair pair : tableModel.data) mapping.put(pair.getMyPrefix(), pair.getMyLanguage());
     return mapping;
   }
@@ -43,9 +46,11 @@ public class ScalaInterpolatedPrefixMappingTable extends JBTable implements Depe
     final List<PrefixLanguagePair> data = tableModel.data;
 
     data.clear();
+    unavailableMapping.clear();
     for (Map.Entry<String, String> pair : mapping.entrySet()) {
       int index = availableIds.indexOf(pair.getValue());
       if (index != -1) data.add(new PrefixLanguagePair(pair.getKey(), index));
+      else unavailableMapping.put(pair.getKey(), pair.getValue());
     }
 
     data.sort(Comparator.comparing(PrefixLanguagePair::getMyPrefix));

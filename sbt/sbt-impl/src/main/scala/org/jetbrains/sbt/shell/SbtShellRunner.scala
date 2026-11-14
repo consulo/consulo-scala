@@ -14,7 +14,9 @@ import consulo.logging.Logger
 import consulo.codeEditor.util.EditorUtil
 import consulo.project.Project
 import consulo.ui.ex.content.ContentFactory
+import consulo.localize.LocalizeValue
 import consulo.ui.image.Image
+import consulo.ui.{HorizontalAlignment, Label, LabelOptions}
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, invokeLater}
 import org.jetbrains.plugins.scala.api.isUnitTestMode
 import org.jetbrains.plugins.scala.project.ProjectExt
@@ -23,7 +25,6 @@ import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.api.icons.Icons
 
 import java.util
-import javax.swing.{JLabel, SwingConstants}
 import scala.jdk.CollectionConverters.*
 
 final class SbtShellRunner(
@@ -65,10 +66,12 @@ final class SbtShellRunner(
 
     SbtShellToolWindowFactory.instance(using project).foreach { toolWindow =>
       invokeLater {
-        val label = new JLabel(SbtBundle.message("initializing.sbt.shell.message"), SwingConstants.CENTER)
-        label.setOpaque(true)
+        val label = Label.create(
+          LocalizeValue.of(SbtBundle.message("initializing.sbt.shell.message")),
+          LabelOptions.builder().horizontalAlignment(HorizontalAlignment.CENTER).build()
+        )
         //noinspection ScalaExtractStringToBundle
-        SbtShellToolWindowFactory.setContent(toolWindow, ContentFactory.getInstance.createContent(label, "", false))
+        SbtShellToolWindowFactory.setContent(toolWindow, ContentFactory.getInstance.createUIContent(label, "", false))
       }
     }
   }

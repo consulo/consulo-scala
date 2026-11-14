@@ -7,7 +7,6 @@ import consulo.ui.ex.awt.{DialogWrapper, Messages}
 import consulo.virtualFileSystem.VirtualFile
 import consulo.ui.ex.awt.JBScrollPane
 import consulo.ui.ex.awt.table.TableView
-import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
 import org.jetbrains.plugins.scala.project.sdkdetect.ScalaSdkProvider
 import org.jetbrains.plugins.scala.project.sdkdetect.repository.ScalaSdkDetector
 import org.jetbrains.plugins.scala.project.template.ScalaVersionDownloadingDialog.ScalaVersionResolveResult
@@ -16,7 +15,7 @@ import org.jetbrains.plugins.scala.project.template.sdk_browse.ExplicitSdkSelect
 import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.ScalaBundle
 
-import java.awt.Dimension
+import java.awt.{BorderLayout, Dimension}
 import java.awt.event.ActionEvent
 import java.nio.file.Path
 import java.util.Collections
@@ -44,7 +43,7 @@ class SdkSelectionDialogWrapper(contextDirectory: VirtualFile) extends DialogWra
   }
 
   override def createCenterPanel(): JComponent = {
-    val panel = new JPanel
+    val panel = new JPanel(new BorderLayout)
 
     myTable.setModelAndUpdateColumns(myTableModel)
     myTable.getSelectionModel.addListSelectionListener((_: ListSelectionEvent) => updateOkButtonEnabled())
@@ -54,8 +53,8 @@ class SdkSelectionDialogWrapper(contextDirectory: VirtualFile) extends DialogWra
     val scrollPane = new JBScrollPane
     scrollPane.setViewportView(myTable)
 
-    panel.setLayout(new GridLayoutManager(1, 1))
-    panel.add(scrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 500), null, 0, false))
+    scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize.width, 500))
+    panel.add(scrollPane, BorderLayout.CENTER)
     panel
   }
 

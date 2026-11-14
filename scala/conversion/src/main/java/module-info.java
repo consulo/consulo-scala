@@ -12,7 +12,6 @@ open module org.intellij.scala.conversion {
     requires scala.collection.compat;
     requires org.apache.ivy;
     requires coursier.paths;
-    requires forms.rt;
     requires jakarta.inject;
     requires com.intellij.xml;
     requires com.intellij.xml.api;

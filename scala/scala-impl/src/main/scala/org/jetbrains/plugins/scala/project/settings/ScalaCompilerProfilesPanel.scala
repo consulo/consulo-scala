@@ -7,7 +7,7 @@ import consulo.module.{Module, ModuleManager}
 import consulo.project.Project
 import consulo.ui.ex.popup.JBPopupFactory
 import consulo.ui.ex.InputValidatorEx
-import consulo.ui.ex.awt.{Messages, Splitter}
+import consulo.ui.ex.awt.Messages
 import consulo.util.dataholder.Key
 import consulo.util.lang.StringUtil
 import consulo.ui.ex.awt.{AnActionButton, ToolbarDecorator}
@@ -17,12 +17,14 @@ import consulo.ui.ex.RelativePoint
 import consulo.ui.ex.awt.tree.Tree
 import consulo.ui.ex.awt.tree.TreeUtil
 import consulo.ui.ex.awt.tree.EditableTreeModel
-import consulo.ui.ex.awt.JBUI
+import consulo.ui.{Component, Space}
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.{SplitLayoutPosition, TwoComponentSplitLayout}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, OptionExt}
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerProfilesPanel._
 
-import java.awt._
 import java.awt.event.MouseEvent
 import java.util
 import java.util.Objects
@@ -36,7 +38,10 @@ import scala.jdk.CollectionConverters._
  * NOTE: This was initially almost the exact clone of [[com.intellij.compiler.options.AnnotationProcessorsPanel]]
  * later converted to Scala with some refactorings
  */
-class ScalaCompilerProfilesPanel(val myProject: Project) extends JPanel(new BorderLayout) {
+/**
+ * The profiles tree with its toolbar stays Swing (no unified UI counterpart for ToolbarDecorator/EditableTreeModel).
+ */
+class ScalaCompilerProfilesPanel(val myProject: Project) {
 
   private val myDefaultProfile = new ScalaCompilerSettingsProfile("") // TODO: make immutable?
   private var myModuleProfiles: Seq[ScalaCompilerSettingsProfile] = Seq.empty
@@ -50,28 +55,31 @@ class ScalaCompilerProfilesPanel(val myProject: Project) extends JPanel(new Bord
 
   private var mySelectedProfile: ScalaCompilerSettingsProfile = scala.compiletime.uninitialized
 
-  initPanel()
+  private val myComponent: TwoComponentSplitLayout = initPanel()
 
-  private def initPanel(): Unit = {
-    val splitter = new Splitter(false, 0.3f)
-    add(splitter, BorderLayout.CENTER)
+  def getComponent: Component = myComponent
 
+  @RequiredUIAccess
+  private def initPanel(): TwoComponentSplitLayout = {
     @nowarn("cat=deprecation")
     val treePanel = ToolbarDecorator.createDecorator(myTree)
       .addExtraAction(new MoveToAction)
       .createPanel
-    splitter.setFirstComponent(treePanel)
 
     myTree.setRootVisible(false)
     myTree.setCellRenderer(new MyCellRenderer)
     myTree.addTreeSelectionListener(onNodeSelected)
 
     val settingsComponent = mySettingsPanel.getComponent
-    settingsComponent.setBorder(JBUI.Borders.emptyLeft(6))
-    splitter.setSecondComponent(settingsComponent)
+    settingsComponent.paddingBuilder().leftSet(Space.SMALL).apply()
 
     TreeSpeedSearch.installOn(myTree)
       .setComparator(new SpeedSearchComparator(false))
+
+    TwoComponentSplitLayout.create(SplitLayoutPosition.HORIZONTAL)
+      .withProportion(30)
+      .withFirstComponent(TargetAWT.wrap(treePanel))
+      .withSecondComponent(settingsComponent)
   }
 
   private def onNodeSelected(__ : TreeSelectionEvent): Unit =

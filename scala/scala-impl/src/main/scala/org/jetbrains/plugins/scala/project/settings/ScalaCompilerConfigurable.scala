@@ -16,7 +16,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 import consulo.disposer.Disposable
 import consulo.localize.LocalizeValue
 import consulo.ui.Component
-import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.annotation.RequiredUIAccess
 
 /**
  * @see [[org.jetbrains.plugins.scala.compiler.data.ScalaCompilerSettingsState]]
@@ -35,15 +35,28 @@ class ScalaCompilerConfigurable @Inject()(project: Project)
   //NOTE: duplicated in XML file
   override def getDisplayName: LocalizeValue = LocalizeValue.of(ScalaBundle.message("displayname.scala.compiler"))
 
-  private val form = new ScalaCompilerConfigurationPanel(project)
+  private var form: ScalaCompilerConfigurationPanel = scala.compiletime.uninitialized
 
   private def configuration = ScalaCompilerConfiguration.instanceIn(project)
 
-  private val profilesPanel: ScalaCompilerProfilesPanel = form.getProfilesPanel
+  private def profilesPanel: ScalaCompilerProfilesPanel = form.getProfilesPanel
 
-  override def createUIComponent(parentDisposable: Disposable): Component = TargetAWT.wrap(form.getContentPanel)
+  @RequiredUIAccess
+  override def createUIComponent(parentDisposable: Disposable): Component = {
+    if (form == null) {
+      form = new ScalaCompilerConfigurationPanel(project)
+    }
+    form.getContentPanel
+  }
+
+  @RequiredUIAccess
+  override def disposeUIResources(): Unit = {
+    form = null
+  }
 
   override def isModified: Boolean = {
+    if (form == null)
+      return false
     if (form.getIncrementalityType != configuration.incrementalityType)
       return true
     if (!equalSettings(profilesPanel.getDefaultProfile, configuration.defaultProfile))
@@ -60,12 +73,18 @@ class ScalaCompilerConfigurable @Inject()(project: Project)
   private def settingsState(profile: ScalaCompilerSettingsProfile): ScalaCompilerSettingsState =
     profile.getSettings.toState
 
+  @RequiredUIAccess
   override def reset(): Unit = {
+    if (form == null)
+      return
     form.setIncrementalityType(configuration.incrementalityType)
     profilesPanel.initProfiles(configuration.defaultProfile, configuration.customProfiles)
   }
 
+  @RequiredUIAccess
   override def apply(): Unit = {
+    if (form == null)
+      return
     val newIncType = form.getIncrementalityType
     if (newIncType != configuration.incrementalityType) {
       ScalaActionUsagesCollector.logIncrementalityTypeSet(newIncType, project)

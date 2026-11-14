@@ -3,6 +3,7 @@ package org.jetbrains.sbt.project.modifier.ui
 import consulo.disposer.Disposable
 import consulo.ui.ex.action.{ActionManager, IdeActions}
 import consulo.project.{Project => IJProject}
+import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.ex.awt.DialogWrapper
 import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.versionControlSystem.change.Change
@@ -10,8 +11,7 @@ import consulo.versionControlSystem.ui.{VcsChangesBrowser, VcsChangesDialogFacto
 import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.sbt.SbtBundle
 
-import java.awt.BorderLayout
-import javax.swing.{JComponent, JPanel}
+import javax.swing.JComponent
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -37,6 +37,7 @@ class ChangesConfirmationDialog private (val project: IJProject, private val cha
     changes.map(BuildFileChange.swap).toSeq
   }
 
+  @RequiredUIAccess
   override def createCenterPanel(): JComponent = {
     val swappedChanges: java.util.List[Change] = new java.util.ArrayList[Change]()
     swappedChanges.addAll(changes.map(BuildFileChange.swap).asJavaCollection)
@@ -49,9 +50,7 @@ class ChangesConfirmationDialog private (val project: IJProject, private val cha
 
     myChangesBrowser = changesBrowser
 
-    val rootPane: JPanel = new JPanel(new BorderLayout)
-    rootPane.add(TargetAWT.to(changesBrowser.getComponent))
-    rootPane
+    TargetAWT.to(changesBrowser.getComponent).asInstanceOf[JComponent]
   }
 
 }

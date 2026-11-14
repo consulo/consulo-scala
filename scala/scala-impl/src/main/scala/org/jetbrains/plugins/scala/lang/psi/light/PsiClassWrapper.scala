@@ -32,7 +32,6 @@ import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.typedef.TypeDefinition
 import org.jetbrains.plugins.scala.lang.resolve.processor.BaseProcessor
 
 import java.util
-import javax.swing._
 import _root_.scala.collection.mutable.ArrayBuffer
 
 class PsiClassWrapper(

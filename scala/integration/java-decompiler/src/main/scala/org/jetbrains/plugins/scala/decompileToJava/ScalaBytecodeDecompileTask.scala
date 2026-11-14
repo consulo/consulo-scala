@@ -6,7 +6,8 @@ import consulo.application.ApplicationManager
 import consulo.navigation.OpenFileDescriptorFactory
 import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
 import consulo.project.Project
-import consulo.ui.ex.awt.Messages
+import consulo.localize.LocalizeValue
+import consulo.ui.Alerts
 import consulo.util.io.FileUtil
 import com.intellij.java.language.impl.JavaFileType
 import consulo.language.file.light.LightVirtualFile
@@ -29,10 +30,9 @@ class ScalaBytecodeDecompileTask(file: ScFile)
       if (file.isValid && !file.getProject.isDisposed) {
         tryDecompile match {
           case Failure(exception) =>
-            Messages.showErrorDialog(
-              ScalaJavaDecompilerBundle.message("cannot.decompile.filename.colon.message", file.getName, exception.getMessage),
-              ScalaJavaDecompilerBundle.message("decompiler.error")
-            )
+            Alerts.okError(LocalizeValue.of(ScalaJavaDecompilerBundle.message("cannot.decompile.filename.colon.message", file.getName, exception.getMessage)))
+              .title(LocalizeValue.of(ScalaJavaDecompilerBundle.message("decompiler.error")))
+              .showAsync(file.getProject)
           case Success(text) =>
             createDummyDecompiledFileWithText(file.getProject, text, file.getName)
         }

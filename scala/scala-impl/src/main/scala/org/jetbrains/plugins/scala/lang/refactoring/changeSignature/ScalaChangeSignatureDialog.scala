@@ -16,7 +16,7 @@ import consulo.language.editor.refactoring.changeSignature.{CallerChooserBase, C
 import consulo.language.editor.refactoring.ui.{CodeFragmentTableCellEditorBase, JBListTableWitEditors, StringTableCellEditor, VisibilityPanelBase}
 import consulo.ui.ex.awt.table.{JBTable, TableView}
 import consulo.ui.ex.awt.tree.Tree
-import consulo.ui.ex.awt.{AnActionButton, AnActionButtonRunnable, HyperlinkLabel, ToolbarDecorator}
+import consulo.ui.ex.awt.{AnActionButton, AnActionButtonRunnable, ToolbarDecorator}
 import consulo.ui.ex.awt.util.TableUtil
 import consulo.language.editor.ui.awt.EditorTextField
 import java.util.function.Consumer
@@ -32,18 +32,21 @@ import org.jetbrains.plugins.scala.lang.psi.types._
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator.isIdentifier
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature.changeInfo.ScalaChangeInfo
 import org.jetbrains.plugins.scala.lang.refactoring.extractMethod.ScalaExtractMethodUtils
-import org.jetbrains.plugins.scala.lang.refactoring.ui.ScalaComboBoxVisibilityPanel
+import org.jetbrains.plugins.scala.lang.refactoring.ui.{ScalaComboBoxVisibilityPanel, TypeAnnotationsSettingsLink}
 import org.jetbrains.plugins.scala.settings.annotations._
-import org.jetbrains.plugins.scala.util.TypeAnnotationUtil
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.HorizontalLayout
+import consulo.ui.{CheckBox, Hyperlink, Label}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaFileType
 
 import java.awt._
-import java.awt.event.ActionEvent
 import java.util
 import javax.swing._
 import javax.swing.border.MatteBorder
-import javax.swing.event.{ChangeEvent, HyperlinkEvent, TableModelListener}
+import javax.swing.event.{ChangeEvent, TableModelListener}
 import javax.swing.table.TableCellEditor
 import scala.annotation.nowarn
 import scala.collection.mutable
@@ -64,7 +67,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
   // Will be set in createNorthPanel, which is called by super's constructor.
   // scala.compiletime.uninitialized preserves the values set by that method.
   private var defaultValuesUsagePanel: DefaultValuesUsagePanel = scala.compiletime.uninitialized
-  private var mySpecifyTypeChb: JCheckBox = scala.compiletime.uninitialized
+  private var mySpecifyTypeChb: CheckBox = scala.compiletime.uninitialized
 
   override def getFileType: LanguageFileType = ScalaFileType.INSTANCE
 
@@ -74,7 +77,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
     val parameters = splittedItems.map(_.map(_.parameter))
         
     val changeInfo =
-      ScalaChangeInfo(getVisibility, method.fun, getMethodName, returnType, parameters, isAddDefaultArgs, Some(mySpecifyTypeChb.isSelected))
+      ScalaChangeInfo(getVisibility, method.fun, getMethodName, returnType, parameters, isAddDefaultArgs, Some(mySpecifyTypeChb.getValueOrError.booleanValue))
 
     new ScalaChangeSignatureProcessor(changeInfo)
   }
@@ -87,31 +90,25 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
     }
     val holder = new JPanel(new BorderLayout())
     holder.add(panel, BorderLayout.NORTH)
-    holder.add(createDefaultArgumentPanel(), BorderLayout.LINE_START)
+    holder.add(TargetAWT.to(createDefaultArgumentPanel()), BorderLayout.LINE_START)
     holder
   }
 
-  protected def createDefaultArgumentPanel(): JPanel = {
-    val optionsPanel = new JPanel(new BorderLayout())
-    val label = new JLabel(ScalaBundle.message("parameter.label.default.value"))
+  @RequiredUIAccess
+  protected def createDefaultArgumentPanel(): consulo.ui.Component = {
+    val label = Label.create(LocalizeValue.of(ScalaBundle.message("parameter.label.default.value")))
     defaultValuesUsagePanel = new DefaultValuesUsagePanel("")
-  
-    val holder = new JPanel()
-    holder.add(label)
-    holder.add(defaultValuesUsagePanel)
-  
-    optionsPanel.add(holder)
-    optionsPanel
+
+    HorizontalLayout.create()
+      .add(label)
+      .add(defaultValuesUsagePanel.component)
   }
   
   override def createOptionsPanel(): JComponent = {
     val panel = super.createOptionsPanel() //to initialize fields in base class
     
-    val holder: JPanel = new JPanel
-    holder.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0))
-    
     val specifyTypePanel = createTypePanel()
-    panel.add(specifyTypePanel)
+    panel.add(TargetAWT.to(specifyTypePanel))
     
     panel.setVisible(needSpecifyTypeChb)
     myPropagateParamChangesButton.setVisible(false)
@@ -235,7 +232,7 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
   
     val needType =
       if (!needSpecifyTypeChb) true
-      else if (mySpecifyTypeChb != null) mySpecifyTypeChb.isSelected
+      else if (mySpecifyTypeChb != null) mySpecifyTypeChb.getValueOrError.booleanValue
       else needsTypeAnnotation(method, visibility)
     
     val typeAnnot =
@@ -498,54 +495,48 @@ class ScalaChangeSignatureDialog(val method: ScalaMethodDescriptor,
 
   private def editingColumn(table: JTable) = if (table.isEditing) Some(table.getEditingColumn) else None
   
-  private def createTypePanel(): JPanel = {
-    val typePanel = new JPanel
-    typePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0))
-    
-    mySpecifyTypeChb = new JCheckBox
-    mySpecifyTypeChb.setText(ScalaBundle.message("specify.result.type"))
-    mySpecifyTypeChb.setDisplayedMnemonicIndex(15)
+  @RequiredUIAccess
+  private def createTypePanel(): consulo.ui.Component = {
+    mySpecifyTypeChb = CheckBox.create(LocalizeValue.of(ScalaBundle.message("specify.result.type")))
 
-    typePanel.add(mySpecifyTypeChb)
-    
-    val myLinkContainer = new JPanel
-    myLinkContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0))
-    typePanel.add(myLinkContainer)
-    
-    myLinkContainer.add(setUpHyperLink())
-    
+    val typePanel = HorizontalLayout.create()
+      .add(mySpecifyTypeChb)
+      .add(setUpHyperLink())
+
     setUpSpecifyTypeChb()
     setUpVisibilityListener()
-    
+
     typePanel
   }
-  
-  private def setUpHyperLink(): HyperlinkLabel = {
-    val link = TypeAnnotationUtil.createTypeAnnotationsHLink(project, ScalaBundle.message("default.ta.settings"))
 
-    link.addHyperlinkListener((_: HyperlinkEvent) => {
+  @RequiredUIAccess
+  private def setUpHyperLink(): Hyperlink = {
+    val link = TypeAnnotationsSettingsLink.create(project)
+
+    link.addHyperlinkListener(_ => {
       invokeLater {
-        mySpecifyTypeChb.setSelected(needsTypeAnnotation(method))
+        mySpecifyTypeChb.setValue(needsTypeAnnotation(method), false)
         updateSignatureAlarmFired()
       }
     })
-    
+
     link
   }
-  
+
   private def setUpVisibilityListener(): Unit = {
     myVisibilityPanel.addListener((_: ChangeEvent) => {
-      mySpecifyTypeChb.setSelected(needsTypeAnnotation(method))
+      mySpecifyTypeChb.setValue(needsTypeAnnotation(method), false)
       updateSignatureAlarmFired()
     })
   }
-  
-  private def setUpSpecifyTypeChb(): Unit ={
-    mySpecifyTypeChb.setSelected(needsTypeAnnotation(method))
-    
-    mySpecifyTypeChb.addActionListener((_: ActionEvent) => updateSignatureAlarmFired())
+
+  @RequiredUIAccess
+  private def setUpSpecifyTypeChb(): Unit = {
+    mySpecifyTypeChb.setValue(needsTypeAnnotation(method), false)
+
+    mySpecifyTypeChb.addValueListener(_ => updateSignatureAlarmFired())
   }
-  
+
   class ScalaParametersListTable extends JBListTableWitEditors(myParametersTable) {
     override protected def getRowRenderer(t: JTable, row: Int, selected: Boolean, focused: Boolean): JComponent = {
         val item = getRowItem(row)

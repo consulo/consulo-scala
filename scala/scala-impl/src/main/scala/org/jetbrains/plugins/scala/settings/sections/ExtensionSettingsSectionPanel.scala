@@ -1,44 +1,47 @@
 package org.jetbrains.plugins.scala.settings.sections
 
 import consulo.fileChooser.{FileChooser, FileChooserDescriptor}
+import consulo.localize.LocalizeValue
+import consulo.platform.Platform
 import consulo.project.Project
-import consulo.ui.ex.awt.Messages
-import consulo.ui.ex.awt.{IdeBorderFactory, JBSplitter, ScrollPaneFactory, ToolbarDecorator}
-import consulo.ui.ex.awt.{HyperlinkLabel, JBLabel, JBList}
-import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager}
-import consulo.ui.ex.awt.UIUtil
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awt.{JBLabel, JBList, Messages, ScrollPaneFactory, ToolbarDecorator, UIUtil}
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.{LabeledLayout, SplitLayoutPosition, TwoComponentSplitLayout, VerticalLayout}
+import consulo.ui.{CheckBox, Component, Hyperlink}
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.components.libextensions.LibraryExtensionsManager._
 import org.jetbrains.plugins.scala.components.libextensions._
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
-import java.awt.{BorderLayout, FlowLayout, Insets}
+import java.awt.BorderLayout
 import java.nio.file.Paths
 import javax.swing._
 import scala.annotation.nowarn
 
 class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPanel(project) {
-  private val rootPanel = new JPanel()
+  private val rootPanel = VerticalLayout.create()
   private val libraryExtensionsManager = LibraryExtensionsManager.getInstance(project)
   @NonNls
   private val CustomMacrosSupportHelpLink = "https://blog.jetbrains.com/scala/2015/10/14/intellij-api-to-build-scala-macros-support/"
 
   // Exported components
-  private val enabledCB: JCheckBox = new JCheckBox(ScalaBundle.message("enable.loading.external.extensions"), true)
+  private val enabledCB: CheckBox = CheckBox.create(LocalizeValue.of(ScalaBundle.message("enable.loading.external.extensions")), true)
 
   private def scalaProjectSettings = ScalaProjectSettings.getInstance(project)
 
-  override def getRootPanel: JComponent = rootPanel
+  override def getRootPanel: Component = rootPanel
 
   override def isModified: Boolean =
-    scalaProjectSettings.isEnableLibraryExtensions != enabledCB.isSelected
+    scalaProjectSettings.isEnableLibraryExtensions != enabledCB.getValue.booleanValue()
 
   override def apply(): Unit =
-    scalaProjectSettings.setEnableLibraryExtensions(enabledCB.isSelected)
+    scalaProjectSettings.setEnableLibraryExtensions(enabledCB.getValue)
 
+  @RequiredUIAccess
   override def reset(): Unit =
-    enabledCB.setSelected(scalaProjectSettings.isEnableLibraryExtensions)
+    enabledCB.setValue(scalaProjectSettings.isEnableLibraryExtensions)
 
 
   class LibraryListModel(val extensionsModel: LibraryDetailsModel) extends AbstractListModel[ExtensionJarData] {
@@ -60,21 +63,13 @@ class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPan
   }
 
   locally {
-    //noinspection UseDPIAwareInsets
-    rootPanel.setLayout(new GridLayoutManager(2, 1, new Insets(9, 9, 9, 9), -1, -1))
-
-    val checkBoxes  = new JPanel()
-    checkBoxes.setLayout(new BoxLayout(checkBoxes, BoxLayout.Y_AXIS))
     // upstream: UI.PanelFactory.panel(enabledCB).withTooltip(...).withTooltipLink(...)
-    enabledCB.setToolTipText(ScalaBundle.message("idea.will.try.to.search.for.extra.support.for.particular.libraries"))
-    val helpLink = new HyperlinkLabel(ScalaBundle.message("how.to.add.custom.macro.support.help.link.title"))
-    helpLink.setHyperlinkTarget(CustomMacrosSupportHelpLink)
-    val enabledPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0))
-    enabledPanel.add(enabledCB)
-    enabledPanel.add(helpLink)
-    checkBoxes.add(enabledPanel)
-
-    rootPanel.add(checkBoxes, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false))
+    enabledCB.setToolTipText(LocalizeValue.of(ScalaBundle.message("idea.will.try.to.search.for.extra.support.for.particular.libraries")))
+    val helpLink = Hyperlink.create(
+      LocalizeValue.of(ScalaBundle.message("how.to.add.custom.macro.support.help.link.title")),
+      _ => Platform.current().openInBrowser(CustomMacrosSupportHelpLink)
+    )
+    rootPanel.add(SettingsSectionPanel.row(enabledCB, helpLink))
 
 
     val detailsModel = new LibraryDetailsModel(None)
@@ -150,22 +145,22 @@ class ExtensionSettingsSectionPanel(project: Project) extends SettingsSectionPan
     val librariesPane = new JPanel(new BorderLayout())
     librariesPane.add(toolbarDecorator.createPanel())
 
-    val listsPane = new JBSplitter(true, 0.6f)
-    listsPane.setFirstComponent(librariesPane)
-    listsPane.setSecondComponent(extensionsPane)
+    // the lists with their toolbar stay Swing (no unified UI counterpart for ToolbarDecorator)
+    val listsPane = TwoComponentSplitLayout.create(SplitLayoutPosition.VERTICAL).withProportion(60)
+    listsPane.setFirstComponent(LabeledLayout.create(LocalizeValue.of(ScalaBundle.message("known.extension.libraries")), TargetAWT.wrap(librariesPane)))
+    listsPane.setSecondComponent(LabeledLayout.create(LocalizeValue.of(ScalaBundle.message("extensions.in.selected.library")), TargetAWT.wrap(extensionsPane)))
 
-    UIUtil.addBorder(librariesPane, IdeBorderFactory.createTitledBorder(ScalaBundle.message("known.extension.libraries"), false))
-    UIUtil.addBorder(extensionsPane, IdeBorderFactory.createTitledBorder(ScalaBundle.message("extensions.in.selected.library"), false))
-
-    enabledCB.addActionListener { _ =>
-      libraryExtensionsManager.setEnabled(enabledCB.isSelected)
+    enabledCB.addValueListener { event =>
+      val enabled = event.getValue.booleanValue()
+      libraryExtensionsManager.setEnabled(enabled)
       val detailsModel = new LibraryDetailsModel(None)
       val libraryListModel = new LibraryListModel(detailsModel)
       extensionsList.setModel(detailsModel)
       librariesList.setModel(libraryListModel)
-      UIUtil.setEnabled(listsPane, enabledCB.isSelected, true)
+      UIUtil.setEnabled(librariesPane, enabled, true)
+      UIUtil.setEnabled(extensionsPane, enabled, true)
     }
 
-    rootPanel.add(listsPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false))
+    rootPanel.add(listsPane)
   }
 }

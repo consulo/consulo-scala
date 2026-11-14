@@ -13,11 +13,12 @@ import org.jetbrains.plugins.scala.project.template.ScalaVersionDownloadingDialo
 import org.jetbrains.plugins.scala.project.{ReplClasspath, Versions}
 import org.jetbrains.plugins.scala.rt.project.Version
 import org.jetbrains.plugins.scala.{DependencyManagerBase, ScalaBundle, ScalaVersion}
-import org.jetbrains.sbt.api.project.template.SComboBox
+import consulo.localize.LocalizeValue
+import consulo.ui.ComboBox
 
-import java.awt.Point
 import java.nio.file.Path
-import javax.swing.{JComponent, JPopupMenu, JScrollPane}
+import javax.swing.JComponent
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 final class ScalaVersionDownloadingDialog(parent: JComponent) extends VersionDialogBase(parent) {
@@ -26,12 +27,12 @@ final class ScalaVersionDownloadingDialog(parent: JComponent) extends VersionDia
     init()
 
     setTitle(ScalaBundle.message("title.download"))
-    myVersion.setTextRenderer(Version.abbreviate)
+    myVersion.setTextRenderer(version => LocalizeValue.of(if (version == null) "" else Version.abbreviate(version)))
 
     val versions = Versions.Scala.loadVersionsWithProgressDialog()
     if (versions.nonEmpty) {
       val stringRepresentation = versions.map(_.presentation)
-      myVersion.setItems(stringRepresentation.toArray)
+      myVersions.replaceAll(stringRepresentation.asJava)
       preselectLatestStableScalaVersion(myVersion, stringRepresentation)
     }
     else
@@ -44,7 +45,7 @@ final class ScalaVersionDownloadingDialog(parent: JComponent) extends VersionDia
 
   def showAndGetSelected(): Option[ScalaVersionResolveResult] =
     if (showAndGet()) {
-      val scalaVersionStr = myVersion.getSelectedItem.asInstanceOf[String]
+      val scalaVersionStr = myVersion.getValue
       val scalaVersion = ScalaVersion.fromString(scalaVersionStr).getOrElse {
         Messages.showErrorDialog(
           parent,
@@ -91,15 +92,11 @@ object ScalaVersionDownloadingDialog {
   /**
    * Preselects the latest stable Scala version in the given combo box - skipping RC versions.
    */
-  private def preselectLatestStableScalaVersion(versionComboBox: SComboBox[String], versions: Seq[String]): Unit = {
+  private def preselectLatestStableScalaVersion(versionComboBox: ComboBox[String], versions: Seq[String]): Unit = {
     val selectIndex = versions.indexWhere(v => !v.contains("RC"))
     if (selectIndex >= 0) {
-      versionComboBox.setSelectedIndex(selectIndex)
-
-      if (selectIndex > 0) {
-        // Scroll to the top to make the newest versions visible, as Swing otherwise scrolls to the selected item
-        UiUtils.scrollToTheTop(versionComboBox)
-      }
+      // upstream: also scrolls the Swing popup list to the top to keep the newest versions visible
+      versionComboBox.setValue(versions(selectIndex))
     }
   }
 
@@ -145,40 +142,5 @@ object ScalaVersionDownloadingDialog {
       compilerBridge,
       replClasspath
     )
-  }
-  object UiUtils {
-
-    def scrollToTheTop(versionComboBox: SComboBox[?]): Unit = {
-      for {
-        scrollPane <- findPopupScrollPane(versionComboBox)
-      } scrollToTop(scrollPane)
-    }
-
-    private def findPopupScrollPane(comboBox: SComboBox[?]): Option[JScrollPane] =
-      for {
-        popup <- findPopupMenu(comboBox)
-        scrollPane <- findScrollPane(popup)
-      } yield scrollPane
-
-    private def findPopupMenu(versionComboBox: SComboBox[?]): Option[JPopupMenu] = {
-      val ui = versionComboBox.getUI
-      val children = Iterable.tabulate(ui.getAccessibleChildrenCount(versionComboBox))(ui.getAccessibleChild(versionComboBox, _))
-      children.findByType[JPopupMenu]
-    }
-
-    private def findScrollPane(popup: JPopupMenu): Option[JScrollPane] = {
-      val children = Iterable.tabulate(popup.getComponentCount)(popup.getComponent)
-      children.findByType[JScrollPane]
-    }
-
-    private def scrollToTop(scrollPane: JScrollPane): Unit = {
-      val viewport = scrollPane.getViewport
-
-      // NOTE: without this call `setViewPosition` will do nothing until user manually scrolls the viewport
-      // (though in general `setSize` shouldn't be called manually)
-      viewport.setSize(viewport.getPreferredSize)
-
-      viewport.setViewPosition(new Point(0, 0))
-    }
   }
 }

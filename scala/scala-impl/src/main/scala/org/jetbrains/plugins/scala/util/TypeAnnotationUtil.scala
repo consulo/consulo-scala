@@ -3,9 +3,6 @@ package org.jetbrains.plugins.scala.util
 import consulo.ide.setting.ShowSettingsUtil
 import consulo.project.Project
 import consulo.language.psi.PsiElement
-import consulo.ui.ex.awt.HyperlinkLabel
-import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.codeInsight.intention.types.AddOrRemoveStrategy
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, invokeLater}
 import org.jetbrains.plugins.scala.lang.formatting.settings.TypeAnnotationsPanelBase.TAB_TITLE
@@ -17,7 +14,6 @@ import org.jetbrains.plugins.scala.settings._
 import org.jetbrains.plugins.scala.compilersettings.settings._
 import org.jetbrains.plugins.scala.settings.annotations._
 
-import javax.swing.event.HyperlinkEvent
 import scala.jdk.CollectionConverters._
 
 // TODO more refactoring needed
@@ -81,17 +77,5 @@ object TypeAnnotationUtil {
         ShowSettingsUtil.getInstance.showSettingsDialog(project, "preferences.sourceCode.Scala", TAB_TITLE)
       }
     }
-  }
-
-  def createTypeAnnotationsHLink(project: Project, @Nls msg: String): HyperlinkLabel = {
-    val typeAnnotationsSettings: HyperlinkLabel = new HyperlinkLabel(msg)
-    typeAnnotationsSettings.addHyperlinkListener((e: HyperlinkEvent) => {
-      if (e.getEventType eq HyperlinkEvent.EventType.ACTIVATED) {
-        showTypeAnnotationsSettings(project)
-      }
-    })
-
-    typeAnnotationsSettings.setToolTipText(ScalaBundle.message("default.ta.tooltip"))
-    typeAnnotationsSettings
   }
 }

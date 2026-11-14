@@ -19,6 +19,7 @@ import consulo.language.psi.util.PsiTreeUtil
 import consulo.language.editor.refactoring.introduce.inplace.InplaceVariableIntroducer
 import consulo.ui.ex.JBColor
 import consulo.ui.ex.awt.NonFocusableCheckBox
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt, inWriteAction, invokeLater}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -30,6 +31,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements._
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory._
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, TypePresentationContext}
+import org.jetbrains.plugins.scala.lang.refactoring.ui.TypeAnnotationsSettingsLink
 import org.jetbrains.plugins.scala.lang.refactoring.util.{BalloonConflictsReporter, ScalaNamesUtil, ScalaVariableValidator, ValidationReporter}
 import org.jetbrains.plugins.scala.project.ProjectContext
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
@@ -43,7 +45,6 @@ import org.jetbrains.plugins.scala.shared.util._
 import java.awt._
 import java.awt.event.ActionEvent
 import javax.swing._
-import javax.swing.event.HyperlinkEvent
 import scala.annotation.nowarn
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
@@ -264,14 +265,14 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
       myLinkContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0))
       typePanel.add(myLinkContainer)
 
-      val link = TypeAnnotationUtil.createTypeAnnotationsHLink(project, ScalaBundle.message("default.ta.settings"))
-      link.addHyperlinkListener((_: HyperlinkEvent) => {
+      val link = TypeAnnotationsSettingsLink.create(project)
+      link.addHyperlinkListener(_ => {
         invokeLater {
           mySpecifyTypeChb.setSelected(needTypeDefault)
         }
       })
 
-      myLinkContainer.add(link)
+      myLinkContainer.add(TargetAWT.to(link))
     }
 
     typePanel

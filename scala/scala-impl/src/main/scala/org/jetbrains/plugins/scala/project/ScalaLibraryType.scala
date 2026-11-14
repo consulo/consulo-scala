@@ -12,7 +12,7 @@ import consulo.content.library.ui.{LibraryEditor, LibraryEditorComponent, Librar
 import consulo.content.base.{BinariesOrderRootType, DocumentationOrderRootType, SourcesOrderRootType}
 import consulo.disposer.Disposable
 import consulo.ui.Component
-import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.image.Image
 import consulo.virtualFileSystem.util.VirtualFileUtil
 import consulo.virtualFileSystem.VirtualFile
@@ -42,19 +42,34 @@ final class ScalaLibraryType extends LibraryType[ScalaLibraryProperties](ScalaLi
   //noinspection TypeAnnotation
   override def createPropertiesEditor(editorComponent: LibraryEditorComponent[ScalaLibraryProperties]) =
     new LibraryPropertiesEditor {
-      private val form = new ScalaLibraryEditorForm(editorComponent)
+      private var form: ScalaLibraryEditorForm = scala.compiletime.uninitialized
 
-      override def createUIComponent(parentDisposable: Disposable): Component = TargetAWT.wrap(form.contentPanel)
+      @RequiredUIAccess
+      override def createUIComponent(parentDisposable: Disposable): Component = {
+        if (form == null) {
+          form = new ScalaLibraryEditorForm(editorComponent, parentDisposable)
+        }
+        form.contentPanel
+      }
 
-      override def isModified: Boolean = formState != propertiesState
+      @RequiredUIAccess
+      override def disposeUIResources(): Unit = {
+        form = null
+      }
 
+      override def isModified: Boolean = form != null && formState != propertiesState
+
+      @RequiredUIAccess
       override def apply(): Unit = {
-        if (form.isValid) {
+        if (form != null && form.isValid) {
           properties.loadState(formState)
         }
       }
 
+      @RequiredUIAccess
       override def reset(): Unit = {
+        if (form == null)
+          return
         val state = propertiesState
         form.languageLevel = state.getLanguageLevel
         form.classpath = state.getCompilerClasspath

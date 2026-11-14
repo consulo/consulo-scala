@@ -1,23 +1,22 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
-import consulo.platform.base.icon.PlatformIconGroup;
-
 import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.module.ui.awt.ChooseModulesDialog;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.RadioButton;
+import consulo.ui.RadioGroup;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.ItemRemovable;
-import consulo.ui.ex.awtUnsafe.TargetAWT;
-import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
-import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
-import consulo.ui.ex.awt.util.TableUtil;
-import consulo.ui.ex.awt.ToolbarDecorator;
 import consulo.ui.ex.awt.JBUIScale;
+import consulo.ui.ex.awt.ToolbarDecorator;
+import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
 import consulo.ui.ex.awt.table.JBTable;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import consulo.ui.ex.awt.util.TableUtil;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.ui.layout.VerticalLayout;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 
@@ -26,24 +25,24 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.*;
 
 import static org.jetbrains.plugins.scala.settings.ScalaProjectSettings.getInstance;
 
 public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
-    private JRadioButton myInheritBasePackagesRadioButton;
-    private JRadioButton myUseCustomBasePackagesRadioButton;
-    private JPanel myBasePackagesPanel;
-    private JPanel myBasePackagesHelpPanel;
-    private JPanel rootPanel;
+    private final RadioGroup<Boolean> myInheritBasePackages;
+    private final JPanel myBasePackagesPanel;
+    private final VerticalLayout rootPanel;
     private final JBTable myBasePackagesTable;
 
+    @RequiredUIAccess
     public BasePackagesSettingsSectionPanel(Project project) {
         super(project);
 
-        myBasePackagesHelpPanel.add(ContextHelpLabel.create(ScalaBundle.message("base.package.help")));
+        myInheritBasePackages = RadioGroup.create();
+        RadioButton inheritBasePackagesRadioButton = myInheritBasePackages.newButton(message("scala.project.settings.form.base.package.inherit"), true);
+        RadioButton useCustomBasePackagesRadioButton = myInheritBasePackages.newButton(message("scala.project.settings.form.base.package.custom"), false);
 
         myBasePackagesTable = new JBTable(new ModuleOptionsTableModel());
         myBasePackagesTable.setRowHeight(JBUIScale.scale(22));
@@ -68,16 +67,22 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
                 .setRemoveAction(b -> removeSelectedBasePackageModules())
                 .createPanel();
         tableComp.setPreferredSize(new Dimension(myBasePackagesTable.getWidth(), 150));
+        // upstream table editor has no unified UI counterpart, stays Swing
+        myBasePackagesPanel = new JPanel(new BorderLayout());
         myBasePackagesPanel.add(tableComp);
 
-        myInheritBasePackagesRadioButton.addActionListener(actionEvent -> myBasePackagesTable.setEnabled(!myInheritBasePackagesRadioButton.isSelected()));
-        myUseCustomBasePackagesRadioButton.addActionListener(actionEvent -> myBasePackagesTable.setEnabled(myUseCustomBasePackagesRadioButton.isSelected()));
+        myInheritBasePackages.addValueListener(inherit -> myBasePackagesTable.setEnabled(!Boolean.TRUE.equals(inherit)));
+
+        rootPanel = VerticalLayout.create();
+        rootPanel.add(withHelp(inheritBasePackagesRadioButton, ScalaBundle.message("base.package.help")));
+        rootPanel.add(useCustomBasePackagesRadioButton);
+        rootPanel.add(TargetAWT.wrap(myBasePackagesPanel));
 
         reset();
     }
 
     @Override
-    JComponent getRootPanel() {
+    consulo.ui.Component getRootPanel() {
         return rootPanel;
     }
 
@@ -85,7 +90,7 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
     boolean isModified() {
         final ScalaProjectSettings scalaProjectSettings = getInstance(myProject);
 
-        return scalaProjectSettings.isInheritBasePackages() != myInheritBasePackagesRadioButton.isSelected() ||
+        return scalaProjectSettings.isInheritBasePackages() != isInheritBasePackages() ||
                 !scalaProjectSettings.getCustomBasePackages().equals(getCustomBasePackages());
     }
 
@@ -93,7 +98,7 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
     void apply() {
         final ScalaProjectSettings scalaProjectSettings = getInstance(myProject);
 
-        scalaProjectSettings.setInheritBasePackages(myInheritBasePackagesRadioButton.isSelected());
+        scalaProjectSettings.setInheritBasePackages(isInheritBasePackages());
         scalaProjectSettings.setCustomBasePackages(getCustomBasePackages());
     }
 
@@ -101,12 +106,15 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
     void reset() {
         final ScalaProjectSettings scalaProjectSettings = getInstance(myProject);
 
-        myInheritBasePackagesRadioButton.setSelected(scalaProjectSettings.isInheritBasePackages());
-        myUseCustomBasePackagesRadioButton.setSelected(!scalaProjectSettings.isInheritBasePackages());
+        myInheritBasePackages.setValue(scalaProjectSettings.isInheritBasePackages());
         myBasePackagesTable.setEnabled(!scalaProjectSettings.isInheritBasePackages());
         setCustomBasePackages(scalaProjectSettings.getCustomBasePackages());
     }
 
+
+    private boolean isInheritBasePackages() {
+        return Boolean.TRUE.equals(myInheritBasePackages.getValue());
+    }
 
     private Map<String, String> getCustomBasePackages() {
         return ((ModuleOptionsTableModel) myBasePackagesTable.getModel()).getModuleOptions();
@@ -129,100 +137,6 @@ public class BasePackagesSettingsSectionPanel extends SettingsSectionPanel {
             TableUtil.removeSelectedItems(myBasePackagesTable);
         }
     }
-
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
-    }
-
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        rootPanel = new JPanel();
-        rootPanel.setLayout(new GridLayoutManager(4, 3, new Insets(9, 9, 9, 9), -1, -1));
-        final Spacer spacer1 = new Spacer();
-        rootPanel.add(spacer1, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        myInheritBasePackagesRadioButton = new JRadioButton();
-        this.$$$loadButtonText$$$(myInheritBasePackagesRadioButton, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.base.package.inherit"));
-        rootPanel.add(myInheritBasePackagesRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myUseCustomBasePackagesRadioButton = new JRadioButton();
-        this.$$$loadButtonText$$$(myUseCustomBasePackagesRadioButton, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.base.package.custom"));
-        rootPanel.add(myUseCustomBasePackagesRadioButton, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myBasePackagesPanel = new JPanel();
-        myBasePackagesPanel.setLayout(new BorderLayout(0, 0));
-        rootPanel.add(myBasePackagesPanel, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        myBasePackagesHelpPanel = new JPanel();
-        myBasePackagesHelpPanel.setLayout(new BorderLayout(0, 0));
-        rootPanel.add(myBasePackagesHelpPanel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        rootPanel.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        ButtonGroup buttonGroup;
-        buttonGroup = new ButtonGroup();
-        buttonGroup.add(myUseCustomBasePackagesRadioButton);
-        buttonGroup.add(myInheritBasePackagesRadioButton);
-    }
-
-    private static Method $$$cachedGetBundleMethod$$$ = null;
-
-    /**
-     * @noinspection ALL
-     */
-    private String $$$getMessageFromBundle$$$(String path, String key) {
-        ResourceBundle bundle;
-        try {
-            Class<?> thisClass = this.getClass();
-            if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
-                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
-            }
-            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
-        } catch (Exception e) {
-            bundle = ResourceBundle.getBundle(path);
-        }
-        return bundle.getString(key);
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return rootPanel;
-    }
-
 
     // upstream: com.intellij.compiler.options.ModuleOptionsTableModel (IntelliJ java-compiler-impl)
     private static class ModuleOptionsTableModel extends AbstractTableModel implements ItemRemovable {

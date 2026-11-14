@@ -2,7 +2,8 @@ package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
 import consulo.application.CommonBundle
 import consulo.project.Project
-import consulo.ui.ex.awt.Messages
+import consulo.localize.LocalizeValue
+import consulo.ui.Alerts
 import com.intellij.java.impl.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesUtil
 import com.intellij.java.impl.refactoring.util.RefactoringMessageUtil
 import consulo.language.util.IncorrectOperationException
@@ -36,7 +37,7 @@ final class ScalaMoveToPackageQuickFix(_file: ScalaFile, packageName: String)
       }
     } catch {
       case e: IncorrectOperationException =>
-        Messages.showMessageDialog(project, e.getLocalizedMessage, CommonBundle.getErrorTitle, Messages.getErrorIcon)
+        Alerts.okError(LocalizeValue.of(e.getLocalizedMessage)).title(LocalizeValue.of(CommonBundle.getErrorTitle)).showAsync(project)
         return
     }
 

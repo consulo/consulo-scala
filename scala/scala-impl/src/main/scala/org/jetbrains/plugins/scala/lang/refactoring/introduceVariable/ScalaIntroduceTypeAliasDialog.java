@@ -1,21 +1,23 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceVariable;
 
-import consulo.document.event.DocumentEvent;
-import consulo.document.event.DocumentListener;
-import consulo.project.Project;
-import consulo.ui.ex.awt.ComboBox;
-import consulo.ui.ex.awt.DialogWrapper;
+import consulo.util.lang.StringUtil;
+
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.util.PsiTreeUtil;
-import consulo.language.editor.ui.awt.EditorComboBoxEditor;
-import consulo.language.editor.ui.awt.EditorComboBoxRenderer;
-import consulo.language.editor.ui.awt.EditorTextField;
-import consulo.language.editor.ui.awt.StringComboboxEditor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
+import consulo.localize.LocalizeValue;
+import consulo.project.Project;
+import consulo.ui.CheckBox;
+import consulo.ui.ComboBox;
+import consulo.ui.Label;
+import consulo.ui.TextBox;
+import consulo.ui.TextBoxWithHistory;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.ui.layout.VerticalLayout;
+import consulo.ui.util.FormBuilder;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.api.ScalaFileType;
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement;
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScTypeElement$;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass;
@@ -25,39 +27,33 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.*;
 import scala.Tuple2;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.EventListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator$;
 
-@SuppressWarnings(value = "unchecked")
 public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements NamedDialog {
-    private JPanel contentPane;
-    private JLabel myTypeLabel;
-    private ComboBox myNameComboBox;
-    private JLabel myScopeLabel;
-    private JComboBox myScopeCombobox;
-    private JLabel myNameLabel;
-    private JCheckBox myCbReplaceAllOccurences;
-    private JTextField myTypeTextField;
-    private JCheckBox myReplaceCompanionObjectOcc;
-    private JCheckBox myReplaceInInheritors;
-    private JButton buttonOK;
+    private VerticalLayout contentPane;
+    private TextBoxWithHistory myNameTextBox;
+    private ComboBox<ScopeItem> myScopeCombobox;
+    private CheckBox myCbReplaceAllOccurences;
+    private TextBox myTypeTextField;
+    private CheckBox myReplaceCompanionObjectOcc;
+    private CheckBox myReplaceInInheritors;
 
     private Project project;
     private ScTypeElement myTypeElement;
-    private EventListenerList myListenerList = new EventListenerList();
     private ConflictsReporter conflictsReporter;
     private ScopeItem currentScope;
     private Map<ScopeItem, Tuple2<ScTypeElement[], ScalaTypeValidator[]>> inheritanceDataMap;
 
     private static final String REFACTORING_NAME = ScalaBundle.message("introduce.type.alias.title");
 
+    @RequiredUIAccess
     public ScalaIntroduceTypeAliasDialog(Project project,
                                          ScTypeElement myTypeElement,
                                          ScopeItem[] possibleScopes,
@@ -70,15 +66,58 @@ public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements Name
         this.conflictsReporter = conflictReporter;
         this.inheritanceDataMap = new HashMap<ScopeItem, Tuple2<ScTypeElement[], ScalaTypeValidator[]>>();
 
-        setUpNameComboBox(currentScope.availableNames());
-        setUpScopeComboBox(possibleScopes, mainScope);
+        createUI(possibleScopes, mainScope);
 
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
         setTitle(REFACTORING_NAME);
         init();
         setUpDialog(currentScope);
         updateOkStatus();
+    }
+
+    @RequiredUIAccess
+    private void createUI(ScopeItem[] possibleScopes, ScopeItem mainScope) {
+        myTypeTextField = TextBox.create(ScTypeElement$.MODULE$.calcType(myTypeElement).toString());
+        myTypeTextField.setEnabled(false);
+        Label typeLabel = Label.create(LocalizeValue.localizeTODO("Type:"));
+        typeLabel.setTarget(myTypeTextField);
+
+        myNameTextBox = TextBoxWithHistory.create();
+        myNameTextBox.addValueListener(e -> updateOkStatus());
+        Label nameLabel = Label.create(LocalizeValue.localizeTODO("&Name:"));
+        nameLabel.setTarget(myNameTextBox);
+
+        myScopeCombobox = ComboBox.create(Arrays.asList(possibleScopes));
+        myScopeCombobox.setTextRenderer(item -> item == null ? LocalizeValue.empty() : LocalizeValue.of(item.toString()));
+        if (mainScope != null) {
+            myScopeCombobox.setValue(mainScope, false);
+        } else if (possibleScopes.length > 0) {
+            myScopeCombobox.setValue(possibleScopes[0], false);
+            currentScope = possibleScopes[0];
+        }
+        updateNameComboBox(currentScope.availableNames());
+        myScopeCombobox.addValueListener(e -> {
+            ScopeItem item = e.getValue();
+            if (item != null) {
+                currentScope = item;
+                setUpOccurrences(item);
+                updateNameComboBox(item.availableNames());
+            }
+        });
+
+        myCbReplaceAllOccurences = CheckBox.create(LocalizeValue.localizeTODO("Replace &all occurrences"));
+        myReplaceInInheritors = CheckBox.create(LocalizeValue.localizeTODO("Replace occurences in class inheritors"));
+        myReplaceCompanionObjectOcc = CheckBox.create(LocalizeValue.localizeTODO("Replace occurrences available from companion class"));
+
+        contentPane = VerticalLayout.create();
+        contentPane.add(FormBuilder.create()
+                .addLabeled(typeLabel, myTypeTextField)
+                .addLabeled(nameLabel, myNameTextBox)
+                .addLabeled(LocalizeValue.localizeTODO("Scope "), myScopeCombobox)
+                .build());
+        contentPane.add(myCbReplaceAllOccurences);
+        contentPane.add(myReplaceInInheritors);
+        contentPane.add(myReplaceCompanionObjectOcc);
     }
 
     @Override
@@ -113,173 +152,49 @@ public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements Name
 
     @Override
     public JComponent getPreferredFocusedComponent() {
-        return myNameComboBox;
+        return (JComponent) TargetAWT.to(myNameTextBox);
     }
 
-    private void setUpNameComboBox(Set<String> possibleNames) {
-
-        final EditorComboBoxEditor comboEditor = new StringComboboxEditor(project, ScalaFileType.INSTANCE, myNameComboBox);
-
-        myNameComboBox.setEditor(comboEditor);
-        myNameComboBox.setRenderer(new EditorComboBoxRenderer(comboEditor));
-
-        myNameComboBox.setEditable(true);
-        myNameComboBox.setMaximumRowCount(8);
-        myListenerList.add(DataChangedListener.class, new DataChangedListener());
-
-        myNameComboBox.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        fireNameDataChanged();
-                    }
-                }
-        );
-
-        ((EditorTextField) myNameComboBox.getEditor().getEditorComponent()).addDocumentListener(new DocumentListener() {
-                                                                                                    @Override
-                                                                                                    public void documentChanged(DocumentEvent event) {
-                                                                                                        fireNameDataChanged();
-                                                                                                    }
-                                                                                                }
-        );
-
-        contentPane.registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                myNameComboBox.requestFocus();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        for (String possibleName : possibleNames) {
-            myNameComboBox.addItem(possibleName);
-        }
-    }
-
+    @RequiredUIAccess
     private void updateNameComboBox(Set<String> possibleNames) {
-        myNameComboBox.removeAllItems();
-        for (String possibleName : possibleNames) {
-            myNameComboBox.addItem(possibleName);
-        }
+        List<String> names = new ArrayList<>(possibleNames);
+        myNameTextBox.setHistory(names);
+        myNameTextBox.setValue(names.isEmpty() ? "" : names.get(0));
     }
 
+    @RequiredUIAccess
     private void setUpOccurrences(ScopeItem item) {
         setUpCompanionObjOcc(item);
         setUpReplaceInInheritors(item);
 
-        myCbReplaceAllOccurences.setSelected(false);
+        myCbReplaceAllOccurences.setValue(false);
         if (item instanceof PackageScopeItem) {
             myCbReplaceAllOccurences.setEnabled(true);
-            myCbReplaceAllOccurences.setText(ScalaBundle.message("replace.all.occurrences"));
+            myCbReplaceAllOccurences.setLabelText(LocalizeValue.of(ScalaBundle.message("replace.all.occurrences")));
         } else if (item instanceof SimpleScopeItem simpleScopeItem) {
             int occurrencesCount = simpleScopeItem.usualOccurrences().length;
             if (occurrencesCount > 1) {
                 myCbReplaceAllOccurences.setEnabled(true);
-                myCbReplaceAllOccurences.setSelected(true);
-                myCbReplaceAllOccurences.setText(ScalaBundle.message("replace.all.x.occurrences", occurrencesCount));
+                myCbReplaceAllOccurences.setValue(true);
+                myCbReplaceAllOccurences.setLabelText(LocalizeValue.of(ScalaBundle.message("replace.all.x.occurrences", occurrencesCount)));
             } else {
                 myCbReplaceAllOccurences.setEnabled(false);
             }
         }
     }
 
+    @RequiredUIAccess
     private void setUpCompanionObjOcc(ScopeItem item) {
-        myReplaceCompanionObjectOcc.setSelected(false);
+        myReplaceCompanionObjectOcc.setValue(false);
         if (item instanceof SimpleScopeItem simpleScopeItem) {
             int companionObjOccCount = simpleScopeItem.occurrencesInCompanion().length;
             if (companionObjOccCount > 0) {
                 myReplaceCompanionObjectOcc.setEnabled(true);
                 String compObjectOccurrences = companionObjOccCount == 1 ? ScalaBundle.message("1.occurrence") : ScalaBundle.message("multi.occurrences", companionObjOccCount);
-                myReplaceCompanionObjectOcc.setText(ScalaBundle.message("replace.occurrences.available.from.companion.class", compObjectOccurrences));
+                myReplaceCompanionObjectOcc.setLabelText(LocalizeValue.of(ScalaBundle.message("replace.occurrences.available.from.companion.class", compObjectOccurrences)));
             } else {
                 myReplaceCompanionObjectOcc.setEnabled(false);
             }
-        }
-    }
-
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
-    }
-
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        myCbReplaceAllOccurences = new JCheckBox();
-        myCbReplaceAllOccurences.setText("Replace all occurrences");
-        myCbReplaceAllOccurences.setMnemonic('A');
-        myCbReplaceAllOccurences.setDisplayedMnemonicIndex(8);
-        panel1.add(myCbReplaceAllOccurences, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myReplaceCompanionObjectOcc = new JCheckBox();
-        myReplaceCompanionObjectOcc.setText("Replace occurrences available from companion class");
-        panel1.add(myReplaceCompanionObjectOcc, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myReplaceInInheritors = new JCheckBox();
-        myReplaceInInheritors.setText("Replace occurences in class inheritors");
-        panel1.add(myReplaceInInheritors, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        myTypeLabel = new JLabel();
-        myTypeLabel.setText("Type:");
-        panel2.add(myTypeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myNameComboBox = new ComboBox();
-        myNameComboBox.setEditable(true);
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        myNameComboBox.setModel(defaultComboBoxModel1);
-        panel2.add(myNameComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myScopeLabel = new JLabel();
-        myScopeLabel.setText("Scope ");
-        myScopeLabel.setVisible(true);
-        panel2.add(myScopeLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myNameLabel = new JLabel();
-        myNameLabel.setText("Name:");
-        panel2.add(myNameLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myScopeCombobox = new JComboBox();
-        myScopeCombobox.setEditable(false);
-        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
-        myScopeCombobox.setModel(defaultComboBoxModel2);
-        myScopeCombobox.setVisible(true);
-        panel2.add(myScopeCombobox, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myTypeTextField = new JTextField();
-        myTypeTextField.setEnabled(false);
-        panel2.add(myTypeTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return contentPane;
-    }
-
-    class ScopeItemChangeListener implements ItemListener {
-        @Override
-        public void itemStateChanged(ItemEvent event) {
-            if (event.getStateChange() == ItemEvent.SELECTED) {
-                ScopeItem item = (ScopeItem) event.getItem();
-                currentScope = item;
-                setUpOccurrences(item);
-                updateNameComboBox(item.availableNames());
-            }
-        }
-    }
-
-
-    class DataChangedListener implements EventListener {
-        void dataChanged() {
-            updateOkStatus();
         }
     }
 
@@ -288,38 +203,14 @@ public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements Name
         setOKActionEnabled(ScalaNamesValidator$.MODULE$.isIdentifier(text));
     }
 
-    private void fireNameDataChanged() {
-        Object[] list = myListenerList.getListenerList();
-        for (Object aList : list) {
-            if (aList instanceof DataChangedListener) {
-                ((DataChangedListener) aList).dataChanged();
-            }
-        }
-    }
-
+    @RequiredUIAccess
     private void setUpDialog(ScopeItem scopeItem) {
-        myCbReplaceAllOccurences.setMnemonic(KeyEvent.VK_A);
-        myCbReplaceAllOccurences.setFocusable(false);
-        myNameLabel.setLabelFor(myNameComboBox);
-        myTypeLabel.setLabelFor(myTypeTextField);
-        myTypeTextField.setText(ScTypeElement$.MODULE$.calcType(myTypeElement).toString());
         setUpOccurrences(scopeItem);
     }
 
-    private void setUpScopeComboBox(ScopeItem[] elements, ScopeItem mainScope) {
-        myScopeCombobox.addItemListener(new ScopeItemChangeListener());
-
-        for (ScopeItem scope : elements) {
-            myScopeCombobox.addItem(scope);
-        }
-
-        if (mainScope != null) {
-            myScopeCombobox.setSelectedItem(mainScope);
-        }
-    }
-
+    @RequiredUIAccess
     private void setUpReplaceInInheritors(ScopeItem scope) {
-        myReplaceInInheritors.setSelected(false);
+        myReplaceInInheritors.setValue(false);
         myReplaceInInheritors.setEnabled(false);
         if (scope instanceof SimpleScopeItem simpleScopeItem) {
             if (simpleScopeItem.isClass() || simpleScopeItem.isTrait()) {
@@ -333,32 +224,28 @@ public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements Name
     @Override
     @Nullable
     protected JComponent createCenterPanel() {
-        return contentPane;
+        return (JComponent) TargetAWT.to(contentPane);
     }
 
     @Override
     public boolean isReplaceAllOccurrences() {
-        return myCbReplaceAllOccurences.isSelected();
+        return myCbReplaceAllOccurences.getValueOrError();
     }
 
     public boolean isReplaceOccurrenceIncompanionObject() {
-        return myReplaceCompanionObjectOcc.isSelected();
+        return myReplaceCompanionObjectOcc.getValueOrError();
     }
 
     public boolean isReplaceOccurrenceInInheritors() {
-        return myReplaceInInheritors.isSelected();
+        return myReplaceInInheritors.getValueOrError();
     }
 
 
     @Override
     @Nullable
     public String getEnteredName() {
-        if (myNameComboBox.getEditor().getItem() instanceof String &&
-                ((String) myNameComboBox.getEditor().getItem()).length() > 0) {
-            return (String) myNameComboBox.getEditor().getItem();
-        } else {
-            return null;
-        }
+        String text = StringUtil.notNullize(myNameTextBox.getValue());
+        return text != null && !text.isEmpty() ? text : null;
     }
 
     public ScopeItem getSelectedScope() {
@@ -369,7 +256,7 @@ public class ScalaIntroduceTypeAliasDialog extends DialogWrapper implements Name
     private boolean handleInheritedClasses(SimpleScopeItem simpleScopeItem) {
         ScTypeDefinition classOrTrait = PsiTreeUtil.getParentOfType(simpleScopeItem.fileEncloser(), ScClass.class, ScTrait.class);
 
-        if (myReplaceInInheritors.isSelected() && (classOrTrait != null)) {
+        if (myReplaceInInheritors.getValueOrError() && (classOrTrait != null)) {
             ScopeItem selectedScope = getSelectedScope();
 
             if (selectedScope == null) {

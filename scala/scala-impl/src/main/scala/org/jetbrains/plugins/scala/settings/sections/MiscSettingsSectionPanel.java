@@ -1,56 +1,61 @@
 package org.jetbrains.plugins.scala.settings.sections;
 
+import consulo.util.lang.StringUtil;
+
 import consulo.configurable.ConfigurationException;
 import consulo.project.Project;
-import consulo.util.lang.Pair;
-import consulo.ui.ex.awt.EnumComboBoxModel;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.plugins.scala.ScalaBundle;
+import consulo.ui.ComboBox;
+import consulo.ui.Component;
+import consulo.ui.TextBox;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.ui.layout.VerticalLayout;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
-import org.jetbrains.plugins.scala.settings.SimpleMappingListCellRenderer;
 import org.jetbrains.plugins.scala.settings.uiControls.DependencyAwareInjectionSettings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static org.jetbrains.plugins.scala.settings.ScalaProjectSettings.getInstance;
 import static org.jetbrains.plugins.scala.settings.uiControls.DependencyAwareInjectionSettings.EP_NAME;
 
-@SuppressWarnings(value = "unchecked")
 public class MiscSettingsSectionPanel extends SettingsSectionPanel {
-    private JPanel injectionJPanel;
-    private JTextField scalaTestDefaultSuperClass;
-    private JComboBox<ScalaProjectSettings.TrailingCommasMode> trailingCommasComboBox;
-    private JPanel rootPanel;
+    private final TextBox scalaTestDefaultSuperClass;
+    private final ComboBox<ScalaProjectSettings.TrailingCommasMode> trailingCommasComboBox;
+    private final VerticalLayout rootPanel;
 
     private final List<DependencyAwareInjectionSettings.ComponentWithSettings> extraSettings = new ArrayList<>();
 
+    @RequiredUIAccess
     public MiscSettingsSectionPanel(Project project) {
         super(project);
 
-        $$$setupUI$$$();
-        trailingCommasComboBox.setModel(new EnumComboBoxModel<>(ScalaProjectSettings.TrailingCommasMode.class));
-        trailingCommasComboBox.setRenderer(SimpleMappingListCellRenderer.create(
-                Pair.create(ScalaProjectSettings.TrailingCommasMode.Enabled, ScalaBundle.message("trailing.commas.mode.enabled")),
-                Pair.create(ScalaProjectSettings.TrailingCommasMode.Disabled, ScalaBundle.message("trailing.commas.mode.disabled")),
-                Pair.create(ScalaProjectSettings.TrailingCommasMode.Auto, ScalaBundle.message("trailing.commas.mode.auto"))
-        ));
+        scalaTestDefaultSuperClass = TextBox.create().withVisibleLength(25);
+        trailingCommasComboBox = ComboBox.<ScalaProjectSettings.TrailingCommasMode>builder()
+                .add(ScalaProjectSettings.TrailingCommasMode.Enabled, message("trailing.commas.mode.enabled"))
+                .add(ScalaProjectSettings.TrailingCommasMode.Disabled, message("trailing.commas.mode.disabled"))
+                .add(ScalaProjectSettings.TrailingCommasMode.Auto, message("trailing.commas.mode.auto"))
+                .build();
 
+        // DependencyAwareInjectionSettings contributors still build Swing UI
+        JPanel injectionJPanel = new JPanel(new GridLayout(1, 1));
+        injectionJPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         for (DependencyAwareInjectionSettings uiWithDependency : EP_NAME.getExtensionList()) {
             extraSettings.add(uiWithDependency.createComponent(injectionJPanel));
         }
+
+        rootPanel = VerticalLayout.create();
+        rootPanel.add(labeledRow(message("scala.project.settings.form.scalatest.default.super.class"), scalaTestDefaultSuperClass));
+        rootPanel.add(labeledRow(message("scala.project.settings.form.trailing.commas"), trailingCommasComboBox));
+        rootPanel.add(TargetAWT.wrap(injectionJPanel));
 
         reset();
     }
 
     @Override
-    public JComponent getRootPanel() {
+    public Component getRootPanel() {
         return rootPanel;
     }
 
@@ -62,19 +67,19 @@ public class MiscSettingsSectionPanel extends SettingsSectionPanel {
             if (setting.isModified(scalaProjectSettings)) return true;
         }
 
-        return !scalaProjectSettings.getScalaTestDefaultSuperClass().equals(scalaTestDefaultSuperClass.getText()) ||
-                scalaProjectSettings.getTrailingCommasMode() != trailingCommasComboBox.getSelectedItem();
+        return !scalaProjectSettings.getScalaTestDefaultSuperClass().equals(StringUtil.notNullize(scalaTestDefaultSuperClass.getValue())) ||
+                scalaProjectSettings.getTrailingCommasMode() != trailingCommasComboBox.getValue();
     }
 
     @Override
     public void apply() throws ConfigurationException {
         final ScalaProjectSettings scalaProjectSettings = getInstance(myProject);
 
-        scalaProjectSettings.setScalaTestDefaultSuperClass(scalaTestDefaultSuperClass.getText());
+        scalaProjectSettings.setScalaTestDefaultSuperClass(StringUtil.notNullize(scalaTestDefaultSuperClass.getValue()));
 
-        Object trailingComa = trailingCommasComboBox.getSelectedItem();
+        ScalaProjectSettings.TrailingCommasMode trailingComa = trailingCommasComboBox.getValue();
         if (trailingComa != null)
-            scalaProjectSettings.setTrailingCommasMode(ScalaProjectSettings.TrailingCommasMode.valueOf(trailingComa.toString()));
+            scalaProjectSettings.setTrailingCommasMode(trailingComa);
 
         extraSettings.forEach(s -> s.saveSettings(scalaProjectSettings));
     }
@@ -83,96 +88,11 @@ public class MiscSettingsSectionPanel extends SettingsSectionPanel {
     public void reset() {
         final ScalaProjectSettings scalaProjectSettings = getInstance(myProject);
 
-        scalaTestDefaultSuperClass.setText(scalaProjectSettings.getScalaTestDefaultSuperClass());
-        trailingCommasComboBox.setSelectedItem(scalaProjectSettings.getTrailingCommasMode());
+        scalaTestDefaultSuperClass.setValue(scalaProjectSettings.getScalaTestDefaultSuperClass());
+        trailingCommasComboBox.setValue(scalaProjectSettings.getTrailingCommasMode());
 
         for (DependencyAwareInjectionSettings.ComponentWithSettings setting : extraSettings) {
             setting.loadSettings(scalaProjectSettings);
         }
     }
-
-    private void createUIComponents() {
-        injectionJPanel = new JPanel(new GridLayout(1, 1));
-        injectionJPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-    }
-
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        createUIComponents();
-        rootPanel = new JPanel();
-        rootPanel.setLayout(new GridLayoutManager(3, 2, new Insets(9, 9, 9, 9), -1, -1));
-        rootPanel.add(injectionJPanel, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.scalatest.default.super.class"));
-        rootPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        scalaTestDefaultSuperClass = new JTextField();
-        scalaTestDefaultSuperClass.setColumns(25);
-        rootPanel.add(scalaTestDefaultSuperClass, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
-        final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "scala.project.settings.form.trailing.commas"));
-        rootPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        trailingCommasComboBox = new JComboBox();
-        rootPanel.add(trailingCommasComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(200, -1), null, 1, false));
-    }
-
-    private static Method $$$cachedGetBundleMethod$$$ = null;
-
-    /**
-     * @noinspection ALL
-     */
-    private String $$$getMessageFromBundle$$$(String path, String key) {
-        ResourceBundle bundle;
-        try {
-            Class<?> thisClass = this.getClass();
-            if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
-                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
-            }
-            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
-        } catch (Exception e) {
-            bundle = ResourceBundle.getBundle(path);
-        }
-        return bundle.getString(key);
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setDisplayedMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return rootPanel;
-    }
-
 }

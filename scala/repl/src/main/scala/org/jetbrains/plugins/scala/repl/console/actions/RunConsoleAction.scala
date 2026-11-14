@@ -11,7 +11,8 @@ import consulo.execution.executor.DefaultRunExecutor
 import consulo.execution.runner.ExecutionEnvironmentBuilder
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent, AnActionWithSyncUpdate}
 import consulo.project.Project
-import consulo.ui.ex.awt.Messages
+import consulo.localize.LocalizeValue
+import consulo.ui.Alerts
 import consulo.language.psi.PsiFile
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.repl.console.ScalaReplBundle
@@ -67,7 +68,7 @@ object RunConsoleAction {
       catch {
         case e: ExecutionException =>
           //noinspection ReferencePassedToNls
-          Messages.showErrorDialog(project, e.getMessage, ExecutionLocalize.errorCommonTitle.get)
+          Alerts.okError(LocalizeValue.of(e.getMessage)).title(ExecutionLocalize.errorCommonTitle).showAsync(project)
       }
     }
   }

@@ -3,20 +3,20 @@ package org.jetbrains.plugins.scala.lang.formatting.settings
 import consulo.language.codeStyle.ui.setting.TabbedLanguageCodeStylePanel
 import consulo.language.codeStyle.ui.setting.CodeStyleSchemesModel
 import consulo.project.Project
-import consulo.ui.ex.awt.ComboBox
 import consulo.disposer.Disposer
 import consulo.language.codeStyle.CodeStyleSettings
-import consulo.ui.ex.awt.JBLabel
-import com.intellij.uiDesigner.core.{GridConstraints, GridLayoutManager, Spacer}
-import consulo.ui.ex.awt.JBUI
+import consulo.localize.LocalizeValue
+import consulo.ui.{ComboBox, Component, Space}
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.DockLayout
+import consulo.ui.util.LabeledBuilder
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.lang.rearranger.ScalaArrangementPanel
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaLanguage
 
-import java.awt._
-import java.awt.event.ItemEvent
-import javax.swing._
+import java.awt.Dimension
+import javax.swing.JComponent
 import scala.annotation.nowarn
 
 class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: CodeStyleSettings)
@@ -24,8 +24,11 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
 
   import ScalaTabbedCodeStylePanel._
 
-  private var formatterSelectorComboBox: JComboBox[String] = scala.compiletime.uninitialized
-  private var outerPanel: JPanel = scala.compiletime.uninitialized
+  private var formatterSelectorComboBox: ComboBox[String] = scala.compiletime.uninitialized
+  private var outerLayout: DockLayout = scala.compiletime.uninitialized
+  private var outerPanel: JComponent = scala.compiletime.uninitialized
+  private var innerComponent: Component = scala.compiletime.uninitialized
+  private var shortenedComponent: Component = scala.compiletime.uninitialized
   private var shortenedPanel: ScalafmtTabbedLanguageCodeStylePanel = scala.compiletime.uninitialized
   // TODO: rework this whole project juggling mess, there should be a straightforward way of depending on a project
   //  from code style settings panels
@@ -62,7 +65,7 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
   }
 
   private def getSelectedFormatterId: Int =
-    formatters(formatterSelectorComboBox.getSelectedItem.toString)
+    formatters(formatterSelectorComboBox.getValue)
 
   override def apply(settings: CodeStyleSettings): Unit = {
     val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
@@ -82,7 +85,7 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
     val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
 
     val formatterKey = formatters.find(_._2 == scalaSettings.FORMATTER).map(_._1).get
-    formatterSelectorComboBox.setSelectedItem(formatterKey)
+    formatterSelectorComboBox.setValue(formatterKey)
 
     toggleSettingsVisibility(scalaSettings.USE_SCALAFMT_FORMATTER)
 
@@ -96,8 +99,9 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
   }
 
   private def initOuterFormatterPanel(): Unit = {
-    formatterSelectorComboBox = new ComboBox(formatters.keys.toArray)
-    formatterSelectorComboBox.addItemListener((_: ItemEvent) => {
+    formatterSelectorComboBox = ComboBox.create(formatters.keys.toSeq*)
+    formatterSelectorComboBox.setValue(formatters.keys.head)
+    formatterSelectorComboBox.addValueListener { _ =>
       //USE_SCALAFMT_FORMATTER setting is immediately set to allow proper formatting for core formatter examples
       val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
       val oldFormatter = scalaSettings.FORMATTER
@@ -106,28 +110,22 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
         toggleSettingsVisibility(scalaSettings.USE_SCALAFMT_FORMATTER)
         syncPanels(scalaSettings.USE_SCALAFMT_FORMATTER)
       }
-    })
+    }
 
-    import GridConstraints._
-    val CAN_SHRINK_AND_GROW = SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW
-
-    def constraint(row: Int, col: Int, fill: Int, HSizePolicy: Int, VSizePolicy: Int) =
-      new GridConstraints(row, col, 1, 1, ANCHOR_CENTER, fill, HSizePolicy, VSizePolicy, null, null, null, 0, false)
-
-    val formatterSelectorPanel = new JPanel(new GridLayoutManager(1, 3, JBUI.insetsLeft(10), -1, -1))
-    formatterSelectorPanel.add(new JBLabel(ScalaBundle.message("scala.root.code.style.panel.formatter")), constraint(0, 0, FILL_BOTH, SIZEPOLICY_FIXED, SIZEPOLICY_FIXED))
-    formatterSelectorPanel.add(formatterSelectorComboBox, constraint(0, 1, FILL_HORIZONTAL, CAN_SHRINK_AND_GROW, SIZEPOLICY_FIXED))
-    formatterSelectorPanel.add(new Spacer, constraint(0, 2, FILL_HORIZONTAL, SIZEPOLICY_WANT_GROW, SIZEPOLICY_CAN_SHRINK))
-
-    outerPanel = new JPanel(new GridLayoutManager(7, 2, JBUI.emptyInsets(), -1, -1))
-    outerPanel.add(formatterSelectorPanel, constraint(0, 0, FILL_BOTH, SIZEPOLICY_FIXED, SIZEPOLICY_FIXED))
-    outerPanel.add(innerPanel, constraint(1, 0, FILL_BOTH, CAN_SHRINK_AND_GROW, CAN_SHRINK_AND_GROW))
+    val formatterSelectorPanel = LabeledBuilder.simple(LocalizeValue.of(ScalaBundle.message("scala.root.code.style.panel.formatter")), formatterSelectorComboBox)
+    formatterSelectorPanel.paddingBuilder().leftSet(Space.MEDIUM).apply()
 
     shortenedPanel = new ScalafmtTabbedLanguageCodeStylePanel(currentSettings, settings)
-    outerPanel.add(shortenedPanel.getPanel, constraint(2, 0, FILL_BOTH, CAN_SHRINK_AND_GROW, CAN_SHRINK_AND_GROW))
+    // the tabs are the platform Swing tabbed panels
+    innerComponent = TargetAWT.wrap(innerPanel)
+    shortenedComponent = TargetAWT.wrap(shortenedPanel.getPanel)
     // this is required in order scrolling works correctly with small settings window height
     // otherwise on small screens the settings can be practically unusable
     innerPanel.setMinimumSize(new Dimension(1, 1))
+
+    outerLayout = DockLayout.create()
+    outerLayout.top(formatterSelectorPanel)
+    outerPanel = TargetAWT.to(outerLayout).asInstanceOf[JComponent]
 
     toggleSettingsVisibility(false)
   }
@@ -155,8 +153,7 @@ class ScalaTabbedCodeStylePanel(currentSettings: CodeStyleSettings, settings: Co
   }
 
   private def toggleSettingsVisibility(useExternalFormatter: Boolean): Unit = {
-    innerPanel.setVisible(!useExternalFormatter)
-    shortenedPanel.getPanel.setVisible(useExternalFormatter)
+    outerLayout.center(if (useExternalFormatter) shortenedComponent else innerComponent)
   }
 }
 

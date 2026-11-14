@@ -1578,9 +1578,11 @@ package object extensions {
     if (condition) inWriteCommandAction(body)
     else body
 
+  // upstream: IntelliJ's WriteCommandAction moves to the EDT itself, Consulo asserts the UI thread
   def inWriteCommandAction[T](body: => T)
                              (implicit project: Project): T =
-    WriteCommandAction.runWriteCommandAction(project, body)
+    if (ApplicationManager.getApplication.isDispatchThread) WriteCommandAction.runWriteCommandAction(project, body)
+    else invokeAndWait(WriteCommandAction.runWriteCommandAction(project, body))
 
   /**
    * Executes the given body of code within a read action.

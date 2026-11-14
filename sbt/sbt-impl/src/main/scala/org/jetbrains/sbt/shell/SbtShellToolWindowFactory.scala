@@ -13,7 +13,9 @@ import consulo.ui.ex.toolWindow.{ToolWindow, ToolWindowAnchor}
 import consulo.project.ui.wm.ToolWindowFactory
 import consulo.project.ui.wm.ToolWindowManager
 import consulo.ui.ex.BadgeIconSupplier
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.image.Image
+import consulo.ui.layout.DockLayout
 import consulo.ui.ex.content.{Content, ContentFactory}
 import org.jetbrains.annotations.{Nls, NotNull}
 import org.jetbrains.plugins.scala.extensions.{invokeLater, schedulePeriodicTask}
@@ -21,9 +23,9 @@ import org.jetbrains.sbt.api.icons.Icons
 import org.jetbrains.sbt.shell.SbtShellToolWindowFactory.Log
 import org.jetbrains.sbt.{SbtBundle, SbtUtil, shell}
 
-import java.awt.{BorderLayout, Component, Container, FocusTraversalPolicy}
+import java.awt.{Component, Container, FocusTraversalPolicy}
 import java.util.concurrent.TimeUnit
-import javax.swing.{JComponent, JPanel}
+import javax.swing.JComponent
 
 /**
   * Creates the sbt shell toolwindow, which is docked at the bottom of sbt projects.
@@ -170,6 +172,7 @@ object SbtShellToolWindowFactory {
     twContentManager.addContent(content)
   }
 
+  @RequiredUIAccess
   private def createToolWindowContent(
     actionGroup: ActionGroup,
     component: JComponent,
@@ -179,18 +182,13 @@ object SbtShellToolWindowFactory {
 
     val actionToolBar = ActionManager.getInstance().createActionToolbar("sbt-shell-toolbar", actionGroup, false)
 
-    val toolbarPanel = new JPanel()
-    toolbarPanel.setLayout(new BorderLayout)
-    toolbarPanel.add(actionToolBar.getComponent)
-
-    val mainPanel = new JPanel()
-    mainPanel.setLayout(new BorderLayout)
-    mainPanel.add(toolbarPanel, BorderLayout.WEST)
-    mainPanel.add(component, BorderLayout.CENTER)
-    actionToolBar.setTargetComponent(mainPanel)
+    val mainPanel = DockLayout.create()
+    mainPanel.left(actionToolBar.getUIComponent)
+    mainPanel.center(TargetAWT.wrap(component))
+    actionToolBar.setTargetUIComponent(mainPanel)
 
     //noinspection ScalaExtractStringToBundle
-    val content = ContentFactory.getInstance.createContent(mainPanel, "sbt-shell-toolwindow-content", true)
+    val content = ContentFactory.getInstance.createUIContent(mainPanel, "sbt-shell-toolwindow-content", true)
     content.setTabName(projectName)
     content.setDisplayName(projectName)
     content.setToolwindowTitle(projectName)

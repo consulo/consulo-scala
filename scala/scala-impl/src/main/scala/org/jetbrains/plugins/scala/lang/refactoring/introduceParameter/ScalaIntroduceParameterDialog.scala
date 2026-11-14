@@ -2,13 +2,17 @@ package org.jetbrains.plugins.scala.lang.refactoring.introduceParameter
 
 import consulo.document.event.{DocumentEvent, DocumentListener}
 import consulo.project.Project
-import consulo.ui.ex.awt.{ComboBox, ValidationInfo}
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awt.ValidationInfo
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.{HorizontalLayout, VerticalLayout}
+import consulo.ui.{CheckBox, ComboBox, Label, TextBox}
 import consulo.language.editor.refactoring.BaseRefactoringProcessor
 import consulo.language.editor.refactoring.ui.JBListTableWitEditors
 import consulo.ui.ex.awt.table.{JBTable, TableView}
 import consulo.language.editor.ui.awt.EditorTextField
 import consulo.ui.ex.awt.ToolbarDecorator
-import consulo.ui.ex.awt.JBUI
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring._
 import org.jetbrains.plugins.scala.lang.refactoring.changeSignature._
@@ -17,7 +21,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.ScalaFileType
 
-import java.awt._
+import java.awt.BorderLayout
 import java.util
 import javax.swing._
 import scala.annotation.nowarn
@@ -28,10 +32,10 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
                                    (implicit project: Project)
   extends ScalaChangeSignatureDialog(method, false) {
 
-  private var paramNameField: EditorTextField = scala.compiletime.uninitialized
+  private var paramNameField: TextBox = scala.compiletime.uninitialized
   private var typeCombobox: ComboBox[String] = scala.compiletime.uninitialized
   private var typeMap: util.LinkedHashMap[String, ScType] = scala.compiletime.uninitialized
-  private var replaceOccurrencesChb: JCheckBox = scala.compiletime.uninitialized
+  private var replaceOccurrencesChb: CheckBox = scala.compiletime.uninitialized
   private var defaultValuesUsagePanel: DefaultValuesUsagePanel = scala.compiletime.uninitialized
   private var defaultForIntroducedTextField: EditorTextField = scala.compiletime.uninitialized
 
@@ -42,23 +46,15 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
 
   override def createNorthPanel(): JComponent = {
     val panel = super.createNorthPanel() //to initialize fields
-    val northPanel = new JPanel(new GridBagLayout())
-    val gbc: GridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 1, 1,
-      GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, JBUI.emptyInsets(), 0, 0)
-
-    val paramNamePanel = createParamNamePanel()
-    val paramTypePanel = createParamTypePanel()
-
-    northPanel.add(paramNamePanel, gbc)
-    gbc.gridx += 1
-    northPanel.add(paramTypePanel, gbc)
-
-    northPanel.add(panel)
+    val northPanel = HorizontalLayout.create()
+      .add(createParamNamePanel())
+      .add(createParamTypePanel())
+      .add(TargetAWT.wrap(panel))
     panel.setVisible(false)
 
     val container = new JPanel(new BorderLayout())
-    container.add(northPanel, BorderLayout.NORTH)
-    container.add(createDefaultArgumentPanel(), BorderLayout.CENTER)
+    container.add(TargetAWT.to(northPanel), BorderLayout.NORTH)
+    container.add(TargetAWT.to(createDefaultArgumentPanel()), BorderLayout.CENTER)
     container
   }
 
@@ -68,8 +64,8 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
     val parameters = splittedItems.map(_.map(_.parameter))
     val changeInfo = ScalaChangeInfo(getVisibility, method.fun, getMethodName, returnType, parameters, isAddDefaultArgs, None)
 
-    val newData = introduceData.copy(paramName = paramNameField.getText, tp = typeMap.get(typeCombobox.getSelectedItem),
-      replaceAll = replaceOccurrencesChb.isSelected, defaultArg = defaultForIntroducedTextField.getText)
+    val newData = introduceData.copy(paramName = Option(paramNameField.getValue).getOrElse(""), tp = typeMap.get(typeCombobox.getValue),
+      replaceAll = replaceOccurrencesChb.getValueOrError.booleanValue, defaultArg = defaultForIntroducedTextField.getText)
 
     changeInfo.introducedParameterData = Some(newData)
     new ScalaChangeSignatureProcessor(changeInfo)
@@ -93,7 +89,7 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
     }
   }
 
-  override def getPreferredFocusedComponent: JComponent = paramNameField
+  override def getPreferredFocusedComponent: JComponent = TargetAWT.to(paramNameField).asInstanceOf[JComponent]
 
   protected override def doValidate(): ValidationInfo = null
 
@@ -115,38 +111,35 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
     buttonsPanel
   }
 
-  private def createParamNamePanel(): JComponent = {
-    paramNameField = new EditorTextField(introduceData.paramName)
-    paramNameField.setPreferredWidth(150)
-    paramNameField.addDocumentListener(new DocumentListener {
-      override def documentChanged(e: DocumentEvent): Unit = {
-        val newText: String = paramNameField.getText
-        introducedParamTableItem.foreach(_.parameter.setName(newText))
-        myParametersTableModel.fireTableDataChanged()
-        parametersTable.updateUI()
-        updateSignatureAlarmFired()
-        getRefactorAction.setEnabled(newText.nonEmpty)
-      }
-    })
-    val paramNameLabel = new JLabel(ScalaBundle.message("parameter.label.name"))
-    paramNameLabel.setDisplayedMnemonic('N')
-    paramNameLabel.setLabelFor(paramNameField)
-    val paramNamePanel = new JPanel(new BorderLayout(0, 2))
-    paramNamePanel.add(paramNameLabel, BorderLayout.NORTH)
-    paramNamePanel.add(paramNameField, BorderLayout.SOUTH)
-    paramNamePanel
+  @RequiredUIAccess
+  private def createParamNamePanel(): consulo.ui.Component = {
+    paramNameField = TextBox.create(introduceData.paramName)
+    paramNameField.setVisibleLength(15)
+    paramNameField.addValueListener { _ =>
+      val newText: String = Option(paramNameField.getValue).getOrElse("")
+      introducedParamTableItem.foreach(_.parameter.setName(newText))
+      myParametersTableModel.fireTableDataChanged()
+      parametersTable.updateUI()
+      updateSignatureAlarmFired()
+      getRefactorAction.setEnabled(newText.nonEmpty)
+    }
+    val paramNameLabel = Label.create(LocalizeValue.of(ScalaBundle.message("parameter.label.name")))
+    paramNameLabel.setTarget(paramNameField)
+    VerticalLayout.create()
+      .add(paramNameLabel)
+      .add(paramNameField)
   }
 
-  private def createParamTypePanel(): JComponent = {
-    typeCombobox = new ComboBox()
-    val typeLabel = new JLabel(ScalaBundle.message("parameter.label.type"))
-    typeLabel.setLabelFor(typeCombobox)
+  @RequiredUIAccess
+  private def createParamTypePanel(): consulo.ui.Component = {
     implicit val context: TypePresentationContext = method.getMethod
     typeMap = ScalaRefactoringUtil.getCompatibleTypeNames(introduceData.possibleTypes)
-    typeMap.keySet.asScala.foreach(typeCombobox.addItem)
-    typeLabel.setDisplayedMnemonic('T')
-    typeCombobox.addItemListener(_ => {
-      val scType = typeMap.get(typeCombobox.getSelectedItem)
+    typeCombobox = ComboBox.create(new util.ArrayList[String](typeMap.keySet))
+    if (!typeMap.isEmpty) typeCombobox.setValueByIndex(0)
+    val typeLabel = Label.create(LocalizeValue.of(ScalaBundle.message("parameter.label.type")))
+    typeLabel.setTarget(typeCombobox)
+    typeCombobox.addValueListener { _ =>
+      val scType = typeMap.get(typeCombobox.getValue)
       introducedParamTableItem.foreach { item =>
         item.parameter.scType = scType
         item.typeText = scType.codeText
@@ -154,20 +147,17 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
       myParametersTableModel.fireTableDataChanged()
       parametersTable.updateUI()
       updateSignatureAlarmFired()
-    })
-    val paramTypePanel = new JPanel(new BorderLayout(0, 2))
-    paramTypePanel.add(typeLabel, BorderLayout.NORTH)
-    paramTypePanel.add(typeCombobox, BorderLayout.SOUTH)
-
-    paramTypePanel
+    }
+    VerticalLayout.create()
+      .add(typeLabel)
+      .add(typeCombobox)
   }
 
-  override def createDefaultArgumentPanel(): JPanel = {
-    val panel = new JPanel(new BorderLayout())
+  @RequiredUIAccess
+  override def createDefaultArgumentPanel(): consulo.ui.Component = {
     defaultForIntroducedTextField = new EditorTextField(introduceData.defaultArg, project, ScalaFileType.INSTANCE)
-    val label = new JLabel(ScalaBundle.message("parameter.label.default.value"))
-    label.setLabelFor(defaultForIntroducedTextField)
-    panel.add(label, BorderLayout.NORTH)
+    val label = Label.create(LocalizeValue.of(ScalaBundle.message("parameter.label.default.value")))
+    val defaultValueField = TargetAWT.wrap(defaultForIntroducedTextField)
     defaultForIntroducedTextField.setOneLineMode(false)
     defaultForIntroducedTextField.setEnabled(true)
     defaultForIntroducedTextField.addDocumentListener(new DocumentListener {
@@ -175,17 +165,15 @@ class ScalaIntroduceParameterDialog(method: ScalaMethodDescriptor,
         introducedParamTableItem.foreach(_.parameter.defaultValue = defaultForIntroducedTextField.getText.trim)
       }
     })
-    panel.add(defaultForIntroducedTextField, BorderLayout.CENTER)
-    val optionsPanel = new JPanel(new BorderLayout())
-    replaceOccurrencesChb = new JCheckBox(ScalaBundle.message("replace.all.occurrences"))
-    replaceOccurrencesChb.setMnemonic('a')
-    replaceOccurrencesChb.setSelected(false)
+    replaceOccurrencesChb = CheckBox.create(LocalizeValue.of(ScalaBundle.message("replace.all.occurrences")))
+    replaceOccurrencesChb.setValue(false)
     replaceOccurrencesChb.setVisible(introduceData.occurrences.length > 1)
-    optionsPanel.add(replaceOccurrencesChb, BorderLayout.NORTH)
     defaultValuesUsagePanel = new DefaultValuesUsagePanel("")
-    optionsPanel.add(defaultValuesUsagePanel, BorderLayout.CENTER)
-    panel.add(optionsPanel, BorderLayout.SOUTH)
-    panel
+    VerticalLayout.create()
+      .add(label)
+      .add(defaultValueField)
+      .add(replaceOccurrencesChb)
+      .add(defaultValuesUsagePanel.component)
   }
 
   private def introducedParamTableItem: Option[ScalaParameterTableModelItem] = {

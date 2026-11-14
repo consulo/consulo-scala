@@ -1,6 +1,9 @@
 package org.jetbrains.plugins.scala.util.ui;
 
+import consulo.localize.LocalizeValue;
 import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.ui.Label;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.JBLabel;
 
 /**
@@ -14,5 +17,13 @@ public final class ContextHelpLabel extends JBLabel {
 
     public static ContextHelpLabel create(String description) {
         return new ContextHelpLabel(description);
+    }
+
+    @RequiredUIAccess
+    public static Label createLabel(String description) {
+        Label label = Label.create();
+        label.setImage(PlatformIconGroup.generalContexthelp());
+        label.setToolTipText(LocalizeValue.of(description));
+        return label;
     }
 }

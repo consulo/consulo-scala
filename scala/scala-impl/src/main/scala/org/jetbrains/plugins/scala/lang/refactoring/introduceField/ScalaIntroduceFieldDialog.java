@@ -1,71 +1,70 @@
 package org.jetbrains.plugins.scala.lang.refactoring.introduceField;
 
+import consulo.util.lang.StringUtil;
 
-import consulo.application.ApplicationManager;
-import consulo.document.event.DocumentEvent;
-import consulo.document.event.DocumentListener;
-import consulo.application.HelpManager;
-import consulo.project.Project;
-import consulo.ui.ex.awt.ComboBox;
-import consulo.ui.ex.awt.DialogWrapper;
+
 import com.intellij.java.impl.refactoring.HelpID;
-import consulo.language.editor.ui.awt.EditorComboBoxEditor;
-import consulo.language.editor.ui.awt.EditorComboBoxRenderer;
-import consulo.language.editor.ui.awt.EditorTextField;
-import consulo.ui.ex.awt.HyperlinkLabel;
-import consulo.language.editor.ui.awt.StringComboboxEditor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import consulo.application.ApplicationManager;
+import consulo.application.HelpManager;
+import consulo.localize.LocalizeValue;
+import consulo.project.Project;
+import consulo.ui.CheckBox;
+import consulo.ui.ComboBox;
+import consulo.ui.Hyperlink;
+import consulo.ui.Label;
+import consulo.ui.RadioButton;
+import consulo.ui.RadioGroup;
+import consulo.ui.TextBox;
+import consulo.ui.TextBoxWithHistory;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
+import consulo.ui.layout.HorizontalLayout;
+import consulo.ui.layout.VerticalLayout;
+import consulo.ui.util.FormBuilder;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.ScalaBundle;
-import org.jetbrains.plugins.scala.api.ScalaFileType;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression;
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition;
 import org.jetbrains.plugins.scala.lang.psi.types.ScType;
 import org.jetbrains.plugins.scala.lang.psi.types.TypePresentationContext;
 import org.jetbrains.plugins.scala.lang.psi.types.TypePresentationContext$;
+import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator$;
+import org.jetbrains.plugins.scala.lang.refactoring.ui.TypeAnnotationsSettingsLink;
 import org.jetbrains.plugins.scala.lang.refactoring.util.NamedDialog;
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaRefactoringUtil;
 import org.jetbrains.plugins.scala.lang.refactoring.util.ValidationReporter;
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings;
 import org.jetbrains.plugins.scala.settings.annotations.*;
-import org.jetbrains.plugins.scala.util.TypeAnnotationUtil;
 import scala.Some$;
 import scala.collection.immutable.ArraySeq;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.lang.reflect.Method;
-import java.util.EventListener;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator$;
-
-@SuppressWarnings({"unchecked", "deprecation"})
+@SuppressWarnings("unchecked")
 public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDialog {
-    private JCheckBox myReplaceAllChb;
-    private JComboBox myTypeComboBox;
-    private ComboBox myNameComboBox;
-    private JRadioButton myInitInDeclarationRB;
-    private JRadioButton myInitInLocalScopeRB;
+    private static final String PRIVATE = "Private";
+    private static final String PROTECTED = "Protected";
+    private static final String PUBLIC = "Public";
 
-    private JLabel myTypeLabel;
-    private JLabel myNameLabel;
-    private JPanel contentPane;
-    private JTextField protectedTextField;
-    private JTextField privateTextField;
-    private JPanel myLinkContainer;
-    private JCheckBox mySpecifyTypeChb;
-    private JCheckBox myVariableCheckBox;
-    private JComboBox visibilityComboBox;
-    private JTextField visibilityTextField;
-    private JButton buttonOK;
-    public String myEnteredName;
+    private CheckBox myReplaceAllChb;
+    private ComboBox<String> myTypeComboBox;
+    private TextBoxWithHistory myNameTextBox;
+    private RadioGroup<Boolean> myInitGroup;
+    private RadioButton myInitInDeclarationRB;
+    private RadioButton myInitInLocalScopeRB;
+
+    private Label myTypeLabel;
+    private VerticalLayout contentPane;
+    private CheckBox mySpecifyTypeChb;
+    private Hyperlink myLink;
+    private CheckBox myVariableCheckBox;
+    private ComboBox<String> visibilityComboBox;
+    private TextBox visibilityTextField;
 
     private Project project;
     private ArraySeq<ScType> myTypes;
@@ -75,10 +74,10 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
     private ScTemplateDefinition myClass;
 
     private LinkedHashMap<String, ScType> myTypeMap = null;
-    private EventListenerList myListenerList = new EventListenerList();
 
     private static final String REFACTORING_NAME = ScalaBundle.message("introduce.field.title");
 
+    @RequiredUIAccess
     public ScalaIntroduceFieldDialog(IntroduceFieldContext<ScExpression> ifc, IntroduceFieldSettings<ScExpression> settings) {
         super(ifc.project(), true);
         this.project = ifc.project();
@@ -90,8 +89,9 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
 
         ScExpression expression = ScalaRefactoringUtil.expressionToIntroduce(ifc.element());
 
+        createUI();
+
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
         setTitle(REFACTORING_NAME);
         init();
         setUpDialog();
@@ -102,140 +102,139 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
         updateOkStatus();
     }
 
-    @Override
-    @Nullable
-    protected JComponent createCenterPanel() {
-        return contentPane;
+    @RequiredUIAccess
+    private void createUI() {
+        mySpecifyTypeChb = CheckBox.create(LocalizeValue.of(ScalaBundle.message("specify.return.type.explicitly")));
+        myLink = TypeAnnotationsSettingsLink.create(project);
+
+        visibilityComboBox = ComboBox.create(PRIVATE, PROTECTED, PUBLIC);
+        visibilityTextField = TextBox.create("");
+        Label visibilityLabel = Label.create(LocalizeValue.localizeTODO("Visi&bility"));
+        visibilityLabel.setTarget(visibilityComboBox);
+
+        boolean nullText = myTypes.exists(ty -> ty.toString() == null);
+        List<String> typeNames = new ArrayList<>();
+        if (myTypes.size() != 0 && !nullText) {
+            TypePresentationContext context = TypePresentationContext$.MODULE$.psiElementPresentationContext(myClass);
+            myTypeMap = ScalaRefactoringUtil.getCompatibleTypeNames(myTypes, context);
+            typeNames.addAll(myTypeMap.keySet());
+        }
+        myTypeComboBox = ComboBox.create(typeNames);
+        if (!typeNames.isEmpty()) {
+            myTypeComboBox.setValueByIndex(0);
+        }
+        myTypeLabel = Label.create(LocalizeValue.localizeTODO("T&ype"));
+        myTypeLabel.setTarget(myTypeComboBox);
+
+        myNameTextBox = TextBoxWithHistory.create();
+        Label nameLabel = Label.create(LocalizeValue.localizeTODO("&Name"));
+        nameLabel.setTarget(myNameTextBox);
+
+        myInitGroup = RadioGroup.create();
+        myInitInDeclarationRB = myInitGroup.newButton(LocalizeValue.localizeTODO("&Field declaration"), true);
+        myInitInLocalScopeRB = myInitGroup.newButton(LocalizeValue.localizeTODO("&Local scope"), false);
+
+        myVariableCheckBox = CheckBox.create(LocalizeValue.localizeTODO("&Variable"));
+        myReplaceAllChb = CheckBox.create(LocalizeValue.localizeTODO("Replace &all occurrences"));
+
+        contentPane = VerticalLayout.create();
+        contentPane.add(HorizontalLayout.create().add(mySpecifyTypeChb).add(myLink));
+        contentPane.add(FormBuilder.create()
+                .addLabeled(visibilityLabel, HorizontalLayout.create().add(visibilityComboBox).add(visibilityTextField))
+                .addLabeled(myTypeLabel, myTypeComboBox)
+                .addLabeled(nameLabel, myNameTextBox)
+                .build());
+        contentPane.add(HorizontalLayout.create()
+                .add(Label.create(LocalizeValue.localizeTODO("Initialize in")))
+                .add(myInitInDeclarationRB)
+                .add(myInitInLocalScopeRB));
+        contentPane.add(myVariableCheckBox);
+        contentPane.add(myReplaceAllChb);
     }
 
     @Override
-    public JComponent getContentPane() {
-        return contentPane;
+    @Nullable
+    protected JComponent createCenterPanel() {
+        return (JComponent) TargetAWT.to(contentPane);
     }
 
     @Override
     @Nullable
     public String getEnteredName() {
-        if (myNameComboBox.getEditor().getItem() instanceof String &&
-                ((String) myNameComboBox.getEditor().getItem()).length() > 0) {
-            return (String) myNameComboBox.getEditor().getItem();
-        } else {
-            return null;
-        }
+        String text = StringUtil.notNullize(myNameTextBox.getValue());
+        return text != null && !text.isEmpty() ? text : null;
     }
 
     @Override
     public boolean isReplaceAllOccurrences() {
-        return myReplaceAllChb.isSelected();
+        return myReplaceAllChb.getValueOrError();
     }
 
     private ScType getSelectedType() {
-        if (mySpecifyTypeChb.isSelected()) {
-            return myTypeMap.get(myTypeComboBox.getSelectedItem());
+        if (mySpecifyTypeChb.getValueOrError()) {
+            return myTypeMap.get(myTypeComboBox.getValue());
         }
 
         return null;
     }
 
     private boolean isPublic() {
-        return visibilityComboBox.getSelectedItem() != null
-                && visibilityComboBox.getSelectedItem().equals("Public");
+        return PUBLIC.equals(visibilityComboBox.getValue());
     }
 
     private String getVisibility() {
         if (isPublic()) return "";
 
         if (getVisibilityEncloser().equals("")) {
-            return visibilityComboBox.getSelectedItem().toString().toLowerCase() + " ";
+            return visibilityComboBox.getValue().toLowerCase() + " ";
         }
 
-        return visibilityComboBox.getSelectedItem().toString().toLowerCase() + "[" + getVisibilityEncloser() + "] ";
+        return visibilityComboBox.getValue().toLowerCase() + "[" + getVisibilityEncloser() + "] ";
     }
 
     private String getVisibilityEncloser() {
-        return visibilityTextField.getText();
+        return StringUtil.notNullize(visibilityTextField.getValue());
     }
 
+    @RequiredUIAccess
     private void bindToSettings() {
-        myInitInDeclarationRB.addActionListener(e -> {
-            mySettings.setInitInDeclaration(myInitInDeclarationRB.isSelected());
+        myInitGroup.addValueListener(value -> {
+            mySettings.setInitInDeclaration(myInitInDeclarationRB.getValueOrError());
             readSettings();
         });
 
-        myInitInLocalScopeRB.addActionListener(e -> {
-            mySettings.setInitInDeclaration(myInitInDeclarationRB.isSelected());
+        myReplaceAllChb.addValueListener(e -> {
+            mySettings.setReplaceAll(myReplaceAllChb.getValueOrError());
             readSettings();
         });
 
-        myReplaceAllChb.addActionListener(e -> {
-            mySettings.setReplaceAll(myReplaceAllChb.isSelected());
+        myVariableCheckBox.addValueListener(e -> {
+            mySettings.setDefineVar(myVariableCheckBox.getValueOrError());
             readSettings();
         });
 
-        myVariableCheckBox.addActionListener(e -> {
-            if (myVariableCheckBox.isSelected()) {
-                mySettings.setDefineVar(true);
-            } else {
-                mySettings.setDefineVar(false);
-            }
-            readSettings();
-        });
-
-        visibilityComboBox.addActionListener(e -> {
+        visibilityComboBox.addValueListener(e -> {
             visibilityTextField.setEnabled(!isPublic());
             mySettings.setVisibilityLevel(getVisibility());
             readSettings();
         });
     }
 
-    private String getPrivateModifierData() {
-        String text = privateTextField.getText();
-        return text.equals("") ? "private" : "private[" + text + "]";
-    }
-
-    private String getProtectedModifierData() {
-        String text = protectedTextField.getText();
-        return text.equals("") ? "protected" : "protected[" + text + "]";
-    }
-
+    @RequiredUIAccess
     private void setUpDialog() {
-        myReplaceAllChb.setFocusable(false);
-        myNameLabel.setLabelFor(myNameComboBox);
-        myTypeLabel.setLabelFor(myTypeComboBox);
-
-        final String[] visibility = {"Private", "Protected", "Public"};
-        for (String v : visibility) {
-            visibilityComboBox.addItem(v);
-        }
-
-        ButtonGroup initButtons = new ButtonGroup();
-        initButtons.add(myInitInDeclarationRB);
-        initButtons.add(myInitInLocalScopeRB);
-        myInitInDeclarationRB.setFocusable(false);
-        myInitInLocalScopeRB.setFocusable(false);
-
         readSettings();
 
-        boolean nullText = myTypes.exists(ty -> ty.toString() == null);
-
         // Type specification
-        if (myTypes.size() == 0 || nullText) {
+        if (myTypeMap == null) {
             myTypeComboBox.setEnabled(false);
-        } else {
-            TypePresentationContext context = TypePresentationContext$.MODULE$.psiElementPresentationContext(myClass);
-            myTypeMap = ScalaRefactoringUtil.getCompatibleTypeNames(myTypes, context);
-            for (String typeName : myTypeMap.keySet()) {
-                myTypeComboBox.addItem(typeName);
-            }
         }
 
         if (occurrencesCount > 1) {
-            myReplaceAllChb.setText(myReplaceAllChb.getText() + " (" + ScalaBundle.message("field.occurrences", occurrencesCount) + ")");
+            myReplaceAllChb.setLabelText(LocalizeValue.localizeTODO("Replace &all occurrences" + " (" + ScalaBundle.message("field.occurrences", occurrencesCount) + ")"));
         }
-
-        contentPane.registerKeyboardAction(e -> myTypeComboBox.requestFocus(), KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.ALT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
+    @RequiredUIAccess
     private void readSettings() {
         myVariableCheckBox.setEnabled(mySettings.defineVarChbEnabled());
 
@@ -243,48 +242,27 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
         myInitInLocalScopeRB.setEnabled(mySettings.initLocallyEnabled());
         myReplaceAllChb.setEnabled(mySettings.replaceAllChbEnabled());
 
-        myVariableCheckBox.setSelected(mySettings.defineVar());
-        myInitInDeclarationRB.setSelected(mySettings.initInDeclaration());
-        myInitInLocalScopeRB.setSelected(!mySettings.initInDeclaration());
-        myReplaceAllChb.setSelected(mySettings.replaceAll());
+        myVariableCheckBox.setValue(mySettings.defineVar(), false);
+        myInitGroup.setValue(mySettings.initInDeclaration(), false);
+        myReplaceAllChb.setValue(mySettings.replaceAll(), false);
 
         if (mySettings.visibilityLevel().contains("protected")) {
-            visibilityComboBox.setSelectedItem("Protected");
+            visibilityComboBox.setValue(PROTECTED, false);
         } else if (mySettings.visibilityLevel().contains("private")) {
-            visibilityComboBox.setSelectedItem("Private");
+            visibilityComboBox.setValue(PRIVATE, false);
         } else {
-            visibilityComboBox.setSelectedItem("Public");
+            visibilityComboBox.setValue(PUBLIC, false);
         }
     }
 
+    @RequiredUIAccess
     private void setUpNameComboBox(Set<String> possibleNames) {
-
-        final EditorComboBoxEditor comboEditor = new StringComboboxEditor(project, ScalaFileType.INSTANCE, myNameComboBox);
-
-        myNameComboBox.setEditor(comboEditor);
-        myNameComboBox.setRenderer(new EditorComboBoxRenderer(comboEditor));
-
-        myNameComboBox.setEditable(true);
-        myNameComboBox.setMaximumRowCount(8);
-        myListenerList.add(DataChangedListener.class, new DataChangedListener());
-
-        myNameComboBox.addItemListener(
-                e -> fireNameDataChanged()
-        );
-
-        ((EditorTextField) myNameComboBox.getEditor().getEditorComponent()).addDocumentListener(new DocumentListener() {
-                                                                                                    @Override
-                                                                                                    public void documentChanged(DocumentEvent event) {
-                                                                                                        fireNameDataChanged();
-                                                                                                    }
-                                                                                                }
-        );
-
-        contentPane.registerKeyboardAction(e -> myNameComboBox.requestFocus(), KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        for (String possibleName : possibleNames) {
-            myNameComboBox.addItem(possibleName);
+        List<String> names = new ArrayList<>(possibleNames);
+        myNameTextBox.setHistory(names);
+        if (!names.isEmpty()) {
+            myNameTextBox.setValue(names.get(0), false);
         }
+        myNameTextBox.addValueListener(e -> updateOkStatus());
     }
 
     private boolean needsTypeAnnotation(ScExpression expression) {
@@ -303,31 +281,30 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
                 );
     }
 
+    @RequiredUIAccess
     private void setUpTypeComboBox(final ScExpression expression) {
-        mySpecifyTypeChb.setSelected(needsTypeAnnotation(expression));
+        mySpecifyTypeChb.setValue(needsTypeAnnotation(expression), false);
         updateEnablingTypeList();
 
-        mySpecifyTypeChb.addActionListener(e -> updateEnablingTypeList());
+        mySpecifyTypeChb.addValueListener(e -> updateEnablingTypeList());
 
-        visibilityComboBox.addItemListener(e -> {
-            mySpecifyTypeChb.setSelected(needsTypeAnnotation(expression));
+        visibilityComboBox.addValueListener(e -> {
+            mySpecifyTypeChb.setValue(needsTypeAnnotation(expression), false);
             updateEnablingTypeList();
         });
     }
 
+    @RequiredUIAccess
     private void setUpHyperLink(final ScExpression expression) {
-        HyperlinkLabel link = TypeAnnotationUtil.createTypeAnnotationsHLink(project, ScalaBundle.message("default.ta.settings"));
-        myLinkContainer.add(link);
-
-        link.addHyperlinkListener(e -> ApplicationManager.getApplication().invokeLater(() -> {
-            mySpecifyTypeChb.setSelected(needsTypeAnnotation(expression));
+        myLink.addHyperlinkListener(e -> ApplicationManager.getApplication().invokeLater(() -> {
+            mySpecifyTypeChb.setValue(needsTypeAnnotation(expression), false);
             updateEnablingTypeList();
         }));
     }
 
     @Override
     public JComponent getPreferredFocusedComponent() {
-        return myNameComboBox;
+        return (JComponent) TargetAWT.to(myNameTextBox);
     }
 
     @Override
@@ -338,15 +315,15 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
     private void saveSettings() {
         ScalaApplicationSettings scalaSettings = ScalaApplicationSettings.getInstance();
         if (myVariableCheckBox.isEnabled())
-            scalaSettings.INTRODUCE_FIELD_IS_VAR = myVariableCheckBox.isSelected();
+            scalaSettings.INTRODUCE_FIELD_IS_VAR = myVariableCheckBox.getValueOrError();
         if (myReplaceAllChb.isEnabled())
-            scalaSettings.INTRODUCE_FIELD_REPLACE_ALL = myReplaceAllChb.isSelected();
+            scalaSettings.INTRODUCE_FIELD_REPLACE_ALL = myReplaceAllChb.getValueOrError();
 
         scalaSettings.INTRODUCE_FIELD_VISIBILITY = getVisibility();
         mySettings.setVisibilityLevel(getVisibility());
 
         if (myInitInDeclarationRB.isEnabled() && myInitInLocalScopeRB.isEnabled()) {
-            scalaSettings.INTRODUCE_FIELD_INITIALIZE_IN_DECLARATION = myInitInDeclarationRB.isSelected();
+            scalaSettings.INTRODUCE_FIELD_INITIALIZE_IN_DECLARATION = myInitInDeclarationRB.getValueOrError();
         }
     }
 
@@ -366,195 +343,14 @@ public class ScalaIntroduceFieldDialog extends DialogWrapper implements NamedDia
         HelpManager.getInstance().invokeHelp(HelpID.INTRODUCE_FIELD);
     }
 
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
-    }
-
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), 0, -1));
-        contentPane.setAlignmentX(0.0f);
-        contentPane.setAlignmentY(0.0f);
-        contentPane.setOpaque(true);
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 3, new Insets(0, 0, 0, 0), 0, 0));
-        contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        myTypeLabel = new JLabel();
-        myTypeLabel.setText("Type");
-        myTypeLabel.setDisplayedMnemonic('Y');
-        myTypeLabel.setDisplayedMnemonicIndex(1);
-        panel1.add(myTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myNameLabel = new JLabel();
-        myNameLabel.setText("Name");
-        myNameLabel.setDisplayedMnemonic('N');
-        myNameLabel.setDisplayedMnemonicIndex(0);
-        panel1.add(myNameLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myTypeComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        myTypeComboBox.setModel(defaultComboBoxModel1);
-        panel1.add(myTypeComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myNameComboBox = new ComboBox();
-        myNameComboBox.setEditable(true);
-        panel1.add(myNameComboBox, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("Visibility");
-        label1.setDisplayedMnemonic('B');
-        label1.setDisplayedMnemonicIndex(4);
-        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        visibilityComboBox = new JComboBox();
-        visibilityComboBox.setEnabled(true);
-        panel1.add(visibilityComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        visibilityTextField = new JTextField();
-        visibilityTextField.setText("");
-        panel1.add(visibilityTextField, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        panel2.setOpaque(false);
-        contentPane.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        mySpecifyTypeChb = new JCheckBox();
-        mySpecifyTypeChb.setContentAreaFilled(false);
-        mySpecifyTypeChb.setHorizontalAlignment(2);
-        mySpecifyTypeChb.setHorizontalTextPosition(11);
-        mySpecifyTypeChb.setMargin(new Insets(0, 0, 0, 0));
-        this.$$$loadButtonText$$$(mySpecifyTypeChb, this.$$$getMessageFromBundle$$$("messages/ScalaBundle", "specify.return.type.explicitly"));
-        panel2.add(mySpecifyTypeChb);
-        myLinkContainer = new JPanel();
-        myLinkContainer.setLayout(new BorderLayout(0, 0));
-        myLinkContainer.setAlignmentX(0.0f);
-        myLinkContainer.setAlignmentY(0.0f);
-        panel2.add(myLinkContainer);
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Initialize in");
-        panel3.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel3.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        myInitInDeclarationRB = new JRadioButton();
-        myInitInDeclarationRB.setLabel("Field declaration");
-        myInitInDeclarationRB.setText("Field declaration");
-        myInitInDeclarationRB.setMnemonic('F');
-        myInitInDeclarationRB.setDisplayedMnemonicIndex(0);
-        panel3.add(myInitInDeclarationRB, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myInitInLocalScopeRB = new JRadioButton();
-        myInitInLocalScopeRB.setLabel("Local scope");
-        myInitInLocalScopeRB.setText("Local scope");
-        myInitInLocalScopeRB.setMnemonic('L');
-        myInitInLocalScopeRB.setDisplayedMnemonicIndex(0);
-        panel3.add(myInitInLocalScopeRB, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        contentPane.add(spacer2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 2), null, null, 0, false));
-        final Spacer spacer3 = new Spacer();
-        contentPane.add(spacer3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), 0, 0));
-        contentPane.add(panel4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        myVariableCheckBox = new JCheckBox();
-        myVariableCheckBox.setLabel("Variable");
-        myVariableCheckBox.setMargin(new Insets(0, 0, 0, 0));
-        myVariableCheckBox.setText("Variable");
-        myVariableCheckBox.setMnemonic('V');
-        myVariableCheckBox.setDisplayedMnemonicIndex(0);
-        myVariableCheckBox.setVerticalAlignment(3);
-        panel4.add(myVariableCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_SOUTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myReplaceAllChb = new JCheckBox();
-        myReplaceAllChb.setMargin(new Insets(0, 0, 0, 0));
-        myReplaceAllChb.setText("Replace all occurrences");
-        myReplaceAllChb.setMnemonic('A');
-        myReplaceAllChb.setDisplayedMnemonicIndex(8);
-        myReplaceAllChb.setVerticalAlignment(1);
-        panel4.add(myReplaceAllChb, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        myTypeLabel.setLabelFor(myTypeComboBox);
-        label1.setLabelFor(visibilityComboBox);
-    }
-
-    private static Method $$$cachedGetBundleMethod$$$ = null;
-
-    /**
-     * @noinspection ALL
-     */
-    private String $$$getMessageFromBundle$$$(String path, String key) {
-        ResourceBundle bundle;
-        try {
-            Class<?> thisClass = this.getClass();
-            if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
-                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
-            }
-            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
-        } catch (Exception e) {
-            bundle = ResourceBundle.getBundle(path);
-        }
-        return bundle.getString(key);
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return contentPane;
-    }
-
-    class DataChangedListener implements EventListener {
-        void dataChanged() {
-            updateOkStatus();
-        }
-    }
-
     private void updateOkStatus() {
         String text = getEnteredName();
         setOKActionEnabled(ScalaNamesValidator$.MODULE$.isIdentifier(text));
     }
 
-    private void fireNameDataChanged() {
-        Object[] list = myListenerList.getListenerList();
-        for (Object aList : list) {
-            if (aList instanceof DataChangedListener) {
-                ((DataChangedListener) aList).dataChanged();
-            }
-        }
-    }
-
+    @RequiredUIAccess
     private void updateEnablingTypeList() {
-        myTypeComboBox.setEnabled(mySpecifyTypeChb.isSelected());
-        myTypeLabel.setEnabled(mySpecifyTypeChb.isSelected());
+        myTypeComboBox.setEnabled(mySpecifyTypeChb.getValueOrError());
+        myTypeLabel.setEnabled(mySpecifyTypeChb.getValueOrError());
     }
 }

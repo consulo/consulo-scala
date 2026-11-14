@@ -21,9 +21,7 @@ import org.jetbrains.plugins.scala.lang.psi.light.PsiClassWrapper
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
-import java.awt.BorderLayout
 import java.util
-import javax.swing.{JCheckBox, JComponent, JPanel}
 import scala.jdk.CollectionConverters.SetHasAsScala
 
 @ExtensionImpl

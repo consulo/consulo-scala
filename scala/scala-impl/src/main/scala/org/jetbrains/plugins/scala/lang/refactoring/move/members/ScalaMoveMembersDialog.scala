@@ -16,8 +16,13 @@ import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.api.{NlsString, ScalaFileType}
 import org.jetbrains.plugins.scala.ScalaBundle
 
-import java.awt.BorderLayout
-import javax.swing._
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.VerticalLayout
+import consulo.ui.{Label, TextBox}
+
+import javax.swing.JComponent
 
 class ScalaMoveMembersDialog(project: Project, canBeParent: Boolean, sourceObject: ScObject, memberToMove: ScMember) extends RefactoringDialog(project, canBeParent) {
 
@@ -49,34 +54,19 @@ class ScalaMoveMembersDialog(project: Project, canBeParent: Boolean, sourceObjec
     }
   }
 
+  @RequiredUIAccess
   override def createCenterPanel(): JComponent = {
-    val panel = new JPanel(new BorderLayout)
-
-    val box = Box.createVerticalBox
-
-    val _panel1 = new JPanel(new BorderLayout)
-    val sourceClassField = new JTextField
-    sourceClassField.setText(sourceObject.name)
+    val sourceClassField = TextBox.create(sourceObject.name)
     sourceClassField.setEditable(false)
-    _panel1.add(new JLabel(ScalaBundle.message("move.members.source.title")), BorderLayout.NORTH)
-    _panel1.add(sourceClassField, BorderLayout.CENTER)
-    box.add(_panel1)
 
-    box.add(Box.createVerticalStrut(10))
-
-    val _panel2 = new JPanel(new BorderLayout)
-    val label = new JLabel(ScalaBundle.message("move.members.target.title"))
-
-    label.setLabelFor(myTfTargetClassName)
-    _panel2.add(label, BorderLayout.NORTH)
-    _panel2.add(myTfTargetClassName, BorderLayout.CENTER)
-    box.add(_panel2)
-
-    panel.add(box, BorderLayout.CENTER)
-    panel.add(Box.createVerticalStrut(10), BorderLayout.SOUTH)
+    val panel = VerticalLayout.create()
+      .add(Label.create(LocalizeValue.of(ScalaBundle.message("move.members.source.title"))))
+      .add(sourceClassField)
+      .add(Label.create(LocalizeValue.of(ScalaBundle.message("move.members.target.title"))))
+      .add(TargetAWT.wrap(myTfTargetClassName))
 
     validateButtons()
-    panel
+    TargetAWT.to(panel).asInstanceOf[JComponent]
   }
 
   override def getPreferredFocusedComponent: JComponent = myTfTargetClassName

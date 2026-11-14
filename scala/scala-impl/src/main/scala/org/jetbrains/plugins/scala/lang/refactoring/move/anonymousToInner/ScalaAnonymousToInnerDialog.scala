@@ -10,8 +10,11 @@ import consulo.language.editor.refactoring.ui.NameSuggestionsField
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import com.intellij.java.impl.refactoring.util.{ParameterTablePanel, RefactoringMessageUtil}
 import com.intellij.java.analysis.impl.refactoring.util.VariableData
-import consulo.ui.ex.awt.IdeBorderFactory
-import consulo.ui.ex.awt.FormBuilder
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.LabeledLayout
+import consulo.ui.util.FormBuilder
 import org.jetbrains.annotations.{Nls, TestOnly}
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
@@ -21,8 +24,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.ScParameterizedType
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.ScDesignatorType
 import org.jetbrains.plugins.scala.lang.refactoring.extractMethod.ScalaVariableData
 
-import java.awt.BorderLayout
-import javax.swing.{JComponent, JPanel}
+import javax.swing.JComponent
 import scala.jdk.CollectionConverters._
 
 /**
@@ -93,18 +95,23 @@ class ScalaAnonymousToInnerDialog(
     classNameField.requestFocusInWindow
   }
 
-  override protected def createNorthPanel: JComponent =
-    FormBuilder
-      .createFormBuilder
-      .addLabeledComponent(JavaRefactoringBundle.message("anonymousToInner.class.name.label.text"), classNameField)
-      .getPanel
+  @RequiredUIAccess
+  override protected def createNorthPanel: JComponent = {
+    val form = FormBuilder.create()
+      .addLabeled(LocalizeValue.of(JavaRefactoringBundle.message("anonymousToInner.class.name.label.text")), TargetAWT.wrap(classNameField))
+      .build()
+    TargetAWT.to(form).asInstanceOf[JComponent]
+  }
 
   override def getPreferredFocusedComponent: JComponent = classNameField.getFocusableComponent
 
+  @RequiredUIAccess
   override def createCenterPanel(): JComponent = {
-    val panel = new JPanel(new BorderLayout)
-    panel.add(createParametersPanel, BorderLayout.CENTER)
-    panel
+    val panel = LabeledLayout.create(
+      LocalizeValue.of(JavaRefactoringBundle.message("anonymousToInner.parameters.panel.border.title")),
+      TargetAWT.wrap(createParametersPanel)
+    )
+    TargetAWT.to(panel).asInstanceOf[JComponent]
   }
 
   def getClassName: String = classNameField.getEnteredName
@@ -127,7 +134,6 @@ class ScalaAnonymousToInnerDialog(
         this.asInstanceOf[DialogWrapper].doCancelAction()
       }
     }
-    panel.setBorder(IdeBorderFactory.createTitledBorder(JavaRefactoringBundle.message("anonymousToInner.parameters.panel.border.title"), false))
     panel
   }
 

@@ -26,6 +26,8 @@ object ScalaHighlightingMode {
   // not be shown at all, so the built-in highlighting is used regardless of the project settings
   private val compilerHighlightingAvailable = false
 
+  def isCompilerHighlightingAvailable: Boolean = compilerHighlightingAvailable
+
   private def showCompilerErrorsScala2(project: Project): Boolean =
     compilerHighlightingEnabledInTests ||
       compilerHighlightingAvailable && !isInTestMode && ScalaProjectSettings.getInstance(project).isCompilerHighlightingScala2

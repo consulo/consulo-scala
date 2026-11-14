@@ -12,21 +12,23 @@ import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaDocFormattingPa
 import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
-import java.awt.BorderLayout
-import java.awt.event.ActionEvent
-import javax.swing.{JCheckBox, JComponent, JPanel}
+import consulo.ui.CheckBox
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.{DockLayout, VerticalLayout}
+
+import javax.swing.JComponent
 
 class ScalaDocFormattingPanel(val settings: CodeStyleSettings) extends OptionTreeWithPreviewPanel(settings) {
 
-  private var myEnableCheckBox: JCheckBox = scala.compiletime.uninitialized
-  private var myAsteriskStyleCheckBox: JCheckBox = scala.compiletime.uninitialized
-  private val myScaladocPanel: JPanel = new JPanel(new BorderLayout)
+  private var myEnableCheckBox: CheckBox = scala.compiletime.uninitialized
+  private var myAsteriskStyleCheckBox: CheckBox = scala.compiletime.uninitialized
+  private var myScaladocPanel: JComponent = scala.compiletime.uninitialized
 
   init()
 
   override def getSettingsType = LanguageCodeStyleSettingsProvider.SettingsType.LANGUAGE_SPECIFIC
 
-  override def getPanel: JPanel = myScaladocPanel
+  override def getPanel: JComponent = myScaladocPanel
 
   override protected def getTabTitle: LocalizeValue = LocalizeValue.of(ScalaBundle.message("scaladoc.panel.title"))
 
@@ -39,17 +41,15 @@ class ScalaDocFormattingPanel(val settings: CodeStyleSettings) extends OptionTre
   override def init(): Unit = {
     super.init()
 
-    val topPanel = new JPanel(new BorderLayout)
-    myEnableCheckBox = new JCheckBox(ScalaBundle.message("scaladoc.panel.enable.scaladoc.formatting"))
-    myEnableCheckBox.addActionListener((_: ActionEvent) => update())
-    myAsteriskStyleCheckBox = new JCheckBox(ScalaBundle.message("scaladoc.panel.add.additional.space.for.leading.asterisk"))
-    topPanel.add(myEnableCheckBox, BorderLayout.NORTH)
-    topPanel.add(myAsteriskStyleCheckBox, BorderLayout.SOUTH)
+    myEnableCheckBox = CheckBox.create(LocalizeValue.of(ScalaBundle.message("scaladoc.panel.enable.scaladoc.formatting")))
+    myEnableCheckBox.addValueListener(_ => update())
+    myAsteriskStyleCheckBox = CheckBox.create(LocalizeValue.of(ScalaBundle.message("scaladoc.panel.add.additional.space.for.leading.asterisk")))
+    val topPanel = VerticalLayout.create().add(myEnableCheckBox).add(myAsteriskStyleCheckBox)
 
     myPanel.setBorder(new CustomLineBorder(OnePixelDivider.BACKGROUND, 1, 0, 0, 0))
 
-    myScaladocPanel.add(BorderLayout.CENTER, myPanel)
-    myScaladocPanel.add(topPanel, BorderLayout.NORTH)
+    // the options tree with the preview is the platform Swing panel
+    myScaladocPanel = TargetAWT.to(DockLayout.create().top(topPanel).center(TargetAWT.wrap(myPanel))).asInstanceOf[JComponent]
   }
 
   override protected  def initTables(): Unit = {
@@ -59,8 +59,7 @@ class ScalaDocFormattingPanel(val settings: CodeStyleSettings) extends OptionTre
   }
 
   private def update(): Unit = {
-    setEnabled(getPanel, myEnableCheckBox.isSelected)
-    myEnableCheckBox.setEnabled(true)
+    setEnabled(myPanel, myEnableCheckBox.getValue)
     myAsteriskStyleCheckBox.setEnabled(true)
   }
 
@@ -79,22 +78,22 @@ class ScalaDocFormattingPanel(val settings: CodeStyleSettings) extends OptionTre
   override def apply(settings: CodeStyleSettings): Unit = {
     super.apply(settings)
     val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
-    scalaSettings.ENABLE_SCALADOC_FORMATTING = myEnableCheckBox.isSelected
-    scalaSettings.USE_SCALADOC2_FORMATTING = myAsteriskStyleCheckBox.isSelected
+    scalaSettings.ENABLE_SCALADOC_FORMATTING = myEnableCheckBox.getValue
+    scalaSettings.USE_SCALADOC2_FORMATTING = myAsteriskStyleCheckBox.getValue
   }
 
   override protected def resetImpl(settings: CodeStyleSettings): Unit = {
     super.resetImpl(settings)
     val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
-    myEnableCheckBox.setSelected(scalaSettings.ENABLE_SCALADOC_FORMATTING)
-    myAsteriskStyleCheckBox.setSelected(scalaSettings.USE_SCALADOC2_FORMATTING)
+    myEnableCheckBox.setValue(scalaSettings.ENABLE_SCALADOC_FORMATTING)
+    myAsteriskStyleCheckBox.setValue(scalaSettings.USE_SCALADOC2_FORMATTING)
     update()
   }
 
   override def isModified(settings: CodeStyleSettings): Boolean = {
     val scalaSettings = settings.getCustomSettings(classOf[ScalaCodeStyleSettings])
-    super.isModified(settings) || myEnableCheckBox.isSelected != scalaSettings.ENABLE_SCALADOC_FORMATTING ||
-      myAsteriskStyleCheckBox.isSelected != scalaSettings.USE_SCALADOC2_FORMATTING
+    super.isModified(settings) || myEnableCheckBox.getValue != scalaSettings.ENABLE_SCALADOC_FORMATTING ||
+      myAsteriskStyleCheckBox.getValue != scalaSettings.USE_SCALADOC2_FORMATTING
   }
 
   protected override def customizeSettings(): Unit = {

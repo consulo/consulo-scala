@@ -24,9 +24,13 @@ import org.jetbrains.plugins.scala.lang.psi.fake.FakePsiMethod
 import org.jetbrains.plugins.scala.lang.psi.impl.search.ScalaOverridingMemberSearcher
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
-import java.awt.{BorderLayout, GridLayout}
+import consulo.localize.LocalizeValue
+import consulo.ui.Label
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.layout.HorizontalLayout
+
 import java.util
-import javax.swing._
+import javax.swing.JComponent
 import scala.collection.mutable.ArrayBuffer
 
 @ExtensionImpl
@@ -153,19 +157,17 @@ class PrepareRenameScalaMethodProcessor extends RenamePsiElementProcessor {
 
     override def createCenterPanel: JComponent = null
 
+    @RequiredUIAccess
     override def createNorthPanel: JComponent = {
-      val panel = new JPanel(new BorderLayout)
-      panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
+      val panel = HorizontalLayout.create()
       val icon = Messages.getWarningIcon
       if (icon != null) {
-        val iconLabel = new JLabel(TargetAWT.to(Messages.getQuestionIcon))
-        panel.add(iconLabel, BorderLayout.WEST)
+        val iconLabel = Label.create()
+        iconLabel.setImage(Messages.getQuestionIcon)
+        panel.add(iconLabel)
       }
-      val labelsPanel = new JPanel(new GridLayout(0, 1, 0, 0))
-      labelsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 10))
-      labelsPanel.add(new JLabel(text))
-      panel.add(labelsPanel, BorderLayout.CENTER)
-      panel
+      panel.add(Label.create(LocalizeValue.of(text)))
+      TargetAWT.to(panel).asInstanceOf[JComponent]
     }
   }
 }

@@ -4,17 +4,19 @@ import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
 import jakarta.inject.{Inject, Singleton}
-import consulo.codeEditor.EditorEx
-import consulo.ide.impl.idea.ui.EditorNotificationPanel
+import consulo.codeEditor.{EditorColors, EditorEx}
+import consulo.colorScheme.EditorColorsManager
+import consulo.localize.LocalizeValue
 import consulo.project.Project
-import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.layout.{DockLayout, HorizontalLayout}
+import consulo.ui.{Component, Hyperlink, Label, Space}
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildToolWindowReporter}
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.process.options.reporting.{SbtOptionsDiagnosticsReporter, SbtOptionsWarningData}
 
 import java.util.concurrent.atomic.AtomicReference
-import javax.swing.JComponent
 import scala.concurrent.Promise
 
 /**
@@ -99,15 +101,18 @@ private[shell] final class SbtShellOptionsWarningService @Inject()(project: Proj
   private def refresh(): Unit =
     warningsHost.foreach(_.update(warningState.get().map(createPanel)))
 
-  private def createPanel(warning: OptionsWarning): EditorNotificationPanel = {
+  @RequiredUIAccess
+  private def createPanel(warning: OptionsWarning): Component = {
     // upstream: warning status panel with a close action
-    val panel = new EditorNotificationPanel()
-    panel.setText(NotificationText)
-    panel.createActionLabel(
-      SbtBundle.message("sbt.options.shell.notification.show.details"),
-      (() => showDetails(warning)): Runnable,
-    )
-    panel.createActionLabel(SbtBundle.message("sbt.options.shell.notification.hide"), (() => hide()): Runnable)
+    val links = HorizontalLayout.create()
+    links.add(Hyperlink.create(LocalizeValue.of(SbtBundle.message("sbt.options.shell.notification.show.details")), _ => showDetails(warning)))
+    links.add(Hyperlink.create(LocalizeValue.of(SbtBundle.message("sbt.options.shell.notification.hide")), _ => hide()))
+
+    val panel = DockLayout.create()
+    panel.center(Label.create(LocalizeValue.of(NotificationText)))
+    panel.right(links)
+    panel.paddingBuilder().horizontalSet(Space.LARGE).apply()
+    panel.setBackgroundColor(EditorColorsManager.getInstance.getGlobalScheme.getColor(EditorColors.NOTIFICATION_INFORMATION_BACKGROUND))
     panel
   }
 
@@ -138,7 +143,7 @@ private[shell] object SbtShellOptionsWarningService {
   private final case class OptionsWarning(warnings: Seq[SbtOptionsWarningData])
 
   private trait SbtShellWarningsHost {
-    def update(component: Option[JComponent]): Unit
+    def update(component: Option[Component]): Unit
     def clear(): Unit = update(None)
 
     def isForHistoryViewer(editor: EditorEx): Boolean = false
@@ -146,10 +151,10 @@ private[shell] object SbtShellOptionsWarningService {
 
   // Legacy sbt shell: LanguageConsoleImpl exposes the console output as an EditorEx history viewer.
   private final class EditorHeaderWarningsHost(editor: EditorEx) extends SbtShellWarningsHost {
-    override def update(component: Option[JComponent]): Unit =
+    override def update(component: Option[Component]): Unit =
       if (!editor.isDisposed) {
         val hasHeader = editor.hasHeaderComponent
-        editor.setPermanentHeaderComponent(component.map(TargetAWT.wrap).orNull)
+        editor.setPermanentHeaderComponent(component.orNull)
         if (!hasHeader) {
           editor.setHeaderComponent(null)
         }
