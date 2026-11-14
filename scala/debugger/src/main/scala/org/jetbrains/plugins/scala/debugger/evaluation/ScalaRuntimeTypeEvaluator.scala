@@ -35,12 +35,14 @@ abstract class ScalaRuntimeTypeEvaluator(@Nullable editor: Editor, expression: P
     // action that makes every write action (e.g. typing in the editor) wait until it is done (SCL-26185).
     // A non-blocking read action is cancelled and restarted when a write action is pending, and the indicator lets
     // the requester drop the computation once it is no longer interested in the result.
-    def nonBlocking[T](body: => T): T = inNonBlockingReadAction(expireWhen = () => !process.isAttached, Some(indicator))(body)
+    def nonBlocking[T](body: => T): T = inNonBlockingReadAction(expireWhen = () => project.isDisposed, Some(indicator))(body)
 
+    // computing the position talks to the debuggee, which a restart of the read action would repeat
+    val sourcePosition = ContextUtil.getSourcePosition(evaluationContext)
     val evaluator: ExpressionEvaluator = nonBlocking {
       val textWithImports = new TextWithImportsImpl(CodeFragmentKind.CODE_BLOCK, expression.getText)
       val codeFragment = new ScalaCodeFragmentFactory().createCodeFragment(textWithImports, expression, project)
-      ScalaEvaluatorBuilder.build(codeFragment, ContextUtil.getSourcePosition(evaluationContext))
+      ScalaEvaluatorBuilder.build(codeFragment, sourcePosition)
     }
     val value: Value = evaluator.evaluate(evaluationContext)
     if (value == null) throw EvaluationException(JavaDebuggerLocalize.evaluationErrorSurroundedExpressionNull().get())

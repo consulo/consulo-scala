@@ -6,6 +6,7 @@ import com.intellij.java.debugger.localize.JavaDebuggerLocalize
 import com.intellij.java.debugger.{NoDataException, SourcePosition}
 import consulo.language.ast.ASTNode
 import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiParameter}
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import consulo.language.psi.{PsiElement, PsiNamedElement}
 import com.intellij.java.language.psi.PsiLocalVariable
 import consulo.language.psi.scope.GlobalSearchScope
@@ -226,6 +227,7 @@ object DebuggerUtil {
       }
     }
 
+    // upstream: the platform takes the read action for the PSI part, consulo-java does not
     override def getDisplayName(debugProcess: DebugProcessImpl): String = {
       inReadAction {
         JVMNameUtil.getSourcePositionClassDisplayName(debugProcess, sourcePosition)
@@ -233,14 +235,15 @@ object DebuggerUtil {
     }
   }
 
-  class JVMConstructorSignature(clazz: PsiClass) extends JVMName {
+  class JVMConstructorSignature @RequiresReadLock (clazz: PsiClass) extends JVMName {
     val position: SourcePosition = SourcePosition.createFromElement(clazz)
+    private val qualifiedName: String = clazz.qualifiedName
 
     override def getName(process: DebugProcessImpl): String = {
       jvmClassAtPosition(position, process) match {
         case Some(refType) => refType.methodsByName("<init>").get(0).signature()
         case None =>
-          throw EvaluationException(JavaDebuggerLocalize.errorClassNotLoaded(inReadAction(clazz.qualifiedName)).get())
+          throw EvaluationException(JavaDebuggerLocalize.errorClassNotLoaded(qualifiedName).get())
       }
     }
 

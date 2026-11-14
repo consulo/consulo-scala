@@ -77,14 +77,46 @@ package object caches {
     }
   }
 
+  /** Computes an unique cache identifier.
+   *
+   *  Return human-readable strings only if `caches.stats` are enabled to reduce CPU and RAM use:
+   *  * Because the method is called frequently, it's best to avoid string transformations.
+   *  * Because results are effectively stored in `Cache` fields, it's best to reference singleton objects rather than unique `String` instances.
+   *
+   *  @param lambdaClass class of the function that computes values, must be unique
+   *  @param name cache name, e.g. "annotation", must be unique within the enclosing class
+   *
+   *  @return cache identifier, for example:
+   *  * `caches.stats` enabled  : `org$example$Foo$$annotation$cacheKey`
+   *  * `caches.stats` disabled : `org.example.Foo$$Lambda/0x000000000000001a`
+   *
+   *  @see https://youtrack.jetbrains.com/issue/SCL-26384#focus=Comments-27-14629331.0-0
+   */
   private def idFor(lambdaClass: Class[?], name: String): String =
-    withoutLambdaSuffix(lambdaClass.getName).replace('.', '$') + "$" + name.replace('.', '$') + "$cacheKey"
+    if (Tracer.isEnabled) withoutLambdaSuffix(lambdaClass.getName).replace('.', '$') + "$" + name.replace('.', '$') + "$cacheKey"
+    else lambdaClass.getName
 
+  /** Computes a qualified cache name.
+   *
+   *  Return human-readable strings only if `caches.stats` are enabled to reduce CPU and RAM use:
+   *  * Because the method is called frequently, it's best to avoid string transformations.
+   *  * Because results are effectively stored in `Cache` fields, it's best to reference singleton objects rather than unique `String` instances.
+   *
+   *  @param lambdaClass class of the function that computes values, must be unique
+   *  @param name cache name, e.g. "annotation", must be unique within the enclosing class
+   *
+   *  @return qualified cache name, for example:
+   *  * `caches.stats` enabled  : `Foo.annotation`
+   *  * `caches.stats` disabled : `org.example.Foo$$Lambda/0x000000000000001a`
+   *
+   *  @see https://youtrack.jetbrains.com/issue/SCL-26384#focus=Comments-27-14629331.0-0
+   */
   private def nameFor(lambdaClass: Class[?], name: String): String =
-    withoutLambdaSuffix(lambdaClass.getSimpleName) + "." + name
+    if (Tracer.isEnabled) withoutLambdaSuffix(lambdaClass.getSimpleName) + "." + name
+    else lambdaClass.getName
 
   private def withoutLambdaSuffix(name: String): String = {
-    val i = name.indexOf("$$Lambda$")
+    val i = name.indexOf("$$Lambda/") // Since JDK 21, lambda class names are like "org.example.Foo$$Lambda/0x000000000000001a"
     if (i != -1) name.substring(0, i) else name
   }
 }

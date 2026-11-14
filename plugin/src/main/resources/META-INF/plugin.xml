@@ -46,7 +46,7 @@
         <reference ref="Scala.MakeExplicit">
             <keyboard-shortcut keymap="$default" first-keystroke="alt ENTER" />
         </reference>
-        <reference ref="Scala.Desugar">
+        <reference ref="Scala.ElaborateCode">
             <keyboard-shortcut first-keystroke="control alt D" keymap="$default" />
         </reference>
         <reference ref="Scala.TypeInfo">

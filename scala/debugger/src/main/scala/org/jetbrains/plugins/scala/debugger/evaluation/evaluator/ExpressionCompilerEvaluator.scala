@@ -7,16 +7,19 @@ import com.intellij.java.debugger.engine.evaluation.expression.{ExpressionEvalua
 import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.DebuggerUtilsEx
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import consulo.language.util.ModuleUtilCore
+import consulo.module.Module
 import consulo.module.content.layer.OrderEnumerator
 import consulo.language.psi.PsiElement
+import consulo.virtualFileSystem.VirtualFile
 import consulo.internal.com.sun.jdi.{ArrayReference, ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
 import org.jetbrains.plugins.scala.compiler.data.ExpressionEvaluationArguments
 import consulo.compiler.CompilerPaths
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ExpressionCompilerEvaluator.filteredScalacOptions
 import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, EvaluatorCompiler, ExpressionCompilerResolverListener}
 import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaPositionManager}
-import org.jetbrains.plugins.scala.extensions.{PathExt, inReadAction}
+import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 
@@ -26,16 +29,20 @@ import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
 import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
 
-private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiElement, position: SourcePosition) extends ExpressionEvaluator {
+private[evaluation] final class ExpressionCompilerEvaluator @RequiresReadLock (codeFragment: PsiElement, position: SourcePosition) extends ExpressionEvaluator {
+
+  // Everything derived from PSI is computed here, under the read action the evaluator is built in; evaluate() only
+  // talks to the compiler and the debuggee
+  private val moduleForPsiElement: Module = ModuleUtilCore.findModuleForPsiElement(codeFragment)
+  private val codeFragmentText: String = codeFragment.getText
+  private val sourceFile: VirtualFile = position.getFile.getVirtualFile
+  private val line: Int = position.getLine + 1
+  private val packageName: String = ScalaPositionManager.findPackageName(position.getElementAt).getOrElse("")
+
   override def getModifier: Modifier = null
 
   override def evaluate(context: EvaluationContext): Value = {
-    val moduleForPsiElement = inReadAction {
-      ModuleUtilCore.findModuleForPsiElement(codeFragment)
-    }
-
     if (moduleForPsiElement eq null) {
-      val codeFragmentText = inReadAction(codeFragment.getText)
       throw EvaluationException(DebuggerBundle.message("could.not.find.module.for.code.fragment", codeFragmentText))
     }
 
@@ -72,9 +79,7 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
           enumerator.getClassesRoots.map(_.getCanonicalPath).map(stripJarPathSuffix).map(Path.of(_)) ++
           expressionCompilerJar).distinct
       val scalacOptions = filteredScalacOptions(ScalaCompilerSettings.forModule(module).getOptionsAsStrings(module.hasScala3))
-      val source = Path.of(position.getFile.getVirtualFile.getCanonicalPath)
-      val line = position.getLine + 1
-      val expression = codeFragment.getText
+      val source = Path.of(sourceFile.getCanonicalPath)
 
       val stackFrame = context.getFrameProxy.getStackFrame
       val localVariables = stackFrame.visibleVariables().asScala
@@ -85,8 +90,7 @@ private[evaluation] final class ExpressionCompilerEvaluator(codeFragment: PsiEle
       }
       val thisObject = stackFrame.thisObject()
 
-      val packageName = inReadAction(ScalaPositionManager.findPackageName(position.getElementAt)).getOrElse("")
-      val arguments = ExpressionEvaluationArguments(useBuiltInExpressionCompiler, outDir, classpath, scalacOptions, source, line, expression, localVariableNames.toSet, packageName)
+      val arguments = ExpressionEvaluationArguments(useBuiltInExpressionCompiler, outDir, classpath, scalacOptions, source, line, codeFragmentText, localVariableNames.toSet, packageName)
 
       // upstream: evaluated by the Scala compile server
       EvaluatorCompiler.evaluateExpression(arguments) match {

@@ -322,7 +322,7 @@ class ScalaPsiManager @Inject()(val project: Project) extends Disposable {
 
   private val _getTopLevelExportsByPackage =
     cachedWithoutModificationCount(
-      "getTopLevelDefinitionsByPackage",
+      "getTopLevelExportsByPackage",
       ValueWrapper.SofterReference,
       clearCacheOnTopLevelChange,
       (pkgFqn: String, scope: GlobalSearchScope) => {

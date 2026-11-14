@@ -11,6 +11,7 @@ import com.intellij.java.debugger.impl.engine.evaluation.{EvaluationContextImpl,
 import com.intellij.java.debugger.impl.engine.evaluation.expression.Evaluator
 import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
 import com.intellij.java.debugger.impl.jdi.VirtualMachineProxyImpl
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import consulo.util.dataholder.Key
 import consulo.language.psi.PsiElement
 import consulo.internal.com.sun.jdi._
@@ -22,12 +23,12 @@ import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import java.util
 import scala.jdk.CollectionConverters._
 
-class ScalaCompilingEvaluator(psiContext: PsiElement, fragment: ScalaCodeFragment)
+class ScalaCompilingEvaluator @RequiresReadLock (psiContext: PsiElement, fragment: ScalaCodeFragment)
         extends Evaluator {
 
   import ScalaCompilingEvaluator._
 
-  private val project = inReadAction(fragment.getProject)
+  private val project = fragment.getProject
   private val generatedClass = GeneratedClass(fragment, psiContext)
   private var classLoader: ClassLoaderReference = null
 
@@ -62,8 +63,7 @@ class ScalaCompilingEvaluator(psiContext: PsiElement, fragment: ScalaCodeFragmen
   }
 
   private def callEvaluator(context: EvaluationContextImpl): ExpressionEvaluator = {
-    val process = context.getDebugProcess
-    ReadActions.inNonBlockingReadAction(expireWhen = () => !process.isAttached) {
+    ReadActions.inNonBlockingReadAction(expireWhen = () => project.isDisposed) {
       val callCode = new TextWithImportsImpl(CodeFragmentKind.CODE_BLOCK, generatedClass.callText)
       val codeFragment = new ScalaCodeFragmentFactory().createCodeFragment(callCode, generatedClass.newContext, project)
       ScalaEvaluatorBuilder.build(codeFragment, SourcePosition.createFromElement(generatedClass.newContext))

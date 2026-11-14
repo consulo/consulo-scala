@@ -21,8 +21,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScClass, ScEnu
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, ScNamedElement, ScPackaging, ScTypeBoundsOwner, ScTypeParametersOwner, ScTypedDefinition}
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.lang.psi.types.ValueClassType.isValueClass
-import org.jetbrains.plugins.scala.lang.psi.types.api.designator.{ScDesignatorType, ScProjectionType}
-import org.jetbrains.plugins.scala.lang.psi.types.api.{FunctionType, ParameterizedType, TypeParameterType}
+import org.jetbrains.plugins.scala.lang.psi.types.api.designator.{ScDesignatorType, ScProjectionType, ScThisType}
+import org.jetbrains.plugins.scala.lang.psi.types.api.{FunctionType, ParameterizedType, StdType, TypeParameterType}
 import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.{Parameter, ScMethodType, ScTypePolymorphicType}
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResult
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScLiteralType, ScType, ScTypeExt, TypePresentationContext}
@@ -39,7 +39,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
 
     val modifiers = {
       val s = textOfModifiers(cls, (if (cls.isObject) ScalaPsiUtil.superValsSignatures(cls) else ScalaPsiUtil.superTypeSignatures(cls)).nonEmpty)
-      if (normalize && cls.is[ScClass] && (cls.hasModifierPropertyScala("implicit") || isValueClass(cls))) s.replace("final ", "")
+      if (normalize && cls.is[ScClass] && isValueClass(cls)) s.replace("final ", "")
       else if (normalize && cls.is[ScObject] && cls.hasModifierPropertyScala("case")) s.replace("final ", "")
       else s
     }
@@ -80,7 +80,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       if (fqns.isEmpty) "" else s"${extendsSeparator}derives " + fqns.mkString(", ")
     }
 
-    val selfType = cls.selfType.map(t => s" ${cls.selfTypeElement.map(_.name).getOrElse("this")}: " + textOf(t) + " =>").mkString
+    val selfType = cls.selfType.map(t => s" ${cls.selfTypeElement.map(_.name).getOrElse("this")}: " + textOf(t).replace(name + ".this.", "") + " =>").mkString
 
     val givenClauses = cls match {
       case g: ScGivenDefinition => g.clauses.map(_.clauses).getOrElse(Seq.empty).map(textOf(_, inPrivateConstructor = false, inCaseClass = false)).mkString
@@ -182,7 +182,9 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       textOf(if (f.returnTypeElement.isDefined) f.returnType else f.returnType.map(_.removeAliasDefinitionsIn(f)))
     val rhs = f match {
       case ScFunctionDefinition.withBody(body) =>
-        val rhs = textOfStatement(normalized(body), indent + "  ")
+        val expression = normalized(body)
+        val rhs = if (f.isLocal && !expression.is[ScBlock]) textOfExpression(expression, indent)
+                  else textOfStatement(expression, indent + "  ")
         if (rhs.startsWith("{")) " = " + rhs else if (!f.isLocal) " = " + rhs else " = " + rhs.trim
       case _ => ""
     }
@@ -209,10 +211,10 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
   private def textOfExpression(e: ScExpression, indent: String, etaExpand: Boolean = true): String = highlighted(e) {
     val text = e match {
       case p: ScParenthesisedExpr => p.innerElement.map(textOfExpression(_, indent)).getOrElse("")
-      case b: ScBlockExpr => "{" + b.statements.map(s => textOfStatement(s, indent + "  ")).mkString("") +
-        b.caseClauses.map("\n" + _.caseClauses.map(c => indent + "  " + "  case " + textOfPattern(c.pattern.get) + c.guard.flatMap(_.expr).map(" if " + textOfExpression(_, indent)).getOrElse("") + " =>" + textOfExpression(c.expr.get, indent + "  ")).mkString("\n")).getOrElse("") +
+      case b: ScBlockExpr => "{" + b.statements.filterNot(isUnitConstant).map(s => textOfStatement(s, indent + "  ")).mkString("") +
+        b.caseClauses.map("\n" + _.caseClauses.map(c => indent + "  " + "  case " + textOfPattern(c.pattern.get) + c.guard.flatMap(_.expr).map(" if " + textOfExpression(_, indent)).getOrElse("") + " =>" + textOfCaseBlock(c.expr.get, indent + "  ")).mkString("\n")).getOrElse("") +
         "\n" + indent + "  " + "}"
-      case b: ScBlock => b.statements.map(s => textOfStatement(s, indent + "  ")).mkString("")
+      case b: ScBlock => b.statements.filterNot(isUnitConstant).map(s => textOfStatement(s, indent + "  ")).mkString("")
       case r: ScReturn => "return" + r.expr.map(" " + textOfExpression(_, indent)).getOrElse("")
       case t: ScTypedExpression =>
         val s = textOfExpression(t.expr, indent)
@@ -223,7 +225,18 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       case s: ScSuperReference => "super" + s.staticSuper.map("[" + textOf(_) + "]").getOrElse("")
       case l: ScInterpolatedStringLiteral => l.desugaredExpression.map(p => textOfExpression(p._2, indent)).getOrElse("")
       case f: ScFor => f.desugared(forDisplay = true).map(textOfExpression(_, indent)).getOrElse("")
-      case l: ScLiteral => if (l.getValue == null) "null" else l.literalType.asInstanceOf[ScLiteralType].value.presentation
+      case l: ScLiteral => l.getValue match {
+        case null => "null"
+        case s: String => "\"" + escapedString(s) + "\""
+        case c: java.lang.Character => "'" + escapedString(c.toString) + "'"
+        case n: Number => l.getTypeWithoutImplicits().toOption match {
+          case Some(StdType(StdType.Name.Long, _)) => n.longValue().toString + "L"
+          case Some(StdType(StdType.Name.Float, _)) => n.floatValue().toString + "f"
+          case Some(StdType(StdType.Name.Double, _)) => n.doubleValue().toString
+          case _ => l.literalType.asInstanceOf[ScLiteralType].value.presentation
+        }
+        case _ => l.literalType.asInstanceOf[ScLiteralType].value.presentation
+      }
       case u: ScUnderscoreSection => u.bindingExpr match {
         case Some(b) => etaExpansionOf(b, indent).getOrElse("<expr>")
         case None => "_"
@@ -231,8 +244,8 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       case e @ NonValueType(_: ScMethodType | ScTypePolymorphicType(_: ScMethodType, _)) & ExpectedType(FunctionType(_, _)) if etaExpand => etaExpansionOf(e, indent).getOrElse("<expr>")
       case e: ScIf =>
         "if (" + e.condition.map(e => textOfExpression(normalized(e), indent)).getOrElse("") + ") " + e.thenExpression.map(e => textOfExpression(normalized(e), indent)).getOrElse("") + (e.elseExpression match {
-          case Some(e) => " else " + textOfExpression(normalized(e), indent)
-          case None => ""
+          case Some(e) if !isUnitConstant(e) => " else " + textOfExpression(normalized(e), indent)
+          case _ => ""
         })
       case e: ScTry =>
         "try " + e.expression.map(e => textOfExpression(normalized(e), indent)).getOrElse("") +
@@ -245,7 +258,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       //belongs to writes all of its clauses, in the order of the signature of the callee
       case owner@Call(call) => inlining(call.target) {
         val callee  = textOfCallee(owner, call, indent)
-        val clauses = textOfClauses(call, indent)
+        val clauses = textOfGetClassTypeArgument(call) + textOfClauses(call, indent)
         owner match {
           //`a += b` assigns the result of `a.+(b)` to `a`, which the source writes as one operator
           case infix: ScInfixExpr if isCompoundAssignment(infix, call) =>
@@ -274,9 +287,9 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       case e: ScNewTemplateDefinition =>
         val hasMembers = e.extendsBlock.members.exists(m => withPrivate || !isPrivate(m))
         val isAbstract = template.superRefs(e).headOption.exists { case (_, cls) => template.isAbstract(cls) }
-        "new " + e.firstConstructorInvocation
+        "new " + e.extendsBlock.templateParents.map(_.parentClauses).getOrElse(Seq.empty)
           .map(textOfConstructorInvocation(_, indent, emptyParens = !(hasMembers || isAbstract)))
-          .getOrElse("") + (if (!hasMembers) (if (isAbstract) " {}" else "") else
+          .mkString(", ") + (if (!hasMembers) (if (isAbstract) " {}" else "") else
           " {" + {
             val sb = new StringBuilder()
             printTo(sb, e.extendsBlock, indent + "  ", _ => ())
@@ -289,7 +302,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
         textOfTuple(e.exprs, indent)
       case m: ScMatch =>
         m.expression.map(textOfExpression(_, indent + "  ")).getOrElse("") + " match {\n" +
-          m.clauses.map(c => indent + "  " + "  case " + textOfPattern(c.pattern.get) + c.guard.flatMap(_.expr).map(" if " + textOfExpression(_, indent)).getOrElse("") + " =>" + textOfExpression(c.expr.get, indent + "  ")).mkString("\n") +
+          m.clauses.map(c => indent + "  " + "  case " + textOfPattern(c.pattern.get) + c.guard.flatMap(_.expr).map(" if " + textOfExpression(_, indent)).getOrElse("") + " =>" + textOfCaseBlock(c.expr.get, indent + "  ")).mkString("\n") +
         "\n" + indent + "  }"
       case e => "<expr>"
     }
@@ -297,6 +310,20 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
     //a call writes the clauses the implicit search filled in where the callee takes them, in the
     //order of the signature rather than after everything the source writes, see textOfClauses
     e.implicitConversion().map(textOfImplicitConversion(_, text, e)).getOrElse(text)
+  }
+
+  // Keep literal escaping consistent with the compiler-side SourceCode printer.
+  private def escapedString(value: String): String = value.flatMap {
+    case '\b' => "\\b"
+    case '\t' => "\\t"
+    case '\n' => "\\n"
+    case '\f' => "\\f"
+    case '\r' => "\\r"
+    case '"' => "\\\""
+    case '\'' => "\\'"
+    case '\\' => "\\\\"
+    case c if c.isControl => f"\\u${c.toInt}%04x"
+    case c => c.toString
   }
 
   private def textOfReference(r: ScReference): String =
@@ -340,13 +367,22 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       case p: ScLiteralPattern => textOfExpression(p.getLiteral, "")
       case p: ScStableReferencePattern => p.referenceExpression.map(textOfExpression(_, "")).getOrElse("")
       case p: ScTuplePattern => "(" + p.patternList.map(_.patterns.map(textOfPattern).mkString(", ")).getOrElse("") + ")"
-      case p: ScTypedPattern => p.name + ": " + textOf(p.`type`())
-      case p: Sc3TypedPattern => textOfPattern(p.pattern) + ": " + textOf(p.`type`())
+      case p @ ScTypedPattern(tpe) => p.name + ": " + textOf(tpe.`type`())
+      case Sc3TypedPattern(pattern, tpe) => textOfPattern(pattern) + ": " + textOf(tpe.`type`())
       case p: ScReferencePattern => p.name
       case p: ScExtractorPattern => textOfReference(p.ref) + "(" + p.argPatterns.map(textOfPattern).mkString(", ") + ")"
       case p: ScCompositePattern => "(" + p.subpatterns.map(textOfPattern).mkString(" | ") + ")"
       case _ => "<pattern>"
     }
+  }
+
+  private def textOfCaseBlock(e: ScExpression, indent: String): String =
+    if (isUnitConstant(e)) "" else textOfExpression(e, indent)
+
+  private def isUnitConstant(s: ScBlockStatement): Boolean = s match {
+    case _: ScUnitExpr => true
+    case b: ScBlock if !b.hasCaseClauses && b.statements.forall(it => it.is[ScImportStmt] || isUnitConstant(it)) => true
+    case _ => false
   }
 
   @tailrec
@@ -438,7 +474,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
       //The operator can belong to an inner clause, as in `(receiver op first)(second)`.
       case reference: ScReferenceExpression
         if reference.getParent.asOptionOf[ScSugarCallExpr].exists(_.operation == reference) => reference.refName
-      case reference: ScReferenceExpression                => textOfCalleeReference(reference, call, indent)
+      case reference: ScReferenceExpression                => textOfCalleeReference(reference, indent)
       case expression: ScExpression if expression != owner => textOfExpression(expression, indent)
       //the `this` of a self invocation is no expression to write out
       case element                                         => element.getText
@@ -456,7 +492,7 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
     //a prefix expression names the operator without the `unary_` the callee is declared with
     val unary = if (owner.is[ScPrefixExpr]) "unary_" else ""
 
-    receiver + separator + unary + calleeText
+    receiver + separator + unary + calleeText + (if (call.isApply) ".apply" else "")
   }
 
   /**
@@ -466,12 +502,30 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
   private def isCompoundAssignment(infix: ScInfixExpr, call: InvocationDetails): Boolean =
     infix.operation.refName.endsWith("=") && !call.target.exists(_.name.endsWith("="))
 
-  /** The callee of a call as the source names it, with an `apply` it does not name written out. */
-  private def textOfCalleeReference(reference: ScReferenceExpression, call: InvocationDetails, indent: String): String =
-    (reference.qualifier match {
+  /** The callee of a call as the source names it. */
+  private def textOfCalleeReference(reference: ScReferenceExpression, indent: String): String =
+    reference.qualifier match {
       case Some(qualifier) => textOfExpression(qualifier, indent) + "." + reference.refName
       case None            => textOfReference(reference)
-    }) + (if (call.isApply) ".apply" else "")
+    }
+
+  /** Scala's compiler records the receiver type as a type argument of Object.getClass. */
+  private def textOfGetClassTypeArgument(call: InvocationDetails): String = {
+    val receiverType = call.target.filter { result =>
+      result.element match {
+        case method: PsiMethod => method.getName == "getClass" && Option(method.getContainingClass).exists(_.getQualifiedName == "java.lang.Object")
+        case _ => false
+      }
+    }.flatMap { result =>
+      call.thisExpr.flatMap(_.getTypeWithoutImplicits(ignoreBaseType = true).toOption).orElse(result.fromType)
+    }
+    receiverType.flatMap { tpe =>
+      tpe.widen match {
+        case ScThisType(cls) => cls.getTypeWithProjections(thisProjections = true).toOption
+        case tpe => Some(tpe)
+      }
+    }.map(tpe => "[" + textOf(tpe.removeAliasDefinitionsIn(call.origin)) + "]").getOrElse("")
+  }
 
   /** The clauses of a call, in the order of the signature of the callee. */
   private def textOfClauses(call: InvocationDetails, indent: String): String =
@@ -576,10 +630,11 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
     case _ => None
   }
 
+  @tailrec
   private def normalized(e: ScExpression): ScExpression = e match {
-    case b: ScBlock if normalize => b.statements match {
-      case Seq(e: ScExpression) => e
-      case statements if statements.length > 1 && statements.init.forall(_.is[ScImportStmt]) => statements.last.asInstanceOf[ScExpression]
+    case b: ScBlock if !b.hasCaseClauses => b.statements.filterNot(isUnitConstant) match {
+      case Seq(e: ScExpression) => normalized(e)
+      case statements if statements.length > 1 && statements.init.forall(_.is[ScImportStmt]) => normalized(statements.last.asInstanceOf[ScExpression])
       case _ => b
     }
     case e => e
@@ -608,7 +663,9 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
     val tpe = spaceAfter(name) + ": " + textOf(if (v.typeElement.isDefined) symbolType else symbolType.map(_.removeAliasDefinitionsIn(v)))
     val rhs = v match {
       case ScValueOrVariableDefinition.withExpr(expr) =>
-        val rhs = textOfStatement(normalized(expr), indent + "  ")
+        val expression = normalized(expr)
+        val rhs = if (v.isLocal && !expression.is[ScBlock]) textOfExpression(expression, indent)
+                  else textOfStatement(expression, indent + "  ")
         if (rhs.startsWith("{")) " = " + rhs else if (!v.isLocal) " = " + rhs else " = " + rhs.trim
       case _ => ""
     }
@@ -704,7 +761,8 @@ private class ClassPrinter(isScala3: Boolean, extendsSeparator: String = " ", wi
   private def isField(p: ScParameter): Boolean = {
     val containingClass = p.contexts.findByType[ScTypeDefinition].get
     val parentClauses = containingClass.extendsBlock.templateParents.map(_.parentClauses).getOrElse(Seq.empty)
-    (parentClauses ++ containingClass.members.filterNot(_.names.contains("this"))).exists(_.elements.exists { case ReferenceTarget(e) if e == p => true; case _ => false } )
+    (parentClauses ++ containingClass.members.filterNot(_.names.contains("this")))
+      .exists(_.elements.exists { case r: ScReference => r.bind().exists(_.getActualElement == p); case _ => false } )
   }
 
   private def textOf(annotation: ScAnnotation): String =

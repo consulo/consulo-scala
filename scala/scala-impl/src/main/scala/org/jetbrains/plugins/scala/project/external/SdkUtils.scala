@@ -146,4 +146,13 @@ object SdkUtils {
         sdkTable.addSdk(sdk)
       }
   }
+
+  /** Removes `sdk` from the global SDK table if that exact instance is still registered. */
+  def removeJdkIfRegistered(sdk: Sdk): Unit = {
+    val sdkTable = SdkTable.getInstance()
+    // A different SDK can reuse the same name. Cleanup must not remove that replacement.
+    if (sdkTable.findSdk(sdk.getName) eq sdk) {
+      inWriteAction(sdkTable.removeSdk(sdk))
+    }
+  }
 }

@@ -438,16 +438,6 @@ open module org.intellij.scala {
     exports org.jetbrains.plugins.scala.lang.surroundWith.surrounders.errorHighlighting;
     exports org.jetbrains.plugins.scala.lang.surroundWith.surrounders.expression;
     exports org.jetbrains.plugins.scala.lang.surroundWith.surrounders.scaladoc;
-    exports org.jetbrains.plugins.scala.lang.transformation;
-    exports org.jetbrains.plugins.scala.lang.transformation.annotations;
-    exports org.jetbrains.plugins.scala.lang.transformation.calls;
-    exports org.jetbrains.plugins.scala.lang.transformation.conversions;
-    exports org.jetbrains.plugins.scala.lang.transformation.declarations;
-    exports org.jetbrains.plugins.scala.lang.transformation.functions;
-    exports org.jetbrains.plugins.scala.lang.transformation.general;
-    exports org.jetbrains.plugins.scala.lang.transformation.implicits;
-    exports org.jetbrains.plugins.scala.lang.transformation.references;
-    exports org.jetbrains.plugins.scala.lang.transformation.types;
     exports org.jetbrains.plugins.scala.overrideImplement;
     exports org.jetbrains.plugins.scala.packagesearch;
     exports org.jetbrains.plugins.scala.packagesearch.codeInspection;

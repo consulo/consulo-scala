@@ -6,7 +6,8 @@ import consulo.compiler.ModuleCompilerPathsManager
 import consulo.project.Project
 import consulo.diff.request.SimpleDiffRequest
 import consulo.diff.{DiffContentFactory, DiffManager}
-import consulo.ui.ex.action.AnActionEvent
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
+import consulo.annotation.component.{ActionImpl, ActionParentRef, ActionRef}
 import consulo.language.editor.CommonDataKeys
 import consulo.codeEditor.Editor
 import consulo.fileEditor.FileEditorManager
@@ -17,32 +18,45 @@ import consulo.virtualFileSystem.util.VirtualFilePathUtil
 import com.intellij.java.language.psi.PsiClass
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil
 import consulo.language.file.light.LightVirtualFile
+import org.jetbrains.plugins.scala.ScalaBundle.message
+import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, inReadAction, withProgressSynchronously}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
+import org.jetbrains.plugins.scala.statistics.ScalaActionUsagesCollector
 import org.jetbrains.plugins.scala.api.{LanguageFileTypeBase, Scala3Language}
 
 import java.nio.file.Files
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
-object DesugarCodeAction {
-  private def getTemplateText: String = "Desugar Scala Code"
+@ActionImpl(id = "Scala.ElaborateCode", parents = Array(new ActionParentRef(value = new ActionRef(id = "CodeMenu")), new ActionParentRef(value = new ActionRef(id = "EditorPopupMenu"))))
+class ElaborateCodeAction extends AnAction(message("elaborate.code.action.text"), message("elaborate.code.action.description"), /* icon = */ null)
+  with AnActionWithSyncUpdate {
 
-  def actionPerformed(e: AnActionEvent): Unit = {
+  override def update(e: AnActionEvent): Unit =
+    ScalaActionUtil.enableAndShowIfInScalaFile(e)
+
+  override def actionPerformed(e: AnActionEvent): Unit = {
     val project = e.getData(Project.KEY)
     val editor = e.getDataContext.getData(CommonDataKeys.EDITOR)
+    val psiFile = e.getDataContext.getData(CommonDataKeys.PSI_FILE).asInstanceOf[ScalaFile]
+    perform(project, editor, psiFile)
+  }
+
+  def perform(project: Project, editor: Editor, psiFile: ScalaFile): Unit = {
+    ScalaActionUsagesCollector.logDesugarCode(project)
+
     val document = editor.getDocument
     val virtualFile = editor.getVirtualFile
-    val psiFile = e.getDataContext.getData(CommonDataKeys.PSI_FILE).asInstanceOf[ScalaFile]
     if (psiFile.isCompiled) {
-      CommonRefactoringUtil.showErrorHint(project, editor, "File must have source", getTemplateText, null)
+      CommonRefactoringUtil.showErrorHint(project, editor, message("elaborate.code.no.source"), getTemplateText, null)
       return
     }
     val cls = classAtCaret(editor, psiFile).orElse(psiFile.typeDefinitions.headOption).getOrElse {
-      CommonRefactoringUtil.showErrorHint(project, editor, "No class to desugar", getTemplateText, null)
+      CommonRefactoringUtil.showErrorHint(project, editor, message("elaborate.code.no.class"), getTemplateText, null)
       return
     }
 
@@ -60,7 +74,7 @@ object DesugarCodeAction {
         elements.foldLeft(outputDir)((acc, x) => acc.resolve(x))
       }
       if (!Files.exists(tastyFile)) {
-        CommonRefactoringUtil.showErrorHint(project, editor, s"${outputDir.relativize(tastyFile)} not found; please compile the class", getTemplateText, null)
+        CommonRefactoringUtil.showErrorHint(project, editor, message("elaborate.code.no.file", outputDir.relativize(tastyFile)), getTemplateText, null)
         return
       }
       val upToDate = document.getModificationStamp <= virtualFile.getModificationStamp && virtualFile.getTimeStamp <= Files.getLastModifiedTime(tastyFile).toMillis
@@ -69,16 +83,16 @@ object DesugarCodeAction {
       val compiledPsiFile = cls.getOriginalElement.getContainingFile
       val compiledVirtualFile = compiledPsiFile.getOriginalFile.getVirtualFile
       val module = fileIndex.getOrderEntriesForFile(compiledVirtualFile).asScala.collectFirst { case entry: LibraryOrderEntry => entry.getOwnerModule }.getOrElse {
-        CommonRefactoringUtil.showErrorHint(project, editor, "Project must have a module that depends on this library", getTemplateText, null)
+        CommonRefactoringUtil.showErrorHint(project, editor, message("elaborate.code.no.module"), getTemplateText, null)
         return
       }
       (compiledVirtualFile.getName, compiledVirtualFile.contentsToByteArray(), true, classpathOf(module))
     }
 
-    val (compilerText, pluginText) = withProgressSynchronously(s"Desugaring ${cls.name}...") {
+    val (compilerText, pluginText) = withProgressSynchronously(message("elaborate.code.elaborating", cls.name)) {
       val compilerText = if (!isScala3) "" else {
         val decompiler = Decompiler(classpath, Decompiler.classLoader(getClass.getClassLoader))
-        decompiler.decompile(tastyFileName, tastyFileContents)
+        decompiler.decompile(tastyFileName, tastyFileContents.toIndexedSeq)
       }
       val pluginText = inReadAction {
         try {
@@ -94,12 +108,14 @@ object DesugarCodeAction {
     }
 
     if (!isScala3) {
-      val file = new LightVirtualFile(s"${cls.name} (desugared)", psiFile.getFileType, pluginText)
+      val file = new LightVirtualFile(message("elaborate.code.elaborated", cls.name), psiFile.getFileType, pluginText)
       FileEditorManager.getInstance(project).openFile(file, true)
     } else {
+      val leftTitle = s"${message("elaborate.code.compiler")}${if (upToDate) "" else s" ⚠️${message("elaborate.code.outdated")}"}"
+      val rightTitle = s"${message("elaborate.code.plugin")}"
       val left = DiffContentFactory.getInstance.create(project, compilerText, Scala3FileType)
       val right = DiffContentFactory.getInstance.create(project, pluginText, Scala3FileType)
-      DiffManager.getInstance.showDiff(project, new SimpleDiffRequest("Desugaring of " + cls.qualifiedName, left, right, "Compiler" + (if (upToDate) "" else " (outdated, please recompile):"), "Plugin:"))
+      DiffManager.getInstance.showDiff(project, new SimpleDiffRequest(message("elaborate.code.elaboration", cls.qualifiedName), left, right, leftTitle, rightTitle))
     }
   }
 

@@ -87,7 +87,15 @@ final class ScalafmtReformatOnFileSaveTask extends AnActionListener {
       isFileSupported(psiFile) && isInProjectSources(psiFile, vFile)
     }
     if (isFileSupportedAndInSources) {
+      val wasSavedByAction = !fileDocumentManager.isDocumentUnsaved(document)
       ScalaFmtPreFormatProcessor.formatWithoutCommit(psiFile, document, respectProjectMatcher = true)
+      // The Save action already wrote the document before this listener ran. Scalafmt can
+      // change it afterward, so persist that new edit now rather than relying on a later
+      // automatic save. Do not retry a document whose original save was vetoed or failed.
+      if (wasSavedByAction && fileDocumentManager.isDocumentUnsaved(document)) {
+        // upstream: wrapped in WriteIntentReadAction (no write intent lock in Consulo, listener runs in UI thread)
+        fileDocumentManager.saveDocument(document)
+      }
     }
   }
 

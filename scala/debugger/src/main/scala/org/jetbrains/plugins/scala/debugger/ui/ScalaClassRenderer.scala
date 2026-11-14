@@ -4,14 +4,17 @@ package ui
 import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.DebuggerContext
 import com.intellij.java.debugger.engine.DebuggerUtils
-import com.intellij.java.debugger.engine.evaluation.EvaluationContext
+import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.settings.NodeRendererSettings
 import com.intellij.java.debugger.impl.ui.impl.watch.FieldDescriptorImpl
 import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, ClassRenderer, DescriptorLabelListener}
 import com.intellij.java.debugger.impl.ui.tree.{DebuggerTreeNode, FieldDescriptor, ValueDescriptor}
+import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import com.intellij.java.debugger.localize.JavaDebuggerLocalize
 import consulo.language.psi.PsiElement
+import consulo.logging.Logger
+import consulo.project.Project
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
@@ -59,10 +62,7 @@ class ScalaClassRenderer extends ClassRenderer {
       builder.setChildren(Collections.singletonList(nodeManager.createMessageNode(JavaDebuggerLocalize.messageNodeClassNoFieldsToDisplay())))
     } else {
       val nodes = toShow.map { field =>
-        val desc =
-          if (isLazyVal(ref, field)) LazyValDescriptor.create(project, ref, field, context.asInstanceOf[EvaluationContextImpl])
-          else new FieldDescriptorImpl(project, ref, field)
-        nodeManager.createNode(desc, context)
+        nodeManager.createNode(fieldDescriptor(project, ref, field, context), context)
       }
       builder.setChildren(nodes.asJava)
     }
@@ -76,6 +76,8 @@ class ScalaClassRenderer extends ClassRenderer {
 }
 
 private object ScalaClassRenderer {
+  private val LOG = Logger.getInstance(classOf[ScalaClassRenderer])
+
   private val Module: String = ScalaBytecodeConstants.ObjectSingletonInstanceName
 
   private val Bitmap: String = "bitmap$"
@@ -88,6 +90,17 @@ private object ScalaClassRenderer {
     val name = f.name()
     name == Module || name.contains(Bitmap) || name.endsWith(VarHandleSuffix) || name.startsWith(OffsetPrefix)
   }
+
+  private def fieldDescriptor(project: Project, ref: ObjectReference, field: Field, context: EvaluationContext): NodeDescriptor =
+    if (!isLazyVal(ref, field)) new FieldDescriptorImpl(project, ref, field)
+    else
+      try LazyValDescriptor.create(project, ref, field, context.asInstanceOf[EvaluationContextImpl])
+      catch {
+        // A lazy val that is compiled in a way the renderer does not know must not hide the other fields
+        case e: EvaluateException =>
+          LOG.error(s"Cannot show the field ${field.name()} of ${ref.referenceType().name()} as a lazy val", e)
+          new FieldDescriptorImpl(project, ref, field)
+      }
 
   def isScalaSource(ct: ClassType): Boolean =
     Try(ct.sourceName().endsWith(".scala")).getOrElse(false)
