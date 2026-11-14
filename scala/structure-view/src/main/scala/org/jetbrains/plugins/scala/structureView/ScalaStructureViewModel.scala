@@ -19,12 +19,16 @@ import org.jetbrains.plugins.scala.structureView.filter.ScalaPublicElementsFilte
 import org.jetbrains.plugins.scala.structureView.grouper.ScalaSuperTypesGrouper
 import org.jetbrains.plugins.scala.structureView.sorter.{ScalaAlphaSorter, ScalaByPositionSorter, ScalaVisibilitySorter}
 
+import consulo.codeEditor.Editor
+
 import java.util
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 
-class ScalaStructureViewModel(myRootElement: ScalaFile)
-  extends TextEditorBasedStructureViewModel(myRootElement) with StructureViewModel.ElementInfoProvider {
+// upstream: TextEditorBasedStructureViewModel(psiFile) - in Consulo that constructor looks up the editor through the focus
+// data context (UI thread only), the sticky lines pass creates the model in the background, so the editor is passed in
+class ScalaStructureViewModel(myRootElement: ScalaFile, editor: Editor = null)
+  extends TextEditorBasedStructureViewModel(editor, myRootElement) with StructureViewModel.ElementInfoProvider {
 
   override def isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean =
     element.asOptionOf[Element].exists(_.isAlwaysShowsPlus)

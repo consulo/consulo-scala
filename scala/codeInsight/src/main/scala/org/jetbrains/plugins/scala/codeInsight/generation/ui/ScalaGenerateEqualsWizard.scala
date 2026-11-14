@@ -14,7 +14,6 @@ import javax.swing.event.TableModelEvent
 import javax.swing.{JComponent, JPanel}
 import scala.jdk.CollectionConverters._
 
-// upstream: AbstractGenerateEqualsWizard (multi-step wizard, not public API in Consulo) - both panels are shown in one dialog
 final class ScalaGenerateEqualsWizard(clazz: ScClass, needEquals: Boolean, needHashCode: Boolean)
                                      (implicit project: Project)
   extends DialogWrapper(project) {

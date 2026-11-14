@@ -41,7 +41,7 @@ trait ScalaUnusedDeclarationIncrementalInspection { this: ScalaUnusedDeclaration
             case inNameContext(holder: PsiAnnotationOwner) if hasUnusedAnnotation(holder) =>
             case _ =>
               val info = unusedProblemInfoFor(e, isOnTheFly = true)
-              holder.registerProblem(info.element, info.message, problemHighlightType, info.fixes*)
+              holder.registerProblem(info.element, info.message, info.fixes*)
           }
         }
       case e: ScImportExpr if e.isVisible(holder.getProject, holder.getFile) && e.selectorSet.isEmpty && !e.hasWildcardSelector && !e.hasGivenSelector =>
@@ -69,7 +69,7 @@ trait ScalaUnusedDeclarationIncrementalInspection { this: ScalaUnusedDeclaration
         case _ => false
       }
       if (!isImplicit && !ScalaCodeStyleSettings.getInstance(stmt.getProject).isAlwaysUsedImport(reference.qualName)) {
-        holder.registerProblem(e, ScalaInspectionBundle.message("unused.import.statement"), problemHighlightType,
+        holder.registerProblem(e, ScalaInspectionBundle.message("unused.import.statement"),
           new IntentionWrapper(new ScalaOptimizeImportsFix()), new IntentionWrapper(new MarkImportAsAlwaysUsed(reference.qualName)))
       }
     }

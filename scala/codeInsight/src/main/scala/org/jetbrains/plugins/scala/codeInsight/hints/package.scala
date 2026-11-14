@@ -2,6 +2,9 @@ package org.jetbrains.plugins.scala
 package codeInsight
 
 import consulo.colorScheme.EditorColorsScheme
+import consulo.ide.setting.ShowSettingsUtil
+import consulo.language.editor.inlay.setting.InlayProviderSettingsModel
+import consulo.project.Project
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.annotator.Tree.{Leaf, Node}
 import org.jetbrains.plugins.scala.annotator.TypeDiff.Match
@@ -13,6 +16,8 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScReferenceE
 import org.jetbrains.plugins.scala.lang.psi.types.api.designator.ScDesignatorType
 import org.jetbrains.plugins.scala.lang.psi.types.{Context, ScType, ScTypeExt, TypePresentationContext}
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
+
+import scala.reflect.ClassTag
 
 package object hints {
   private[hints] object ReferenceName {
@@ -194,4 +199,7 @@ package object hints {
       typeFirstLetterCase,
     ).foldRight(equal)(_(_))
 
+  // upstream: also selects the model of the Scala language on the page (InlaySettingsConfigurable.selectModel is not public API)
+  def navigateToInlaySettings[S <: InlayProviderSettingsModel: ClassTag](project: Project): Unit =
+    ShowSettingsUtil.getInstance.showSettingsDialog(project, "inlay.hints", "")
 }

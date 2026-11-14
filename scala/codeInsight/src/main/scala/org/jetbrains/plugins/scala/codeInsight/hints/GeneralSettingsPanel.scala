@@ -1,202 +1,79 @@
-package org.jetbrains.plugins.scala.codeInsight.hints;
+package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import consulo.localize.LocalizeValue
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.ui.layout.{HorizontalLayout, VerticalLayout}
+import consulo.ui.{CheckBox, IntBox, Label}
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings.{MAX_PRESENTATION_LENGTH, MIN_PRESENTATION_LENGTH}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
-import javax.swing.*;
-import java.awt.*;
-import java.lang.reflect.Method;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import javax.swing.JComponent
 
-import static org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings.MAX_PRESENTATION_LENGTH;
-import static org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings.MIN_PRESENTATION_LENGTH;
+// upstream: a GUI designer form (GeneralSettingsPanel.form)
+final class GeneralSettingsPanel(obviousTypesLoader: () => Boolean, obviousTypesSaver: Boolean => Unit,
+                                 preserveIndentsLoader: () => Boolean, preserveIndentsSaver: Boolean => Unit,
+                                 presentationLengthLoader: () => Int, presentationLengthSaver: Int => Unit) {
 
-public final class GeneralSettingsPanel {
+  private var obviousTypes: Boolean = obviousTypesLoader()
+  private var preserveIndents: Boolean = preserveIndentsLoader()
+  private var presentationLength: Int = presentationLengthLoader()
 
-    private JCheckBox obviousTypesCheckbox;
-    private JCheckBox preserveIndentsCheckBox;
-    private JPanel panel;
-    private JSpinner presentationLengthSpinner;
-    private final SpinnerNumberModel presentationLengthModel;
+  private var components: Option[(CheckBox, CheckBox, IntBox)] = None
 
-    private final Supplier<Boolean> obviousTypesLoader;
-    private final Supplier<Boolean> preserveIndentsLoader;
-    private final Supplier<Integer> presentationLengthLoader;
-    private final Consumer<Boolean> obviousTypesSaver;
-    private final Consumer<Boolean> preserveIndentsSaver;
-    private final Consumer<Integer> presentationLengthSaver;
+  def showObviousTypes: Boolean = obviousTypes
 
+  def getPreserveIntends: Boolean = preserveIndents
 
-    // TODO Just use public fields?
-    public GeneralSettingsPanel(Supplier<Boolean> obviousTypesLoader, Consumer<Boolean> obviousTypesSaver,
-                                Supplier<Boolean> preserveIndentsLoader, Consumer<Boolean> preserveIndentsSaver,
-                                Supplier<Integer> presentationLengthLoader, Consumer<Integer> presentationLengthSaver) {
-        this.obviousTypesLoader = obviousTypesLoader;
-        this.preserveIndentsLoader = preserveIndentsLoader;
-        this.presentationLengthLoader = presentationLengthLoader;
-        this.obviousTypesSaver = obviousTypesSaver;
-        this.preserveIndentsSaver = preserveIndentsSaver;
-        this.presentationLengthSaver = presentationLengthSaver;
-        presentationLengthModel = new SpinnerNumberModel();
-        $$$setupUI$$$();
-        presentationLengthModel.setMinimum(MIN_PRESENTATION_LENGTH);
-        presentationLengthModel.setMaximum(MAX_PRESENTATION_LENGTH);
-        presentationLengthModel.setStepSize(1);
-        reset();
+  def getPresentationLength: Int = presentationLength
+
+  def isModified: Boolean =
+    showObviousTypes != obviousTypesLoader() ||
+      getPreserveIntends != preserveIndentsLoader() ||
+      getPresentationLength != presentationLengthLoader()
+
+  def saveSettings(): Unit = {
+    obviousTypesSaver(showObviousTypes)
+    preserveIndentsSaver(getPreserveIntends)
+    presentationLengthSaver(getPresentationLength)
+  }
+
+  def reset(): Unit = {
+    obviousTypes = obviousTypesLoader()
+    preserveIndents = preserveIndentsLoader()
+    presentationLength = presentationLengthLoader()
+    components.foreach { case (obviousTypesCheckbox, preserveIndentsCheckBox, presentationLengthBox) =>
+      obviousTypesCheckbox.setValue(obviousTypes)
+      preserveIndentsCheckBox.setValue(preserveIndents)
+      presentationLengthBox.setValue(presentationLength)
     }
+  }
 
-    public boolean showObviousTypes() {
-        return obviousTypesCheckbox.isSelected();
-    }
+  @RequiredUIAccess
+  lazy val getPanel: JComponent = {
+    val obviousTypesCheckbox = CheckBox.create(LocalizeValue.of(ScalaCodeInsightBundle.message("show.types.even.if.they.are.obvious")))
+    obviousTypesCheckbox.setValue(obviousTypes)
+    obviousTypesCheckbox.addValueListener(e => obviousTypes = e.getValue)
 
-    public boolean getPreserveIntends() {
-        return preserveIndentsCheckBox.isSelected();
-    }
+    val preserveIndentsCheckBox = CheckBox.create(LocalizeValue.of(ScalaCodeInsightBundle.message("inlay.hints.respect.vertical.alignment")))
+    preserveIndentsCheckBox.setValue(preserveIndents)
+    preserveIndentsCheckBox.addValueListener(e => preserveIndents = e.getValue)
 
-    public int getPresentationLength() {
-        return presentationLengthModel.getNumber().intValue();
-    }
+    val presentationLengthBox = IntBox.create(presentationLength)
+    presentationLengthBox.setRange(MIN_PRESENTATION_LENGTH, MAX_PRESENTATION_LENGTH)
+    presentationLengthBox.addValueListener(e => presentationLength = e.getValue)
 
-    public boolean isModified() {
-        return showObviousTypes() != obviousTypesLoader.get() ||
-                getPreserveIntends() != preserveIndentsLoader.get() ||
-                getPresentationLength() != presentationLengthLoader.get();
-    }
+    components = Some((obviousTypesCheckbox, preserveIndentsCheckBox, presentationLengthBox))
 
-    public void saveSettings() {
-        obviousTypesSaver.accept(showObviousTypes());
-        preserveIndentsSaver.accept(getPreserveIntends());
-        presentationLengthSaver.accept(getPresentationLength());
-    }
+    val lengthLine = HorizontalLayout.create()
+    lengthLine.add(Label.create(LocalizeValue.of(ScalaCodeInsightBundle.message("inlay.hints.limit.hint.length.to"))))
+    lengthLine.add(presentationLengthBox)
+    lengthLine.add(Label.create(LocalizeValue.of(ScalaCodeInsightBundle.message("inlay.hints.characters"))))
 
-    public void reset() {
-        obviousTypesCheckbox.setSelected(obviousTypesLoader.get());
-        preserveIndentsCheckBox.setSelected(preserveIndentsLoader.get());
-        presentationLengthModel.setValue(presentationLengthLoader.get());
-    }
-
-    private void createUIComponents() {
-        presentationLengthSpinner = new JSpinner(presentationLengthModel);
-        ((JSpinner.DefaultEditor) presentationLengthSpinner.getEditor()).getTextField().setColumns(3);
-    }
-
-    public JPanel getPanel() {
-        return panel;
-    }
-
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        createUIComponents();
-        panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 0, 0), -1, -1));
-        final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("messages/ScalaCodeInsightBundle", "inlay.hints.limit.hint.length.to"));
-        panel.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        panel.add(presentationLengthSpinner, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("messages/ScalaCodeInsightBundle", "inlay.hints.characters"));
-        panel.add(label2, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel.add(spacer1, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel.add(spacer2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        preserveIndentsCheckBox = new JCheckBox();
-        this.$$$loadButtonText$$$(preserveIndentsCheckBox, this.$$$getMessageFromBundle$$$("messages/ScalaCodeInsightBundle", "inlay.hints.respect.vertical.alignment"));
-        panel.add(preserveIndentsCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        obviousTypesCheckbox = new JCheckBox();
-        this.$$$loadButtonText$$$(obviousTypesCheckbox, this.$$$getMessageFromBundle$$$("messages/ScalaCodeInsightBundle", "show.types.even.if.they.are.obvious"));
-        panel.add(obviousTypesCheckbox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        label1.setLabelFor(presentationLengthSpinner);
-    }
-
-    private static Method $$$cachedGetBundleMethod$$$ = null;
-
-    /**
-     * @noinspection ALL
-     */
-    private String $$$getMessageFromBundle$$$(String path, String key) {
-        ResourceBundle bundle;
-        try {
-            Class<?> thisClass = this.getClass();
-            if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
-                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
-            }
-            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
-        } catch (Exception e) {
-            bundle = ResourceBundle.getBundle(path);
-        }
-        return bundle.getString(key);
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadLabelText$$$(JLabel component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setDisplayedMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private void $$$loadButtonText$$$(AbstractButton component, String text) {
-        StringBuffer result = new StringBuffer();
-        boolean haveMnemonic = false;
-        char mnemonic = '\0';
-        int mnemonicIndex = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '&') {
-                i++;
-                if (i == text.length()) break;
-                if (!haveMnemonic && text.charAt(i) != '&') {
-                    haveMnemonic = true;
-                    mnemonic = text.charAt(i);
-                    mnemonicIndex = result.length();
-                }
-            }
-            result.append(text.charAt(i));
-        }
-        component.setText(result.toString());
-        if (haveMnemonic) {
-            component.setMnemonic(mnemonic);
-            component.setDisplayedMnemonicIndex(mnemonicIndex);
-        }
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return panel;
-    }
-
+    val panel = VerticalLayout.create()
+    panel.add(obviousTypesCheckbox)
+    panel.add(preserveIndentsCheckBox)
+    panel.add(lengthLine)
+    TargetAWT.to(panel).asInstanceOf[JComponent]
+  }
 }

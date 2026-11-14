@@ -50,7 +50,7 @@ final class ScalaAccessCanBeTightenedInspection extends HighlightingPassInspecti
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-  override def editorAttributes: TextAttributesKey = CodeInsightColors.WEAK_WARNING_ATTRIBUTES
+  override def getEditorAttributesKey: TextAttributesKey = CodeInsightColors.INFO_ATTRIBUTES
 
 
   private def computeCanBePrivate(element: ScNamedElement): Boolean =

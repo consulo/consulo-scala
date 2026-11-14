@@ -1,17 +1,19 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.codeInsight.hints.{ImmediateConfigurable, InlayGroup}
-import com.intellij.codeInsight.hints.settings.InlayProviderSettingsModel
-import com.intellij.lang.Language
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.progress.DumbProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
+import consulo.application.progress.DumbProgressIndicator
+import consulo.codeEditor.Editor
+import consulo.language.Language
+import consulo.language.editor.inlay.InlayGroup
+import consulo.language.editor.inlay.setting.{ImmediateConfigurable, InlayProviderSettingsModel}
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
+import consulo.project.Project
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.ScalaLanguage
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
 import org.jetbrains.plugins.scala.codeInsight.hints.ScalaTypeHintsSettingsModel.Case
 import org.jetbrains.plugins.scala.codeInsight.implicits.{ImplicitHints, ImplicitHintsPass}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.StringExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
@@ -26,7 +28,8 @@ class ScalaTypeHintsSettingsModel(project: Project) extends InlayProviderSetting
 )  {
   private lazy val insightSettings = ScalaCodeInsightSettings.getInstance()
 
-  override def getName: String = "Type Hints"
+  //noinspection ScalaExtractStringToBundle
+  override def getName: LocalizeValue = LocalizeValue.of("Type Hints")
   override def getGroup: InlayGroup = InlayGroup.TYPES_GROUP
 
   private lazy val generalSettingsPanel = new GeneralSettingsPanel(
@@ -38,8 +41,6 @@ class ScalaTypeHintsSettingsModel(project: Project) extends InlayProviderSetting
   override def getComponent: JComponent = generalSettingsPanel.getPanel
 
   override def getDescription: String = ScalaCodeInsightBundle.message("type.hints.description", ScalaHintsSettings.xRayModeTipText)
-
-  override def getMainCheckBoxLabel: String = getName
 
   override def getPreviewText: String = {
     if (project.isDefault)
@@ -152,13 +153,10 @@ object ScalaTypeHintsSettingsModel {
     var currentValue: Boolean = loadSetting()
 
     final lazy val configCase: ImmediateConfigurable.Case = new ImmediateConfigurable.Case(
-      name, id,
+      LocalizeValue.of(name), id,
       () => currentValue,
-      (newValue) => {
-        currentValue = newValue
-        kotlin.Unit.INSTANCE
-      },
-      description
+      (newValue: java.lang.Boolean) => currentValue = newValue,
+      LocalizeValue.of(description)
     )
   }
 

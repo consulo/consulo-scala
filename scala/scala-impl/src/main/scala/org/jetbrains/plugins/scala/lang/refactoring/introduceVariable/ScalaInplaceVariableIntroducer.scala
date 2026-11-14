@@ -4,7 +4,7 @@ import consulo.language.editor.template.TemplateManager
 import consulo.language.editor.template.TemplateState
 import consulo.application.ApplicationManager
 import consulo.language.editor.WriteCommandAction.writeCommandAction
-import consulo.undoRedo.ProjectUndoManager
+import consulo.undoRedo.{ProjectUndoManager, StartMarkAction}
 import consulo.document.event.{DocumentEvent, DocumentListener}
 import consulo.codeEditor.markup.RangeHighlighter
 import consulo.codeEditor.{Editor, ScrollType}
@@ -360,7 +360,9 @@ class ScalaInplaceVariableIntroducer(expr: ScExpression,
     PsiTreeUtil.findCommonParent(elements*)
   }
 
-  // upstream: startRename override starting StartMarkAction outside of a command (StartMarkAction is internal API in Consulo)
+  protected override def startRename: StartMarkAction = {
+    StartMarkAction.start(myEditor.getDocument, myProject, getCommandName)
+  }
 
   override def finish(success: Boolean): Unit = {
     myCheckIdentifierListener.foreach {

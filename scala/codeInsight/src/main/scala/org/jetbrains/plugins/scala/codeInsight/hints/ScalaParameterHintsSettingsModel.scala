@@ -1,17 +1,18 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.codeInsight.hints.settings.InlayProviderSettingsModel
-import com.intellij.codeInsight.hints.{ImmediateConfigurable, InlayGroup}
-import com.intellij.lang.Language
-import com.intellij.openapi.project.Project
-import com.intellij.ui.components.ActionLink
-import org.jetbrains.plugins.scala.ScalaLanguage
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
+import consulo.language.Language
+import consulo.language.editor.inlay.InlayGroup
+import consulo.language.editor.inlay.setting.{ImmediateConfigurable, InlayProviderSettingsModel}
+import consulo.language.editor.localize.LanguageEditorLocalize
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import consulo.ui.Hyperlink
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings.{getInstance => ScalaCodeInsightSettings}
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
-import java.awt.event.ActionListener
 import java.util
 import javax.swing.JComponent
 
@@ -22,13 +23,13 @@ class ScalaParameterHintsSettingsModel(project: Project)
 
   override def getCases: util.List[ImmediateConfigurable.Case] = util.Collections.emptyList()
 
-  override def getMainCheckBoxLabel: String = ScalaCodeInsightBundle.message("parameter.name.hints.action.description")
+  override def getName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("parameter.name.hints"))
 
-  override def getName: String = ScalaCodeInsightBundle.message("parameter.name.hints")
+  private lazy val component: JComponent =
+    TargetAWT.to(Hyperlink.create(LanguageEditorLocalize.settingsInlayJavaExcludeList(),
+      _ => new ExcludeListDialog(ScalaLanguage.INSTANCE, ScalaInlayParameterHintsProvider).show())).asInstanceOf[JComponent]
 
-  override def getComponent: JComponent =
-    new ActionLink(CodeInsightBundle.message("settings.inlay.java.exclude.list"),
-      (_ => new ExcludeListDialog(ScalaLanguage.INSTANCE, ScalaInlayParameterHintsProvider).show()): ActionListener)
+  override def getComponent: JComponent = component
 
   override def getPreviewText: String = null
 

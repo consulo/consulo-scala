@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.rangeHints
 
-import com.intellij.codeInsight.hints.settings.InlayProviderSettingsModel
-import com.intellij.codeInsight.hints.{ImmediateConfigurable, InlayGroup}
-import com.intellij.lang.Language
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.codeEditor.Editor
+import consulo.language.Language
+import consulo.language.editor.inlay.InlayGroup
+import consulo.language.editor.inlay.setting.{ImmediateConfigurable, InlayProviderSettingsModel}
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
 import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, navigateToInlaySettings}
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.StringExt
 
 import java.util
@@ -42,11 +44,12 @@ class RangeHintsForToAndUntilSettingsModel(project: Project) extends InlayProvid
 
   override def getCases: util.List[ImmediateConfigurable.Case] = util.Collections.emptyList()
 
-  override def getMainCheckBoxLabel: String = getName
 
-  override def getName: String = ScalaCodeInsightBundle.message("range.hints.for.to.and.until")
+  override def getName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("range.hints.for.to.and.until"))
 
-  override def getComponent: JComponent = new JPanel()
+  private lazy val component: JComponent = new JPanel()
+
+  override def getComponent: JComponent = component
 
   override def getPreviewText: String = {
     if (project.isDefault)

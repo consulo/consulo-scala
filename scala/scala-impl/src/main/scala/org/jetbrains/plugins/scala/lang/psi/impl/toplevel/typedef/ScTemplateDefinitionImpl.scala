@@ -168,6 +168,10 @@ abstract class ScTemplateDefinitionImpl[T <: ScTemplateDefinition] private[impl]
     PsiClassImplUtil.findMethodsBySignature(this, patternMethod, checkBases)
 
   override final def findMethodsByName(name: String, checkBases: Boolean): Array[PsiMethod] = name match {
+    case "main" | JUnitUtil.SUITE_METHOD_NAME if DumbService.getInstance(getProject).isDumb =>
+      // upstream: no dumb mode check; Consulo calls it during indexing (e.g. JUnit test framework detection), use own members only
+      functions.filter(_.name == name).toArray[PsiMethod]
+
     case "main" | JUnitUtil.SUITE_METHOD_NAME => // these methods may be searched from EDT, search them without building a whole type hierarchy
 
       val inThisClass = allFunctionsByName(name)

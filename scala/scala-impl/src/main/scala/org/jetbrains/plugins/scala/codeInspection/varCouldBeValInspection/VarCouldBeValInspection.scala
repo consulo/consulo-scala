@@ -34,7 +34,7 @@ class VarCouldBeValInspection extends HighlightingPassInspection {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 
-  override def editorAttributes: TextAttributesKey = CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
+  override def getEditorAttributesKey: TextAttributesKey = CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
 
 
   import VarCouldBeValInspection._

@@ -1,8 +1,13 @@
 package org.jetbrains.plugins.scala.lang.completion
 
-import com.intellij.codeInsight.completion.PlainTextSymbolCompletionContributor
-import com.intellij.codeInsight.lookup.{LookupElement, LookupElementBuilder}
-import com.intellij.psi.PsiFile
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import consulo.language.editor.completion.PlainTextSymbolCompletionContributor
+import consulo.language.editor.completion.lookup.{LookupElement, LookupElementBuilder}
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.language.psi.PsiFile
+import consulo.ui.image.Image
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.PsiMemberExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScDeclaredElementsHolder
@@ -10,11 +15,13 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScMember, ScTypeDefinition}
 
 import java.{util => ju}
-import javax.swing.Icon
 
+@ExtensionImpl
 final class ScalaPlainTextSymbolCompletionContributor extends PlainTextSymbolCompletionContributor {
 
   import ScalaPlainTextSymbolCompletionContributor._
+
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
 
   override def getLookupElements(file: PsiFile,
                                  invocationCount: Int,
@@ -28,7 +35,7 @@ final class ScalaPlainTextSymbolCompletionContributor extends PlainTextSymbolCom
           name <- member.names
           if name != null
         } {
-          result.add(createElement(name, member.getIcon(0)))
+          result.add(createElement(name, IconDescriptorUpdaters.getIcon(member, 0)))
 
           val topLevelOnly = invocationCount == 0
           member match {
@@ -55,7 +62,7 @@ final class ScalaPlainTextSymbolCompletionContributor extends PlainTextSymbolCom
 object ScalaPlainTextSymbolCompletionContributor {
 
   private def foreachMemberIn(definition: ScTypeDefinition)
-                             (action: (ScMember, String, Icon) => Unit): Unit = for {
+                             (action: (ScMember, String, Image) => Unit): Unit = for {
     member <- definition.members
     if member.isPhysical
 
@@ -64,7 +71,7 @@ object ScalaPlainTextSymbolCompletionContributor {
       case named: ScNamedElement => Option(named.name).toSeq
       case _ => Seq.empty
     }
-  } action(member, memberName, member.getIcon(0))
+  } action(member, memberName, IconDescriptorUpdaters.getIcon(member, 0))
 
   private def processClassBody(result: ju.List[LookupElement],
                                definition: ScTypeDefinition,
@@ -99,6 +106,6 @@ object ScalaPlainTextSymbolCompletionContributor {
       None
   }
 
-  private def createElement(name: String, icon: Icon) =
+  private def createElement(name: String, icon: Image) =
     LookupElementBuilder.create(name).withIcon(icon)
 }

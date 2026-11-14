@@ -3,7 +3,6 @@ package codeInsight
 package hints
 
 import consulo.annotation.component.{ActionImpl, ActionRef}
-import consulo.ide.setting.ShowSettingsUtil
 import consulo.localize.LocalizeValue
 import consulo.project.Project
 import consulo.ui.ex.action.{AnAction, AnActionEvent, AnSeparator, DefaultActionGroup}
@@ -14,7 +13,6 @@ import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 
 // upstream: the inlay context menus were anonymous ActionGroup instances (MenuProvider(actionGroup));
 // Consulo renderers only support group ids, so every menu is a registered group.
-// "Configure ... hints" opens the standalone Scala inlay hints page
 object InlayHintsMenus {
   final val LocalVariableType = "Scala.LocalVariableTypeHintsMenu"
   final val MemberVariableType = "Scala.MemberVariableTypeHintsMenu"
@@ -86,22 +84,26 @@ final class DisableParameterNameHintsAction extends DisableInlayHintsAction(
   _.showParameterNames = false
 )
 
-abstract class ConfigureInlayHintsAction(@Nls text: String) extends AnAction(LocalizeValue.of(text)) {
+abstract class ConfigureInlayHintsAction(@Nls text: String, navigateTo: Project => Unit) extends AnAction(LocalizeValue.of(text)) {
   override def actionPerformed(e: AnActionEvent): Unit =
-    ShowSettingsUtil.getInstance.showSettingsDialog(e.getData(Project.KEY), classOf[ScalaInlayHintsConfigurable])
+    navigateTo(e.getData(Project.KEY))
 }
 
 @ActionImpl(id = "Scala.ConfigureTypeHints")
-final class ConfigureTypeHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.type.hints"))
+final class ConfigureTypeHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.type.hints"),
+  ScalaTypeHintsSettingsModel.navigateTo)
 
 @ActionImpl(id = "Scala.ConfigureParameterNameHints")
-final class ConfigureParameterNameHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.parameter.name.hints"))
+final class ConfigureParameterNameHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.parameter.name.hints"),
+  ScalaParameterHintsSettingsModel.navigateTo)
 
 @ActionImpl(id = "Scala.ConfigureMethodChainHints")
-final class ConfigureMethodChainHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.method.chain.hints"))
+final class ConfigureMethodChainHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.method.chain.hints"),
+  methodChains.ScalaMethodChainInlayHintsSettingsModel.navigateTo)
 
 @ActionImpl(id = "Scala.ConfigureRangeHints")
-final class ConfigureRangeHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.range.hints"))
+final class ConfigureRangeHintsAction extends ConfigureInlayHintsAction(ScalaCodeInsightBundle.message("configure.range.hints"),
+  rangeHints.RangeHintsForToAndUntilSettingsModel.navigateTo)
 
 @ActionImpl(
   id = "Scala.LocalVariableTypeHintsMenu",

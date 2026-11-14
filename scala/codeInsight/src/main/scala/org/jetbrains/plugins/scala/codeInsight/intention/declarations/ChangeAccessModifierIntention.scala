@@ -10,7 +10,8 @@ import consulo.language.editor.intention.IntentionMetaData
 import consulo.language.editor.intention.BaseElementAtCaretIntentionAction
 import consulo.application.{ApplicationManager, ReadAction}
 import consulo.language.editor.WriteCommandAction
-import consulo.undoRedo.ProjectUndoManager
+import consulo.undoRedo.{FinishMarkAction, ProjectUndoManager, StartMarkAction}
+import consulo.ui.ex.awt.Messages
 import consulo.codeEditor.EditorColors
 import consulo.colorScheme.{EditorColorsManager, EditorFontType}
 import consulo.codeEditor.markup.{HighlighterLayer, HighlighterTargetArea}
@@ -139,7 +140,15 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
     val originalCursorPositionMarker = document.createRangeMarker(curCursorPos, curCursorPos)
     model.moveToOffset(modifierRange.getStartOffset)
 
-    // upstream: StartMarkAction/FinishMarkAction around the popup (internal API in Consulo); the updater merges its commands into one undo group instead
+    val markAction =
+      try StartMarkAction.start(document, project, actionName)
+      catch {
+        case e: StartMarkAction.AlreadyStartedException =>
+          //noinspection ReferencePassedToNls
+          Messages.showErrorDialog(project, e.getMessage, StringUtil.toTitleCase(actionName))
+          return
+      }
+
     val lvAttr = EditorColorsManager.getInstance.getGlobalScheme.getAttributes(EditorColors.LIVE_TEMPLATE_ATTRIBUTES)
     val highlighter = editor.getMarkupModel.addRangeHighlighter(
       modifierRange.getStartOffset, modifierRange.getEndOffset,
@@ -164,6 +173,7 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
           highlighter.dispose()
           model.moveToOffset(originalCursorPositionMarker.getStartOffset)
           if (!event.isOk) {
+            FinishMarkAction.finish(project, document, markAction)
             updater.undoChange(true)
           }
         }
@@ -175,24 +185,28 @@ class ChangeAccessModifierIntention extends BaseElementAtCaretIntentionAction {
         updater.setModifier(modifier)
         // do not commit document now: checkForConflicts should have original content
         // while the editor should display the updated content to prevent flicker
-        for {
-          m <- Option(memberPointer.getElement)
-          modifierList <- Option(m.getModifierList)
-        } {
-          checkForConflicts(member, modifier) match {
-            case None =>
-              updater.undoChange(true)
-            case Some(conflicts) =>
-              if (conflicts.nonEmpty) {
+        try {
+          for {
+            m <- Option(memberPointer.getElement)
+            modifierList <- Option(m.getModifierList)
+          } {
+            checkForConflicts(member, modifier) match {
+              case None =>
                 updater.undoChange(true)
-                PsiDocumentManager.getInstance(project).commitDocument(document)
-                processWithConflicts(modifierList, modifier, conflicts)
-              } else {
-                updater.undoChange(false)
-                PsiDocumentManager.getInstance(project).commitDocument(document)
-                changeModifier(modifierList, modifier, hasConflicts = false)
-              }
+              case Some(conflicts) =>
+                if (conflicts.nonEmpty) {
+                  updater.undoChange(true)
+                  PsiDocumentManager.getInstance(project).commitDocument(document)
+                  processWithConflicts(modifierList, modifier, conflicts)
+                } else {
+                  updater.undoChange(false)
+                  PsiDocumentManager.getInstance(project).commitDocument(document)
+                  changeModifier(modifierList, modifier, hasConflicts = false)
+                }
+            }
           }
+        } finally {
+          FinishMarkAction.finish(project, document, markAction)
         }
       })
       .createPopup()
@@ -350,7 +364,6 @@ object ChangeAccessModifierIntention {
     private val myExtendLeft = range.getStartOffset > 0 && !StringUtil.isWhiteSpace(sequence.charAt(range.getStartOffset - 1))
     private val myExtendRight = range.getEndOffset < sequence.length && !StringUtil.isWhiteSpace(sequence.charAt(range.getEndOffset))
     private val myOriginalText = sequence.subSequence(range.getStartOffset, range.getEndOffset).toString
-    private val myGroupId = s"ChangeAccessModifier@${System.identityHashCode(this)}"
     private val myMarker = {
       val marker = myDocument.createRangeMarker(range)
       marker.setGreedyToRight(true)
@@ -364,7 +377,7 @@ object ChangeAccessModifierIntention {
       val fileEditor = fileEditorManager.getSelectedEditor(myFile.getVirtualFile)
       val manager = ProjectUndoManager.getInstance(project)
       if (viaUndoManager && manager.isUndoAvailable(fileEditor)) manager.undo(fileEditor)
-      else WriteCommandAction.writeCommandAction(myFile).withName(myActionName).withGroupId(myGroupId).run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, myOriginalText))
+      else WriteCommandAction.writeCommandAction(myFile).withName(myActionName).run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, myOriginalText))
     }
 
     def setModifier(target: String): Unit = {
@@ -382,7 +395,6 @@ object ChangeAccessModifierIntention {
 
       WriteCommandAction.writeCommandAction(myFile)
         .withName(myActionName)
-        .withGroupId(myGroupId)
         .run(() => myDocument.replaceString(myMarker.getStartOffset, myMarker.getEndOffset, updatedText))
     }
   }

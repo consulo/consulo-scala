@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala.codeInspection.packageNameInspection
 
 import consulo.annotation.component.ExtensionImpl
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.TextAttributesKey
 import consulo.language.Language
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel
 import consulo.localize.LocalizeValue
@@ -25,6 +27,8 @@ class ChainedPackageInspection extends LocalInspectionTool {
   override def getGroupDisplayName: LocalizeValue = LocalizeValue.of(ScalaInspectionBundle.message("group.general"))
 
   override def getDefaultLevel: HighlightDisplayLevel = HighlightDisplayLevel.WARNING
+
+  override def getEditorAttributesKey: TextAttributesKey = CodeInsightColors.INFO_ATTRIBUTES
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
 

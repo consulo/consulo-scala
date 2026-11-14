@@ -1,36 +1,37 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
-import com.intellij.codeInsight.CodeInsightBundle
-import com.intellij.codeInsight.hints.HintUtilsKt._
-import com.intellij.codeInsight.hints.InlayParameterHintsProvider
-import com.intellij.codeInsight.hints.settings.{Diff, ParameterNameHintsSettings}
-import com.intellij.lang.{LangBundle, Language}
-import com.intellij.openapi.editor.colors.CodeInsightColors
-import com.intellij.openapi.editor.event.{DocumentEvent, DocumentListener}
-import com.intellij.openapi.editor.markup.HighlighterLayer
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.fileTypes.FileTypes
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.EditorTextField
-import com.intellij.ui.dsl.builder.BuilderKt._
-import com.intellij.ui.dsl.builder.{AlignX, BottomGap, HyperlinkEventAction, Panel, Row, UtilsKt}
+import consulo.codeEditor.markup.HighlighterLayer
+import consulo.codeEditor.{CodeInsightColors, Editor, EditorFactory}
+import consulo.document.event.{DocumentEvent, DocumentListener}
+import consulo.language.Language
+import consulo.language.editor.inlay.{InlayParameterHintsProvider, ParameterNameHintsSettings}
+import consulo.language.editor.localize.CodeInsightLocalize
+import consulo.language.editor.ui.awt.EditorTextField
+import consulo.language.plain.PlainTextFileType
+import consulo.localize.LocalizeValue
+import consulo.platform.base.localize.CommonLocalize
+import consulo.project.Project
+import consulo.ui.Hyperlink
+import consulo.ui.ex.awt.{BorderLayoutPanel, DialogWrapper, VerticalFlowLayout}
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
 
 import java.awt.{Component, Dimension}
-import java.util
-import javax.swing.{JComponent, JLabel}
+import java.util.regex.{Pattern, PatternSyntaxException}
+import javax.swing.{JComponent, JLabel, JPanel}
 import scala.jdk.CollectionConverters.SetHasAsJava
-import scala.language.implicitConversions
 
-/** A copy of [[com.intellij.codeInsight.hints.ExcludeListDialog]] that takes [[provider]] as a parameter instead of looking it up statically. */
+/**
+ * A copy of [[consulo.ide.impl.idea.codeInsight.hints.settings.ExcludeListDialog]] that takes [[provider]] as a parameter
+ * instead of looking it up statically.
+ */
 private class ExcludeListDialog(language: Language, provider: InlayParameterHintsProvider, patternToAdd: String = null) extends DialogWrapper(null: Project) {
   private var myEditor: EditorTextField = scala.compiletime.uninitialized
   private var myPatternsAreValid = true
 
   locally {
-    setTitle(CodeInsightBundle.message("settings.inlay.parameter.hints.exclude.list"))
+    setTitle(CodeInsightLocalize.settingsInlayParameterHintsExcludeList())
     init()
   }
 
@@ -48,33 +49,32 @@ private class ExcludeListDialog(language: Language, provider: InlayParameterHint
 
     myEditor = editorTextField
 
-    @inline implicit def kotlinUnitDiscarding(v: Any): kotlin.Unit = kotlin.Unit.INSTANCE
-    def row(f: Row => Unit)(implicit p: Panel) = p.row(null: JLabel, (r => f(r)): kotlin.jvm.functions.Function1[Row, kotlin.Unit])
+    val layoutPanel = new BorderLayoutPanel()
+    val resetLink = Hyperlink.create(CommonLocalize.linkReset(), _ => setLanguageExcludelistToDefault())
 
-    panel { implicit p =>
-      row { r =>
-        r.link(LangBundle.message("action.link.reset"), _ =>
-          setLanguageExcludelistToDefault()
-        ).align(AlignX.RIGHT.INSTANCE)
-      }
-      row { r =>
-        r.cell(editorTextField)
-          .align(AlignX.FILL.INSTANCE)
-      }.bottomGap(BottomGap.SMALL)
-      baseLanguageComment(provider).foreach { it =>
-        row { r =>
-          r.comment(it, UtilsKt.MAX_LINE_LENGTH_WORD_WRAP, HyperlinkEventAction.HTML_HYPERLINK_INSTANCE)
-        }
-      }
-      row { r =>
-        r.comment(getExcludeListExplanationHTML, UtilsKt.MAX_LINE_LENGTH_WORD_WRAP, HyperlinkEventAction.HTML_HYPERLINK_INSTANCE)
-      }
+    layoutPanel.addToTop(TargetAWT.to(resetLink))
+    layoutPanel.addToCenter(editorTextField)
+
+    val bottomPanel = new JPanel(new VerticalFlowLayout())
+    layoutPanel.addToBottom(bottomPanel)
+
+    val comment = baseLanguageComment
+    if (comment.isNotEmpty) {
+      bottomPanel.add(new JLabel(comment.get))
     }
+
+    val explanationHTML = provider.getBlacklistExplanationHTML
+    if (explanationHTML.isNotEmpty) {
+      bottomPanel.add(new JLabel(explanationHTML.get))
+    }
+
+    layoutPanel
   }
 
-  private def baseLanguageComment(provider: InlayParameterHintsProvider): Option[String] =
+  private def baseLanguageComment: LocalizeValue =
     Option(provider.getBlackListDependencyLanguage)
-      .map(it => CodeInsightBundle.message("inlay.hints.base.exclude.list.description", it.getDisplayName))
+      .map(it => CodeInsightLocalize.inlayHintsBaseExcludeListDescription(it.getDisplayName))
+      .getOrElse(LocalizeValue.empty())
 
   private def setLanguageExcludelistToDefault(): Unit = {
     val defaultExcludeList = provider.getDefaultBlackList
@@ -97,27 +97,28 @@ private class ExcludeListDialog(language: Language, provider: InlayParameterHint
   override def doOKAction(): Unit = {
     super.doOKAction()
     val excludeList = myEditor.getText
-    storeExcludeListDiff(language, excludeList)
+    storeExcludeListDiff(excludeList)
   }
 
-  private def storeExcludeListDiff(language: Language, text: String): Unit = {
-    val updatedExcludeList = text.split("\n").filter(_.trim.nonEmpty).toSet.asJava
+  // upstream: the settings key is getLanguageForSettingKey(language) - the Scala provider is not registered, so it is the language
+  private def storeExcludeListDiff(text: String): Unit = {
+    val updatedExcludeList = text.split("\n").map(_.trim).filter(_.nonEmpty).toSet.asJava
 
     val defaultExcludeList = provider.getDefaultBlackList
-    val diff = Diff.Builder.build(defaultExcludeList, updatedExcludeList)
-    ParameterNameHintsSettings.getInstance.setExcludeListDiff(getLanguageForSettingKey(language), diff)
+    val diff = ParameterNameHintsSettings.Diff.build(defaultExcludeList, updatedExcludeList)
+    ParameterNameHintsSettings.getInstance.setExcludeListDiff(language, diff)
     ImplicitHints.updateInAllEditors()
   }
 
   private def getLanguageExcludeList: String = {
-    val diff = ParameterNameHintsSettings.getInstance().getExcludeListDiff(getLanguageForSettingKey(language))
+    val diff = ParameterNameHintsSettings.getInstance().getExcludeListDiff(language)
     val excludeList = diff.applyOn(provider.getDefaultBlackList)
     StringUtil.join(excludeList, "\n")
   }
 
   private def createExcludeListEditorField(text: String): EditorTextField = {
     val document = EditorFactory.getInstance().createDocument(text)
-    val field = new EditorTextField(document, null, FileTypes.PLAIN_TEXT, false, false)
+    val field = new EditorTextField(document, null, PlainTextFileType.INSTANCE, false, false)
     field.setPreferredSize(new Dimension(400, 350))
     field.addSettingsProvider { editor =>
       editor.setVerticalScrollbarVisible(true)
@@ -128,17 +129,27 @@ private class ExcludeListDialog(language: Language, provider: InlayParameterHint
     field
   }
 
-  private def highlightErrorLines(lines: util.List[Integer], editor: Editor): Unit = {
+  private def highlightErrorLines(lines: Seq[Int], editor: Editor): Unit = {
     val document = editor.getDocument
     val totalLines = document.getLineCount
 
     val model = editor.getMarkupModel
     model.removeAllHighlighters()
-    lines.stream()
-      .filter { current => current < totalLines }
-      .forEach { line => model.addLineHighlighter(CodeInsightColors.ERRORS_ATTRIBUTES, line, HighlighterLayer.ERROR) }
+    lines
+      .filter(_ < totalLines)
+      .foreach(line => model.addLineHighlighter(CodeInsightColors.ERRORS_ATTRIBUTES, line, HighlighterLayer.ERROR))
   }
 
-  private def getExcludeListExplanationHTML: String =
-    provider.getBlacklistExplanationHTML
+  private def getExcludeListInvalidLineNumbers(text: String): Seq[Int] =
+    text.split("\n", -1).toSeq.zipWithIndex.collect {
+      case (line, index) if line.trim.nonEmpty && !isValidPattern(line.trim) => index
+    }
+
+  private def isValidPattern(pattern: String): Boolean =
+    try {
+      Pattern.compile(pattern)
+      true
+    } catch {
+      case _: PatternSyntaxException => false
+    }
 }

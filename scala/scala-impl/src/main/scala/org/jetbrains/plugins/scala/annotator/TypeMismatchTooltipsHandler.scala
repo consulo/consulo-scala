@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.annotator
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.daemon.impl.{DaemonCodeAnalyzerImpl, HighlightInfo}
-import com.intellij.openapi.editor.event.{EditorMouseEvent, EditorMouseMotionListener}
-import com.intellij.openapi.editor.impl.EditorMouseHoverPopupControl
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ExtensionImpl
+import consulo.codeEditor.event.{EditorMouseEvent, EditorMouseMotionListener}
+import consulo.codeEditor.{Editor, EditorFactory, EditorMouseHoverPopupControl}
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.language.editor.rawHighlight.HighlightInfo
+import consulo.project.Project
 import org.jetbrains.plugins.scala.annotator.TypeMismatchError.TypeMismatchErrorProblemGroup
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.ProjectExt
@@ -15,7 +15,8 @@ import org.jetbrains.plugins.scala.startup.ProjectActivity
 // Annotation.setTooltip is shown both on mouse hover (EditorMouseHoverPopupManager), and on Ctrl / Cmd + F1 (ShowErrorDescriptionAction)
 // But when type mismatch hints are enabled, we don't want tooltips on mouse hover (on the expression), but still want tooltips on the explicit action.
 // https://youtrack.jetbrains.com/issue/SCL-15782
-private final class TypeMismatchTooltipsHandler extends ProjectActivity {
+@ExtensionImpl
+final class TypeMismatchTooltipsHandler extends ProjectActivity {
   override def execute(project: Project): Unit = {
     val listener = new TypeMismatchTooltipsHandler.Listener(project)
     EditorFactory.getInstance().getEventMulticaster.addEditorMouseMotionListener(listener, project.unloadAwareDisposable)
@@ -24,7 +25,7 @@ private final class TypeMismatchTooltipsHandler extends ProjectActivity {
 
 private object TypeMismatchTooltipsHandler {
   private class Listener(project: Project) extends EditorMouseMotionListener {
-    // See com.intellij.openapi.editor.impl.EditorMouseHoverPopupControl
+    // See consulo.codeEditor.EditorMouseHoverPopupControl
     private var popupsWereDisabled = false
 
     override def mouseMoved(e: EditorMouseEvent): Unit = {
@@ -32,14 +33,10 @@ private object TypeMismatchTooltipsHandler {
         val editor = e.getEditor
 
         if (ScalaProjectSettings.getInstance(project).isTypeMismatchHints) {
-          val point = e.getMouseEvent.getPoint
-
-          val position = editor.xyToLogicalPosition(point)
-          val offset = editor.logicalPositionToOffset(position)
+          val offset = e.getOffset
 
           val highlightInfo = inReadAction {
-            Option(DaemonCodeAnalyzer.getInstance(project).asInstanceOf[DaemonCodeAnalyzerImpl]
-              .findHighlightByOffset(editor.getDocument, offset, false))
+            Option(DaemonCodeAnalyzer.getInstance(project).findHighlightByOffset(editor.getDocument, offset, false))
           }
 
           disableTooltipOnMouseHoverForTypeMismatchErrors(editor, highlightInfo)

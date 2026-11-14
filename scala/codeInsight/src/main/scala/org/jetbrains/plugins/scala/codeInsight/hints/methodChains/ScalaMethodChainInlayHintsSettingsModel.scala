@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.codeInsight.hints.methodChains
 
-import com.intellij.codeInsight.hints.settings.InlayProviderSettingsModel
-import com.intellij.codeInsight.hints.{ImmediateConfigurable, InlayGroup}
-import com.intellij.lang.Language
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import com.intellij.ui.components.labels.LinkLabel
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.codeEditor.Editor
+import consulo.language.Language
+import consulo.language.editor.inlay.InlayGroup
+import consulo.language.editor.inlay.setting.{ImmediateConfigurable, InlayProviderSettingsModel}
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
+import consulo.project.Project
+import consulo.ui.Hyperlink
+import consulo.ui.ex.awtUnsafe.TargetAWT
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightSettings
 import org.jetbrains.plugins.scala.codeInsight.hints.{ScalaHintsSettings, ScalaTypeHintsSettingsModel, navigateToInlaySettings}
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
-import org.jetbrains.plugins.scala.codeInsight.{ScalaCodeInsightBundle, ScalaCodeInsightSettings}
+import org.jetbrains.plugins.scala.codeInsight.messages.ScalaCodeInsightBundle
 import org.jetbrains.plugins.scala.extensions.StringExt
 
 import java.awt.{BorderLayout, FlowLayout}
@@ -66,9 +69,7 @@ class ScalaMethodChainInlayHintsSettingsModel(project: Project) extends InlayPro
     }
   )
 
-  override def getMainCheckBoxLabel: String = ScalaCodeInsightBundle.message("method.chain.hints")
-
-  override def getName: String = ScalaCodeInsightBundle.message("method.chain.hints")
+  override def getName: LocalizeValue = LocalizeValue.of(ScalaCodeInsightBundle.message("method.chain.hints"))
 
   override def getPreviewText: String = {
     if (project.isDefault)
@@ -123,17 +124,17 @@ class ScalaMethodChainInlayHintsSettingsModel(project: Project) extends InlayPro
 
   override def getDescription: String = ScalaCodeInsightBundle.message("method.chain.hints.description", ScalaHintsSettings.xRayModeTipText)
 
-  override def getComponent: JComponent = {
+  private lazy val component: JComponent = {
     val linePanel = {
-      val link = new LinkLabel[Any](ScalaCodeInsightBundle.message("method.chain.hints.link.to.general.settings"), null)
-      link.setListener((_, _) => ScalaTypeHintsSettingsModel.navigateTo(project), null)
+      val link = Hyperlink.create(LocalizeValue.of(ScalaCodeInsightBundle.message("method.chain.hints.link.to.general.settings")),
+        _ => ScalaTypeHintsSettingsModel.navigateTo(project))
       val linePanel = {
         val layout = new FlowLayout()
         layout.setHgap(0)
         layout.setAlignment(FlowLayout.LEFT)
         new JPanel(layout)
       }
-      linePanel.add(link)
+      linePanel.add(TargetAWT.to(link))
       linePanel
     }
 
@@ -142,6 +143,8 @@ class ScalaMethodChainInlayHintsSettingsModel(project: Project) extends InlayPro
     panel.add(linePanel, BorderLayout.SOUTH)
     panel
   }
+
+  override def getComponent: JComponent = component
 
   override def getCaseDescription(aCase: ImmediateConfigurable.Case): String = null
 

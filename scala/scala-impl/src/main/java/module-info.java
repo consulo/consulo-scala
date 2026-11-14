@@ -414,6 +414,7 @@ open module org.intellij.scala {
     exports org.jetbrains.plugins.scala.lang.refactoring.namesSuggester.genericTypes;
     exports org.jetbrains.plugins.scala.lang.refactoring.rename;
     exports org.jetbrains.plugins.scala.lang.refactoring.rename.inplace;
+    exports org.jetbrains.plugins.scala.lang.refactoring.suggested;
     exports org.jetbrains.plugins.scala.lang.refactoring.ui;
     exports org.jetbrains.plugins.scala.lang.refactoring.util;
     exports org.jetbrains.plugins.scala.lang.references;

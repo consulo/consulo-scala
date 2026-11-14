@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.codeInsight.hints
 
 import consulo.language.editor.inlay.HintInfo.MethodInfo
-import consulo.language.editor.inlay.{HintInfo, InlayParameterHintsProvider}
+import consulo.language.editor.inlay.ParameterNameHintsSettings.{getInstance => ParameterNameHintsSettings}
+import consulo.language.editor.inlay.{HintInfo, HintInfoFilter, InlayParameterHintsProvider, MethodInfoExcludeListFilter}
 import consulo.language.Language
 import consulo.codeEditor.Editor
 import consulo.language.psi.{PsiElement, PsiFile}
@@ -24,7 +25,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.nonvalue.Parameter
 import org.jetbrains.plugins.scala.settings.ScalaApplicationSettings.{getInstance => ScalaApplicationSettings}
 
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 trait ScalaInlayParameterHintsPass {
   protected implicit def settings: ScalaHintsSettings
@@ -63,62 +64,17 @@ trait ScalaInlayParameterHintsPass {
 }
 
 object ScalaInlayParameterHintsPass {
-  private[hints] trait HintInfoFilter {
-    def showHint(info: HintInfo): Boolean
-  }
-
-  // upstream: MethodInfoExcludeListFilter with the user exclude list diff from ParameterNameHintsSettings
-  // (both are Consulo internals), only the default exclude lists are applied here
   private def hintInfoFilterFor(language: Language, provider: InlayParameterHintsProvider): HintInfoFilter = {
     val dependencyLanguage = provider.getBlackListDependencyLanguage
-    val dependencyExcludeList = Option(InlayParameterHintsProvider.forLanguage(dependencyLanguage))
-      .map(_.getDefaultBlackList)
+    // upstream: the dependency provider (Java) is always present
+    val dependencyExcludeList = Option(dependencyLanguage)
+      .flatMap(language => Option(InlayParameterHintsProvider.forLanguage(language)))
+      .map(dependencyProvider => ParameterNameHintsSettings.getExcludeListDiff(dependencyLanguage).applyOn(dependencyProvider.getDefaultBlackList))
       .getOrElse(java.util.Collections.emptySet[String]())
 
-    val matchers = ContainerUtil.union(provider.getDefaultBlackList, dependencyExcludeList).asScala.flatMap(ExcludeListMatcher(_)).toSeq
-
-    {
-      case info: MethodInfo =>
-        val paramNames = info.getParamNames.asScala.toSeq
-        !matchers.exists(_(info.getFullyQualifiedName, paramNames))
-      case _ => false
-    }
-  }
-
-  private object ExcludeListMatcher {
-
-    def apply(pattern: String): Option[(String, Seq[String]) => Boolean] = {
-      val trimmed = pattern.trim
-      if (trimmed.isEmpty) return None
-
-      val openIndex = trimmed.lastIndexOf('(')
-      val closeIndex = trimmed.lastIndexOf(')')
-      if (openIndex < 0) {
-        stringMatcher(trimmed).map(method => (name, _) => method(name))
-      } else if (closeIndex <= openIndex) {
-        None
-      } else {
-        val inner = trimmed.substring(openIndex + 1, closeIndex)
-        val paramPatterns = inner.split(",").map(_.trim).toSeq
-        for {
-          method <- stringMatcher(trimmed.substring(0, openIndex).trim)
-          if inner.nonEmpty && !paramPatterns.exists(_.isEmpty)
-          params = paramPatterns.flatMap(stringMatcher)
-          if params.size == paramPatterns.size
-        } yield (name: String, paramNames: Seq[String]) =>
-          method(name) && paramNames.size == params.size && params.zip(paramNames).forall { case (m, n) => m(n) }
-      }
-    }
-
-    private def stringMatcher(pattern: String): Option[String => Boolean] = {
-      val asterisks = pattern.count(_ == '*')
-      if (pattern.isEmpty || pattern == "*") Some(_ => true)
-      else if (asterisks == 0) Some(_ == pattern)
-      else if (asterisks == 1 && pattern.startsWith("*")) Some(_.endsWith(pattern.substring(1)))
-      else if (asterisks == 1 && pattern.endsWith("*")) Some(_.startsWith(pattern.dropRight(1)))
-      else if (asterisks == 2 && pattern.startsWith("*") && pattern.endsWith("*")) Some(_.contains(pattern.substring(1, pattern.length - 1)))
-      else None
-    }
+    new MethodInfoExcludeListFilter(ContainerUtil.union(
+      ParameterNameHintsSettings.getExcludeListDiff(language).applyOn(provider.getDefaultBlackList),
+      dependencyExcludeList))
   }
 
   private val menu: MenuProvider = MenuProvider(InlayHintsMenus.ParameterNames)

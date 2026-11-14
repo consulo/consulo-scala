@@ -23,7 +23,6 @@ import javax.swing.JComponent
   * @param project      IntelliJ project.
   * @param classMembers Class members to choose from.
   */
-// upstream: single-step AbstractWizard (not public API in Consulo)
 final class ScalaGenerateToStringWizard(classMembers: Seq[ScNamedElement])
                                        (implicit project: Project)
   extends DialogWrapper(project) {

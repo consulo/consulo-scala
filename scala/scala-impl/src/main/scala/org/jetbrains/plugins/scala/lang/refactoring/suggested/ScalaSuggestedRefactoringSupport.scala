@@ -1,15 +1,20 @@
 package org.jetbrains.plugins.scala.lang.refactoring.suggested
 
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.refactoring.suggested.{SuggestedRefactoringAvailability, SuggestedRefactoringExecution, SuggestedRefactoringStateChanges, SuggestedRefactoringSupport, SuggestedRefactoringUI}
-import com.intellij.util.ObjectUtils
+import consulo.annotation.component.ExtensionImpl
+import consulo.document.util.TextRange
+import consulo.language.Language
+import consulo.language.editor.refactoring.suggested.{SuggestedRefactoringAvailability, SuggestedRefactoringExecution, SuggestedRefactoringStateChanges, SuggestedRefactoringSupport, SuggestedRefactoringUI}
+import consulo.language.psi.{PsiElement, PsiFile}
 import org.jetbrains.annotations.Nullable
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsoleUtils
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 
+@ExtensionImpl
 final class ScalaSuggestedRefactoringSupport extends SuggestedRefactoringSupport {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   // TODO(SCL-17973): Support Change Signature. Handle ScMethodLike
   override def isAnchor(element: PsiElement): Boolean = element match {
     //case _: ScParameter =>
@@ -33,7 +38,7 @@ final class ScalaSuggestedRefactoringSupport extends SuggestedRefactoringSupport
   @Nullable
   override def nameRange(element: PsiElement): TextRange = element match {
     case named: ScNamedElement =>
-      ObjectUtils.doIfNotNull[PsiElement, TextRange](named.getNameIdentifier, _.getTextRange)
+      Option(named.getNameIdentifier).map(_.getTextRange).orNull
     case _ => null
   }
 

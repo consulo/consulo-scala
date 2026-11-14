@@ -119,7 +119,7 @@ abstract class InspectionBasedHighlightingPass(file: ScalaFile, document: Option
         val range = info.element.getTextRange
         val severity: HighlightSeverity = getSeverity
         val infoType: HighlightInfoType = HighlightTypeUtil.convertSeverity(severity)
-        val textAttributes: TextAttributesKey = inspection.editorAttributes
+        val textAttributes: TextAttributesKey = profile.getEditorAttributes(highlightKey.toString, file)
 
         val highlightingInfoBuilder = HighlightInfo
           .newHighlightInfo(infoType)
