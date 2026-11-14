@@ -2,8 +2,9 @@ package org.jetbrains.plugins.scala.intelliLang.injection
 
 import consulo.annotation.component.ExtensionImpl
 
-import consulo.language.psi.PsiLanguageInjectionHost
-import org.intellij.plugins.intelliLang.inject.{AbstractLanguageInjectionSupport, TemporaryPlacesRegistry}
+import consulo.language.inject.advanced.{AbstractLanguageInjectionSupport, BaseInjection, TemporaryPlacesRegistry}
+import consulo.language.psi.{PsiElement, PsiLanguageInjectionHost}
+import consulo.util.lang.ref.SimpleReference
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScInfixExpr}
 import org.jetbrains.plugins.scala.patterns.ScalaPatterns
@@ -18,7 +19,8 @@ final class ScalaLanguageInjectionSupport extends AbstractLanguageInjectionSuppo
 
   override def useDefaultInjector(host: PsiLanguageInjectionHost): Boolean = false
 
-  override def useDefaultCommentInjector: Boolean = false
+  // upstream: useDefaultCommentInjector = false, ScalaLanguageInjector handles the comments itself
+  override def findCommentInjection(host: PsiElement, commentRef: SimpleReference[PsiElement]): BaseInjection = null
 
   override def removeInjectionInPlace(host: PsiLanguageInjectionHost): Boolean = {
     if (!host.isInstanceOf[ScExpression])

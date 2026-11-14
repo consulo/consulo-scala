@@ -3,16 +3,14 @@ package org.jetbrains.plugins.scala.decompileToJava
 import consulo.language.editor.FileHighlightingSetting
 import consulo.language.editor.highlight.HighlightLevelUtil
 import consulo.application.ApplicationManager
-import consulo.document.FileDocumentManager
-import consulo.navigation.OpenFileDescriptor
+import consulo.navigation.OpenFileDescriptorFactory
 import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
 import consulo.project.Project
 import consulo.ui.ex.awt.Messages
 import consulo.util.io.FileUtil
-import com.intellij.openapi.vfs.ex.dummy.DummyFileSystem
-import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
+import com.intellij.java.language.impl.JavaFileType
+import consulo.language.file.light.LightVirtualFile
 import consulo.language.psi.PsiManager
-import org.jetbrains.plugins.scala.extensions.inWriteAction
 import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
 import scala.util.{Failure, Success}
@@ -36,9 +34,7 @@ class ScalaBytecodeDecompileTask(file: ScFile)
               ScalaJavaDecompilerBundle.message("decompiler.error")
             )
           case Success(text) =>
-            inWriteAction {
-              createDummyDecompiledFileWithText(myProject, text, file.getName)
-            }
+            createDummyDecompiledFileWithText(file.getProject, text, file.getName)
         }
       }
     }
@@ -46,41 +42,24 @@ class ScalaBytecodeDecompileTask(file: ScFile)
 }
 
 object ScalaBytecodeDecompileTask {
-  private[decompileToJava] val scalaDecompiledFolder = "scala-decompiled"
-  private[decompileToJava] val scalaDecompiledRoot   = s"dummy://$scalaDecompiledFolder"
-
   def showDecompiledJavaCode(file: ScFile): Unit =
     ProgressManager.getInstance().run(new ScalaBytecodeDecompileTask(file))
 
-  private def getOrCreateDummyRoot(): VirtualFile = {
-    val root = VirtualFileManager.getInstance().refreshAndFindFileByUrl(scalaDecompiledRoot)
-    if (root == null)
-      DummyFileSystem.getInstance().createRoot(scalaDecompiledFolder)
-    else
-      root
-  }
-
+  // upstream: the file is created in the "scala-decompiled" root of DummyFileSystem and kept read-only by a WritingAccessProvider
   private def createDummyDecompiledFileWithText(
     project: Project,
     text: String,
     originalFileName: String,
   ): Unit = {
-    val dummyRoot = getOrCreateDummyRoot()
     val decompiledFileName = FileUtil.getNameWithoutExtension(originalFileName) + ".decompiled.java"
-    val dummyFile = DummyFileSystem.getInstance().createChildFile(null, dummyRoot, decompiledFileName)
+    val dummyFile = new LightVirtualFile(decompiledFileName, JavaFileType.INSTANCE, text)
+    dummyFile.setWritable(false)
 
     val psiFile = PsiManager.getInstance(project).findFile(dummyFile)
     if (psiFile != null) {
       HighlightLevelUtil.forceRootHighlighting(psiFile, FileHighlightingSetting.SKIP_HIGHLIGHTING)
     }
-    val document = FileDocumentManager.getInstance().getDocument(dummyFile)
-    if (document != null) {
-      document.setText(text)
-    }
-    else {
-      throw new AssertionError(s"Can't find document of dummy decompiled file, original file name: $originalFileName")
-    }
 
-    new OpenFileDescriptor(project, dummyFile).navigate(true)
+    OpenFileDescriptorFactory.getInstance(project).builder(dummyFile).build().navigate(true)
   }
 }

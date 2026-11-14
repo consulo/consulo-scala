@@ -4,7 +4,7 @@ import consulo.annotation.component.ExtensionImpl
 
 import consulo.document.util.TextRange
 import consulo.util.lang.StringUtil
-import com.intellij.psi.AbstractElementManipulator
+import consulo.language.psi.AbstractElementManipulator
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.base._
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
@@ -12,6 +12,8 @@ import org.jetbrains.plugins.scala.lang.psi.impl._
 
 @ExtensionImpl
 final class ScalaInjectedStringLiteralManipulator extends AbstractElementManipulator[ScStringLiteral] {
+
+  override def getElementClass: Class[ScStringLiteral] = classOf[ScStringLiteral]
 
   override def handleContentChange(
     literal: ScStringLiteral,

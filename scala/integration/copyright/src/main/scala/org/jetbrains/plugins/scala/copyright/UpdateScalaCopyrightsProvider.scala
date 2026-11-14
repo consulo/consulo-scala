@@ -1,15 +1,13 @@
 package org.jetbrains.plugins.scala.copyright
 
 import consulo.annotation.component.ExtensionImpl
-
-import consulo.virtualFileSystem.fileType.FileType
-import consulo.module.Module
-import consulo.project.Project
-import consulo.virtualFileSystem.VirtualFile
+import consulo.language.copyright.config.CopyrightProfile
+import consulo.language.copyright.{BaseUpdateCopyrightsProvider, UpdatePsiFileCopyright}
+import consulo.language.copyright.config.CopyrightFileConfig
 import consulo.language.psi.{PsiComment, PsiFile, PsiWhiteSpace, SyntaxTraverser}
-import com.intellij.util.containers.TreeTraversal
-import com.maddyhome.idea.copyright.CopyrightProfile
-import com.maddyhome.idea.copyright.psi.{UpdateCopyrightsProvider, UpdatePsiFileCopyright}
+import consulo.util.collection.TreeTraversal
+import consulo.virtualFileSystem.fileType.FileType
+import org.jetbrains.plugins.scala.api.ScalaFileType
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScCommentOwner
@@ -18,22 +16,18 @@ import org.jetbrains.plugins.scalaDirective.psi.api.{ScDirective, ScDirectiveTok
 import scala.jdk.CollectionConverters.{IterableHasAsScala, SeqHasAsJava}
 
 @ExtensionImpl
-final class UpdateScalaCopyrightsProvider extends UpdateCopyrightsProvider {
+final class UpdateScalaCopyrightsProvider extends BaseUpdateCopyrightsProvider {
 
-  override def createInstance(project: Project,
-                              module: Module,
-                              file: VirtualFile,
-                              base: FileType,
-                              options: CopyrightProfile): UpdateScalaCopyright =
-    new UpdateScalaCopyright(project, module, file, options)
+  override def getFileType: FileType = ScalaFileType.INSTANCE
+
+  override def createInstance(file: PsiFile, options: CopyrightProfile): UpdatePsiFileCopyright[CopyrightFileConfig] =
+    new UpdateScalaCopyright(file, options)
 }
 
 private final class UpdateScalaCopyright(
-  project: Project,
-  module: Module,
-  file: VirtualFile,
+  file: PsiFile,
   options: CopyrightProfile
-) extends UpdatePsiFileCopyright(project, module, file, options) {
+) extends UpdatePsiFileCopyright[CopyrightFileConfig](file, options) {
   override def accept(): Boolean = getFile.is[ScalaFile]
 
   override def scanFile(): Unit = {

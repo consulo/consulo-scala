@@ -3,9 +3,9 @@ package org.jetbrains.plugins.scala.intelliLang.injection
 import consulo.language.ast.ASTNode
 import consulo.language.Language
 import consulo.document.util.TextRange
-import com.intellij.psi.ElementManipulators
-import org.intellij.plugins.intelliLang.inject.InjectorUtils.InjectionInfo
-import org.intellij.plugins.intelliLang.inject._
+import consulo.language.inject.advanced.InjectedLanguage
+import consulo.language.psi.{ElementManipulators, PsiLanguageInjectionHost}
+import consulo.util.lang.Trinity
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.parser.ScCodeBlockElementType
@@ -26,6 +26,8 @@ import scala.collection.mutable.ArrayBuffer
    * Note that the text is mainly needed for tests. It's not supposed to be shown to the user anywhere.
    */
   private val InjectionPlaceholder = "InjectionPlaceholder"
+
+  type InjectionInfo = Trinity[PsiLanguageInjectionHost, InjectedLanguage, TextRange]
 
   case class InjectionSplitResult(isUnparseable: Boolean, ranges: collection.Seq[InjectionInfo])
 
@@ -90,7 +92,7 @@ import scala.collection.mutable.ArrayBuffer
       case _ =>
         val range = getRangeInElement(string)
         val injectedLanguage = newInjectedLanguage(languageId, prefix, suffix)
-        result += new InjectionInfo(string, injectedLanguage, range)
+        result += Trinity.create[PsiLanguageInjectionHost, InjectedLanguage, TextRange](string, injectedLanguage, range)
         false
     }
   }
@@ -147,7 +149,7 @@ import scala.collection.mutable.ArrayBuffer
           val ranges = extractMultiLineStringRanges(contentText, start, marginChar)
           collectInjectionInfosForMultilineString(literal, ranges, languageId, partPrefix, partSuffix)(result)
         case `tINTERPOLATED_STRING` =>
-          result += new InjectionInfo(literal, injectedLanguageForPart, TextRange.create(start, end))
+          result += Trinity.create[PsiLanguageInjectionHost, InjectedLanguage, TextRange](literal, injectedLanguageForPart, TextRange.create(start, end))
         case _ =>
           if (prevChild != null) {
             val prevElementType = prevChild.getElementType
@@ -168,7 +170,7 @@ import scala.collection.mutable.ArrayBuffer
               //s"$$<CARET>"
               //s"$$<CARET>$$"
               val emptyRange = TextRange.create(baseOffset, baseOffset)
-              result += new InjectionInfo(literal, injectedLanguageForPart, emptyRange)
+              result += Trinity.create[PsiLanguageInjectionHost, InjectedLanguage, TextRange](literal, injectedLanguageForPart, emptyRange)
             }
           }
       }
@@ -209,7 +211,7 @@ import scala.collection.mutable.ArrayBuffer
       //capture new line symbol using `lineRange.grown(1)` for all lines except the last
       val rangeActual = if (isLastRange) range else range.grown(1)
       val injectedLanguage = newInjectedLanguage(languageId, rangePrefix, rangeSuffix)
-      result += new InjectionInfo(literal, injectedLanguage, rangeActual)
+      result += Trinity.create[PsiLanguageInjectionHost, InjectedLanguage, TextRange](literal, injectedLanguage, rangeActual)
     }
   }
 

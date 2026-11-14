@@ -3,18 +3,15 @@ package org.jetbrains.plugins.scala.intelliLang.injection
 import consulo.annotation.component.ExtensionImpl
 
 import consulo.language.Language
-import com.intellij.lang.injection.{MultiHostInjector, MultiHostRegistrar}
+import consulo.language.inject.{InjectedLanguageManager, MultiHostInjector, MultiHostRegistrar}
 import consulo.application.ApplicationManager
 import consulo.util.dataholder.Key
 import com.intellij.java.language.psi.{PsiAnnotationOwner, PsiField, PsiMethod}
 import consulo.language.psi.{PsiElement, PsiReference}
 import org.apache.commons.lang3.StringUtils
-import org.intellij.plugins.intelliLang.Configuration
 
 import java.util as ju
-import org.intellij.plugins.intelliLang.inject.*
-import org.intellij.plugins.intelliLang.inject.config.BaseInjection
-import org.intellij.plugins.intelliLang.inject.java.JavaLanguageInjectionSupport
+import consulo.language.inject.advanced.{BaseInjection, Configuration, InjectedLanguage, InjectorUtils, LanguageInjectionSupport, TemporaryPlacesRegistry}
 import org.jetbrains.plugins.scala.caches.BlockModificationTracker
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.incremental.Highlighting.ElementHighlightingExt
@@ -41,12 +38,17 @@ final class ScalaLanguageInjector extends MultiHostInjector {
 
   import ScalaLanguageInjector._
 
-  override def elementsToInjectIn: ju.List[? <: Class[? <: PsiElement]] = ElementsToInjectIn
+  // upstream: injects into ScInterpolatedStringLiteral, ScStringLiteral and ScInfixExpr (string concatenation)
+  override def getElementClass: Class[? <: PsiElement] = classOf[ScExpression]
 
   // TODO: rethink, add caching
   //  this adds significant typing performance overhead if file contains many injected literals
-  override def getLanguagesToInject(registrar: MultiHostRegistrar, host: PsiElement): Unit = {
-    implicit val support: ScalaLanguageInjectionSupport = LanguageInjectionSupport.EP_NAME.findExtension(classOf[ScalaLanguageInjectionSupport])
+  override def injectLanguages(registrar: MultiHostRegistrar, host: PsiElement): Unit = {
+    if (!ElementsToInjectIn.exists(_.isInstance(host)))
+      return
+
+    implicit val support: ScalaLanguageInjectionSupport =
+      host.getProject.getApplication.getExtensionPoint(classOf[LanguageInjectionSupport]).findExtension(classOf[ScalaLanguageInjectionSupport])
     if (support == null)
       return
 
@@ -324,7 +326,7 @@ final class ScalaLanguageInjector extends MultiHostInjector {
     if (javaParameter == null)
       return false
 
-    val injectionsForJava = injectionConfiguration.getInjections(JavaLanguageInjectionSupport.JAVA_SUPPORT_ID)
+    val injectionsForJava = injectionConfiguration.getInjections(JavaSupportId)
     injectUsingPatterns(host, javaParameter, literals, injectionsForJava)
   }
 
@@ -361,7 +363,10 @@ final class ScalaLanguageInjector extends MultiHostInjector {
 
 private object ScalaLanguageInjector {
 
-  private val ElementsToInjectIn = ju.Arrays.asList(
+  // upstream: JavaLanguageInjectionSupport.JAVA_SUPPORT_ID
+  private val JavaSupportId = "java"
+
+  private val ElementsToInjectIn: Seq[Class[? <: ScExpression]] = Seq(
     classOf[ScInterpolatedStringLiteral],
     classOf[ScStringLiteral],
     classOf[ScInfixExpr] //string concatenation
@@ -401,10 +406,13 @@ private object ScalaLanguageInjector {
   )(implicit support: ScalaLanguageInjectionSupport, registrar: MultiHostRegistrar): Unit = {
     val InjectionSplitResult(isUnparseable, injectionInfos) = ScalaInjectionInfosCollector.collectInjectionInfos(literals, language, prefix, suffix)
 
-    InjectorUtils.registerInjection(language, host.getContainingFile, injectionInfos.asJava, registrar, (registrar: MultiHostRegistrar) => {
-      registrar.frankensteinInjection(isUnparseable)
-      InjectorUtils.registerSupport(registrar, support, true)
-    })
+    if (injectionInfos.isEmpty)
+      return
+
+    InjectorUtils.registerInjection(language, injectionInfos.asJava, host.getContainingFile, registrar)
+    val firstHost = injectionInfos.head.getFirst
+    InjectorUtils.registerSupport(support, true, firstHost, language)
+    InjectorUtils.putInjectedFileUserData(firstHost, language, InjectedLanguageManager.FRANKENSTEIN_INJECTION, if (isUnparseable) java.lang.Boolean.TRUE else null)
   }
 
   private def annotationOwnerForScStringLiteral(stringLiteral: ScStringLiteral): Option[AnnotationOwner] = {

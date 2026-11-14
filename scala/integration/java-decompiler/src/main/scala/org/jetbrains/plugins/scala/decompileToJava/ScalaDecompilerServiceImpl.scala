@@ -9,9 +9,9 @@ import consulo.language.codeStyle.CodeStyle
 import com.intellij.java.language.impl.{JavaClassFileType, JavaFileType}
 import consulo.util.io.FileUtil
 import consulo.virtualFileSystem.VirtualFile
-import org.jetbrains.java.decompiler.IdeaLogger
+import consulo.logging.Logger
 import org.jetbrains.java.decompiler.main.decompiler.BaseDecompiler
-import org.jetbrains.java.decompiler.main.extern.{IBytecodeProvider, IFernflowerPreferences, IResultSaver}
+import org.jetbrains.java.decompiler.main.extern.{IBytecodeProvider, IFernflowerLogger, IFernflowerPreferences, IResultSaver}
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
@@ -38,12 +38,12 @@ private class ScalaDecompilerServiceImpl extends ScalaDecompilerService {
         mappings.get(path).map(_.apply()).orNull
       }
       val options: Map[String, AnyRef] = getFernflowerDecompilerOptions
-      val decompiler = new BaseDecompiler(provider, saver, options.asJava, new IdeaLogger())
-      mappings.foreach { case (path, _) => decompiler.addSource(new java.io.File(path)) }
+      val decompiler = new BaseDecompiler(provider, saver, options.asJava, new ScalaFernflowerLogger)
+      mappings.foreach { case (path, _) => decompiler.addSpace(new java.io.File(path), true) }
       decompiler.decompileContext()
       Success(saver.result)
     } catch {
-      case e: IdeaLogger.InternalException =>
+      case e: InternalException =>
         Failure(e)
     }
   }
@@ -114,8 +114,7 @@ object ScalaDecompilerServiceImpl {
       //value is copied from IdeaDecompilerKt
       IFernflowerPreferences.MAX_PROCESSING_METHOD -> 60.asInstanceOf[java.lang.Integer],
 
-      //value is copied from IdeaDecompilerKt
-      IFernflowerPreferences.IGNORE_INVALID_BYTECODE -> ENABLED,
+      // upstream: IGNORE_INVALID_BYTECODE -> ENABLED (not supported by the bundled fernflower)
 
       //Skipping the BANNER - we will append the banner manually after concatenating all decompilation results for a given file
       //IFernflowerPreferences.BANNER -> ScalaDecompilerServiceImpl.BANNER,
@@ -123,6 +122,28 @@ object ScalaDecompilerServiceImpl {
       //it's used in IdeaDecompilerKt, but I have no idea what it affects from the user perspective
       //IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES -> ENABLED,
     )
+  }
+
+  private val Log = Logger.getInstance(classOf[ScalaDecompilerServiceImpl])
+
+  private class InternalException(message: String, cause: Throwable) extends RuntimeException(message, cause)
+
+  // upstream: org.jetbrains.java.decompiler.IdeaLogger (not exported by the Consulo fernflower plugin)
+  private class ScalaFernflowerLogger extends IFernflowerLogger {
+    override def writeMessage(message: String, severity: IFernflowerLogger.Severity): Unit =
+      writeMessage(message, severity, null)
+
+    override def writeMessage(message: String, severity: IFernflowerLogger.Severity, t: Throwable): Unit = severity match {
+      case IFernflowerLogger.Severity.TRACE => Log.debug(message, t)
+      case IFernflowerLogger.Severity.INFO  => Log.info(message, t)
+      case IFernflowerLogger.Severity.WARN  => Log.warn(message, t)
+      case IFernflowerLogger.Severity.ERROR => Log.error(message, t)
+    }
+
+    override def writeMessage(message: String, t: Throwable): Unit = t match {
+      case e: InternalException => throw e
+      case _ => throw new InternalException(message, t)
+    }
   }
 
   private def getFileContents(vf: VirtualFile): FileContents =

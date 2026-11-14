@@ -6,8 +6,9 @@ import consulo.annotation.component.ActionRef
 import consulo.annotation.component.ActionRefAnchor
 
 import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
-import consulo.navigation.OpenFileDescriptor
-import com.intellij.openapi.fileTypes.PlainTextFileType
+import consulo.application.Application
+import consulo.language.plain.PlainTextFileType
+import consulo.navigation.OpenFileDescriptorFactory
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
 import consulo.language.file.light.LightVirtualFile
@@ -16,17 +17,22 @@ import org.jetbrains.plugins.scala.tasty.reader.{NameTable, NodePrinter, TreeRea
 
 //NOTE: disabled inspection as it's an internal action
 //noinspection ScalaExtractStringToBundle
-@ActionImpl(id = "Scala.DecompileTastyRaw", parents = Array(new ActionParentRef(value = new ActionRef(id = "idea.java.decompiler.action.group"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileTasty"))))
+@ActionImpl(id = "Scala.DecompileTastyRaw", parents = Array(new ActionParentRef(value = new ActionRef(id = "QuickActions"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileTasty"))))
 class ShowDecompiledTastyRawInternalAction extends AnAction("Show Tasty Raw Representation (Internal)") {
 
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override def update(e: AnActionEvent): Unit = {
+    // upstream: internal="true"
+    if (!Application.get().isInternal) {
+      e.getPresentation.setEnabledAndVisible(false)
+      return
+    }
     ShowDecompiledTastyAction.showVisibleAndEnabled(e)
   }
 
   override def actionPerformed(e: AnActionEvent): Unit = {
-    val project = e.getProject
+    val project = e.getData(Project.KEY)
     if (project == null)
       return
 
@@ -67,6 +73,6 @@ class ShowDecompiledTastyRawInternalAction extends AnAction("Show Tasty Raw Repr
   private def createDummyFileWithTextAndOpenEditor(project: Project, fileText: String, tastyFile: VirtualFile): Unit = {
     val fileName = tastyFile.getNameWithoutExtension + ".tasty.raw"
     val lightFile = new LightVirtualFile(fileName, PlainTextFileType.INSTANCE, fileText)
-    new OpenFileDescriptor(project, lightFile).navigate(true)
+    OpenFileDescriptorFactory.getInstance(project).builder(lightFile).build().navigate(true)
   }
 }
