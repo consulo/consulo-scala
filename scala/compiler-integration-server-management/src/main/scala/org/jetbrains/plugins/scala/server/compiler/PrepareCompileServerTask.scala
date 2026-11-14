@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.server.compiler
 
 import consulo.annotation.component.ExtensionImpl
 import consulo.application.ReadAction
-import consulo.compiler.CompileContext
+import consulo.compiler.{BeforeCompileTask, CompileContext}
 import consulo.logging.Logger
 import consulo.module.Module
 import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
@@ -14,7 +14,7 @@ import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerS
 import org.jetbrains.plugins.scala.util.compile.ScalaCompileTask
 
 @ExtensionImpl
-private final class PrepareCompileServerTask extends ScalaCompileTask {
+private final class PrepareCompileServerTask extends ScalaCompileTask with BeforeCompileTask {
   import PrepareCompileServerTask.Log
 
   override protected def run(context: CompileContext): Boolean = {

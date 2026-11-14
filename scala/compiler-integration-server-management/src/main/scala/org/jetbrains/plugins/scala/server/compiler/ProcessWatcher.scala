@@ -1,24 +1,21 @@
 package org.jetbrains.plugins.scala.server.compiler
-import com.intellij.execution.process.{OSProcessHandler, ProcessOutputTypes}
+import consulo.process.{ProcessHandler, ProcessOutputTypes}
 import consulo.process.event.{ProcessEvent, ProcessListener}
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.project.ProjectManager
 import consulo.util.dataholder.Key
-import com.intellij.util.io.BaseOutputReader
 import org.jetbrains.jps.incremental.scala.utils.CompileServerSharedMessages
 import org.jetbrains.plugins.scala.server.compiler.ProcessWatcher.Log
 import org.jetbrains.plugins.scala.extensions.invokeLater
 
 /**
- * @param process an instance of the running Scala Compile Server process
- * @param commandLine the command line used for starting the Scala Compile Server process
+ * @param processHandler the handler of the running Scala Compile Server process (with a blocking output reader),
+ *                       its notifications are already started
  * @param local true if the process is running on the same machine where IntelliJ IDEA is running
  */
-private final class ProcessWatcher(process: Process, commandLine: String, local: Boolean) {
-  private val processHandler: OSProcessHandler = new OSProcessHandler(process, commandLine) {
-    override def readerOptions(): BaseOutputReader.Options = BaseOutputReader.Options.BLOCKING
-  }
+// upstream: wraps the started java.lang.Process into an OSProcessHandler with a blocking reader
+private final class ProcessWatcher(processHandler: ProcessHandler, local: Boolean) {
 
   @volatile
   private var errorInStdOut = false
@@ -28,10 +25,6 @@ private final class ProcessWatcher(process: Process, commandLine: String, local:
   def addProcessListener(listener: ProcessListener): Unit =
     processHandler.addProcessListener(listener)
 
-  def startNotify(): Unit = {
-    processHandler.startNotify()
-  }
-
   def running: Boolean = !processHandler.isProcessTerminated
 
   /**
@@ -39,7 +32,7 @@ private final class ProcessWatcher(process: Process, commandLine: String, local:
    *         where IntelliJ IDEA is running
    */
   def pid: Option[Long] =
-    Option.when(local)(process.pid())
+    Option.when(local)(processHandler.getId).filter(_ >= 0)
 
   def destroyAndWait(): Boolean = {
     processHandler.destroyProcess()

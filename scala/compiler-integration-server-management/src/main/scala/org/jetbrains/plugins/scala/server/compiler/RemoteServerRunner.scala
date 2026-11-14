@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.server.compiler
 import consulo.logging.Logger
 import consulo.project.Project
-import com.intellij.openapi.util.registry.RegistryManager
 import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.jps.incremental.scala.shared.remote.RemoteResourceOwner
 import org.jetbrains.plugins.scala.server.compiler.RemoteServerRunner.*
@@ -22,8 +21,8 @@ final class RemoteServerRunner(project: Project) extends RemoteResourceOwner {
 
   override protected def compileServerPort: CompileServerPort = CompileServerLauncher.compileServerPort.getOrElse(throw new TCPPortMissingException())
 
-  override protected val socketConnectTimeout: FiniteDuration =
-    RegistryManager.getInstance().intValue("scala.compile.server.socket.connect.timeout.milliseconds").milliseconds
+  // upstream: registry key scala.compile.server.socket.connect.timeout.milliseconds
+  override protected val socketConnectTimeout: FiniteDuration = 10000.milliseconds
 
   // TODO: make it cancelable, if request is hanging we cant cancel it now.
   //  E.g. when the server is down and we retry to connect to it.

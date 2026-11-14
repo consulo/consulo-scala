@@ -2,13 +2,14 @@ package org.jetbrains.plugins.scala.server.compiler
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
 import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-import consulo.project.ui.notification.{Notification, NotificationAction, NotificationType, Notifications}
+import jakarta.inject.{Inject, Singleton}
+import consulo.localize.LocalizeValue
+import consulo.project.ui.notification.{Notification, NotificationAction, NotificationService, NotificationType}
 import consulo.ui.ex.action.AnActionEvent
 import consulo.application.ApplicationManager
 import consulo.project.Project
 import consulo.module.content.ProjectRootManager
-import com.intellij.openapi.util.CompositeModificationTracker
+import consulo.component.util.CompositeModificationTracker
 import org.jetbrains.plugins.scala.caches.cached
 import org.jetbrains.plugins.scala.extensions.executeOnPooledThread
 import org.jetbrains.plugins.scala.project.ProjectExt
@@ -18,7 +19,7 @@ import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerS
 @Singleton
 @ServiceAPI(ComponentScope.PROJECT)
 @ServiceImpl
-final class CompileServerNotificationsService(project: Project) {
+final class CompileServerNotificationsService @Inject()(project: Project) {
 
   private val title = ServerManagementBundle.message("scala.compile.server.title")
   
@@ -45,13 +46,16 @@ final class CompileServerNotificationsService(project: Project) {
 
   private def showWarning(serverSdk: String, recommendedSdk: String): Unit = {
     val text = s"""We recommend using JDK '$recommendedSdk' to prevent compilation issues (current JDK is '$serverSdk')""".stripMargin
-    val notification = new Notification(title, title, text, NotificationType.WARNING)
-    notification.addAction(new FixSdkAction(recommendedSdk))
-    notification.addAction(new OpenScalaCompileServerSettingsAction(project, filter = "JDK"))
-    Notifications.Bus.notify(notification)
+    NotificationService.getInstance
+      .newOfType(CompileServerNotificationGroups.compileServer, NotificationType.WARNING)
+      .title(LocalizeValue.of(title))
+      .content(LocalizeValue.of(text))
+      .addAction(new FixSdkAction(recommendedSdk))
+      .addAction(new OpenScalaCompileServerSettingsAction(project, filter = "JDK"))
+      .notify(project)
   }
   
-  private class FixSdkAction(fixedSdk: String) extends NotificationAction(ServerManagementBundle.message("wrong.jdk.action.use.jdk", fixedSdk)) {
+  private class FixSdkAction(fixedSdk: String) extends NotificationAction(LocalizeValue.of(ServerManagementBundle.message("wrong.jdk.action.use.jdk", fixedSdk))) {
 
     override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
       notification.expire()

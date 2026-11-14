@@ -1,65 +1,35 @@
 package org.jetbrains.plugins.scala.server.compiler
-import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
+import consulo.localize.LocalizeValue
+import consulo.project.ui.notification.{NotificationService, NotificationType}
 import consulo.project.Project
-import com.intellij.openapi.ui.MessageType
-import consulo.ui.ex.popup.Balloon.Position
-import consulo.ui.ex.popup.{Balloon, JBPopupFactory}
 import consulo.project.ui.wm.WindowManager
-import com.intellij.openapi.wm.impl.status.IdeStatusBarImpl
-import consulo.ui.ex.RelativePoint
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
-import com.intellij.util.ui.PositionTracker
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.api.NlsString
-
-import java.awt.Point
 
 private object CompileServerNotifications {
   /**
    * This method only shows the balloon, but doesn't log it in the "Event Log" tool window.
-   *
-   * Current IntelliJ API doesn't support showing real Notifications on widgets (like on tool windows)
-   * and you can add a "Event Log" entry only via a `com.intellij.notification.Notification` object.
-   *
-   * TODO: rewrite with proper api when IDEA-273990 is fixed
    */
-  private def showBalloonNotificationOnWidget(message: NlsString, project: Project): Unit = {
-    val balloonBuilder = JBPopupFactory.getInstance.createHtmlTextBalloonBuilder(message.nls, MessageType.INFO, null)
-    val balloon = balloonBuilder.createBalloon()
-
-    val statusBar = Option(WindowManager.getInstance.getStatusBar(project))
-    val positionTracker = statusBar match {
-      case Some(bar: IdeStatusBarImpl) if bar.getComponent.isVisible =>
-        val component = Option(bar.getWidgetComponent(CompileServerWidgetFactory.ID))
-        component.map { c =>
-          new PositionTracker[Balloon](c) {
-            override def recalculateLocation(b: Balloon): RelativePoint =
-              new RelativePoint(c, new Point(c.getWidth / 2, 0))
-          }
-        }
-      case _ =>
-        // if status bar is not visible, show the balloon in the right-bottom corner
-        val component = Option(WindowManager.getInstance.getIdeFrame(project)).map(_.getComponent)
-        component.map { c =>
-          new PositionTracker[Balloon](c) {
-            override def recalculateLocation(b: Balloon): RelativePoint = {
-              new RelativePoint(c, new Point(c.getWidth, c.getHeight))
-            }
-          }
-        }
+  // upstream: positions the balloon over the widget component (or the right-bottom corner of the frame) with PositionTracker
+  @RequiresEdt
+  private def showBalloonNotificationOnWidget(message: NlsString, project: Project): Unit =
+    Option(WindowManager.getInstance.getStatusBar(project)) match {
+      case Some(statusBar) =>
+        statusBar.notifyByBalloon(CompileServerWidgetFactory.ID, NotificationType.INFORMATION, message.nls)
+      case None =>
+        showNotification(message.nls, NotificationType.INFORMATION, Some(project))
     }
-
-    positionTracker.foreach(balloon.show(_, Position.above))
-  }
 
   @Nls
   private def title: String = ServerManagementBundle.message("scala.compile.server.title")
 
-  private val NotificationGroupId = "Scala Compile Server"
-
-  def showNotification(@Nls message: String, notificationType: NotificationType, project: Option[Project]): Unit = {
-    Notifications.Bus.notify(new Notification(NotificationGroupId, title, message, notificationType), project.orNull)
-  }
+  def showNotification(@Nls message: String, notificationType: NotificationType, project: Option[Project]): Unit =
+    NotificationService.getInstance
+      .newOfType(CompileServerNotificationGroups.compileServer, notificationType)
+      .title(LocalizeValue.of(title))
+      .content(LocalizeValue.of(message))
+      .notify(project.orNull)
 
   @RequiresEdt
   def showStoppedByIdleTimeoutNotification(project: Project): Unit = {

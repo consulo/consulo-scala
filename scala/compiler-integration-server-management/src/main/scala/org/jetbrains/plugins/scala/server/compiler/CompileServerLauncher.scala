@@ -1,58 +1,43 @@
 //noinspection ApiStatus,UnstableApiUsage
 package org.jetbrains.plugins.scala.server.compiler
-import consulo.annotation.component.ComponentScope
-import consulo.annotation.component.ServiceAPI
-import consulo.annotation.component.ServiceImpl
-import jakarta.inject.Singleton
-import com.intellij.compiler.server.impl.BuildProcessClasspathManager
-import com.intellij.compiler.server.{BuildManager, BuildProcessParametersProvider}
-import com.intellij.execution.configurations.GeneralCommandLine
-import consulo.process.event.{ProcessEvent, ProcessListener}
-import consulo.project.ui.notification.{Notification, NotificationType, Notifications}
-import consulo.disposer.Disposable
-import com.intellij.openapi.application.{ApplicationInfo, PathManager}
+import com.intellij.java.language.projectRoots.JavaSdkVersion
 import consulo.application.ApplicationManager
+import consulo.compiler.CompilerPaths
+import consulo.container.boot.ContainerPathManager
+import consulo.content.bundle.{Sdk, SdkTable}
+import consulo.disposer.{Disposable, Disposer}
+import consulo.localize.LocalizeValue
 import consulo.logging.Logger
-import com.intellij.openapi.options.advanced.AdvancedSettings
-import consulo.project.{Project, ProjectManager}
+import consulo.platform.{ForwardedPort, Platform}
+import consulo.process.cmd.GeneralCommandLine
+import consulo.process.event.{ProcessEvent, ProcessListener}
+import consulo.process.util.CapturingProcessUtil
+import consulo.process.{ExecutionException, ProcessHandler, ProcessHandlerBuilderFactory, ProcessOutputTypes}
+import consulo.project.ui.notification.{NotificationService, NotificationType}
 import consulo.project.util.ProjectUtil
-import com.intellij.openapi.projectRoots.{JavaSdkVersion, ProjectJdkTable}
-import consulo.content.bundle.Sdk
-import consulo.disposer.Disposer
-import com.intellij.platform.eel.path.EelPath
-import com.intellij.platform.eel.provider.utils.{EelPathUtils, EelProjectUtils, EelSystemFolderUtils}
-import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, EelProviderUtil, LocalEelDescriptor}
-import com.intellij.platform.eel.{EelDescriptor, EelPlatformKt}
+import consulo.project.{Project, ProjectManager}
+import consulo.util.dataholder.Key
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.{Nls, Nullable, TestOnly}
-import org.jetbrains.jps.api.GlobalOptions
-import org.jetbrains.jps.cmdline.ClasspathBootstrap
-import org.jetbrains.plugins.scala.server.compiler.EelCompilerUtils.asTargetLocalPathString
 import org.jetbrains.plugins.scala.compiler.buildinfo.BuildInfo
-import org.jetbrains.plugins.scala.eel.tunnels.EelTunnels
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
+import org.jetbrains.plugins.scala.server.compiler.EelCompilerUtils.{asTargetLocalPathString, isLocal}
 import org.jetbrains.plugins.scala.server.{CompileServerPort, CompileServerProperties, CompileServerToken}
-import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 import org.jetbrains.plugins.scala.util.*
-import org.jetbrains.plugins.scala.api.util.*
-import org.jetbrains.plugins.scala.language.util.*
-import org.jetbrains.plugins.scala.rt.util.*
-import org.jetbrains.plugins.scala.shared.util.*
 import org.jetbrains.plugins.scala.util.teamcity.TeamcityUtils
 
-import java.io.{BufferedReader, IOException, InputStream, InputStreamReader}
-import java.nio.file.{Files, Path}
-import java.util.concurrent.{ConcurrentHashMap, ConcurrentLinkedQueue, CopyOnWriteArrayList}
-import kotlinx.coroutines.CoroutineScope
+import java.io.IOException
+import java.nio.file.{FileSystems, Files, Path, StandardCopyOption}
+import java.util.concurrent.{CompletableFuture, ConcurrentHashMap, ConcurrentLinkedQueue, CopyOnWriteArrayList}
 import scala.collection.mutable
 import scala.concurrent.duration.*
-import scala.io.Source
 import scala.jdk.CollectionConverters.*
 import scala.util.control.Exception.*
 import scala.util.matching.Regex
-import scala.util.{Try, Using}
+import scala.util.Try
 
 object CompileServerLauncher {
 
@@ -80,21 +65,26 @@ object CompileServerLauncher {
         true
       case Left(error)  =>
         val title = ServerManagementBundle.message("cannot.start.scala.compile.server")
-        val groupId = "scala"
+        // upstream: notification group id "scala"
+        def notification(text: String) =
+          NotificationService.getInstance
+            .newOfType(ScalaNotificationGroups.scalaGeneral, NotificationType.ERROR)
+            .title(LocalizeValue.of(title))
+            .content(LocalizeValue.of(text))
         error match {
           case CompileServerProblem.SdkNotSpecified =>
             val text =
               s"""No SDK specified.<p/>
                  |""".stripMargin
             val action = new OpenScalaCompileServerSettingsAction(project, filter = "JDK")
-            Notifications.Bus.notify(new Notification(groupId, title, text, NotificationType.ERROR).addAction(action))
+            notification(text).addAction(action).notify(null)
           case error: CompileServerProblem.Error =>
             val text = error.text
-            Notifications.Bus.notify(new Notification(groupId, title, text, NotificationType.ERROR))
+            notification(text).notify(null)
             LOG.error(title, text)
           case error: CompileServerProblem.UnexpectedException =>
             val text = error.cause.getMessage
-            Notifications.Bus.notify(new Notification(groupId, title, text, NotificationType.ERROR))
+            notification(text).notify(null)
             LOG.error(title, error.cause)
         }
         false
@@ -103,7 +93,7 @@ object CompileServerLauncher {
 
   // TODO: track that we attach debug agent and show notification, as with JPS Build Process
   // TODO: add internal action "Debug Scala Compile Server" as with JPS "Debug Build Process"
-  private def start(project: Project, jdk: JDK): Either[CompileServerProblem, Process] = {
+  private def start(project: Project, jdk: JDK): Either[CompileServerProblem, ProcessHandler] = {
     LOG.traceWithDebugInDev(s"starting server")
 
     val settings = ScalaCompileServerSettings.getInstance
@@ -113,42 +103,33 @@ object CompileServerLauncher {
       ApplicationManager.getApplication.saveSettings()
     }
 
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
+    val platform = project.getPlatform
 
     compileServerJars.partition(_.exists) match {
       case (presentFiles, Seq()) =>
         val (nailgunCpFiles, classpathFiles) = presentFiles.partition(_.nameContains("nailgun"))
 
-        val targetPathSeparator = EelPlatformKt.getPathSeparator(eelDescriptor.getOsFamily)
+        val targetPathSeparator = platform.fs().getPathListSeparator
 
         val nailgunClasspath =
           nailgunCpFiles
-            .map(transferredRemotePath(_, project, eelDescriptor))
-            .map(asTargetLocalPathString(_, eelDescriptor))
+            .map(transferredRemotePath(_, project, platform))
+            .map(asTargetLocalPathString(_, platform))
             .mkString(targetPathSeparator)
 
-        val buildProcessClasspath =
-          if (project.isDisposed)
-            Seq.empty
-          else
-            new BuildProcessClasspathManager(project.unloadAwareDisposable)
-              .getBuildProcessClasspath(project)
-              .asScala
-              .toSeq
-              .map(Path.of(_))
-
+        // upstream: also the JPS build process classpath (BuildProcessClasspathManager), Consulo has no JPS
         val classpath =
-          (jdk.tools.toSeq ++ classpathFiles ++ buildProcessClasspath)
-            .map(transferredRemotePath(_, project, eelDescriptor))
-            .map(asTargetLocalPathString(_, eelDescriptor))
+          (jdk.tools.toSeq ++ classpathFiles)
+            .map(transferredRemotePath(_, project, platform))
+            .map(asTargetLocalPathString(_, platform))
             .mkString(targetPathSeparator)
 
-        // Remote eel-specific preparation: transfer compiler bridge sources and worksheet repl interface impls jar to the remote machine.
-        if (eelDescriptor != LocalEelDescriptor.INSTANCE) {
+        // Remote platform preparation: transfer compiler bridge sources and worksheet repl interface impls jar to the remote machine.
+        if (!isLocal(platform)) {
           CompilerBridgeSourcesJars.allBridgeSources.foreach { path =>
-            transferredRemotePath(path, project, eelDescriptor)
+            transferredRemotePath(path, project, platform)
           }
-          transferWorksheetReplInterfaceImpls(project, eelDescriptor)
+          transferWorksheetReplInterfaceImpls(project, platform)
         }
 
         val compileServerSystemDir = scalaCompileServerSystemDir(project)
@@ -159,29 +140,14 @@ object CompileServerLauncher {
         } else Nil
         val isScalaCompileServer = s"-D${CompileServerProperties.IsScalaCompileServer}=true"
 
-        val jpsUseUnifiedIC = isJpsUseUnifiedIC
-
-        val vmOptions = if (project.isDisposed) Seq.empty else {
-          // Duplicated --add-opens parameters are inherited from this extension point
-          // through ScalaBuildProcessParametersProvider. This filtering also helps to not
-          // pass --add-opens parameters to JDK 8 and lower.
-          val buildProcessParameters = BuildProcessParametersProvider.EP_NAME.getExtensions(project).asScala.iterator
-            .flatMap(_.getVMArguments.asScala).toSeq.diff(compileServerJvmAddOpensExtraParams)
-
-          val jpsOptions =
-            if (jpsUseUnifiedIC) Seq(s"-D${GlobalOptions.DEPENDENCY_GRAPH_ENABLED}=true")
-            else Seq.empty
-
-          buildProcessParameters ++ jpsOptions
-        }
+        // upstream: also the VM arguments of BuildProcessParametersProvider extensions and the JPS dependency graph
+        // option (AdvancedSettings "compiler.unified.ic.implementation"), Consulo has no JPS
 
         // SCL-18193
+        // upstream: also the --add-opens options of the JPS build process (ClasspathBootstrap.configureReflectionOpenPackages)
         val addOpensOptions =
-          if (isJdkAtLeast(jdk, JavaSdkVersion.JDK_1_9)) {
-            val buffer = mutable.ListBuffer.empty[String]
-            ClasspathBootstrap.configureReflectionOpenPackages(buffer.append)
-            buffer.result() ++ compileServerJvmAddOpensExtraParams
-          } else Seq.empty
+          if (isJdkAtLeast(jdk, JavaSdkVersion.JDK_1_9)) compileServerJvmAddOpensExtraParams
+          else Seq.empty
 
         // SCL-23766 Unsafe memory access in JDK 24+
         val unsafeMemoryAccessOptions =
@@ -206,15 +172,15 @@ object CompileServerLauncher {
               Seq.empty
 
           Seq(
-            s"-D${GlobalOptions.USE_DEFAULT_FILE_LOGGING_OPTION}=false",
-            s"-D${CompileServerProperties.LogDirectory}=${asTargetLocalPathString(logDirectory(eelDescriptor), eelDescriptor)}"
+            // upstream: org.jetbrains.jps.api.GlobalOptions.USE_DEFAULT_FILE_LOGGING_OPTION
+            "-Djps.use.default.file.logging=false",
+            s"-D${CompileServerProperties.LogDirectory}=${asTargetLocalPathString(logDirectory(platform), platform)}"
           ) ++ vmOptionsForLogging
         }
 
-        val jpsBuildSystemDir = BuildManager.getInstance().getBuildSystemDirectory(project)
+        val jpsBuildSystemDir = buildSystemDirectory(platform)
 
-        val commands =
-          jdk.executable.toCanonicalPath.toString +:
+        val parameters =
             "-cp" +: nailgunClasspath +:
             userJvmParameters ++:
             jnaVMOptions ++:
@@ -224,52 +190,64 @@ object CompileServerLauncher {
             addOpensOptions ++:
             unsafeMemoryAccessOptions ++:
             finalFieldMutationOptions ++:
-            vmOptions ++:
             loggingParameters ++:
             NailgunRunnerFQN +:
             classpath +:
-            asTargetLocalPathString(compileServerSystemDir, eelDescriptor) +:
-            asTargetLocalPathString(jpsBuildSystemDir, eelDescriptor) +:
+            asTargetLocalPathString(compileServerSystemDir, platform) +:
+            asTargetLocalPathString(jpsBuildSystemDir, platform) +:
             Nil
 
         val workingDirectory: Path = {
           val customWorkingDir = settings.CUSTOM_WORKING_DIR_FOR_TESTS
-          if (customWorkingDir ne null) Path.of(customWorkingDir).toCanonicalPath
+          if (customWorkingDir ne null) platform.fs().getPath(customWorkingDir).toCanonicalPath
           else if (settings.USE_PROJECT_HOME_AS_WORKING_DIR) projectHome(project).map(_.toCanonicalPath).orNull
           else null
         }
 
-        val builder = new GeneralCommandLine(commands.asJava)
+        val builder = new GeneralCommandLine()
+          .withPlatform(platform)
+          .withExecutablePath(jdk.executable.toCanonicalPath)
+          .withParameters(parameters.asJava)
           .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
           .withWorkingDirectory(workingDirectory)
         val commandLineString = builder.getCommandLineString
 
         val incrementalCompiler = ScalaCompilerConfiguration(project).incrementalityType
 
-        catching(classOf[IOException])
-          .either(builder.createProcess())
+        catching(classOf[ExecutionException])
+          .either {
+            ApplicationManager.getApplication.getInstance(classOf[ProcessHandlerBuilderFactory])
+              .newBuilder(builder)
+              .blockingReader()
+              .build()
+          }
           .left.map(e => CompileServerProblem.UnexpectedException(e))
           .flatMap {
-            process =>
-              waitUntilNailgunServerIsReady(compileServerSystemDir, process.getInputStream)
-                .zip(Some(process))
+            processHandler =>
+              waitUntilNailgunServerIsReady(compileServerSystemDir, processHandler)
+                .zip(Some(processHandler))
                 .toRight(CompileServerProblem.Error(ServerManagementBundle.message("compile.server.missing.tcp.port")))
           }
-          .map { (portReportedByServer, process) =>
-            val local = EelProjectUtils.isProjectLocal(project)
-            val port =
-              if (local) CompileServerPort.Local(portReportedByServer)
-              else {
-                val eelApi = EelProviderUtil.toEelApiBlocking(eelDescriptor)
-                val tunnels = eelApi.getTunnels
-                val scope = CoroutineScopeProvider.scope(project)
-                val forwardedLocalPort = EelTunnels.forwardLocalPort(scope, tunnels, portReportedByServer)
-                CompileServerPort.Remote(forwardedLocalPort, portReportedByServer)
+          .flatMap { (portReportedByServer, processHandler) =>
+            val local = isLocal(platform)
+            // upstream: EelTunnels.forwardLocalPort(project coroutine scope, eel tunnels, port) - forwarded while the project is open
+            catching(classOf[IOException])
+              .either(Option.when(!local)(platform.net().forward("127.0.0.1", portReportedByServer)))
+              .left.map { e =>
+                processHandler.destroyProcess()
+                CompileServerProblem.UnexpectedException(e)
               }
+              .map(forwardedPort => (portReportedByServer, processHandler, local, forwardedPort))
+          }
+          .map { (portReportedByServer, processHandler, local, forwardedPort) =>
+            val port = forwardedPort match {
+              case None => CompileServerPort.Local(portReportedByServer)
+              case Some(forwarded) => CompileServerPort.Remote(forwarded.port(), portReportedByServer)
+            }
 
             CompileServerPort.writePortFile(compileServerSystemDir, port.forToken)
 
-            val watcher = new ProcessWatcher(process, "scalaCompileServer", local)
+            val watcher = new ProcessWatcher(processHandler, local)
             // ATTENTION: this stack trace captures only the synchronous process-creation path.
             // If the launch is scheduled through platform background executors, the trace may start in a pooled thread and may not
             // contain the original test method.
@@ -286,19 +264,19 @@ object CompileServerLauncher {
               createdAtStackTrace = processStartStackTrace,
               compileServerSystemDir = compileServerSystemDir,
               port = port,
+              forwardedPort = forwardedPort,
               workingDir = Option(workingDirectory),
               jdk = jdk,
               jvmParameters = userJvmParameters.toSet,
-              jpsUseUnifiedIC = jpsUseUnifiedIC,
               incrementalCompiler = incrementalCompiler
             )
             LOG.assertTrue(serverInstance.isEmpty, "serverInstance is expected to be None")
             serverInstance = Some(instance)
             updateCompileServerWidget()
-            watcher.startNotify()
             watcher.addProcessListener(new ProcessListener {
               override def processTerminated(event: ProcessEvent): Unit = {
                 CompileServerToken.removeTokenFileForPort(compileServerSystemDir, port.forToken)
+                instance.closeForwardedPort()
                 val isExpectedProcessTermination = watcher.isTerminatedByIdleTimeout || instance.stopped
                 if (!isExpectedProcessTermination) {
                   LOG.warn(s"Compile server terminated unexpectedly: ${instance.summary}")
@@ -329,7 +307,7 @@ object CompileServerLauncher {
               // (works only if `debugger.auto.attach.from.console` registry is enabled in main IDEA instance)
               LOG.info(s"Listening for transport dt_socket at address: $debugAgentPort")
             }
-            process
+            processHandler
           }
       case (_, absentFiles) =>
         val paths = absentFiles.mkString(", ")
@@ -340,7 +318,7 @@ object CompileServerLauncher {
   private def updateCompileServerWidget(): Unit = {
     val app = ApplicationManager.getApplication
     if (app.isDisposed) return
-    app.getMessageBus.syncPublisher(CompileServerWidgetFactory.Topic).updateWidget()
+    app.getMessageBus.syncPublisher(CompileServerWidgetUpdateListener.Topic).updateWidget()
   }
 
   // TODO stop server more gracefully
@@ -470,7 +448,7 @@ object CompileServerLauncher {
         Option(defaultSdk(project))
           .toRight(CompileServerProblem.Error(ServerManagementBundle.message("can.t.find.default.jdk")))
       else if (settings.COMPILE_SERVER_SDK != null)
-        Option(ProjectJdkTable.getInstance().findJdk(settings.COMPILE_SERVER_SDK))
+        Option(SdkTable.getInstance().findSdk(settings.COMPILE_SERVER_SDK))
           .toRight(CompileServerProblem.Error(ServerManagementBundle.message("cant.find.jdk", settings.COMPILE_SERVER_SDK)))
       else
         Left(CompileServerProblem.SdkNotSpecified)
@@ -491,13 +469,12 @@ object CompileServerLauncher {
   /**
    * NOTE: extra classpath for JPS process is defined in a differ place in `compiler-integration.xml` in `compileServer.plugin` extension
    */
+  // upstream: also IntellijPlatformJars.jpsBuildersJar, protobufJava (for org.jetbrains.jps.incremental.scala.remote.Main.compileJpsLogic)
+  // and asmJar - JPS jars, Consulo has no JPS
   def compileServerJars: Seq[Path] = Seq(
-    IntellijPlatformJars.jpsBuildersJar,
     IntellijPlatformJars.utilJar,
     IntellijPlatformJars.utilRtJar,
-    IntellijPlatformJars.protobufJava, // required for org.jetbrains.jps.incremental.scala.remote.Main.compileJpsLogic
     IntellijPlatformJars.fastUtilJar,
-    IntellijPlatformJars.asmJar,
     LibraryJars.scalaParserCombinators,
     LibraryJars.scalaXml, // excluded from incremental-compiler.jar together with scala-parser-combinators, see Dependencies.zinc
     ScalaPluginJars.compileServerScalaLibraryJar,
@@ -532,8 +509,6 @@ object CompileServerLauncher {
 
     xmx ++ otherParams ++ debugAgent
   }
-
-  private def isJpsUseUnifiedIC: Boolean = AdvancedSettings.getBoolean("compiler.unified.ic.implementation")
 
   /**
    * Same parameters as the ones provided by the IntelliJ platform to the JPS build process.
@@ -599,24 +574,23 @@ object CompileServerLauncher {
     Option(jdk).filter(isJdkAtLeast(_, JavaSdkVersion.JDK_1_9)).fold(Seq.empty[String]) { jdk =>
       // We are running JDK 9+ as the runtime JDK for the Scala compiler.
       val executablePath = jdk.executable.toCanonicalPath
-      val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
+      val platform = project.getPlatform
 
       val resultPath =
         if (jdkRtJarCache.containsKey(executablePath)) Some(jdkRtJarCache.get(executablePath))
         else {
           // The path of the `java9-rt-export.jar` tool packaged as `<plugin root>/java9-rt-export/java9-rt-export.jar`
           // and distributed with the Scala plugin.
+          // upstream: PathManager.getJarForClass(getClass).getParent.getParent.getParent (<plugin root>/lib/modules/<jar>)
           val java9rtExportJar =
-            PathManager.getJarForClass(getClass)
-              .getParent
-              .getParent
+            ScalaPluginJars.libRoot
               .getParent
               .resolve(java9rtExportString)
               .resolve(s"$java9rtExportString.jar")
 
           val transferredJava9rtExportJarPath = asTargetLocalPathString(
-            transferredRemotePath(java9rtExportJar, project, eelDescriptor),
-            eelDescriptor
+            transferredRemotePath(java9rtExportJar, project, platform),
+            platform
           )
 
           // The command
@@ -629,18 +603,14 @@ object CompileServerLauncher {
           Try {
             val jvmRtDir = asTargetLocalPathString(
               scalaCompileServerSystemDir(project) / "jvm-rt",
-              eelDescriptor
+              platform
             )
 
-            val exportDirectoryPathProcess =
-              new GeneralCommandLine(executablePath.toString, s"-Dsbt.global.base=$jvmRtDir", "-jar", transferredJava9rtExportJarPath, "--rt-ext-dir")
-                .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-                .createProcess()
-
-            exportDirectoryPathProcess.waitFor()
-            val rawPathStringOutput =
-              Using.resource(Source.fromInputStream(exportDirectoryPathProcess.getInputStream))(_.mkString.trim)
-            val exportDirectoryPath = EelNioBridgeServiceKt.asNioPath(EelPath.parse(rawPathStringOutput, eelDescriptor))
+            val exportDirectoryPathOutput = CapturingProcessUtil.execAndGetOutput(
+              javaCommandLine(platform, executablePath, s"-Dsbt.global.base=$jvmRtDir", "-jar", transferredJava9rtExportJarPath, "--rt-ext-dir")
+            )
+            val rawPathStringOutput = exportDirectoryPathOutput.getStdout.trim
+            val exportDirectoryPath = platform.fs().getPath(rawPathStringOutput)
 
             // The full path of the produced `rt.jar`.
             // Example: <IDEA system directory>/scala-compile-server/jvm-rt/java9-rt-ext-eclipse_adoptium_17_0_5/rt.jar
@@ -653,14 +623,13 @@ object CompileServerLauncher {
 
             // Create the `rt.jar` if it doesn't exist.
             if (!rtJarPath.exists) {
-              val rtJarTargetLocalPathString = asTargetLocalPathString(rtJarPath, eelDescriptor)
+              val rtJarTargetLocalPathString = asTargetLocalPathString(rtJarPath, platform)
               // The command
               // `java -jar <plugin root>/java9-rt-export/java9-rt-export.jar <IDEA system directory>/scala-compile-server/jvm-rt/<jdk specific directory>`
               // is executed and creates the `rt.jar`.
-              new GeneralCommandLine(executablePath.toString, "-jar", transferredJava9rtExportJarPath, rtJarTargetLocalPathString)
-                .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-                .createProcess()
-                .waitFor()
+              CapturingProcessUtil.execAndGetOutput(
+                javaCommandLine(platform, executablePath, "-jar", transferredJava9rtExportJarPath, rtJarTargetLocalPathString)
+              )
             }
 
             jdkRtJarCache.put(executablePath, exportDirectoryPath)
@@ -671,11 +640,18 @@ object CompileServerLauncher {
       // The path of the directory with the exported `rt.jar` is provided as a JVM parameter
       // `-Dscala.ext.dirs=<IDEA system directory>/scala-compile-server/jvm-rt/<jdk specific directory>`
       resultPath
-        .map(asTargetLocalPathString(_, eelDescriptor))
+        .map(asTargetLocalPathString(_, platform))
         .map(path => s"$scalaExtDirsParameterString=$path")
         .toSeq
     }
   }
+
+  private def javaCommandLine(platform: Platform, executable: Path, parameters: String*): GeneralCommandLine =
+    new GeneralCommandLine()
+      .withPlatform(platform)
+      .withExecutablePath(executable)
+      .withParameters(parameters.asJava)
+      .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
 
   private val serverStartLock = new Object
 
@@ -733,14 +709,12 @@ object CompileServerLauncher {
         case _ => false
       }
       val jvmParametersChanged = jvmParameters.toSet != instance.jvmParameters
-      val jpsUseUnifiedICChanged = isJpsUseUnifiedIC != instance.jpsUseUnifiedIC
       val incrementalCompilerChanged = ScalaCompilerConfiguration(project).incrementalityType != instance.incrementalCompiler
       val reasons = mutable.ArrayBuffer.empty[String]
       if (workingDirChanged) reasons += "working dir changed"
       if (systemDirectoryChanged) reasons += "system directory changed"
       if (jdkChanged) reasons += "jdk changed"
       if (jvmParametersChanged) reasons += "jvm parameters changed"
-      if (jpsUseUnifiedICChanged) reasons += "jps unified incremental compilation setting changed"
       if (incrementalCompilerChanged) reasons += "incremental compiler changed"
       reasons.toSeq
     }.getOrElse(Seq.empty)
@@ -750,27 +724,43 @@ object CompileServerLauncher {
     s"""^NGServer ${BuildInfo.nailgunVersion} started on (.*), port (\\d{1,5})\\.$$""".r
 
   /**
-   * @note The provided [[InputStream]] should not be closed after use, as that would prevent the process
-   *       from printing to the out stream.
+   * Starts the notifications of the process handler and waits until the nailgun server reports its port.
    *
-   * @param is the input stream of the nailgun process
+   * @param processHandler the handler of the nailgun process, its notifications are not started yet
    * @return the TCP port number on which the server is listening
    */
-  // upstream: @RequiresBackgroundThread
-  private def waitUntilNailgunServerIsReady(compileServerSystemDir: Path, is: InputStream): Option[Int] = {
-    val bufferedReader = new BufferedReader(new InputStreamReader(is))
-    while (true) {
-      bufferedReader.readLine() match {
-        case null => return None
-        case ngServerStartedLine(_, port) =>
-          // The NGServer is ready to accept connections.
-          val opt = port.toIntOption
-          opt.foreach(p => CompileServerToken.generateAndWriteTokenFor(compileServerSystemDir, p))
-          return opt
-        case _ =>
-      }
+  // upstream: @RequiresBackgroundThread, reads the lines of the process input stream before it is wrapped into a process handler
+  private def waitUntilNailgunServerIsReady(compileServerSystemDir: Path, processHandler: ProcessHandler): Option[Int] = {
+    val portFuture = new CompletableFuture[Option[Int]]
+    val listener = new ProcessListener {
+      private val buffer = new java.lang.StringBuilder
+
+      override def onTextAvailable(event: ProcessEvent, outputType: Key[?]): Unit =
+        if (outputType == ProcessOutputTypes.STDOUT && !portFuture.isDone) {
+          buffer.append(event.getText)
+          var lineEnd = buffer.indexOf("\n")
+          while (lineEnd >= 0) {
+            val line = buffer.substring(0, lineEnd).stripTrailing()
+            buffer.delete(0, lineEnd + 1)
+            line match {
+              case ngServerStartedLine(_, port) =>
+                // The NGServer is ready to accept connections.
+                portFuture.complete(port.toIntOption)
+              case _ =>
+            }
+            lineEnd = buffer.indexOf("\n")
+          }
+        }
+
+      override def processTerminated(event: ProcessEvent): Unit =
+        portFuture.complete(None)
     }
-    None
+    processHandler.addProcessListener(listener)
+    processHandler.startNotify()
+    val opt = portFuture.get()
+    processHandler.removeProcessListener(listener)
+    opt.foreach(p => CompileServerToken.generateAndWriteTokenFor(compileServerSystemDir, p))
+    opt
   }
 
   private def projectHome(project: Project): Option[Path] = {
@@ -790,10 +780,8 @@ object CompileServerLauncher {
 
   private final val ScalaCompileServerDirName = "scala-compile-server"
 
-  def scalaCompileServerSystemDir(project: Project): Path = {
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-    scalaCompileServerSystemDir(eelDescriptor)
-  }
+  def scalaCompileServerSystemDir(project: Project): Path =
+    scalaCompileServerSystemDir(project.getPlatform)
 
   // Own subdirectory under the IDEA log dir. Deliberately NOT `build-log`: the platform's
   // CompilerTester clears `build-log` during tests, but the long-running compile server keeps the
@@ -803,35 +791,45 @@ object CompileServerLauncher {
 
   def logDirectory(@Nullable project: Project): Path = project match {
     case null => localLogDirectory()
-    case p =>
-      val descriptor = EelProviderUtil.getEelDescriptor(p)
-      logDirectory(descriptor)
+    case p => logDirectory(p.getPlatform)
   }
 
-  private def logDirectory(eelDescriptor: EelDescriptor): Path =
-    eelDescriptor match {
-      case LocalEelDescriptor.INSTANCE =>
-        localLogDirectory()
-      case remote =>
-        // Remote keeps the platform's `"logs"` convention: BuildManager uses
-        // getSystemFolder(project).resolve("logs") for remote build logs.
-        EelSystemFolderUtils.getSystemFolder(remote) / "logs" / ScalaCompileServerLogDirName
+  private def logDirectory(platform: Platform): Path =
+    if (isLocal(platform)) localLogDirectory()
+    else {
+      // Remote keeps the platform's `"logs"` convention: BuildManager uses
+      // getSystemFolder(project).resolve("logs") for remote build logs.
+      remoteSystemFolder(platform) / "logs" / ScalaCompileServerLogDirName
     }
 
-  // `PathManager.getLogDir` is the IDEA log dir; PathManager.LOG_DIRECTORY ("log") is private,
-  // so it cannot be referenced directly.
+  // upstream: PathManager.getLogDir
   private def localLogDirectory(): Path =
-    PathManager.getLogDir.resolve(ScalaCompileServerLogDirName).toCanonicalPath
+    ContainerPathManager.get().getLogPath.toPath.resolve(ScalaCompileServerLogDirName).toCanonicalPath
 
-  private def scalaCompileServerSystemDir(eelDescriptor: EelDescriptor): Path = {
-    val systemDir = PathUtil.getSystemDirectory(eelDescriptor)
+  // upstream: PathUtil.getSystemDirectory(eelDescriptor)
+  private def scalaCompileServerSystemDir(platform: Platform): Path = {
+    val systemDir =
+      if (isLocal(platform)) ContainerPathManager.get().getSystemDir
+      else remoteSystemFolder(platform)
     systemDir.resolve(ScalaCompileServerDirName)
   }
 
+  // upstream: BuildManager.getBuildSystemDirectory(project) - the JPS build system directory
+  private def buildSystemDirectory(platform: Platform): Path =
+    if (isLocal(platform)) CompilerPaths.getCompilerSystemDirectory().toPath
+    else remoteSystemFolder(platform) / "compiler"
+
+  /**
+   * The IDE system folder on a remote machine.
+   */
+  // upstream: EelSystemFolderUtils.getSystemFolder(eelDescriptor)
+  private def remoteSystemFolder(platform: Platform): Path =
+    platform.user().homePath() / ".cache" / "consulo" / "system"
+
   def targetLocalScalaCompileServerSystemDir(project: Project): String = {
-    val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-    val dir = scalaCompileServerSystemDir(eelDescriptor)
-    asTargetLocalPathString(dir, eelDescriptor)
+    val platform = project.getPlatform
+    val dir = scalaCompileServerSystemDir(platform)
+    asTargetLocalPathString(dir, platform)
   }
 
   /**
@@ -839,39 +837,46 @@ object CompileServerLauncher {
    *
    * @see [[remoteProjectCacheDirectory]]
    */
-  def transferredRemotePath(path: Path, project: Project, eelDescriptor: EelDescriptor): Path =
-    remoteProjectCacheDirectory(project, eelDescriptor) match {
-      case Some(cacheDir) =>
-        EelPathUtils.transferLocalContentToRemote(path, new EelPathUtils.TransferTarget.Explicit(cacheDir / path.getFileName))
-      case None =>
+  def transferredRemotePath(path: Path, project: Project, platform: Platform): Path =
+    remoteProjectCacheDirectory(project, platform) match {
+      case Some(cacheDir) if path.getFileSystem == FileSystems.getDefault =>
+        transferLocalContentToRemote(path, cacheDir / path.getFileName.toString)
+      case _ =>
         path
     }
 
-  private def transferWorksheetReplInterfaceImpls(project: Project, eelDescriptor: EelDescriptor): Unit = {
-    remoteProjectCacheDirectory(project, eelDescriptor).foreach { cacheDir =>
+  private def transferWorksheetReplInterfaceImpls(project: Project, platform: Platform): Unit = {
+    remoteProjectCacheDirectory(project, platform).foreach { cacheDir =>
       val impls = ScalaPluginJars.worksheetReplInterfaceImplsJar
       val nameCount = impls.getNameCount
-      val targetDir = cacheDir.getParent / impls.subpath(nameCount - 2, nameCount - 1) // worksheet-repl-interface
+      val targetDir = cacheDir.getParent / impls.subpath(nameCount - 2, nameCount - 1).toString // worksheet-repl-interface
       if (!targetDir.exists) Files.createDirectories(targetDir)
-      EelPathUtils.transferLocalContentToRemote(impls, new EelPathUtils.TransferTarget.Explicit(targetDir / impls.getFileName))
+      transferLocalContentToRemote(impls, targetDir / impls.getFileName.toString)
     }
   }
 
+  // upstream: EelPathUtils.transferLocalContentToRemote(path, TransferTarget.Explicit(target))
+  private def transferLocalContentToRemote(path: Path, target: Path): Path = {
+    val upToDate = Try(target.exists && Files.size(target) == Files.size(path) &&
+      Files.getLastModifiedTime(target).toMillis >= Files.getLastModifiedTime(path).toMillis).getOrElse(false)
+    if (!upToDate) {
+      Option(target.getParent).filterNot(_.exists).foreach(Files.createDirectories(_))
+      Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING)
+    }
+    target
+  }
+
   /**
-   * Needs to match `cacheDirectory` in [[com.intellij.compiler.server.EelBuildCommandLineBuilder]].
    * @return a path to the cache directory if the project belongs to a remote machine, `None` if the
    *         project is a project on the local machine where IDEA is running
    */
-  private def remoteProjectCacheDirectory(project: Project, eelDescriptor: EelDescriptor): Option[Path] =
-    eelDescriptor match {
-      case LocalEelDescriptor.INSTANCE => None
-      case remote =>
-        val systemDir = EelSystemFolderUtils.getSystemFolder(remote)
-        val buildId = ApplicationInfo.getInstance().getBuild.toString
-        val projectSpecific = ProjectUtil.getProjectCacheFileName(project)
-        val path = systemDir / s"jps-$buildId" / projectSpecific
-        if (!path.exists) Files.createDirectories(path)
-        Some(path)
+  // upstream: needs to match `cacheDirectory` in com.intellij.compiler.server.EelBuildCommandLineBuilder (jps-<build id>/<project>)
+  private def remoteProjectCacheDirectory(project: Project, platform: Platform): Option[Path] =
+    if (isLocal(platform)) None
+    else {
+      val path = scalaCompileServerSystemDir(platform) / "cache" / ProjectUtil.getProjectCacheFileName(project)
+      if (!path.exists) Files.createDirectories(path)
+      Some(path)
     }
 
   private val java9rtExportString: String = "java9-rt-export"
@@ -887,15 +892,4 @@ object CompileServerLauncher {
     ).flatMap { modulePackage =>
       Seq("--add-opens", s"$modulePackage=ALL-UNNAMED")
     }
-
-  // upstream: @Service(Array(Service.Level.PROJECT))
-  @Singleton
-  @ServiceAPI(ComponentScope.PROJECT)
-  @ServiceImpl
-  private final class CoroutineScopeProvider(private val scope: CoroutineScope)
-
-  private object CoroutineScopeProvider {
-    def scope(project: Project): CoroutineScope =
-      project.getInstance(classOf[CoroutineScopeProvider]).scope
-  }
 }

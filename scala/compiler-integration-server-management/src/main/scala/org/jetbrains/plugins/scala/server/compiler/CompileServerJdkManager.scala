@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.server.compiler
-import com.intellij.compiler.server.BuildManager
-import consulo.project.Project
-import com.intellij.openapi.projectRoots.{JavaSdk, JavaSdkVersion}
+import com.intellij.java.language.projectRoots.{JavaSdkType, JavaSdkVersion}
 import consulo.content.bundle.Sdk
-import consulo.module.content.ProjectRootManager
+import consulo.java.language.bundle.JavaSdkTypeUtil
+import consulo.java.language.module.extension.JavaModuleExtension
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import org.jetbrains.plugins.scala.extensions.inReadAction
+import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 
 object CompileServerJdkManager {
@@ -37,25 +40,37 @@ object CompileServerJdkManager {
   }
 
   /**
-   * Returns the Build Process runtime SDK.
+   * Returns the runtime JDK of the IDE.
    * The method isn't thread-safe, so the synchronized is used.
    * @see SCL-17710
    */
+  // upstream: BuildManager.getBuildProcessRuntimeSdk(project) - the JPS build process JDK (the project JDK or the bundled JDK)
   private[compiler] def getBuildProcessRuntimeJdk(project: Project): JdkWithVersion = synchronized {
-    val pair = BuildManager.getBuildProcessRuntimeSdk(project)
-    (pair.first, pair.second)
+    if (ideRuntimeJdk == null) {
+      val sdk = JavaSdkType.getDefaultJavaSdkType.createJdk("IDE JDK", System.getProperty("java.home"))
+      ideRuntimeJdk = (sdk, JavaSdkVersion.fromVersionString(System.getProperty("java.version")))
+    }
+    ideRuntimeJdk
   }
-  
-  private def getProjectJdk(project: Project): Option[JdkWithVersion] =
-    for {
-      sdk <- Option(ProjectRootManager.getInstance(project).getProjectSdk)
-      version <- getJdkVersion(sdk)
-    } yield (sdk, version)
+
+  private var ideRuntimeJdk: JdkWithVersion = scala.compiletime.uninitialized
+
+  // upstream: the project JDK (ProjectRootManager.getProjectSdk), Consulo modules have own JDKs - the most recent JDK of
+  // the Scala modules is used
+  private def getProjectJdk(project: Project): Option[JdkWithVersion] = {
+    val jdks = inReadAction {
+      if (project.isDisposed) Seq.empty
+      else project.modulesWithScala.flatMap(module => Option(ModuleUtilCore.getSdk(module, classOf[JavaModuleExtension[?]])))
+    }
+    jdks.distinct
+      .flatMap(sdk => getJdkVersion(sdk).map((sdk, _)))
+      .maxByOption { case (_, version) => version.ordinal() }
+  }
 
   private def getJdkVersion(sdk: Sdk): Option[JavaSdkVersion] =
     sdk.getSdkType match {
-      case javaSdkType: JavaSdk =>
-        Option(javaSdkType.getVersion(sdk))
+      case _: JavaSdkType =>
+        Option(JavaSdkTypeUtil.getVersion(sdk))
       case _ => None
     }
 

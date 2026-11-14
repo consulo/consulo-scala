@@ -2,14 +2,11 @@ package org.jetbrains.plugins.scala.server.compiler
 
 import consulo.annotation.component.ExtensionImpl
 import consulo.project.Project
-import com.intellij.openapi.util.IconLoader
 import consulo.project.ui.wm.{StatusBar, StatusBarWidget, StatusBarWidgetFactory}
-import com.intellij.util.messages.Topic
+import consulo.ui.image.{Image, ImageEffects}
 import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.ProjectExt
 import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
-
-import javax.swing.Icon
 
 @ExtensionImpl(id = "ScalaCompileServer", order = "before ScalaHighlightingMode")
 private final class CompileServerWidgetFactory extends StatusBarWidgetFactory {
@@ -37,13 +34,6 @@ private final class CompileServerWidgetFactory extends StatusBarWidgetFactory {
 private object CompileServerWidgetFactory {
   val ID: String = "ScalaCompileServer"
 
-  val IconRunning: Icon = Icons.COMPILE_SERVER
-  val IconStopped: Icon = IconLoader.getDisabledIcon(IconRunning)
-
-  trait UpdateWidgetListener {
-    def updateWidget(): Unit
-  }
-
-  val Topic: Topic[UpdateWidgetListener] =
-    new Topic("Scala Compile Server widget update topic", classOf[UpdateWidgetListener])
+  val IconRunning: Image = Icons.COMPILE_SERVER
+  val IconStopped: Image = ImageEffects.grayed(IconRunning)
 }

@@ -6,7 +6,7 @@ import jakarta.inject.Singleton
 import consulo.project.ui.notification.NotificationType
 import consulo.disposer.Disposable
 import consulo.application.ApplicationManager
-import com.intellij.util.ui.update.{MergingUpdateQueue, Update}
+import consulo.ui.ex.awt.util.{MergingUpdateQueue, Update}
 
 import java.util.concurrent.locks.{Lock, ReentrantLock}
 

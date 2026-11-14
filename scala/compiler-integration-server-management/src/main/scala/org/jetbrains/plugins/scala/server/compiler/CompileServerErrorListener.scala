@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.server.compiler
-import com.intellij.util.messages.Topic
+import consulo.annotation.component.{ComponentScope, TopicAPI}
 
+@TopicAPI(ComponentScope.APPLICATION)
 trait CompileServerErrorListener {
   def onError(text: String): Unit
 }
 
 object CompileServerErrorListener {
-  @com.intellij.util.messages.Topic.AppLevel
-  val Topic: Topic[CompileServerErrorListener] =
-    new Topic("Scala Compile Server errors text topic", classOf[CompileServerErrorListener])
+  val Topic: Class[CompileServerErrorListener] = classOf[CompileServerErrorListener]
 }

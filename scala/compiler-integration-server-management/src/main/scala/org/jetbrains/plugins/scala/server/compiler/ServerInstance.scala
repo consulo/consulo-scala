@@ -1,4 +1,5 @@
 package org.jetbrains.plugins.scala.server.compiler
+import consulo.platform.ForwardedPort
 import org.jetbrains.plugins.scala.compiler.data.IncrementalityType
 import org.jetbrains.plugins.scala.server.CompileServerPort
 
@@ -9,10 +10,10 @@ private final class ServerInstance(
   val createdAtStackTrace: Throwable,
   val compileServerSystemDir: Path,
   val port: CompileServerPort,
+  val forwardedPort: Option[ForwardedPort],
   val workingDir: Option[Path],
   val jdk: JDK,
   val jvmParameters: Set[String],
-  val jpsUseUnifiedIC: Boolean,
   val incrementalCompiler: IncrementalityType
 ) {
 
@@ -26,20 +27,26 @@ private final class ServerInstance(
 
   def destroyAndWait(): Boolean = {
     _stopped = true
-    watcher.destroyAndWait()
+    val result = watcher.destroyAndWait()
+    closeForwardedPort()
+    result
   }
 
   def destroyAndWaitFor(timeoutMs: Long): Boolean = {
     _stopped = true
-    watcher.destroyAndWaitFor(timeoutMs)
+    val result = watcher.destroyAndWaitFor(timeoutMs)
+    closeForwardedPort()
+    result
   }
+
+  def closeForwardedPort(): Unit =
+    forwardedPort.foreach(_.close())
 
   def summary: String = {
     s"pid: $pid" +
       s", port: $port" +
       s", jdk: $jdk" +
       s", jvmParameters: ${jvmParameters.mkString(",")}" +
-      s", jpsUseUnifiedIC: $jpsUseUnifiedIC" +
       s", incrementalCompiler: $incrementalCompiler" +
       s", stopped: ${_stopped}" +
       s", running: $running"

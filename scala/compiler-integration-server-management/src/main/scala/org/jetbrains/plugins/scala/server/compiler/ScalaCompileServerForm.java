@@ -1,27 +1,31 @@
 package org.jetbrains.plugins.scala.server.compiler;
 
+import com.intellij.java.language.projectRoots.JavaSdkType;
+import com.intellij.java.language.projectRoots.JavaSdkVersion;
 import consulo.annotation.component.ExtensionImpl;
-
-import com.intellij.compiler.server.BuildManager;
 import consulo.application.ApplicationManager;
-import consulo.configurable.Configurable;
-import consulo.project.Project;
-import com.intellij.openapi.projectRoots.JavaSdkVersion;
+import consulo.configurable.ProjectConfigurable;
+import consulo.configurable.SearchableConfigurable;
 import consulo.content.bundle.Sdk;
-import com.intellij.openapi.roots.ui.configuration.JdkComboBox;
-import consulo.ui.ex.JBColor;
+import consulo.content.bundle.SdkTable;
+import consulo.disposer.Disposable;
 import consulo.execution.ui.awt.RawCommandLineEditor;
-import consulo.ui.ex.awt.TitledSeparator;
+import consulo.java.language.bundle.JavaSdkTypeUtil;
+import consulo.localize.LocalizeValue;
+import consulo.module.ui.awt.SdkComboBox;
+import consulo.project.Project;
+import consulo.ui.Component;
+import consulo.ui.ex.JBColor;
 import consulo.ui.ex.awt.IntegerField;
+import consulo.ui.ex.awt.TitledSeparator;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.util.containers.ComparatorUtil;
-import com.intellij.util.ui.UI;
-import org.jetbrains.annotations.Nls;
+import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.plugins.scala.help.ScalaWebHelpProvider$;
-import org.jetbrains.plugins.scala.project.external.SdkUtils;
+import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfigurable$;
 import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings;
 import scala.Some;
 import scala.concurrent.duration.Duration;
@@ -30,18 +34,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 @SuppressWarnings("deprecation")
 @ExtensionImpl
-public class ScalaCompileServerForm implements Configurable {
+public class ScalaCompileServerForm implements ProjectConfigurable, SearchableConfigurable {
     private JPanel myJvmSettingsPanel;
     private RawCommandLineEditor myCompilationServerJvmParameters;
     private IntegerField myCompilationServerMaximumHeapSize;
     private JCheckBox myEnableCompileServer;
     private JPanel myContentPanel;
-    private final JdkComboBox myCompilationServerSdk;
+    private final SdkComboBox myCompilationServerSdk;
     private JPanel mySdkPanel;
     private JCheckBox myProjectHomeChb;
     private JCheckBox myShutdownServerCheckBox;
@@ -55,16 +60,23 @@ public class ScalaCompileServerForm implements Configurable {
     private TitledSeparator myJvmTitle;
     private JLabel myJdkWarningLabel;
     private final ScalaCompileServerSettings mySettings;
-    private final ProjectSdksModelWithDefault sdkModel;
+    private final Project myProject;
 
     private static final int HEAP_SIZE_NOT_SET = -1;
+
+    // upstream: ProjectSdksModelWithDefault adds a "Recommended JDK" ProjectJdkImpl to the JdkComboBox model
+    private static final String DEFAULT_SDK_ITEM = "#ScalaCompileServerRecommendedJdk";
+
+    public static final String ID = "scala.compile.server";
 
     public static final class SearchFilter {
         // TODO: will not work with localized IDEA
         public static String USE_COMPILE_SERVER_FOR_SCALA = "use scala compile server";
     }
 
+    @Inject
     public ScalaCompileServerForm(Project project) {
+        myProject = project;
         mySettings = ScalaCompileServerSettings.getInstance();
 
         // Accept only positive values.
@@ -75,22 +87,27 @@ public class ScalaCompileServerForm implements Configurable {
         myCompilationServerMaximumHeapSize.setCanBeEmpty(true);
 
         myProjectHomeChb = new JCheckBox(ServerManagementBundle.message("compile.server.use.project.home"));
-        myUseProjectHomePanel.add(UI.PanelFactory.panel(myProjectHomeChb).withTooltip(ServerManagementBundle.message("compile.server.new.project.restart")).createPanel());
+        // upstream: UI.PanelFactory.panel(...).withTooltip(...) - a context help label
+        myProjectHomeChb.setToolTipText(ServerManagementBundle.message("compile.server.new.project.restart"));
+        myUseProjectHomePanel.add(myProjectHomeChb);
 
         myEnableCompileServer.addChangeListener(e -> updateJvmSettingsPanel());
         myParallelCompilation.addChangeListener(e -> updateParallelCompilationSettingsPanel());
         myShutdownServerCheckBox.addChangeListener(e -> updateShutdownSettingsPanel());
 
-        sdkModel = new ProjectSdksModelWithDefault();
-        inEventDispatchThread(() -> sdkModel.reset(project));
-
-        myCompilationServerSdk = new JdkComboBox(project, sdkModel, null, null, null, SdkUtils::addJdkIfNotExists);
-        myCompilationServerSdk.setMinimumAndPreferredWidth(500);
+        // upstream: JdkComboBox with an "add JDK" action (SdkUtils.addJdkIfNotExists)
+        myCompilationServerSdk = new SdkComboBox(SdkTable.getInstance(), sdkTypeId -> sdkTypeId instanceof JavaSdkType, false);
+        Sdk defaultSdk = CompileServerLauncher.defaultSdk(project);
+        myCompilationServerSdk.insertCustomSdkItem(
+            DEFAULT_SDK_ITEM,
+            "Recommended JDK (" + defaultSdk.getName() + ")",
+            JavaSdkType.getDefaultJavaSdkType().getIcon()
+        );
+        myCompilationServerSdk.setMinimumSize(new Dimension(500, myCompilationServerSdk.getMinimumSize().height));
         myCompilationServerSdk.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                Optional.ofNullable(((JdkComboBox.JdkComboBoxItem) e.getItem()).getJdk())
-                        .flatMap(sdk -> Optional.ofNullable(sdk.getVersionString()))
-                        .map(JavaSdkVersion::fromVersionString)
+                Optional.ofNullable(getSelectedSdk())
+                        .map(JavaSdkTypeUtil::getVersion)
                         .ifPresent(version -> {
                             if (!CompileServerJdkManager$.MODULE$.isCompatible(version)) {
                                 myJdkWarningLabel.setForeground(JBColor.RED);
@@ -109,7 +126,8 @@ public class ScalaCompileServerForm implements Configurable {
             }
         });
 
-        mySdkPanel.add(UI.PanelFactory.panel(myCompilationServerSdk).withTooltip(ServerManagementBundle.message("compile.server.description")).createPanel(), BorderLayout.CENTER);
+        myCompilationServerSdk.setToolTipText(ServerManagementBundle.message("compile.server.description"));
+        mySdkPanel.add(myCompilationServerSdk, BorderLayout.CENTER);
 
         myShutdownDelay.setModel(new SpinnerNumberModel(mySettings.COMPILE_SERVER_SHUTDOWN_DELAY, 0, 24 * 60, 1));
         myParallelism.setModel(new SpinnerNumberModel(mySettings.COMPILE_SERVER_PARALLELISM, 1, 9999, 1));
@@ -132,13 +150,17 @@ public class ScalaCompileServerForm implements Configurable {
         setDescendantsEnabledIn(myShutdownSettingsPanel, myShutdownServerCheckBox.isSelected());
     }
 
-    private static void inEventDispatchThread(Runnable runnable) {
-        if (SwingUtilities.isEventDispatchThread()) runnable.run();
-        else ApplicationManager.getApplication().invokeAndWait(runnable);
+    private boolean isDefaultSdkSelected() {
+        return DEFAULT_SDK_ITEM.equals(myCompilationServerSdk.getSelectedSdkName());
+    }
+
+    @Nullable
+    private Sdk getSelectedSdk() {
+        return isDefaultSdkSelected() ? CompileServerLauncher.defaultSdk(myProject) : myCompilationServerSdk.getSelectedSdk();
     }
 
     private static void setDescendantsEnabledIn(JComponent root, boolean b) {
-        for (Component child : root.getComponents()) {
+        for (java.awt.Component child : root.getComponents()) {
             child.setEnabled(b);
             if (child instanceof JComponent) {
                 setDescendantsEnabledIn((JComponent) child, b);
@@ -157,9 +179,18 @@ public class ScalaCompileServerForm implements Configurable {
     }
 
     @Override
-    @Nls
-    public String getDisplayName() {
-        return ServerManagementBundle.message("scala.compile.server.title");
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public String getParentId() {
+        return ScalaCompilerConfigurable$.MODULE$.Id();
+    }
+
+    @Override
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.of(ServerManagementBundle.message("displayname.scala.compile.server"));
     }
 
     @Override
@@ -170,19 +201,18 @@ public class ScalaCompileServerForm implements Configurable {
 
     @Override
     @Nullable
-    public JComponent createComponent() {
-        return myContentPanel;
+    public Component createUIComponent(Disposable parentDisposable) {
+        return TargetAWT.wrap(myContentPanel);
     }
 
     @Override
     public boolean isModified() {
-        final var sdk = myCompilationServerSdk.getSelectedJdk();
-        final var sdkName = sdk == null ? null : sdk.getName();
+        final var sdkName = myCompilationServerSdk.getSelectedSdkName();
 
         final var compileServerEnabledMatches = myEnableCompileServer.isSelected() == mySettings.COMPILE_SERVER_ENABLED;
-        final var sdkSettingsMatch = sdkModel.isDefault(sdk)
+        final var sdkSettingsMatch = isDefaultSdkSelected()
                 ? mySettings.USE_DEFAULT_SDK
-                : ComparatorUtil.equalsNullable(sdkName, mySettings.COMPILE_SERVER_SDK);
+                : !mySettings.USE_DEFAULT_SDK && Objects.equals(sdkName, mySettings.COMPILE_SERVER_SDK);
         final var heapSizeMatches = heapSizeAsString().equals(mySettings.COMPILE_SERVER_MAXIMUM_HEAP_SIZE);
         final var serverParamsMatch = myCompilationServerJvmParameters.getText().equals(mySettings.COMPILE_SERVER_JVM_PARAMETERS);
         final var useProjectDirMatches = myProjectHomeChb.isSelected() == mySettings.USE_PROJECT_HOME_AS_WORKING_DIR;
@@ -213,8 +243,8 @@ public class ScalaCompileServerForm implements Configurable {
             );
         }
 
-        Sdk sdk = myCompilationServerSdk.getSelectedJdk();
-        mySettings.USE_DEFAULT_SDK = sdkModel.isDefault(sdk);
+        Sdk sdk = getSelectedSdk();
+        mySettings.USE_DEFAULT_SDK = isDefaultSdkSelected();
         mySettings.COMPILE_SERVER_SDK = sdk == null ? null : sdk.getName();
 
         mySettings.COMPILE_SERVER_MAXIMUM_HEAP_SIZE = heapSizeAsString();
@@ -227,10 +257,7 @@ public class ScalaCompileServerForm implements Configurable {
 
         Integer newParallelism = (Integer) (myParallelism.getModel().getValue());
         Boolean newParallelCompilation = myParallelCompilation.isSelected();
-        if (mySettings.COMPILE_SERVER_PARALLELISM != newParallelism ||
-                mySettings.COMPILE_SERVER_PARALLEL_COMPILATION != newParallelCompilation) {
-            BuildManager.getInstance().clearState(); // We have to cancel all preloaded builds. SCL-18512
-        }
+        // upstream: BuildManager.getInstance().clearState() when parallelism settings change (cancels preloaded JPS builds, SCL-18512)
         mySettings.COMPILE_SERVER_PARALLELISM = newParallelism;
         mySettings.COMPILE_SERVER_PARALLEL_COMPILATION = newParallelCompilation;
     }
@@ -239,8 +266,12 @@ public class ScalaCompileServerForm implements Configurable {
     public void reset() {
         myEnableCompileServer.setSelected(mySettings.COMPILE_SERVER_ENABLED);
 
-        Sdk sdk = sdkModel.sdkFrom(mySettings);
-        myCompilationServerSdk.setSelectedJdk(sdk);
+        if (mySettings.USE_DEFAULT_SDK) {
+            myCompilationServerSdk.setSelectedSdk(DEFAULT_SDK_ITEM);
+        }
+        else {
+            myCompilationServerSdk.setSelectedSdk(mySettings.COMPILE_SERVER_SDK);
+        }
 
         myCompilationServerMaximumHeapSize.setText(mySettings.COMPILE_SERVER_MAXIMUM_HEAP_SIZE);
         myCompilationServerJvmParameters.setText(mySettings.COMPILE_SERVER_JVM_PARAMETERS);
@@ -281,7 +312,7 @@ public class ScalaCompileServerForm implements Configurable {
         panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         myAdvancedSettingsPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         myShutdownServerCheckBox = new JCheckBox();
-        this.$$$loadButtonText$$$(myShutdownServerCheckBox, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "compile.server.shutdown.if.idle.for"));
+        this.$$$loadButtonText$$$(myShutdownServerCheckBox, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "compile.server.shutdown.if.idle.for"));
         panel1.add(myShutdownServerCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         myShutdownSettingsPanel = new JPanel();
         myShutdownSettingsPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
@@ -289,7 +320,7 @@ public class ScalaCompileServerForm implements Configurable {
         myShutdownDelay = new JSpinner();
         myShutdownSettingsPanel.add(myShutdownDelay, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "minutes"));
+        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "minutes"));
         myShutdownSettingsPanel.add(label1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         myShutdownSettingsPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -300,7 +331,7 @@ public class ScalaCompileServerForm implements Configurable {
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         myAdvancedSettingsPanel.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         myParallelCompilation = new JCheckBox();
-        this.$$$loadButtonText$$$(myParallelCompilation, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "compile.server.parallel.compilation"));
+        this.$$$loadButtonText$$$(myParallelCompilation, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "compile.server.parallel.compilation"));
         panel2.add(myParallelCompilation, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         myParallelCompilationSettingsPanel = new JPanel();
         myParallelCompilationSettingsPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -308,7 +339,7 @@ public class ScalaCompileServerForm implements Configurable {
         myParallelism = new JSpinner();
         myParallelCompilationSettingsPanel.add(myParallelism, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "compile.server.parallelism"));
+        this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "compile.server.parallelism"));
         myParallelCompilationSettingsPanel.add(label2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -319,22 +350,22 @@ public class ScalaCompileServerForm implements Configurable {
         myContentPanel.add(myJvmSettingsPanel, new GridConstraints(9, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         final JLabel label3 = new JLabel();
         label3.setEnabled(true);
-        this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "jvm.options"));
+        this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "jvm.options"));
         myJvmSettingsPanel.add(label3, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         myCompilationServerJvmParameters = new RawCommandLineEditor();
-        myCompilationServerJvmParameters.setDialogCaption(this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "compile.server.jvm.command.line.parameters"));
+        myCompilationServerJvmParameters.setDialogCaption(this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "compile.server.jvm.command.line.parameters"));
         myCompilationServerJvmParameters.setEnabled(true);
         myJvmSettingsPanel.add(myCompilationServerJvmParameters, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(250, -1), new Dimension(500, 27), null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setEnabled(true);
-        this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "jvm.maximum.heap.size.mb"));
+        this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "jvm.maximum.heap.size.mb"));
         myJvmSettingsPanel.add(label4, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         myCompilationServerMaximumHeapSize = new IntegerField();
         myCompilationServerMaximumHeapSize.setColumns(5);
         myCompilationServerMaximumHeapSize.setEnabled(true);
         myJvmSettingsPanel.add(myCompilationServerMaximumHeapSize, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
-        this.$$$loadLabelText$$$(label5, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "jdk"));
+        this.$$$loadLabelText$$$(label5, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "jdk"));
         myJvmSettingsPanel.add(label5, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mySdkPanel = new JPanel();
         mySdkPanel.setLayout(new BorderLayout(0, 0));
@@ -346,7 +377,7 @@ public class ScalaCompileServerForm implements Configurable {
         myJdkWarningLabel.setVisible(false);
         myJvmSettingsPanel.add(myJdkWarningLabel, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, new Dimension(500, -1), 1, false));
         myEnableCompileServer = new JCheckBox();
-        this.$$$loadButtonText$$$(myEnableCompileServer, this.$$$getMessageFromBundle$$$("messages/ServerManagementBundle", "compile.server.use.for.scala"));
+        this.$$$loadButtonText$$$(myEnableCompileServer, this.$$$getMessageFromBundle$$$("org/jetbrains/plugins/scala/server/compiler/ServerManagementBundle", "compile.server.use.for.scala"));
         myContentPanel.add(myEnableCompileServer, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         myJvmTitle = new TitledSeparator();
         myJvmTitle.setText("JVM");
