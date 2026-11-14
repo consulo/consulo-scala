@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
 import com.intellij.debugger.engine.evaluation.EvaluateException
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.progress.ProgressIndicator
+import consulo.application.ReadAction
+import consulo.application.progress.ProgressIndicator
 
 import java.util.concurrent.{Callable, ExecutionException}
 

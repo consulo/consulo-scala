@@ -1,10 +1,15 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
+import consulo.annotation.component.ExtensionImpl
+import consulo.language.Language
+import org.jetbrains.plugins.scala.api.ScalaLanguage
+
 import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, TextWithImports, TextWithImportsImpl}
 import com.intellij.debugger.impl.EditorTextProvider
-import com.intellij.openapi.util.{Pair, TextRange}
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.util.lang.Pair
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.childOf
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr._
@@ -14,7 +19,10 @@ import org.jetbrains.plugins.scala.util.SideEffectsUtil
 
 import scala.util.Try
 
+@ExtensionImpl
 class ScalaEditorTextProvider extends EditorTextProvider {
+  override def getLanguage: Language = ScalaLanguage.INSTANCE
+
   override def getEditorText(elementAtCaret: PsiElement): TextWithImports = {
     val result: String = findExpressionInner(elementAtCaret, allowMethodCalls = true).map(_.getText).getOrElse("")
     new TextWithImportsImpl(CodeFragmentKind.EXPRESSION, result)

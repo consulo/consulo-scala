@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.scala
 package debugger.ui
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
 import com.intellij.debugger.engine.{DebugProcess, DebugProcessImpl}
 import com.intellij.debugger.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.debugger.ui.util._
 
 import java.util.concurrent.CompletableFuture
 
+@ExtensionImpl
 class ScalaRuntimeRefRenderer extends ScalaClassRenderer {
   import ScalaRuntimeRefRenderer._
 

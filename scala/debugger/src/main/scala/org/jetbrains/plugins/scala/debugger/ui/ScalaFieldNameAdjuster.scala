@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.debugger.ui
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.ui.tree.{FieldDescriptor, NodeDescriptor, NodeDescriptorNameAdjuster}
 import com.sun.jdi.{ClassType, ReferenceType}
 import org.jetbrains.plugins.scala.debugger.ScalaSyntheticProvider
@@ -8,6 +10,7 @@ import org.jetbrains.plugins.scala.debugger.ui.ScalaFieldNameAdjuster.objectSuff
 
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaFieldNameAdjuster extends NodeDescriptorNameAdjuster {
 
   override def isApplicable(descriptor: NodeDescriptor): Boolean = {

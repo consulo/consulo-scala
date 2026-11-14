@@ -1,7 +1,9 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.engine.{DebugProcess, ExtraSteppingFilter, SuspendContext}
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import com.sun.jdi.Location
 import com.sun.jdi.request.StepRequest
 import org.jetbrains.plugins.scala.extensions._
@@ -10,6 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefin
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.util.AnonymousFunction
 
+@ExtensionImpl
 class ScalaSyntheticSteppingFilter extends ExtraSteppingFilter {
 
   override def isApplicable(context: SuspendContext): Boolean = {

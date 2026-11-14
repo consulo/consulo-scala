@@ -1,12 +1,15 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.SourcePositionProvider
 import com.intellij.debugger.impl.{DebuggerContextImpl, DebuggerContextUtil, PositionUtil}
 import com.intellij.debugger.ui.tree.{FieldDescriptor, LocalVariableDescriptor, NodeDescriptor}
-import com.intellij.openapi.project.{IndexNotReadyException, Project}
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.application.dumb.IndexNotReadyException
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScBindingPattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
@@ -15,6 +18,7 @@ import org.jetbrains.plugins.scala.lang.refactoring.ScalaNamesValidator.isIdenti
 
 import scala.annotation.tailrec
 
+@ExtensionImpl
 class ScalaSourcePositionProvider extends SourcePositionProvider {
   override def computeSourcePosition(descriptor: NodeDescriptor,
                                      project: Project,

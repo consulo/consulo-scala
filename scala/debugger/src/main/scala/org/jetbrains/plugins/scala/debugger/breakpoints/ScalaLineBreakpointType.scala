@@ -1,23 +1,26 @@
 package org.jetbrains.plugins.scala.debugger.breakpoints
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.ui.breakpoints._
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.Processor
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import com.intellij.debugger.ui.breakpoints.{BreakpointManager, ConditionalReturnJavaBreakpointVariant, JavaBreakpointVariant, JavaLineBreakpointType, LambdaJavaBreakpointVariant, LineBreakpoint, LineJavaBreakpointVariant, RunToCursorBreakpoint}
+import consulo.application.AllIcons
+import consulo.document.FileDocumentManager
+import consulo.project.{DumbService, Project}
+import consulo.document.util.TextRange
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.{PsiComment, PsiElement, PsiFile, PsiManager, PsiWhiteSpace}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.application.util.function.Processor
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.XSourcePositionImpl
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointBase
 import com.intellij.xdebugger.{XDebuggerUtil, XSourcePosition}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.java.debugger.breakpoints.properties.JavaLineBreakpointProperties
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaConditionalReturnSourcePosition, ScalaLambdaSourcePosition, ScalaPositionManager, ScalaSourcePositionWithWholeLineHighlighted, typeAware}
 import org.jetbrains.plugins.scala.extensions._
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
@@ -33,6 +36,7 @@ import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 import java.util.Collections
 import javax.swing.Icon
 
+@ExtensionImpl
 class ScalaLineBreakpointType extends JavaLineBreakpointType("scala-line", DebuggerBundle.message("line.breakpoints.tab.title")) {
 
   override def getDisplayName: String = DebuggerBundle.message("line.breakpoints.tab.title")

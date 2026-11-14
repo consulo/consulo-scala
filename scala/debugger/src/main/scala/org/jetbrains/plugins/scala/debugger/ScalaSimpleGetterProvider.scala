@@ -1,12 +1,16 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.engine.SimplePropertyGetterProvider
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiClass, PsiElement, PsiMethod}
+import consulo.language.psi.util.PsiTreeUtil
+import com.intellij.java.language.psi.{PsiClass, PsiMethod}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScExpression, ScReferenceExpression, ScThisReference}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScFunctionDefinition}
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScObject
 
+@ExtensionImpl
 class ScalaSimpleGetterProvider extends SimplePropertyGetterProvider {
   override def isInsideSimpleGetter(element: PsiElement): Boolean = {
     PsiTreeUtil.getParentOfType(element, classOf[ScFunctionDefinition]) match {

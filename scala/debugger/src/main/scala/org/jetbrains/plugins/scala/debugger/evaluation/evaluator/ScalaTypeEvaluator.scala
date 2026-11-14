@@ -4,7 +4,7 @@ import com.intellij.debugger.engine.evaluation.expression.TypeEvaluator
 import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContextImpl}
 import com.intellij.debugger.engine.{JVMName, JVMNameUtil}
 import com.sun.jdi.ReferenceType
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 
 /**
  * This is a workaround for scala versions > 2.11 (see SCL-10132).

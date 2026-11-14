@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala
 
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import org.jetbrains.plugins.scala.incremental.Highlighting.builtInHighlightingDisabledIn
 
 package object debugger {

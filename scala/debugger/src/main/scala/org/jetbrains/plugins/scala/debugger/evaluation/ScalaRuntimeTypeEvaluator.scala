@@ -7,11 +7,12 @@ import com.intellij.debugger.engine.ContextUtil
 import com.intellij.debugger.engine.evaluation.expression.ExpressionEvaluator
 import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, EvaluationContextImpl, TextWithImportsImpl}
 import com.intellij.debugger.impl.DebuggerContextImpl
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
-import com.intellij.psi.impl.source.PsiImmediateClassType
+import consulo.codeEditor.Editor
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiSubstitutor, PsiType}
+import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType
 import com.sun.jdi.{ClassType, ReferenceType, Value}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction

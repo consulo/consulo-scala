@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.SourcePositionHighlighter
-import com.intellij.openapi.util.TextRange
-import org.jetbrains.plugins.scala.ScalaLanguage
+import consulo.document.util.TextRange
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
+@ExtensionImpl
 class ScalaSourcePositionHighlighter extends SourcePositionHighlighter {
   override def getHighlightRange(sourcePosition: SourcePosition): TextRange = sourcePosition match {
     case _ if !isScalaLanguage(sourcePosition) => null

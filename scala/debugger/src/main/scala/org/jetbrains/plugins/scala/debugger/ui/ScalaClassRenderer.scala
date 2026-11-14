@@ -9,11 +9,11 @@ import com.intellij.debugger.settings.NodeRendererSettings
 import com.intellij.debugger.ui.impl.watch.FieldDescriptorImpl
 import com.intellij.debugger.ui.tree.render.{ChildrenBuilder, ClassRenderer, DescriptorLabelListener}
 import com.intellij.debugger.ui.tree.{DebuggerTreeNode, DescriptorWithParentObject, ValueDescriptor}
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.ui.util._
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 
 import java.util.concurrent.CompletableFuture
 import scala.jdk.CollectionConverters._

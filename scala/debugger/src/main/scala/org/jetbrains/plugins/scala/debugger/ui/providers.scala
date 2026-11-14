@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.scala.debugger.ui
 
+import consulo.annotation.component.ExtensionImpl
+
 //import com.intellij.debugger.collections.visualizer.CollectionVisualizerEvaluator
 //import com.intellij.debugger.engine.FullValueEvaluatorProvider
 //import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
@@ -24,8 +26,10 @@ abstract class ScalaRendererProvider(private val renderer: ScalaClassRenderer) e
     tpe => DebuggerUtilsAsync.reschedule(CompletableFuture.supplyAsync(() => renderer.isApplicableFor(tpe)))
 }
 
+@ExtensionImpl
 class ScalaClassRendererProvider extends ScalaRendererProvider(new ScalaClassRenderer())
 
+@ExtensionImpl
 class ScalaCollectionRendererProvider extends ScalaRendererProvider(new ScalaCollectionRenderer())
 /*{
   override def getFullValueEvaluatorProvider: FullValueEvaluatorProvider =

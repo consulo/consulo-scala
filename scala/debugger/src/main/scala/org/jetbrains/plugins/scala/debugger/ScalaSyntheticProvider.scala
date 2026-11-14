@@ -1,11 +1,13 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.engine.SyntheticTypeComponentProvider
-import com.intellij.util.containers.ContainerUtil
+import consulo.util.collection.ContainerUtil
 import com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager.isAnonfunType
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 import org.jetbrains.plugins.scala.util.TopLevelMembers.isSyntheticClassForTopLevelMembers
 
 import java.util.concurrent.ConcurrentMap
@@ -14,6 +16,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Try
 import scala.util.matching.Regex
 
+@ExtensionImpl
 class ScalaSyntheticProvider extends SyntheticTypeComponentProvider {
   override def isSynthetic(typeComponent: TypeComponent): Boolean = ScalaSyntheticProvider.isSynthetic(typeComponent)
 

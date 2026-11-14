@@ -5,7 +5,7 @@ import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
 import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ModifiableEvaluator, ModifiableValue, Modifier}
 import com.intellij.debugger.ui.impl.watch.FieldDescriptorImpl
 import com.intellij.debugger.ui.tree.NodeDescriptor
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.sun.jdi._
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.debugger.evaluation.EvaluationException

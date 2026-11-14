@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.debugger.filters;
 
-import com.intellij.openapi.options.Configurable;
+import consulo.annotation.component.ExtensionImpl;
+
+import consulo.configurable.Configurable;
 import com.intellij.openapi.options.SimpleConfigurable;
-import com.intellij.util.xmlb.XmlSerializerUtil;
+import consulo.util.xml.serializer.XmlSerializerUtil;
 import com.intellij.xdebugger.settings.DebuggerSettingsCategory;
 import com.intellij.xdebugger.settings.XDebuggerSettings;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle;
 
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
 
+@ExtensionImpl
 public class ScalaDebuggerSettings extends XDebuggerSettings<ScalaDebuggerSettings> implements Supplier<ScalaDebuggerSettings> {
 
   public boolean DEBUG_DISABLE_SPECIFIC_SCALA_METHODS = true;
@@ -26,9 +28,8 @@ public class ScalaDebuggerSettings extends XDebuggerSettings<ScalaDebuggerSettin
     super("scala_debugger");
   }
 
-  @NotNull
   @Override
-  public Collection<? extends Configurable> createConfigurables(@NotNull DebuggerSettingsCategory category) {
+  public Collection<? extends Configurable> createConfigurables(DebuggerSettingsCategory category) {
     //todo: split settings configurables somehow
     return switch (category) {
       case GENERAL -> singletonList(new ScalaDebuggerSettingsConfigurable(this));
@@ -43,7 +44,7 @@ public class ScalaDebuggerSettings extends XDebuggerSettings<ScalaDebuggerSettin
   }
 
   @Override
-  public void loadState(@NotNull final ScalaDebuggerSettings state) {
+  public void loadState(final ScalaDebuggerSettings state) {
     XmlSerializerUtil.copyBean(state, this);
   }
 

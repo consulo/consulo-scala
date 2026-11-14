@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.debugger.evaluation.evaluator
 package compiling
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.codeInsight.CodeInsightUtilCore.findElementInRange
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.module.ModuleUtilCore.findModuleForPsiElement
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{PsiElement, PsiFile, PsiFileFactory}
+import consulo.language.codeStyle.CodeStyle
+import consulo.language.editor.CodeInsightUtilCore.findElementInRange
+import consulo.module.Module
+import consulo.language.util.ModuleUtilCore.findModuleForPsiElement
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile, PsiFileFactory}
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, EvaluatorCompileHelper, ScalaEvaluatorCompileHelper}
 import org.jetbrains.plugins.scala.extensions._

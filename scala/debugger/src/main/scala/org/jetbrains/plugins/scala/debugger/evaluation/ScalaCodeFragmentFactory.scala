@@ -1,14 +1,17 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.DebuggerManagerEx
-import com.intellij.debugger.engine.evaluation._
+import com.intellij.debugger.engine.evaluation.{CodeFragmentFactory, CodeFragmentFactoryContextWrapper, CodeFragmentKind, DefaultCodeFragmentFactory, TextWithImports, TextWithImportsImpl}
 import com.intellij.debugger.engine.evaluation.expression.EvaluatorBuilder
 import com.intellij.debugger.impl.DebuggerContextImpl
-import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.progress.{EmptyProgressIndicator, ProgressManager}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi._
+import consulo.language.file.LanguageFileType
+import consulo.application.progress.{EmptyProgressIndicator, ProgressManager}
+import consulo.project.Project
+import consulo.util.lang.StringUtil
+import com.intellij.java.language.psi.{JavaCodeFragment, PsiClass, PsiClassType, PsiCodeBlock, PsiType}
+import consulo.language.psi.PsiElement
 import com.intellij.util.concurrency.Semaphore
 import com.intellij.xdebugger.impl.XDebugSessionImpl
 import com.intellij.xdebugger.impl.ui.tree.ValueMarkup
@@ -21,12 +24,13 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScalaType}
-import org.jetbrains.plugins.scala.{ScalaFileType, ScalaLanguage}
+import org.jetbrains.plugins.scala.api.{ScalaFileType, ScalaLanguage}
 
 import java.util.concurrent.atomic.AtomicReference
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaCodeFragmentFactory extends CodeFragmentFactory {
   override def createPsiCodeFragment(item: TextWithImports, context: PsiElement, project: Project): ScalaCodeFragment = {
     implicit val p: Project = project

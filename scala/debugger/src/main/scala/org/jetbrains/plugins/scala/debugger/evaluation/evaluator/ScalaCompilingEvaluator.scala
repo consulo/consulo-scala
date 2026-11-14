@@ -3,12 +3,12 @@ package debugger
 package evaluation.evaluator
 
 import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine._
-import com.intellij.debugger.engine.evaluation._
+import com.intellij.debugger.engine.{DebugProcess, Method, SuspendContextImpl}
+import com.intellij.debugger.engine.evaluation.{CodeFragmentKind, EvaluationContext, EvaluationContextImpl, TextWithImportsImpl}
 import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator}
 import com.intellij.debugger.jdi.VirtualMachineProxyImpl
-import com.intellij.openapi.util.Key
-import com.intellij.psi.PsiElement
+import consulo.util.dataholder.Key
+import consulo.language.psi.PsiElement
 import com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.evaluation._
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.compiling._

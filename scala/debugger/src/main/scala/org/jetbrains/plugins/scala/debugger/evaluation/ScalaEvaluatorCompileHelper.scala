@@ -2,20 +2,31 @@ package org.jetbrains.plugins.scala
 package debugger
 package evaluation
 
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+
+
+import org.jetbrains.plugins.scala.api.NlsString
 import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
+import consulo.module.Module
+import consulo.project.Project
 import com.intellij.openapi.util.io.NioFiles
 import com.intellij.platform.eel.provider.utils.EelProjectUtils
-import org.jetbrains.plugins.scala.compiler.CompileServerLauncher
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.server.compiler.CompileServerLauncher
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 
 import java.nio.file.{Files, Path}
 import scala.collection.mutable
 import scala.concurrent.duration.Duration
 
 //noinspection ApiStatus,UnstableApiUsage
-class ScalaEvaluatorCompileHelper(project: Project) extends EvaluatorCompileHelper {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+class ScalaEvaluatorCompileHelper @Inject()(project: Project) extends EvaluatorCompileHelper {
 
   private val tempFiles: mutable.Set[Path] = mutable.Set.empty
 
@@ -58,7 +69,7 @@ class ScalaEvaluatorCompileHelper(project: Project) extends EvaluatorCompileHelp
 
 object ScalaEvaluatorCompileHelper {
   def instance(project: Project): ScalaEvaluatorCompileHelper =
-    project.getService(classOf[ScalaEvaluatorCompileHelper])
+    project.getInstance(classOf[ScalaEvaluatorCompileHelper])
 
   private class Listener(project: Project) extends DebuggerManagerListener {
 

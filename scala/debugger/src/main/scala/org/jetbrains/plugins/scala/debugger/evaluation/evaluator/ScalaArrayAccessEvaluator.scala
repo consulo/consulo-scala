@@ -6,7 +6,7 @@ import com.intellij.debugger.engine.evaluation.expression.{Evaluator, Modifiable
 import com.intellij.debugger.engine.evaluation.{EvaluateExceptionUtil, EvaluationContextImpl}
 import com.intellij.debugger.ui.impl.watch.ArrayElementDescriptorImpl
 import com.intellij.debugger.ui.tree.NodeDescriptor
-import com.intellij.openapi.project.Project
+import consulo.project.Project
 import com.sun.jdi._
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ScalaArrayAccessEvaluator.MyModifier

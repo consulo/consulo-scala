@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.debugger.evaluation
 
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.evaluation.expression.{EvaluatorBuilder, EvaluatorBuilderImpl, ExpressionEvaluator, ExpressionEvaluatorImpl}
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.psi.PsiElement
+import com.intellij.java.language.JavaLanguage
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 

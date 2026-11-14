@@ -1,16 +1,19 @@
 package org.jetbrains.plugins.scala.debugger.smartStepInto
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.actions.{JvmSmartStepIntoHandler, MethodSmartStepTarget, SmartStepTarget}
 import com.intellij.debugger.engine.events.DebuggerContextCommandImpl
 import com.intellij.debugger.engine.{MethodFilter, SuspendContextImpl}
 import com.intellij.debugger.impl.PrioritizedTask.Priority
 import com.intellij.debugger.impl.{DebuggerSession, PrioritizedTask}
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.application.ReadAction
+import consulo.document.FileDocumentManager
+import consulo.document.util.TextRange
+import consulo.language.psi.{PsiElement, PsiFile}
+import com.intellij.java.language.psi.PsiMethod
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.util.Range
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.{AsyncPromise, Promise, Promises}
@@ -34,6 +37,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
+@ExtensionImpl
 class ScalaSmartStepIntoHandler extends JvmSmartStepIntoHandler {
 
   override def findSmartStepTargets(position: SourcePosition): java.util.List[SmartStepTarget] = {

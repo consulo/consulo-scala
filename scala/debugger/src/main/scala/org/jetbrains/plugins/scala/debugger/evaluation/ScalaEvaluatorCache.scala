@@ -1,16 +1,24 @@
 package org.jetbrains.plugins.scala
 package debugger.evaluation
 
-import com.intellij.codeInsight.PsiEquivalenceUtil
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
+import consulo.language.editor.PsiEquivalenceUtil
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.evaluation.expression.Evaluator
 import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.project.Project
-import com.intellij.psi.{PsiElement, PsiFile}
+import consulo.disposer.Disposable
+import consulo.project.Project
+import consulo.language.psi.{PsiElement, PsiFile}
 
 import scala.collection.mutable
 
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 class ScalaEvaluatorCache
   extends Disposable
     with DebuggerManagerListener {
@@ -69,5 +77,5 @@ class ScalaEvaluatorCache
 
 object ScalaEvaluatorCache {
   def getInstance(project: Project): ScalaEvaluatorCache =
-    project.getService(classOf[ScalaEvaluatorCache])
+    project.getInstance(classOf[ScalaEvaluatorCache])
 }

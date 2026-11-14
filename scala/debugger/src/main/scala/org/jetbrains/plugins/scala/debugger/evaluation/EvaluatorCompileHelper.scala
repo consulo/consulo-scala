@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
+import consulo.module.Module
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 
 import java.nio.file.Path
@@ -16,7 +15,7 @@ import java.nio.file.Path
  * <br>
  * NOTE: only single implementation will be used (first found implementation)
  */
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
 trait EvaluatorCompileHelper {
 
   /**

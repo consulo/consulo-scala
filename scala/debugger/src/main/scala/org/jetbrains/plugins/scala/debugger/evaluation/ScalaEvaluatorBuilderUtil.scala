@@ -4,14 +4,15 @@ package evaluation
 
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.evaluation.CodeFragmentFactoryContextWrapper
-import com.intellij.debugger.engine.evaluation.expression.*
+import com.intellij.debugger.engine.evaluation.expression.{AssignmentEvaluator, BlockStatementEvaluator, Evaluator, IdentityEvaluator, TypeEvaluator, UnBoxingEvaluator, WhileStatementEvaluator}
 import com.intellij.debugger.engine.{JVMName, JVMNameUtil}
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.util.Condition
-import com.intellij.psi.*
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.java.language.JavaLanguage
+import consulo.util.lang.function.Condition
+import com.intellij.java.language.psi.{PsiClass, PsiField, PsiMethod, PsiParameter, PsiType}
+import consulo.language.psi.{PsiElement, PsiNamedElement, SyntaxTraverser}
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.ReferencesSearch
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.*
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
@@ -42,7 +43,7 @@ import org.jetbrains.plugins.scala.lang.resolve.{ScalaResolveResult, ScalaResolv
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
 import org.jetbrains.plugins.scala.util.AnonymousFunction.*
 import org.jetbrains.plugins.scala.util.SAMUtil.SAMToFunctionType
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 import org.jetbrains.plugins.scala.util.TopLevelMembers.topLevelMemberClassName
 
 import scala.annotation.tailrec

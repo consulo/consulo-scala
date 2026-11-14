@@ -1,13 +1,17 @@
 package org.jetbrains.plugins.scala.debugger
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.evaluation.{EvaluationContext, TextWithImports, TextWithImportsImpl}
 import com.intellij.debugger.engine.{DebuggerUtils, FrameExtraVariablesProvider}
 import com.intellij.psi.impl.search.PsiSearchHelperImpl
-import com.intellij.psi.search.{LocalSearchScope, TextOccurenceProcessor, UsageSearchContext}
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile, PsiNamedElement, ResolveState}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.language.psi.scope.LocalSearchScope
+import consulo.language.psi.search.{TextOccurenceProcessor, UsageSearchContext}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile, PsiNamedElement}
+import consulo.language.psi.resolve.ResolveState
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import org.jetbrains.plugins.scala.codeInsight.template.util.VariablesCompletionProcessor
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction
@@ -24,7 +28,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTemplateDefinition
 import org.jetbrains.plugins.scala.lang.resolve.{ScalaResolveResult, ScalaResolveState, StdKinds}
 import org.jetbrains.plugins.scala.util.SideEffectsUtil
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 
 import java.util
 import java.util.Collections
@@ -32,6 +36,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
+@ExtensionImpl
 class ScalaFrameExtraVariablesProvider extends FrameExtraVariablesProvider {
   override def isAvailable(sourcePosition: SourcePosition, evaluationContext: EvaluationContext): Boolean = {
     ScalaDebuggerSettings.getInstance().SHOW_VARIABLES_FROM_OUTER_SCOPES &&

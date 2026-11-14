@@ -130,6 +130,16 @@
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-compiler.consulo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-debugger</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-compile.server</artifactId>
             <version>${project.version}</version>
         </dependency>

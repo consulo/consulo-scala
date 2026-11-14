@@ -1,26 +1,32 @@
 package org.jetbrains.plugins.scala
 package debugger
 
+
+import org.jetbrains.plugins.scala.api.ScalaFileType
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import com.intellij.concurrency.ConcurrentCollectionFactory
-import com.intellij.debugger.engine._
+import com.intellij.debugger.engine.{DebugProcess, DebugProcessListener, DebuggerManagerThreadImpl, JVMNameUtil, Method, PositionManagerEx, PositionManagerImpl}
 import com.intellij.debugger.engine.evaluation.EvaluationContext
 import com.intellij.debugger.impl.DebuggerUtilsEx
 import com.intellij.debugger.jdi.{StackFrameProxyImpl, VirtualMachineProxyImpl}
 import com.intellij.debugger.requests.ClassPrepareRequestor
 import com.intellij.debugger.ui.impl.watch.StackFrameDescriptorImpl
 import com.intellij.debugger.{MultiRequestPositionManager, NoDataException, SourcePosition}
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileTypes.{FileType, FileTypeRegistry, LanguageFileType}
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.DumbService
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.CachedValueProvider.Result
-import com.intellij.psi.util.{CachedValueProvider, CachedValuesManager, PsiTreeUtil}
-import com.intellij.util.ThreeState
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.application.ReadAction
+import consulo.util.lang.ControlFlowException
+import consulo.document.Document
+import consulo.virtualFileSystem.fileType.{FileType, FileTypeRegistry}
+import consulo.language.file.LanguageFileType
+import consulo.application.progress.ProgressManager
+import consulo.project.DumbService
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace, SmartPsiElementPointer}
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.application.util.CachedValueProvider.Result
+import consulo.application.util.{CachedValueProvider, CachedValuesManager}
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.util.lang.ThreeState
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import com.intellij.util.containers.ConcurrentIntObjectMap
 import com.intellij.xdebugger.frame.XStackFrame
 import com.sun.jdi._
@@ -46,7 +52,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
 import org.jetbrains.plugins.scala.lang.psi.types.ValueClassType
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.util.AnonymousFunction._
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants._
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants._
 import org.jetbrains.plugins.scala.util.TopLevelMembers.{findEnclosingPackageOrFile, findFileWithTopLevelMembers, topLevelMemberClassName}
 
 import java.{util => ju}

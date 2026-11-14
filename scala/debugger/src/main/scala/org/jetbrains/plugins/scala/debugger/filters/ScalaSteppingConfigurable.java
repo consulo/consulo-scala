@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.debugger.filters;
 
 import com.intellij.openapi.options.ConfigurableUi;
-import com.intellij.openapi.options.ConfigurationException;
+import consulo.configurable.ConfigurationException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,24 +17,23 @@ public class ScalaSteppingConfigurable implements ConfigurableUi<ScalaDebuggerSe
     private JPanel myPanel;
 
     @Override
-    public void reset(@NotNull ScalaDebuggerSettings settings) {
+    public void reset(ScalaDebuggerSettings settings) {
         myIgnoreScalaMethods.setSelected(settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS);
         myAlwaysSmartStepInto.setSelected(settings.ALWAYS_SMART_STEP_INTO);
     }
 
     @Override
-    public boolean isModified(@NotNull ScalaDebuggerSettings settings) {
+    public boolean isModified(ScalaDebuggerSettings settings) {
         return settings.ALWAYS_SMART_STEP_INTO != myAlwaysSmartStepInto.isSelected() ||
                 settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS != myIgnoreScalaMethods.isSelected();
     }
 
     @Override
-    public void apply(@NotNull ScalaDebuggerSettings settings) throws ConfigurationException {
+    public void apply(ScalaDebuggerSettings settings) throws ConfigurationException {
         settings.ALWAYS_SMART_STEP_INTO = myAlwaysSmartStepInto.isSelected();
         settings.DEBUG_DISABLE_SPECIFIC_SCALA_METHODS = myIgnoreScalaMethods.isSelected();
     }
 
-    @NotNull
     @Override
     public JComponent getComponent() {
         return myPanel;
@@ -80,7 +78,7 @@ public class ScalaSteppingConfigurable implements ConfigurableUi<ScalaDebuggerSe
         try {
             Class<?> thisClass = this.getClass();
             if ($$$cachedGetBundleMethod$$$ == null) {
-                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("consulo.component.util.localize.AbstractBundle");
                 $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
             }
             bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);

@@ -7,10 +7,10 @@ import com.intellij.debugger.jdi.LocalVariableProxyImpl
 import com.intellij.debugger.ui.impl.watch.{ArrayElementDescriptorImpl, LocalVariableDescriptorImpl, ValueDescriptorImpl}
 import com.intellij.debugger.ui.tree.render.{NodeRenderer, OnDemandRenderer}
 import com.intellij.debugger.ui.tree.{DescriptorWithParentObject, NodeDescriptor}
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiExpression
-import com.intellij.ui.LayeredIcon
+import consulo.application.AllIcons
+import consulo.project.Project
+import com.intellij.java.language.psi.PsiExpression
+import consulo.desktop.awt.ui.impl.image.LayeredIcon
 import com.sun.jdi._
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle

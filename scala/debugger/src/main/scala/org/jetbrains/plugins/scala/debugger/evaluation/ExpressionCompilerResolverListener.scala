@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
 import com.intellij.debugger.impl.{DebuggerManagerListener, DebuggerSession}
-import com.intellij.openapi.progress.{ProgressIndicator, Task}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
+import consulo.application.progress.{ProgressIndicator, Task}
+import consulo.project.Project
+import consulo.util.dataholder.Key
 import com.intellij.platform.eel.provider.EelProviderUtil
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
-import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt, ScalaLanguageLevel}
+import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectExt}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.{EelAwareDependencyManager, ScalaVersion}
 
 import java.nio.file.Path

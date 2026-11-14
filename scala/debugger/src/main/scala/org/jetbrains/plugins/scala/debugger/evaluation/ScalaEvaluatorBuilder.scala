@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.scala.debugger.evaluation
 
 import com.intellij.debugger.SourcePosition
-import com.intellij.debugger.engine.evaluation._
-import com.intellij.debugger.engine.evaluation.expression._
-import com.intellij.openapi.diagnostic.ControlFlowException
-import com.intellij.openapi.project.Project
-import com.intellij.psi._
+import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContextImpl}
+import com.intellij.debugger.engine.evaluation.expression.{BlockStatementEvaluator, Evaluator, ExpressionEvaluator, ExpressionEvaluatorImpl, SyntheticVariableEvaluator, ThisEvaluator}
+import consulo.util.lang.ControlFlowException
+import consulo.project.Project
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nls
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator._
@@ -22,7 +22,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment
 import org.jetbrains.plugins.scala.project.{ProjectContext, ProjectContextOwner}
 import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 import org.jetbrains.plugins.scala.util.AnonymousFunction
-import org.jetbrains.plugins.scala.{NlsString, Scala3Language}
+import org.jetbrains.plugins.scala.api.{NlsString, Scala3Language}
 
 /**
  * Resolves the expression while building, which can take seconds; [[ScalaLazyResolveEvaluatorBuilder]] does this in a

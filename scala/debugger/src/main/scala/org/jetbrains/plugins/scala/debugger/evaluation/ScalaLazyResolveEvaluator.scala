@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.debugger.evaluation
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
 import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator, ModifiableValue}
-import com.intellij.psi.util.PsiModificationTracker
+import consulo.language.psi.PsiModificationTracker
 import com.sun.jdi.Value
 import org.jetbrains.plugins.scala.debugger.evaluation.ReadActions.inNonBlockingReadAction
 import org.jetbrains.plugins.scala.lang.psi.impl.source.ScalaCodeFragment

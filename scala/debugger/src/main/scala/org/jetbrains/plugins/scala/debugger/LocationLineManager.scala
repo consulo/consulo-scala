@@ -4,11 +4,11 @@ import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.{DebugProcess, SyntheticTypeComponentProvider}
 import com.intellij.debugger.jdi.GeneratedLocation
 import com.intellij.debugger.settings.DebuggerSettings
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiDocumentManager, PsiElement}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.application.ReadAction
+import consulo.application.progress.ProgressManager
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiDocumentManager, PsiElement}
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import com.sun.jdi.{AbsentInformationException, Location, Method, ReferenceType}
 import org.jetbrains.plugins.scala.debugger.evaluation.util.DebuggerUtil
 import org.jetbrains.plugins.scala.extensions._

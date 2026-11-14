@@ -2,10 +2,12 @@ package org.jetbrains.plugins.scala.debugger.evaluation.util
 
 import com.intellij.debugger.engine.{DebugProcess, DebugProcessImpl, JVMName, JVMNameUtil}
 import com.intellij.debugger.{JavaDebuggerBundle, NoDataException, SourcePosition}
-import com.intellij.lang.ASTNode
-import com.intellij.psi._
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.language.ast.ASTNode
+import com.intellij.java.language.psi.{PsiClass, PsiMethod, PsiParameter}
+import consulo.language.psi.{PsiElement, PsiNamedElement}
+import com.intellij.psi.PsiLocalVariable
+import consulo.language.psi.scope.GlobalSearchScope
+import consulo.language.psi.util.PsiTreeUtil
 import com.sun.jdi.{Field, ObjectReference, ReferenceType}
 import org.jetbrains.plugins.scala.caches.{ModTracker, ScalaShortNamesCacheManager, cachedInUserData}
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager
@@ -28,10 +30,10 @@ import org.jetbrains.plugins.scala.lang.psi.types.recursiveUpdate.ScSubstitutor
 import org.jetbrains.plugins.scala.lang.psi.types.result._
 import org.jetbrains.plugins.scala.lang.psi.types.{ScType, ScTypeExt, ValueClassType}
 import org.jetbrains.plugins.scala.lang.psi.{ElementScope, ScalaPsiUtil}
-import org.jetbrains.plugins.scala.project.ScalaLanguageLevel.Scala_2_12
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel.Scala_2_12
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiElementExt}
 import org.jetbrains.plugins.scala.util.JvmUtil.getJVMStringForType
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.{PackageObjectSingletonClassPackageSuffix, TraitImplementationClassSuffix_211}
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.{PackageObjectSingletonClassPackageSuffix, TraitImplementationClassSuffix_211}
 
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable

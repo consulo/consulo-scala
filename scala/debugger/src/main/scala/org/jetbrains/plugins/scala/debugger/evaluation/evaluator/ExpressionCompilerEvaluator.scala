@@ -5,24 +5,25 @@ import com.intellij.debugger.engine.JVMNameUtil
 import com.intellij.debugger.engine.evaluation.expression.{Evaluator, ExpressionEvaluator, IdentityEvaluator, Modifier, UnBoxingEvaluator}
 import com.intellij.debugger.engine.evaluation.{EvaluateException, EvaluationContext, EvaluationContextImpl}
 import com.intellij.debugger.impl.DebuggerUtilsEx
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.OrderEnumerator
+import consulo.language.util.ModuleUtilCore
+import consulo.project.Project
+import consulo.module.content.layer.OrderEnumerator
 import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import com.sun.jdi.{ArrayType, ClassLoaderReference, ClassType, ObjectReference, Value}
-import org.jetbrains.jps.incremental.scala.remote.CommandIds
-import org.jetbrains.jps.incremental.scala.{Client, DummyClient, MessageKind}
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.jps.incremental.scala.shared.remote.CommandIds
+import org.jetbrains.jps.incremental.scala.shared.{Client, DummyClient, MessageKind}
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.compiler.data.ExpressionEvaluationArguments
-import org.jetbrains.plugins.scala.compiler.{CompileServerLauncher, CompilerManagerUtil, EelPathTranslator, RemoteServerRunner}
+import org.jetbrains.plugins.scala.server.compiler.{CompileServerLauncher, CompilerManagerUtil, RemoteServerRunner}
+import org.jetbrains.plugins.scala.compiler.EelPathTranslator
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator.ExpressionCompilerEvaluator.filteredScalacOptions
 import org.jetbrains.plugins.scala.debugger.evaluation.{EvaluationException, ExpressionCompilerResolverListener}
 import org.jetbrains.plugins.scala.debugger.{DebuggerBundle, ScalaPositionManager}
 import org.jetbrains.plugins.scala.extensions.{PathExt, inReadAction}
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
-import org.jetbrains.plugins.scala.settings.ScalaCompileServerSettings
+import org.jetbrains.plugins.scala.compilersettings.settings.ScalaCompileServerSettings
 
 import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes

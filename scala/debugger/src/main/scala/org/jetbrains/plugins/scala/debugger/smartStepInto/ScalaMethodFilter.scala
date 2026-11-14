@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.debugger.smartStepInto
 
-import com.intellij.debugger.engine._
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.debugger.engine.{DebugProcessImpl, DebuggerUtils, JVMNameUtil, MethodFilter}
+import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.util.Range
 import com.sun.jdi.Location
 import org.jetbrains.plugins.scala.debugger.ScalaPositionManager
@@ -12,7 +12,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScObject, ScTe
 import org.jetbrains.plugins.scala.lang.psi.types.ValueClassType
 import org.jetbrains.plugins.scala.lang.refactoring.util.ScalaNamesUtil
 import org.jetbrains.plugins.scala.project.ProjectPsiElementExt
-import org.jetbrains.plugins.scala.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
+import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants.TraitImplementationClassSuffix_211
 import org.jetbrains.plugins.scala.util.TopLevelMembers.{findEnclosingPackageOrFile, topLevelMemberClassName}
 
 class ScalaMethodFilter(function: ScMethodLike, callingExpressionLines: Range[Integer]) extends MethodFilter {
