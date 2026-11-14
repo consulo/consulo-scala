@@ -25,7 +25,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.intellij.scala</artifactId>
+    <artifactId>org.intellij.scala-scala.impl</artifactId>
     <packaging>jar</packaging>
 
     <build>
@@ -50,29 +50,6 @@
                             <includes>**/*.class</includes>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>consulo.maven</groupId>
-                <artifactId>maven-consulo-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <dependencies>
-                        <dependency>consulo.java</dependency>
-                    </dependencies>
-                    <packaging>
-                        <skip>${dev.mode}</skip>
-                        <version>${build.number}</version>
-                    </packaging>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>workspace</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -152,7 +129,6 @@
             <artifactId>config</artifactId>
             <version>1.4.9</version>
         </dependency>
-        <!-- packaging takes only direct dependencies - all runtime libraries must be listed here -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>

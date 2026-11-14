@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Packages scala-impl and runs it in a Consulo sandbox (platform and consulo.java from the hub, the version of
+# Packages the plugin and runs it in a Consulo sandbox (platform and consulo.java from the hub, the version of
 # consulo.java matches the downloaded platform build).
 # Runs on an isolated X display (Xvfb + openbox), never on the user's display; other sessions use their own displays.
 # usage: tools/run_sandbox.sh [display-number]   (default 81)
 set -e
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 DISPLAY_NUM=${1:-81}
-MODULE=$REPO/scala/scala-impl
+MODULE=$REPO/plugin
 PLATFORM=${PLATFORM_VERSION:-$(curl -s "https://api.consulo.io/repository/info?id=consulo.dist.linux64&platformVersion=SNAPSHOT&version=SNAPSHOT&channel=nightly" | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')}
 
 # required plugins (and their required dependencies) for exactly that platform build
@@ -37,7 +37,7 @@ for module in java.language.api; do
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
 done
 
-(cd "$REPO" && mvn -o -q install -pl scala/scala-impl -am -DskipTests -Dmaven.build.cache.enabled=false)
+(cd "$REPO" && mvn -o -q install -pl plugin -am -DskipTests -Dmaven.build.cache.enabled=false)
 
 if ! pgrep -f "Xvfb :$DISPLAY_NUM" >/dev/null; then
   Xvfb ":$DISPLAY_NUM" -screen 0 1600x1000x24 >/dev/null 2>&1 &
