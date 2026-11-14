@@ -40,6 +40,7 @@ open module org.intellij.scala.conversion {
     requires consulo.find.api;
     requires consulo.http.api;
     requires consulo.ide.api;
+    requires consulo.ide.impl;
     requires consulo.index.io;
     requires consulo.java;
     requires consulo.java.analysis.impl;

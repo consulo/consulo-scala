@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.conversion.copy
 
-import com.intellij.codeInsight.editorActions.{CopyPastePostProcessor, TextBlockTransferableData}
+import consulo.ide.impl.idea.codeInsight.editorActions.{CopyPastePostProcessor, TextBlockTransferableData}
 import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.project.Project
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -54,8 +54,8 @@ abstract class SingularCopyPastePostProcessor[T <: TextBlockTransferableData](da
     editor: Editor,
     bounds: RangeMarker,
     caretOffset: Int,
-    ref: Ref[? >: JBoolean],
-    values: ju.List[? <: T]
+    ref: SimpleReference[JBoolean],
+    values: ju.List[T]
   ): Unit = {
     val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument)
     psiFile match {
@@ -77,7 +77,7 @@ abstract class SingularCopyPastePostProcessor[T <: TextBlockTransferableData](da
   protected def processTransferableData(
     bounds: RangeMarker,
     caretOffset: Int,
-    ref: Ref[? >: JBoolean],
+    ref: SimpleReference[JBoolean],
     value: T
   )(implicit
     project: Project,

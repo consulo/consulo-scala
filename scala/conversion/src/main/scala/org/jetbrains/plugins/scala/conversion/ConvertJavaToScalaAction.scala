@@ -5,10 +5,9 @@ import consulo.annotation.component.ActionParentRef
 import consulo.annotation.component.ActionRef
 
 import consulo.language.codeStyle.CodeStyle
-import consulo.project.ui.notification.NotificationType
-import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
-import consulo.language.editor.CommonDataKeys
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import consulo.ui.ex.action.{AnAction, AnActionEvent, AnActionWithSyncUpdate}
+import consulo.localize.LocalizeValue
+import consulo.project.ui.notification.NotificationService
 import consulo.util.lang.ControlFlowException
 import consulo.project.Project
 import consulo.virtualFileSystem.VirtualFile
@@ -28,10 +27,9 @@ import org.jetbrains.plugins.scala.util.ScalaNotificationGroups
 
 @ActionImpl(id = "Scala.RenameJavaToScala", parents = Array(new ActionParentRef(value = new ActionRef(id = "RefactoringMenu")), new ActionParentRef(value = new ActionRef(id = "EditorTabPopupMenu"))))
 class ConvertJavaToScalaAction extends AnAction(
-  ScalaConversionBundle.message("convert.java.to.scala.action.text"),
-  ScalaConversionBundle.message("convert.java.to.scala.action.description"),
-  /* icon = */ null
-) {
+  LocalizeValue.of(ScalaConversionBundle.message("convert.java.to.scala.action.text")),
+  LocalizeValue.of(ScalaConversionBundle.message("convert.java.to.scala.action.description"))
+) with AnActionWithSyncUpdate {
 
   override def update(e: AnActionEvent): Unit = {
     val presentation = e.getPresentation
@@ -49,8 +47,6 @@ class ConvertJavaToScalaAction extends AnAction(
     }
   }
 
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
-
   private def isElementOkForConversion(element: PsiElement): Boolean =
     element.getContainingFile match {
       case javaFile: PsiJavaFile if javaFile.isInScalaModule =>
@@ -61,9 +57,9 @@ class ConvertJavaToScalaAction extends AnAction(
     }
 
   private def getElementsFromContext(e: AnActionEvent): Array[PsiElement] = {
-    val elements = PlatformCoreDataKeys.PSI_ELEMENT_ARRAY.getData(e.getDataContext)
+    val elements = e.getData(PsiElement.KEY_OF_ARRAY)
     if (elements != null) elements else {
-      val file = CommonDataKeys.PSI_FILE.getData(e.getDataContext)
+      val file = e.getData(PsiFile.KEY)
       if (file != null) Array(file)
       else Array.empty
     }
@@ -125,12 +121,10 @@ object ConvertJavaToScalaAction {
   }
 
   private def showFileAlreadyExistsNotification(project: Project, scalaFileName: String): Unit =
-    ScalaNotificationGroups.javaToScalaConverter
-      .createNotification(
-        ScalaConversionBundle.message("cannot.create.file"),
-        ScalaConversionBundle.message("file.already.exists", scalaFileName),
-        NotificationType.ERROR
-      )
+    NotificationService.getInstance
+      .newError(ScalaNotificationGroups.javaToScalaConverter)
+      .title(LocalizeValue.of(ScalaConversionBundle.message("cannot.create.file")))
+      .content(LocalizeValue.of(ScalaConversionBundle.message("file.already.exists", scalaFileName)))
       .notify(project)
 
   private def updateDocumentTextAndCommit(scalaFile: PsiFile, convertedScalaText: String): Unit = {

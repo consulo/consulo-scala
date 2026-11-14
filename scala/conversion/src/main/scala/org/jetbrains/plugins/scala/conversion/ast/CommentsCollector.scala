@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.conversion.ast
 
 import consulo.util.lang.StringUtil
-import com.intellij.psi.JavaTokenType
+import com.intellij.java.language.psi.JavaTokenType
 import com.intellij.java.language.psi.{PsiBlockStatement, PsiCodeBlock}
 import consulo.language.psi.{PsiComment, PsiElement, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

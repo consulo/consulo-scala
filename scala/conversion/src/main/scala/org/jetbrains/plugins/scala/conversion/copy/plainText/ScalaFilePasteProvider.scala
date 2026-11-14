@@ -2,21 +2,18 @@ package org.jetbrains.plugins.scala.conversion.copy.plainText
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.core.CoreBundle
-import consulo.ide.IdeBundle
-import com.intellij.ide.{IdeView, PasteProvider}
-import consulo.ui.ex.action.ActionUpdateThread
+import consulo.ide.localize.IdeLocalize
 import consulo.dataContext.DataContext
-import consulo.language.editor.LangDataKeys
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
-import consulo.navigation.OpenFileDescriptor
-import consulo.ui.ex.CopyPasteManager
+import consulo.language.editor.FilePasteProvider
+import consulo.language.editor.util.IdeView
+import consulo.localize.LocalizeValue
+import consulo.navigation.OpenFileDescriptorFactory
+import consulo.ui.ex.awt.CopyPasteManager
 import consulo.module.Module
 import consulo.project.Project
 import consulo.module.content.ModuleRootManager
-import com.intellij.openapi.ui.MessageDialogBuilder
+import consulo.ui.ex.awt.Messages
 import consulo.ui.ex.awt.Messages.showErrorDialog
-import consulo.virtualFileSystem.util.{VirtualFileUtil => VfsUtil}
 import com.intellij.java.language.psi.JavaDirectoryService
 import consulo.language.psi.{PsiDirectory, PsiDocumentManager, PsiElement, PsiFile}
 import consulo.language.codeStyle.CodeStyleManager
@@ -46,12 +43,11 @@ import scala.util.control.NonFatal
  * @note for a similar Java implementation see [[com.intellij.ide.JavaFilePasteProvider]]
  * @note the provider is used from [[com.intellij.ide.CopyPasteDelegator]]
  */
-@ExtensionImpl(id = "scalaFilePasteProvider", order = "first")
-final class ScalaFilePasteProvider extends PasteProvider {
+// upstream: order = "first" (not allowed on platform extension points)
+@ExtensionImpl(id = "scalaFilePasteProvider")
+final class ScalaFilePasteProvider extends FilePasteProvider {
 
   import ScalaFilePasteProvider.PasteActionIntention._
-
-  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   override def isPastePossible(dataContext: DataContext): Boolean = true
 
@@ -215,17 +211,19 @@ final class ScalaFilePasteProvider extends PasteProvider {
     //  - plugins.sbt, plugins1.sbt (only when not updating existing)
     val fileName: String =
       if (allowCreateMultipleFilesWithSameName)
-        VfsUtil.getNextAvailableName(targetPsiDir.getVirtualFile, name, extension)
+        nextAvailableName(targetPsiDir, name, extension)
       else s"$name.$extension"
 
     //If the file with same name already exists ask the user whether s/he wants to replace it
     val existingFile = targetPsiDir.findFile(fileName)
     if (existingFile != null) {
-      val dialog = MessageDialogBuilder.yesNo(
-        IdeBundle.message("title.file.already.exists"),
-        CoreBundle.message("prompt.overwrite.project.file", fileName, "")
+      val answer = Messages.showYesNoDialog(
+        project,
+        LocalizeValue.localizeTODO(s"The file \n'$fileName'\nalready exists.\nWould you like to overwrite it?").get,
+        IdeLocalize.titleFileAlreadyExists.get,
+        Messages.getQuestionIcon
       )
-      val replaceExistingFile = dialog.ask(project)
+      val replaceExistingFile = answer == Messages.YES
       if (!replaceExistingFile) {
         return
       }
@@ -255,7 +253,7 @@ final class ScalaFilePasteProvider extends PasteProvider {
 
         updatePackageStatement(psiFile, targetPsiDir)
 
-        new OpenFileDescriptor(project, psiFile.getVirtualFile).navigate(true)
+        OpenFileDescriptorFactory.getInstance(project).builder(psiFile.getVirtualFile).build().navigate(true)
       }
     }
     inWriteCommandAction { createAndOpenFile() }
@@ -276,7 +274,7 @@ final class ScalaFilePasteProvider extends PasteProvider {
         documentManager.commitDocument(document)
 
         // Navigate to the insertion point
-        val fileDescriptor = new OpenFileDescriptor(project, psiFile.getVirtualFile, update.navigationOffset)
+        val fileDescriptor = OpenFileDescriptorFactory.getInstance(project).builder(psiFile.getVirtualFile).offset(update.navigationOffset).build()
         fileDescriptor.navigate(true)
       }
     }
@@ -297,6 +295,13 @@ final class ScalaFilePasteProvider extends PasteProvider {
 }
 
 object ScalaFilePasteProvider {
+
+  private def nextAvailableName(directory: PsiDirectory, prefix: String, extension: String): String = {
+    val dotExt = s".$extension"
+    (Iterator.single(prefix + dotExt) ++ Iterator.from(1).map(i => s"${prefix}_$i$dotExt"))
+      .find(directory.getVirtualFile.findChild(_) == null)
+      .get
+  }
 
   case class FileNameWithExtension(name: String, extension: String) {
     def fullName: String = s"$name.$extension"
@@ -320,9 +325,9 @@ object ScalaFilePasteProvider {
   }
 
   implicit class DataContextExt(private val context: DataContext) extends AnyVal {
-    def maybeIdeView: Option[IdeView] = Option(LangDataKeys.IDE_VIEW.getData(context))
+    def maybeIdeView: Option[IdeView] = Option(context.getData(IdeView.KEY))
 
-    private def maybeModule: Option[Module] = Option(PlatformCoreDataKeys.MODULE.getData(context))
+    private def maybeModule: Option[Module] = Option(context.getData(Module.KEY))
 
     def maybeModuleWithScala: Option[Module] = maybeModule.filter(_.hasScala)
   }

@@ -1,18 +1,17 @@
 package org.jetbrains.plugins.scala.conversion
 
 import com.intellij.java.language.codeInsight.AnnotationUtil
-import com.intellij.codeInsight.editorActions.ReferenceData
+import com.intellij.java.impl.codeInsight.editorActions.JavaReferenceData
 import com.intellij.java.language.JavaLanguage
 import consulo.project.Project
-import com.intellij.psi.{JavaTokenType, PsiAnonymousClass, PsiArrayAccessExpression, PsiArrayInitializerMemberValue, PsiAssertStatement, PsiAssignmentExpression, PsiBinaryExpression, PsiBreakStatement, PsiCatchSection, PsiClassObjectAccessExpression, PsiConditionalExpression, PsiContinueStatement, PsiDeclarationStatement, PsiDoWhileStatement, PsiEmptyStatement, PsiExpressionListStatement, PsiForStatement, PsiForeachPatternStatement, PsiForeachStatement, PsiForeachStatementBase, PsiIfStatement, PsiImplicitClass, PsiImportList, PsiImportStatement, PsiImportStatementBase, PsiImportStaticStatement, PsiInstanceOfExpression, PsiLabeledStatement, PsiLambdaExpression, PsiLambdaParameterType, PsiLiteralExpression, PsiLocalVariable, PsiPackageStatement, PsiParenthesizedExpression, PsiPolyadicExpression, PsiPostfixExpression, PsiPrefixExpression, PsiReferenceParameterList, PsiResourceVariable, PsiReturnStatement, PsiSwitchBlock, PsiSwitchExpression, PsiSwitchLabelStatement, PsiSwitchLabelStatementBase, PsiSwitchLabeledRuleStatement, PsiSwitchStatement, PsiSynchronizedStatement, PsiThisExpression, PsiThrowStatement, PsiTryStatement, PsiTypeCastExpression, PsiTypeTestPattern, PsiWhileStatement, PsiYieldStatement}
-import com.intellij.java.language.psi.{PsiAnnotation, PsiAnnotationMemberValue, PsiArrayInitializerExpression, PsiArrayType, PsiBlockStatement, PsiClass, PsiClassInitializer, PsiClassOwner, PsiClassType, PsiCodeBlock, PsiDisjunctionType, PsiEnumConstant, PsiExpression, PsiExpressionList, PsiExpressionStatement, PsiField, PsiIdentifier, PsiJavaCodeReferenceElement, PsiMember, PsiMethod, PsiMethodCallExpression, PsiModifier, PsiModifierListOwner, PsiNameValuePair, PsiNewExpression, PsiParameter, PsiParameterList, PsiPrimitiveType, PsiReferenceExpression, PsiStatement, PsiSuperExpression, PsiType, PsiTypeElement, PsiTypeParameter}
+import com.intellij.java.language.psi.{JavaTokenType, PsiAnnotation, PsiAnnotationMemberValue, PsiAnonymousClass, PsiArrayAccessExpression, PsiArrayInitializerExpression, PsiArrayInitializerMemberValue, PsiArrayType, PsiAssertStatement, PsiAssignmentExpression, PsiBinaryExpression, PsiBlockStatement, PsiBreakStatement, PsiCatchSection, PsiClass, PsiClassInitializer, PsiClassObjectAccessExpression, PsiClassOwner, PsiClassType, PsiCodeBlock, PsiConditionalExpression, PsiContinueStatement, PsiDeclarationStatement, PsiDeconstructionPattern, PsiDisjunctionType, PsiDoWhileStatement, PsiEmptyStatement, PsiEnumConstant, PsiExpression, PsiExpressionList, PsiExpressionListStatement, PsiExpressionStatement, PsiField, PsiForStatement, PsiForeachPatternStatement, PsiForeachStatement, PsiForeachStatementBase, PsiIdentifier, PsiIfStatement, PsiImplicitClass, PsiImportList, PsiImportStatement, PsiImportStatementBase, PsiImportStaticStatement, PsiInstanceOfExpression, PsiJavaCodeReferenceElement, PsiLabeledStatement, PsiLambdaExpression, PsiLambdaParameterType, PsiLiteralExpression, PsiLocalVariable, PsiMember, PsiMethod, PsiMethodCallExpression, PsiModifier, PsiModifierListOwner, PsiNameValuePair, PsiNewExpression, PsiPackageStatement, PsiParameter, PsiParameterList, PsiParenthesizedExpression, PsiPolyadicExpression, PsiPostfixExpression, PsiPrefixExpression, PsiPrimitiveType, PsiReferenceExpression, PsiReferenceParameterList, PsiResourceVariable, PsiReturnStatement, PsiStatement, PsiSuperExpression, PsiSwitchBlock, PsiSwitchExpression, PsiSwitchLabelStatement, PsiSwitchLabelStatementBase, PsiSwitchLabeledRuleStatement, PsiSwitchStatement, PsiSynchronizedStatement, PsiThisExpression, PsiThrowStatement, PsiTryStatement, PsiType, PsiTypeCastExpression, PsiTypeElement, PsiTypeParameter, PsiTypeTestPattern, PsiWhileStatement, PsiYieldStatement}
 import consulo.language.psi.{PsiComment, PsiElement, PsiErrorElement, PsiFile, PsiReference, PsiWhiteSpace}
 import consulo.language.psi.search.ReferencesSearch
 import consulo.language.psi.scope.{GlobalSearchScope, LocalSearchScope}
-import com.intellij.psi.util.JavaPsiPatternUtil
 import consulo.language.psi.util.PsiTreeUtil
 import com.intellij.java.language.psi.util.PsiUtil
-import com.siyeh.ig.psiutils.{ControlFlowUtils, CountingLoop, ExpressionUtils}
+import com.intellij.java.analysis.impl.codeInspection.ControlFlowUtils
+import com.siyeh.ig.psiutils.{CountingLoop, ExpressionUtils}
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.scala.conversion.ast.CommentsCollector.UsedComments
 import org.jetbrains.plugins.scala.conversion.ast.{ModifierType, _}
@@ -124,7 +123,7 @@ object JavaToScala {
     externalProperties: ExternalProperties
   )(implicit
     associations: mutable.ListBuffer[AssociationHelper] = mutable.ListBuffer(),
-    refs: Seq[ReferenceData] = Seq.empty,
+    refs: Seq[JavaReferenceData] = Seq.empty,
     dropElements: mutable.Set[PsiElement] = new mutable.HashSet[PsiElement](),
     textMode: Boolean = false
   ): IntermediateNode = {
@@ -141,7 +140,7 @@ object JavaToScala {
   private class ConversionContext(
     val textMode: Boolean = false,
     val associations: mutable.ListBuffer[AssociationHelper] = mutable.ListBuffer(),
-    val references: Seq[ReferenceData] = Seq.empty,
+    val references: Seq[JavaReferenceData] = Seq.empty,
     val dropElements: mutable.Set[PsiElement] = new mutable.HashSet[PsiElement](),
     val usedComments: UsedComments = new UsedComments,
   )
@@ -280,7 +279,11 @@ object JavaToScala {
           case statement: PsiForeachStatement => statement.getIterationParameter.getNameIdentifier
           case patternStatement: PsiForeachPatternStatement =>
             val pattern = patternStatement.getIterationPattern
-            val variable = JavaPsiPatternUtil.getPatternVariable(pattern)
+            val variable = pattern match {
+              case p: PsiTypeTestPattern => p.getPatternVariable
+              case p: PsiDeconstructionPattern => p.getPatternVariable
+              case _ => null
+            }
             if (variable != null) variable.getNameIdentifier else null
           case _ => null
         }

@@ -7,7 +7,7 @@ import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.project.{DumbService, Project}
 import consulo.ui.ex.awt.DialogWrapper
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiDocumentManager, PsiFile}
 import org.jetbrains.plugins.scala.editor.copy.Scala3IndentationBasedSyntaxCopyPastePreProcessor.AfterIndentOffsetAdjuster
@@ -19,11 +19,11 @@ import org.jetbrains.plugins.scala.compilersettings.settings._
 
 @ExtensionImpl
 private[copy]
-class ScalaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Associations](Associations.flavor) {
+class ScalaCopyPastePostProcessor extends SingularCopyPastePostProcessor[AssociationsTransferableData](AssociationsTransferableData.flavor) {
 
   override def collectTransferableData(startOffsets: Array[Int], endOffsets: Array[Int])
                                       (implicit file: PsiFile,
-                                       editor: Editor): Option[Associations] = {
+                                       editor: Editor): Option[AssociationsTransferableData] = {
     if (DumbService.getInstance(file.getProject).isDumb)
       return None
 
@@ -43,14 +43,14 @@ class ScalaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Associa
     val ranges = startOffsets.zip(endOffsets).map {
       case (startOffset, endOffset) => TextRange.create(startOffset, endOffset)
     }
-    Option(Associations.collectAssociations(ranges.toSeq*)(using scalaFile))
+    Option(Associations.collectAssociations(ranges.toSeq*)(using scalaFile)).map(AssociationsTransferableData(_))
   }
 
   override def processTransferableData(
     bounds: RangeMarker,
     caretOffset: Int,
-    ref: Ref[? >: java.lang.Boolean],
-    associations: Associations
+    ref: SimpleReference[java.lang.Boolean],
+    associations: AssociationsTransferableData
   )(implicit project: Project, editor: Editor, file: ScalaFile): Unit = {
     import CodeInsightSettings._
     if (DumbService.getInstance(project).isDumb)
@@ -62,7 +62,7 @@ class ScalaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Associa
 
     PsiDocumentManager.getInstance(project).commitAllDocuments()
     val adjuster = AfterIndentOffsetAdjuster.getAndClearFromUserdata(file)
-    associations.restoreOnUiThread(bounds, adjuster) {
+    associations.toAssociations.restoreOnUiThread(bounds, adjuster) {
       case bindings if setting == ASK =>
         val bindingsSorted = bindings.filterNot(_.path.isEmpty).sortBy(_.path)
         val bindingsUnique = bindingsSorted.distinctBy(b => (b.path, b.aliasName))

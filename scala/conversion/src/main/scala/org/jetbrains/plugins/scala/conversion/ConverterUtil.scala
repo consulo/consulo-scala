@@ -2,13 +2,13 @@ package org.jetbrains.plugins.scala
 package conversion
 
 import consulo.language.editor.inspection.scheme.InspectionManager
-import consulo.language.editor.inspection.{LocalQuickFixOnPsiElement, ProblemDescriptor, ProblemsHolder}
+import consulo.language.editor.inspection.{LocalQuickFixOnPsiElement, ProblemDescriptor}
 import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.project.Project
 import consulo.document.util.TextRange
-import com.intellij.psi.JavaTokenType
-import com.intellij.java.language.psi.{PsiAnnotation, PsiCodeBlock, PsiJavaToken, PsiMethod, PsiModifierList}
+import consulo.ide.impl.idea.codeInsight.editorActions.TextBlockTransferableData
+import com.intellij.java.language.psi.{JavaTokenType, PsiAnnotation, PsiCodeBlock, PsiJavaToken, PsiMethod, PsiModifierList}
 import consulo.language.psi.{PsiComment, PsiDocumentManager, PsiElement, PsiFile, PsiWhiteSpace}
 import org.jetbrains.plugins.scala.codeInsight.intention.RemoveBracesIntention
 import org.jetbrains.plugins.scala.codeInspection.parentheses.ScalaUnnecessaryParenthesesInspection
@@ -177,7 +177,7 @@ object ConverterUtil {
       fixes.foreach(_.applyFix)
     }
 
-    val holder = new ProblemsHolder(InspectionManager.getInstance(project), file, false)
+    val holder = InspectionManager.getInstance(project).createProblemsHolder(file, false)
 
     val removeReturnVisitor = (new RemoveRedundantReturnInspection).buildVisitor(holder, isOnTheFly = false)
     val parenthesisedExpr = (new ScalaUnnecessaryParenthesesInspection).buildVisitor(holder, isOnTheFly = false)
@@ -232,7 +232,8 @@ object ConverterUtil {
   final class ConvertedCode private(override val associations: Array[Association],
                                     val text: String,
                                     val showDialog: Boolean)
-    extends AssociationsData(associations, ConvertedCode) {
+    extends AssociationsData(associations, ConvertedCode)
+      with TextBlockTransferableData {
 
     override def canEqual(other: Any): Boolean = other.isInstanceOf[ConvertedCode]
 

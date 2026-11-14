@@ -4,14 +4,15 @@ package copy
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.editorActions.{CopyPastePostProcessor, JavaCopyPasteReferenceProcessor, ReferenceData}
-import consulo.logging.attachment.Attachment
+import com.intellij.java.impl.codeInsight.editorActions.{JavaCopyPasteReferenceProcessor, JavaReferenceData}
+import consulo.ide.impl.idea.codeInsight.editorActions.CopyPastePostProcessor
+import consulo.logging.attachment.AttachmentFactory
 import consulo.util.lang.ControlFlowException
 import consulo.logging.Logger
 import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.project.{DumbService, Project, ProjectManager}
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.document.util.TextRange
 import consulo.language.psi.{PsiComment, PsiFile}
 import com.intellij.java.language.psi.PsiJavaFile
@@ -47,13 +48,13 @@ class JavaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Converte
     if (!ProjectManager.getInstance.getOpenProjects.exists(_.hasScala)) return None // SCL-21511
 
     try {
-      val data: Seq[ReferenceData] =
+      val data: Seq[JavaReferenceData] =
         referenceProcessor.collectTransferableData(file, editor, startOffsets, endOffsets) match {
           case dataList if dataList.isEmpty => Seq.empty
           case dataList =>
             val shift = startOffsets.headOption.getOrElse(0)
             dataList.get(0).getData.map { it =>
-              new ReferenceData(
+              new JavaReferenceData(
                 it.startOffset + shift,
                 it.endOffset + shift,
                 it.qClassName,
@@ -102,14 +103,14 @@ class JavaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Converte
       case e: Exception =>
         val charSequence = file.charSequence
         val selections = (startOffsets lazyZip endOffsets).map((a, b) => charSequence.substring(a, b))
-        val attachments = selections.zipWithIndex.map(p => new Attachment("Selection-%d.java".format(p._2 + 1), p._1))
+        val attachments = selections.zipWithIndex.map(p => AttachmentFactory.get.create("Selection-%d.java".format(p._2 + 1), p._1))
         Log.error(e.getMessage, e, attachments.toSeq*)
         None
     }
   }
 
   override def processTransferableData(bounds: RangeMarker, caretOffset: Int,
-                                       ref: Ref[? >: java.lang.Boolean], value: ConvertedCode)
+                                       ref: SimpleReference[java.lang.Boolean], value: ConvertedCode)
                                       (implicit project: Project,
                                        editor: Editor,
                                        file: ScalaFile): Unit = {
@@ -143,7 +144,7 @@ class JavaCopyPastePostProcessor extends SingularCopyPastePostProcessor[Converte
         }
       }
 
-      scalaProcessor.processTransferableData(bounds, caretOffset, ref, Associations(shiftedAssociations.toArray))
+      scalaProcessor.processTransferableData(bounds, caretOffset, ref, AssociationsTransferableData(shiftedAssociations.toArray))
 
       inWriteAction {
         cleanCode(file, project, bounds.getStartOffset, bounds.getEndOffset, editor)

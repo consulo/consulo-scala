@@ -2,15 +2,14 @@ package org.jetbrains.plugins.scala.conversion.copy.plainText
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.codeInsight.editorActions.TextBlockTransferableData
+import consulo.ide.impl.idea.codeInsight.editorActions.TextBlockTransferableData
 import consulo.application.ApplicationManager
 import consulo.codeEditor.Editor
 import consulo.document.RangeMarker
 import consulo.project.Project
-import consulo.util.lang.ref.Ref
+import consulo.util.lang.ref.SimpleReference
 import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.psi.{PsiImportList, PsiPackageStatement}
-import com.intellij.java.language.psi.PsiJavaFile
+import com.intellij.java.language.psi.{PsiImportList, PsiJavaFile, PsiPackageStatement}
 import consulo.language.codeStyle.CodeStyleManager
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.conversion.ConverterUtil.ConvertedCode
@@ -55,7 +54,7 @@ final class TextJavaCopyPastePostProcessor extends SingularCopyPastePostProcesso
   override protected def processTransferableData(
     bounds: RangeMarker,
     caretOffset: Int,
-    ref: Ref[? >: java.lang.Boolean],
+    ref: SimpleReference[java.lang.Boolean],
     value: ConvertedCode
   )(implicit
     project: Project,

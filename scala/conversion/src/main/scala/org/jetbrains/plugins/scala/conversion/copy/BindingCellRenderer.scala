@@ -4,8 +4,10 @@ import consulo.colorScheme.{EditorColorsManager, EditorColorsScheme, EditorFontT
 import consulo.colorScheme.TextAttributes
 import consulo.project.Project
 import consulo.language.impl.psi.LeafPsiElement
-import com.intellij.ui.SimpleColoredComponent
+import consulo.ui.ex.awt.SimpleColoredComponent
 import consulo.ui.ex.SimpleTextAttributes
+import consulo.ui.ex.util.TextAttributesUtil
+import consulo.ui.ex.awtUnsafe.TargetAWT
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.scala.conversion.copy.BindingCellRenderer.renderImportStatementText
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
@@ -30,7 +32,7 @@ class BindingCellRenderer(
 
   private val FONT: Font = {
     val scheme: EditorColorsScheme = EditorColorsManager.getInstance.getGlobalScheme
-    scheme.getFont(EditorFontType.PLAIN)
+    TargetAWT.to(scheme.getFont(EditorFontType.PLAIN))
   }
 
   setOpaque(true)
@@ -51,7 +53,7 @@ class BindingCellRenderer(
       val parts = renderImportStatementText(binding, features, project, colorScheme)
       parts.foreach { case (text, attributes) =>
         val simpleAttributes = if (attributes != null)
-          SimpleTextAttributes.fromTextAttributes(attributes)
+          TextAttributesUtil.fromTextAttributes(attributes)
         else
           SimpleTextAttributes.REGULAR_ATTRIBUTES
         append(text, simpleAttributes)

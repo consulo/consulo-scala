@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.conversion.copy.plainText
 
-import com.intellij.codeInsight.daemon.JavaErrorBundle
+import com.intellij.java.language.impl.codeInsight.daemon.JavaErrorBundle
 import com.intellij.java.language.impl.JavaFileType
 import consulo.module.Module
 import consulo.project.Project

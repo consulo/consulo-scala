@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.conversion.copy
 
 import consulo.application.CommonBundle
-import consulo.java.impl.JavaBundle
+import consulo.language.editor.localize.CodeInsightLocalize
 import consulo.application.ApplicationManager
 import consulo.colorScheme.EditorColorsScheme
 import consulo.project.Project
@@ -38,7 +38,7 @@ class RestoreReferencesDialog(
   private var mySelectedElements: java.util.List[Associations.Binding] = Collections.emptyList
   def getSelectedElements: Seq[Associations.Binding] = mySelectedElements.asScala.toSeq
 
-  setTitle(JavaBundle.message("dialog.import.on.paste.title2"))
+  setTitle(CodeInsightLocalize.dialogImportOnPasteTitle2())
 
   init()
 
@@ -54,7 +54,7 @@ class RestoreReferencesDialog(
     myList = new JBList(importedPathsArray*)
     myList.setCellRenderer(new BindingCellRenderer(features, colorScheme, project))
     panel.add(ScrollPaneFactory.createScrollPane(myList), BorderLayout.CENTER)
-    panel.add(new JBLabel(JavaBundle.message("dialog.paste.on.import.text2"), SMALL, BRIGHTER), BorderLayout.NORTH)
+    panel.add(new JBLabel(CodeInsightLocalize.dialogPasteOnImportText2().get, SMALL, BRIGHTER), BorderLayout.NORTH)
     val buttonPanel = new JPanel(new VerticalFlowLayout)
     val okButton = new JButton(CommonBundle.getOkButtonText)
 
