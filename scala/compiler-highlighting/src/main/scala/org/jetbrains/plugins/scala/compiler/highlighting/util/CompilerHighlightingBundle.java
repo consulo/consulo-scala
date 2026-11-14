@@ -1,22 +1,23 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.util;
 
-import com.intellij.DynamicBundle;
+import consulo.component.util.localize.AbstractBundle;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.PropertyKey;
 
-public final class CompilerHighlightingBundle {
+public final class CompilerHighlightingBundle extends AbstractBundle {
+    // upstream: messages.CompilerHighlightingBundle, the messages package would be split between the plugin modules
     @NonNls
-    public static final String BUNDLE = "messages.CompilerHighlightingBundle";
-    private static final DynamicBundle INSTANCE = new DynamicBundle(CompilerHighlightingBundle.class, BUNDLE);
+    private static final String BUNDLE = "org.jetbrains.plugins.scala.compiler.highlighting.util.CompilerHighlightingBundle";
+    private static final CompilerHighlightingBundle INSTANCE = new CompilerHighlightingBundle();
 
     private CompilerHighlightingBundle() {
+        super(BUNDLE);
     }
 
-    @NotNull
     @Nls
-    public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, @NotNull Object... params) {
-        return INSTANCE.getMessage(key, params);
+    public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
+        String message = INSTANCE.getMessage(key, params);
+        return message != null ? message : key;
     }
 }

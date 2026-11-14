@@ -1,22 +1,25 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.triggers
 
-import com.intellij.ide.PowerSaveMode
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{JavaProjectRootsUtil, ProjectRootManager}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiFile, PsiJavaFile}
+import consulo.application.PowerSaveMode
+import consulo.document.Document
+import consulo.module.Module
+import consulo.project.Project
+import consulo.java.impl.util.JavaProjectRootsUtil
+import consulo.module.content.ProjectRootManager
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
+import com.intellij.java.language.psi.PsiJavaFile
 import org.jetbrains.plugins.scala.compiler.highlighting.core.FileCompilationScope
 import org.jetbrains.plugins.scala.compiler.highlighting.core.FileCompilationScope.sourceScopeOf
 import org.jetbrains.plugins.scala.extensions.{PsiFileExt, inReadAction}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.plugins.scala.settings.{ScalaCompileServerSettings, ScalaHighlightingMode}
+import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
 
 private[highlighting] object TriggerUtil:
 
+  // upstream: also requires the compile server to be enabled, here the compilation runs in the IDE process
   def isHighlightingEnabled: Boolean =
-    !PowerSaveMode.isEnabled && ScalaCompileServerSettings.getInstance.COMPILE_SERVER_ENABLED
+    !PowerSaveMode.isEnabled
 
   def isHighlightingEnabled(project: Project): Boolean =
     isHighlightingEnabled && ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)
@@ -26,7 +29,7 @@ private[highlighting] object TriggerUtil:
       virtualFile.isInLocalFileSystem &&
       (psiFile match {
         case _ if psiFile.isScalaWorksheet => true
-        case _: ScalaFile | _: PsiJavaFile if !JavaProjectRootsUtil.isOutsideJavaSourceRoot(psiFile) => true
+        case _: ScalaFile | _: PsiJavaFile if !JavaProjectRootsUtil.isOutsideSourceRoot(psiFile) => true
         case _ => false
       }) &&
       ScalaHighlightingMode.shouldHighlightBasedOnFileLevel(psiFile, project)

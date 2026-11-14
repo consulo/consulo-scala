@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.core
 
-import com.intellij.codeInsight.daemon.impl.{HighlightInfo, HighlightInfoType}
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.openapi.project.{DumbService, Project}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
+import consulo.language.editor.intention.IntentionAction
+import consulo.project.{DumbService, Project}
+import consulo.document.util.TextRange
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
 import org.jetbrains.plugins.scala.annotator.UnresolvedReferenceFixProvider
 import org.jetbrains.plugins.scala.autoImport.quickFix.{CBHSuggestionToImport, ImportCBHSuggestionFix}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScReference
@@ -42,7 +43,7 @@ private[highlighting] class ExternalHighlightingFixProvider(project: Project) {
           .toSeq
         //val fix = ScalaAddImportAction.cbhSuggested(editor, imports, place)
         val fix = ImportCBHSuggestionFix(imports, place)
-        highlightInfo.registerFix(fix, null, null, highlightingRange, null)
+        highlightInfo.registerFix(fix, null, LocalizeValue.empty(), highlightingRange, null)
       }
   }
 

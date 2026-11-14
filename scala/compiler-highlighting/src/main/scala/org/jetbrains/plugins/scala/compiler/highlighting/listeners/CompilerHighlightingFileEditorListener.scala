@@ -1,9 +1,11 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.listeners
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.{FileEditorManager, FileEditorManagerEvent, FileEditorManagerListener}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.annotation.component.{ComponentScope, TopicImpl}
+import consulo.fileEditor.FileEditorManager
+import consulo.fileEditor.event.{FileEditorManagerEvent, FileEditorManagerListener}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import jakarta.inject.Inject
 import org.jetbrains.plugins.scala.compiler.highlighting.triggers.EditorTrigger
 
 /**
@@ -12,9 +14,9 @@ import org.jetbrains.plugins.scala.compiler.highlighting.triggers.EditorTrigger
  * Both callbacks are needed and neither implies the other: a file can be opened into a split without
  * becoming the selection, and switching tabs selects a file that was opened long ago.
  */
-private final class CompilerHighlightingFileEditorListener(project: Project) extends FileEditorManagerListener {
+@TopicImpl(ComponentScope.PROJECT)
+final class CompilerHighlightingFileEditorListener @Inject()(project: Project) extends FileEditorManagerListener {
 
-  private val logger  = Logger.getInstance(classOf[CompilerHighlightingFileEditorListener])
   override def fileOpened(source: FileEditorManager, file: VirtualFile): Unit = {
     activated(file, "editor opened")
   }
@@ -24,6 +26,6 @@ private final class CompilerHighlightingFileEditorListener(project: Project) ext
   }
 
   private def activated(file: VirtualFile, source: String): Unit = {
-    EditorTrigger.triggerOnFile(project, file, source)
+    if (!project.isDisposed) EditorTrigger.triggerOnFile(project, file, source)
   }
 }

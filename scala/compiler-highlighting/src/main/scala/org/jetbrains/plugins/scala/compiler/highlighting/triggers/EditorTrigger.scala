@@ -1,12 +1,10 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.triggers
 
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.fileEditor.FileEditorManager
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.compiler.highlighting.services.BackgroundExecutorService.executeOnBackgroundThreadInNotDisposed
 import org.jetbrains.plugins.scala.compiler.highlighting.services.TriggerService
-import org.jetbrains.plugins.scala.compiler.tracing.Tracing
-import org.jetbrains.plugins.scala.compiler.tracing.core.events.BaseEvent
 
 /**
  * Compiles the file the user has just landed in, either because its editor was opened or because its tab was
@@ -18,9 +16,7 @@ private[highlighting] object EditorTrigger:
 
   def triggerOnSelectedEditor(project: Project, debugReason: String): Unit =
     executeOnBackgroundThreadInNotDisposed(project) {
-      Option(FileEditorManager.getInstance(project).getSelectedEditor)
-        .flatMap(editor => Option(editor.getFile))
-        .fold(Tracing(project).instant(BaseEvent(name = s"dropped (no editor selected):$debugReason").closed())) { file =>
-          triggerOnFile(project, file, debugReason)
-        }
+      FileEditorManager.getInstance(project).getSelectedFiles.headOption.foreach { file =>
+        triggerOnFile(project, file, debugReason)
+      }
     }

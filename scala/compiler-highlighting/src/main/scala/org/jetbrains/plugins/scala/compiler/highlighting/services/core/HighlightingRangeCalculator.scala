@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.core
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.{JavaTokenType, PsiElement, PsiFile, PsiJavaToken, PsiWhiteSpace}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import consulo.document.Document
+import consulo.document.util.TextRange
+import com.intellij.java.language.psi.JavaTokenType
+import consulo.language.psi.{PsiElement, PsiFile, PsiWhiteSpace}
+import com.intellij.java.language.psi.PsiJavaToken
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.core.ExternalHighlighting.RangeInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.services.ExternalHighlightersService.{Log, TextRangeWithEndOfLine}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

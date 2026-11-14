@@ -22,19 +22,13 @@ object ScalaHighlightingMode {
 
   private def isInTestMode: Boolean = ApplicationManager.getApplication.isUnitTestMode
 
-  // compiler based highlighting (upstream compiler-highlighting module) is not ported yet: without it the errors would
-  // not be shown at all, so the built-in highlighting is used regardless of the project settings
-  private val compilerHighlightingAvailable = false
-
-  def isCompilerHighlightingAvailable: Boolean = compilerHighlightingAvailable
-
   private def showCompilerErrorsScala2(project: Project): Boolean =
     compilerHighlightingEnabledInTests ||
-      compilerHighlightingAvailable && !isInTestMode && ScalaProjectSettings.getInstance(project).isCompilerHighlightingScala2
+      !isInTestMode && ScalaProjectSettings.getInstance(project).isCompilerHighlightingScala2
 
   def showCompilerErrorsScala3(project: Project): Boolean =
     compilerHighlightingEnabledInTests ||
-      compilerHighlightingAvailable && !isInTestMode && ScalaProjectSettings.getInstance(project).isCompilerHighlightingScala3
+      !isInTestMode && ScalaProjectSettings.getInstance(project).isCompilerHighlightingScala3
 
   /**
    * Whether the Scala 3 compiler reports the errors of the element's file, so the checks it covers can be skipped.

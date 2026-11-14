@@ -4,6 +4,7 @@ package worksheet.processor
 import consulo.application.ApplicationManager
 import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
 import consulo.codeEditor.Editor
+import consulo.document.Document
 import consulo.compiler.{CompilerMessage, CompilerMessageCategory}
 import consulo.java.language.module.extension.JavaModuleExtension
 import consulo.language.util.ModuleUtilCore
@@ -12,14 +13,17 @@ import consulo.module.Module
 import consulo.project.Project
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.extensions.{LoggerExt, PathExt}
-import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
+import org.jetbrains.jps.incremental.scala.shared.remote.{PathTranslator, SerializablePath}
+import org.jetbrains.jps.incremental.scala.shared.{Client, DelegateClient, MessageKind}
+import org.jetbrains.plugins.scala.extensions.{LoggerExt, PathExt, inReadAction}
+import org.jetbrains.plugins.scala.lang.psi.api.{FileDeclarationsContributor, ScalaFile}
 import org.jetbrains.plugins.scala.project.{ModuleExt, ScalaSdkNotConfiguredException}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.worksheet.processor.WorksheetCompilerUtil.WorksheetCompileRunRequest
 import org.jetbrains.plugins.scala.worksheet.processor.WorksheetCompilerUtil.WorksheetCompileRunRequest._
 import org.jetbrains.plugins.scala.worksheet.runconfiguration.WorksheetCache
-import org.jetbrains.plugins.scala.worksheet.server.RemoteServerConnector.Args.{PlainModeArgs, ReplModeArgs}
+import org.jetbrains.plugins.scala.worksheet.server.RemoteServerConnector.Args.{CompileOnly, PlainModeArgs, ReplModeArgs}
 import org.jetbrains.plugins.scala.worksheet.server.RemoteServerConnector._
 import org.jetbrains.plugins.scala.worksheet.server._
 import org.jetbrains.plugins.scala.worksheet.settings.WorksheetExternalRunType.WorksheetPreprocessError
@@ -27,7 +31,7 @@ import org.jetbrains.plugins.scala.worksheet.settings._
 import org.jetbrains.plugins.scala.worksheet.ui.printers.{WorksheetEditorPrinter, WorksheetEditorPrinterFactory, WorksheetEditorPrinterRepl}
 import org.jetbrains.plugins.scala.worksheet.{WorksheetBundle, WorksheetUtils}
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
 import scala.collection.mutable
 import scala.util.control.NonFatal
 
@@ -48,6 +52,83 @@ class WorksheetCompiler(
   private val makeType: WorksheetMakeType = WorksheetCompiler.getMakeType(project, runType)
 
   private val virtualFile = worksheetFile.getVirtualFile
+
+  /**
+   * Compiles the worksheet without running it, for the compiler based highlighting.
+   * upstream: waits at most for a given duration, the in-process compilation is synchronous here
+   */
+  def compileOnlySync(document: Document, client: Client): WorksheetCompilerResult = {
+    var result: WorksheetCompilerResult = WorksheetCompilerResult.Compiled
+    compileOnly(document, client)(result = _)
+    result
+  }
+
+  private def compileOnly(document: Document, client: Client)(callback0: EvaluationCallback): Unit =  {
+    Log.traceWithDebugInDev(s"compileOnly: $document")
+
+    val callback: EvaluationCallback = result => {
+      result match {
+        case error: WorksheetCompilerResult.WorksheetCompilerError =>
+          logCompileOnlyError(error)
+        case _ =>
+          Log.traceWithDebugInDev(s"compileOnly result: ok")
+      }
+      callback0(result)
+    }
+
+    compileOnly2(document, client)(callback)
+  }
+
+  private def logCompileOnlyError(error: WorksheetCompilerResult.WorksheetCompilerError): Unit = {
+    import RemoteServerConnector.{RemoteServerConnectorResult => RSCR}
+    import WorksheetCompiler.{WorksheetCompilerResult => WCR}
+    val exception = error match {
+      case WCR.UnknownError(cause)                                     => Some(cause)
+      case WCR.RemoteServerConnectorError(RSCR.UnexpectedError(cause)) => Some(cause)
+      case _                                                           => None
+    }
+    exception match {
+      case Some(ex) =>
+        Log.error(error.toString, ex)
+      case _ => error match {
+        case WCR.ProjectIsAlreadyDisposed(name, trace) =>
+          Log.error(s"compileOnly was called in already-disposed project: $name", trace)
+        case _ =>
+          Log.traceWithDebugInDev(error.toString)
+      }
+    }
+  }
+
+  // upstream: also ensures that the compile server is running
+  private def compileOnly2(document: Document, client: Client)(originalCallback: EvaluationCallback): Unit = try {
+    if (project.isDisposed) {
+      originalCallback(WorksheetCompilerResult.ProjectIsAlreadyDisposed(project.getName))
+      return
+    }
+
+    val callback: RemoteServerConnectorResult => Unit = result => {
+      Log.traceWithDebugInDev(s"compileOnly remote server connection result: $result")
+      originalCallback(WorksheetCompilerResult.Compiled)
+    }
+    try {
+      val originalFilePath = virtualFile.getCanonicalPath
+      val (_, tempFile, outputDir) = WorksheetCache.getInstance(project).updateOrCreateCompilationInfo(
+        filePath = originalFilePath,
+        fileName = worksheetFile.getName,
+        tempDirName = Some("worksheet-compilation")
+      )
+      WorksheetWrapper.writeWrappedToFile(document.getText, tempFile)
+      val connector = new RemoteServerConnector(module, worksheetFile, CompileOnly(tempFile, outputDir), InProcess)
+      val delegatingClient = new WrappedWorksheetCompilerMessagesFixer(Path.of(originalFilePath), worksheetFile, client)
+      connector.compileAndRun(virtualFile, delegatingClient)(callback)
+    } catch {
+      case NonFatal(ex) =>
+        callback(toError(ex))
+    }
+  } catch {
+    case NonFatal(ex) =>
+      originalCallback(WorksheetCompilerResult.UnknownError(ex))
+  }
 
   private def toError(ex: Throwable): RemoteServerConnectorResult.UnhandledError = ex match {
     case ex: ScalaSdkNotConfiguredException => RemoteServerConnectorResult.ExpectedError(ex)
@@ -317,6 +398,121 @@ object WorksheetCompiler {
     // assuming that jdk name is a sensitive information, so can't directly use jdkName
     def jdkVersion(jdkVersionString: String): Option[Int] =
       versions.find(v => jdkVersionString.contains(v.toString))
+  }
+
+  private object WorksheetWrapper {
+    val className: String = "WorksheetWrapper"
+    val header: String = s"object $className {\n"
+    private val footer = "\n}"
+
+    val headerLinesCount: Int = header.linesIterator.size
+
+    def writeWrappedToFile(worksheetCode: String, file: Path): Unit = {
+      val contents = new StringBuilder()
+        .append(header)
+        .append(worksheetCode)
+        .append(footer)
+        .toString()
+      Files.writeString(file, contents)
+    }
+  }
+
+  private val Scala3NotFoundRegex = """Not found:\s+(.*?)""".r
+  private val Scala2NotFoundRegex = """not found:\s+value\s+(.*?)""".r
+
+  /**
+   * restores:
+   * 1. message position in the original worksheet file
+   * 2. original file pointer
+   */
+  private class WrappedWorksheetCompilerMessagesFixer(
+    originalFile: Path,
+    originalPsiFile: ScalaFile,
+    client: Client
+  )
+    extends DelegateClient(client) {
+
+    override def pathTranslator: PathTranslator = client.pathTranslator
+
+    override def message(msg: Client.ClientMsg): Unit =
+      if (needToHandleMessage(msg)){
+        val msgFixed = fixMessage(msg)
+        super.message(msgFixed)
+      }
+
+    // for now show only errors, cause compiler returns many warnings that are not actual for the worksheet
+    // for example, for a simple expression `2 + 1` it will show:
+    // "A pure expression does nothing in statement position; you may be omitting necessary parentheses"
+    // Need to find a way to filter out certain warnings.
+    // Also maybe we would like to filter out some errors. For example for value/function redefinition:
+    // ```val x = 42
+    //    val x = 42```
+    // you will get:
+    // "Double definition: val x: Int in class WorksheetWrapper at line 7 and val x: Int in class WorksheetWrapper at line 8"
+    private def needToHandleMessage(msg: Client.ClientMsg): Boolean = {
+      msg.kind == MessageKind.Error && !muteMessage(msg)
+    }
+
+    private def muteMessage(message: Client.ClientMsg): Boolean = {
+      val firstLineText = getFirstLine(message.text)
+      val unresolvedIdentifier = firstLineText match {
+        case Scala3NotFoundRegex(identifier) => Some(identifier)
+        case Scala2NotFoundRegex(identifier) => Some(identifier)
+        case _ => None
+      }
+      unresolvedIdentifier.exists { symbol =>
+        val contributors = inReadAction(FileDeclarationsContributor.getAllFor(originalPsiFile))
+        contributors.exists(_.muteUnresolvedSymbolInCompilerBasedHighlighting(symbol))
+      }
+    }
+
+    private def getFirstLine(text: String): String = {
+      val newLineIdx = text.indexOf('\n')
+      if (newLineIdx >= 0)
+        text.substring(0, newLineIdx)
+      else
+        text
+    }
+
+    // note that messages text will contain positions from the wrapped code
+    private def fixMessage(msg: Client.ClientMsg): Client.ClientMsg = {
+      def fixPosInfo(posInfo: PosInfo): PosInfo = {
+        val fixedLine = (posInfo.line - WorksheetWrapper.headerLinesCount).max(0)
+        posInfo.copy(line = fixedLine)
+      }
+
+      import org.jetbrains.plugins.scala.compiler.diagnostics.Action
+      def fixDiagnostics(actions: List[Action]): List[Action] =
+        actions.map { action =>
+          val textEdits = action.edit.changes.map { edit =>
+            edit.copy(
+              start = fixPosInfo(edit.start),
+              end = fixPosInfo(edit.end)
+            )
+          }
+          action.copy(edit = action.edit.copy(textEdits))
+        }
+
+      val originalFileName = originalFile.getFileName.toString
+      msg.copy(
+        source = msg.source.map(_ => SerializablePath(originalFile, pathTranslator)),
+        text = msg.text
+          .replace(s"object ${WorksheetWrapper.className}.", "object ") // object WorksheetWrapper.X -> object X
+          .replace(s"object ${WorksheetWrapper.className}", originalFileName) // object WorksheetWrapper -> worksheet name
+          .replace(s"${WorksheetWrapper.className}", originalFileName) // other unknown cases
+          .trim,
+        pointer = msg.pointer.map(fixPosInfo),
+        problemStart = msg.problemStart.map(fixPosInfo),
+        problemEnd = msg.problemEnd.map(fixPosInfo),
+        diagnostics = fixDiagnostics(msg.diagnostics)
+      )
+    }
+
+    override def compilationEnd(sources: Set[Path]): Unit = {
+      Log.assertTrue(sources.size <= 1, "expecting at most 1 source file during worksheet compilation")
+      val sourcesFixed = sources.map(_ => originalFile)
+      super.compilationEnd(sourcesFixed)
+    }
   }
 
   // upstream: OutOfProcessServer only with the compile server enabled and "Run worksheet in the compiler process" off,

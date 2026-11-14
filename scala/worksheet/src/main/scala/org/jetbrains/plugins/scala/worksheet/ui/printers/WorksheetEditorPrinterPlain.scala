@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.worksheet.ui.printers
 import consulo.application.ApplicationManager
 import consulo.logging.Logger
 import consulo.document.Document
-import consulo.codeEditor.Editor
+import consulo.codeEditor.{Editor, RealEditor}
 import consulo.util.lang.StringUtil
 import consulo.ui.annotation.{RequiredUIAccess => RequiresEdt}
 import org.apache.commons.lang3.StringUtils
@@ -45,7 +45,8 @@ final class WorksheetEditorPrinterPlain private[printers](
   @TestOnly
   lazy val viewerEditorStates: ArrayBuffer[ViewerEditorState] = ArrayBuffer.empty
 
-  // upstream: EditorImpl.setScrollToCaret(false) for both editors (no public API in Consulo)
+  originalEditor.asInstanceOf[RealEditor].setScrollToCaret(false)
+  worksheetViewer.asInstanceOf[RealEditor].setScrollToCaret(false)
 
   override def getScalaFile: ScalaFile = file
 

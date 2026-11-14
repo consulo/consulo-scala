@@ -1,15 +1,17 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.Project
-import com.intellij.util.concurrency.AppExecutorUtil
-import org.jetbrains.plugins.scala.internal.ScalaDynamicPluginManager
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.application.util.concurrent.AppExecutorUtil
+import consulo.disposer.Disposable
+import consulo.project.Project
+import jakarta.inject.Singleton
 
 import java.util.concurrent.ExecutorService
 
-@Service(Array(Service.Level.PROJECT))
-private[highlighting] final class BackgroundExecutorService(project: Project) extends Disposable {
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class BackgroundExecutorService extends Disposable {
 
   val executor: ExecutorService = {
     val backendExecutor = AppExecutorUtil.getAppExecutorService
@@ -25,7 +27,7 @@ private[highlighting] final class BackgroundExecutorService(project: Project) ex
 
 private[highlighting] object BackgroundExecutorService {
   def executeOnBackgroundThreadInNotDisposed(project: Project)(action: => Unit): Unit = {
-    if (ScalaDynamicPluginManager.isScalaPluginUnloading)
+    if (project.isDisposed)
       return
 
     instance(project).executeOnBackgroundThread(() => {
@@ -36,5 +38,5 @@ private[highlighting] object BackgroundExecutorService {
   }
 
   def instance(project: Project): BackgroundExecutorService =
-    project.getService[BackgroundExecutorService](classOf[BackgroundExecutorService])
+    project.getInstance(classOf[BackgroundExecutorService])
 }

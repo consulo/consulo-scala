@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import consulo.language.editor.rawHighlight.HighlightInfoType
+import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.util.DocumentUtil
 
 sealed trait HighlightingState {

@@ -1,30 +1,32 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.core
 
-import com.intellij.codeInsight.daemon.impl.{ErrorStripeUpdateManager, UpdateHighlightersUtil}
-import com.intellij.codeInsight.lookup.LookupManager
-import com.intellij.openapi.editor.{Editor, EditorFactory}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.problems.WolfTheProblemSolver
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.language.editor.completion.lookup.LookupManager
+import consulo.language.editor.highlight.UpdateHighlightersUtil
+import consulo.language.editor.wolfAnalyzer.WolfTheProblemSolver
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.caches.ModTracker.anyScalaPsiChange
 import org.jetbrains.plugins.scala.codeInsight.implicits.ImplicitHints
 import org.jetbrains.plugins.scala.compiler.highlighting.services.ExternalHighlightersService.{AppliedHighlightings, HighlightInfoData, HighlightingData, ScalaCompilerPassId}
 import org.jetbrains.plugins.scala.extensions.invokeLater
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiManager
-import org.jetbrains.plugins.scala.settings.{ProblemSolverUtils, ScalaHighlightingMode, ScalaProjectSettings}
+import org.jetbrains.plugins.scala.settings.{ScalaHighlightingMode, ScalaProjectSettings}
 
 import java.util.Collections
-import scala.annotation.nowarn
 import scala.jdk.CollectionConverters.*
 
 /**
  * Applies highlighting data and diagnostics to the workspace interface.
  *
  * Responsible for interfacing with the editor subsystem to visually render highlights,
- * update error stripe panels, trigger semantic structural updates, and synchronize
- * errors with project-wide problem tracking services.
+ * trigger semantic structural updates, and synchronize errors with project-wide problem tracking services.
+ *
+ * upstream: also repaints the error stripe panel (ErrorStripeUpdateManager is internal in Consulo, the markup model
+ * repaints the stripe marks itself). The Wolf has no problem
+ * sources in Consulo: the problems of the files reported here are replaced.
  */
-private[highlighting] class ExternalHighlightingUpdater(project: Project, problemSource: AnyRef) {
+private[highlighting] class ExternalHighlightingUpdater(project: Project) {
 
   /**
    * Applies each file's highlightings to its editor, skipping a file that has been edited since they were built: their
@@ -43,16 +45,14 @@ private[highlighting] class ExternalHighlightingUpdater(project: Project, proble
     if (!project.isDisposed) {
       val (current, stale) = infos.partition(data => data.document.getModificationStamp == data.textStamp)
       val applied = current.collect {
-        case HighlightingData(editor, document, psiFile, virtualFile, highlightInfos, _) if shouldApplyHighlightings(editor) =>
-          val collection = highlightInfos.asJavaCollection
+        case HighlightingData(editor, document, _, virtualFile, highlightInfos, _) if shouldApplyHighlightings(editor) =>
           UpdateHighlightersUtil.setHighlightersToEditor(
             project,
             document, 0, document.getTextLength,
-            collection,
+            highlightInfos.asJavaCollection,
             editor.getColorsScheme,
             ScalaCompilerPassId
-          ): @nowarn("cat=deprecation")
-          ErrorStripeUpdateManager.getInstance(project).launchRepaintErrorStripePanel(editor, psiFile)
+          )
           virtualFile
       }.toSet
 
@@ -74,11 +74,10 @@ private[highlighting] class ExternalHighlightingUpdater(project: Project, proble
     }
   }
 
-  def clearWolfProblems(file: VirtualFile, source: AnyRef): Unit = {
-    WolfTheProblemSolver.getInstance(project).clearProblemsFromExternalSource(
-      file, source
-    )
-  }
+  // upstream: clearProblemsFromExternalSource(file, source)
+  def clearWolfProblems(file: VirtualFile): Unit =
+    if (file ne null) WolfTheProblemSolver.getInstance(project).clearProblems(file)
+
   def eraseEditorHighlightings(editor: Editor): Unit = {
     val document = editor.getDocument
     UpdateHighlightersUtil.setHighlightersToEditor(
@@ -89,8 +88,9 @@ private[highlighting] class ExternalHighlightingUpdater(project: Project, proble
       Collections.emptyList(),
       editor.getColorsScheme,
       ScalaCompilerPassId
-    ): @nowarn("cat=deprecation")
+    )
   }
+
   def eraseAllHighlightings(): Unit = {
     for {
       editor <- EditorFactory.getInstance.getAllEditors
@@ -103,16 +103,27 @@ private[highlighting] class ExternalHighlightingUpdater(project: Project, proble
     }
     clearAllWolfProblems()
   }
-  
-  private def clearAllWolfProblems(): Unit =
-    ProblemSolverUtils.clearAllProblemsFromExternalSource(project, problemSource)
 
+  /** The files this updater reported to the Wolf, Consulo's Wolf has no problem sources to tell them apart */
+  @volatile private var reportedToWolf: Set[VirtualFile] = Set.empty
 
+  private def clearAllWolfProblems(): Unit = {
+    val wolf = WolfTheProblemSolver.getInstance(project)
+    reportedToWolf.foreach(file => if (file.isValid) wolf.clearProblems(file))
+    reportedToWolf = Set.empty
+  }
+
+  // upstream: clearProblemsFromExternalSource of all files, then reportProblemsFromExternalSource(file, source)
   private[highlighting] def informWolf(errorFiles: Set[VirtualFile]): Unit = {
     if (!project.isDisposed && ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)) {
-      ProblemSolverUtils.clearAllProblemsFromExternalSource(project, problemSource)
       val wolf = WolfTheProblemSolver.getInstance(project)
-      errorFiles.foreach(wolf.reportProblemsFromExternalSource(_, problemSource))
+      (reportedToWolf -- errorFiles).foreach(file => if (file.isValid) wolf.clearProblems(file))
+      errorFiles.foreach { file =>
+        Option(wolf.convertToProblem(file, 0, 0, Array("Compilation error"))).foreach { problem =>
+          wolf.reportProblems(file, Collections.singletonList(problem))
+        }
+      }
+      reportedToWolf = errorFiles
     }
   }
 }

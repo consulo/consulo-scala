@@ -1,58 +1,44 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.requests
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
-import org.jetbrains.plugins.scala.compiler.highlighting.events.TriggerPhaseEvents.RequestId
-import org.jetbrains.plugins.scala.compiler.highlighting.triggers.TriggerUtil.{fileCompilationScope, moduleFor}
-import org.jetbrains.plugins.scala.extensions.inReadAction
-import org.jetbrains.plugins.scala.util.DocumentVersion
+import consulo.document.Document
+import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.plugins.scala.compiler.highlighting.util.DocumentUtil
+import org.jetbrains.plugins.scala.shared.util.{CanonicalPath, DocumentVersion}
+
+import scala.collection.immutable.HashMap
+
+type SerializableMap[K, V] = Map[K, V] & Serializable
 
 /**
  * Contract for a compilation request handled by the scheduler.
+ *
+ * upstream: also incremental (JPS/BSP) compilations of the unbuilt files, here every request compiles one document
+ * against the module output, see [[org.jetbrains.plugins.scala.compiler.highlighting.services.CompilerHighlightingService]]
  */
 trait CompilationRequest:
-  /** The files this request compiles, each mapped to its open document. */
+  /** The file this request compiles, mapped to its open document. */
   def originFiles: Map[VirtualFile, Document]
-  /** Identifies the request across its lifecycle (queueing, merging, tracing). */
-  def id: RequestId
 
   /** Snapshot of each file's document version, used to detect edits made after enqueueing. */
-  def documentVersions: Map[VirtualFile, DocumentVersion]
-  /** Determines whether this request is ready to execute, needs delay, or has expired. */
-  def isReadyForExecution: RequestState
+  final lazy val documentVersions: Map[VirtualFile, DocumentVersion] =
+    originFiles.map { case (vf, doc) => vf -> DocumentUtil.documentVersion(vf, doc) }
+
+  /** Whether a file was edited after the request was created, the compilation would be for an outdated text */
+  def isExpired: Boolean =
+    originFiles.keys.exists(!_.isValid) ||
+      documentVersions.exists { case (virtualFile, version) =>
+        version.version != DocumentUtil.version(originFiles(virtualFile))
+      }
+
   /**
-   * Executes/triggers the compilation on the calling thread.
+   * Executes the compilation on the calling thread.
    */
   private[services] def execute(): Unit
-  /** The kind of compilation this request performs (incremental, document, worksheet, …). */
-  def kind: CompilationKind
 
-object CompilationRequest:
-  
   /**
-   * A build over `scope`.
-   *
-   * Every file is resolved on its own rather than reusing anything from the file the decision was asked
-   * about, since the scope holds other files by construction. A file with no module, document or PSI file
-   * is dropped instead of failing the request, and a scope that resolves to nothing produces no request.
+   * The text this compilation compiles: the document as it is in memory, which is what the document compiler reads.
    */
-  def incremental(project: Project, scope: Set[VirtualFile],
-                  requestId: RequestId): Option[CompilationRequest] = 
-    val scopes = inReadAction {
-      scope.iterator.flatMap { file =>
-        val module = moduleFor(project, file)
-        if (module == null) None
-        else {
-          val document = FileDocumentManager.getInstance().getDocument(file)
-          val psiFile = PsiManager.getInstance(project).findFile(file)
-          if (document != null && psiFile != null)
-            Some(file -> fileCompilationScope(project, file, module, document, psiFile))
-          else None
-        }
-      }.toMap
-    }
-    if (scopes.isEmpty) None
-    else Some(IncrementalRequest(scopes, requestId, project))
+  protected final def reportedDocumentVersions: SerializableMap[CanonicalPath, Long] =
+    documentVersions.map { case (_, DocumentVersion(path, version)) =>
+      path -> version
+    }.to(HashMap.mapFactory[CanonicalPath, Long])

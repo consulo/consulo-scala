@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.core
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Disposer
+import consulo.disposer.Disposable
+import consulo.logging.Logger
+import consulo.disposer.Disposer
 
 import java.util.concurrent.{ConcurrentHashMap, ScheduledExecutorService, ScheduledFuture, TimeUnit}
 import scala.compiletime.uninitialized

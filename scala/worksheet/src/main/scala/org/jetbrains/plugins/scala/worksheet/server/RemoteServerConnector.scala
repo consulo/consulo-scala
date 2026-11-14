@@ -70,6 +70,8 @@ final class RemoteServerConnector(
               continueOnChunkError = WorksheetUtils.continueWorksheetEvaluationOnExpressionFailure,
               outputDirs
             ))
+          case Args.CompileOnly(_, _) =>
+            None // just compile (data is taken from CompilationData)
         }
     }
 
@@ -122,7 +124,9 @@ final class RemoteServerConnector(
     val stoppableClient = new DelegateClient(client) {
       override def isCanceled: Boolean = stopped || super.isCanceled
     }
-    WorksheetFileHook.updateStoppableProcess(originalFile, Some(() => {
+    // a compilation of the compiler based highlighting is not stopped by the worksheet stop action
+    val stoppable = !args.isInstanceOf[Args.CompileOnly]
+    if (stoppable) WorksheetFileHook.updateStoppableProcess(originalFile, Some(() => {
       stopped = true
       thread.interrupt()
     }))
@@ -136,8 +140,10 @@ final class RemoteServerConnector(
       case NonFatal(ex) =>
         RemoteServerConnectorResult.ProcessTerminatedError(ex)
     } finally {
-      WorksheetFileHook.updateStoppableProcess(originalFile, None)
-      Thread.interrupted()
+      if (stoppable) {
+        WorksheetFileHook.updateStoppableProcess(originalFile, None)
+        Thread.interrupted()
+      }
     }
     callback(result)
   }
@@ -216,16 +222,20 @@ object RemoteServerConnector {
   sealed trait Args {
     final def compiledFile: Option[Path] = this match {
       case Args.PlainModeArgs(sourceFile, _, _) => Some(sourceFile)
+      case Args.CompileOnly(sourceFile, _)      => Some(sourceFile)
       case Args.ReplModeArgs(_, _, _)           => None
     }
     final def compilationOutputDir: Option[Path] = this match {
       case Args.PlainModeArgs(_, outputDir, _) => Some(outputDir)
+      case Args.CompileOnly(_, outputDir)      => Some(outputDir)
       case _                                   => None
     }
   }
   object Args {
     final case class PlainModeArgs(sourceFile: Path, outputDir: Path, className: String) extends Args
     final case class ReplModeArgs(path: String, dropCachedReplInstance: Boolean, codeChunk: String) extends Args
+    /** compiler based highlighting of the worksheet, see [[org.jetbrains.plugins.scala.worksheet.processor.WorksheetHighlightingCompilerImpl]] */
+    final case class CompileOnly(sourceFile: Path, outputDir: Path) extends Args
   }
 
   sealed trait RemoteServerConnectorResult

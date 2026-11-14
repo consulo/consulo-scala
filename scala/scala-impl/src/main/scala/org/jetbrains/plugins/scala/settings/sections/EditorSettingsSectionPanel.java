@@ -25,7 +25,6 @@ import consulo.ui.layout.VerticalLayout;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.plugins.scala.ScalaBundle;
 import org.jetbrains.plugins.scala.incremental.Highlighting;
-import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 import org.jetbrains.plugins.scala.util.ui.ContextHelpLabel;
 
@@ -118,8 +117,7 @@ public class EditorSettingsSectionPanel extends SettingsSectionPanel {
 
         LabeledLayout errorHighlightingSection = LabeledLayout.create(message("scala.project.settings.form.error.highlighting"), errorHighlightingContent);
         // The error highlighting section should not be visible at all in non-Scala projects.
-        // upstream: always shown - the type checker choice has no effect while compiler highlighting is not ported
-        errorHighlightingSection.setVisible((showScala2Setting || showScala3Setting) && ScalaHighlightingMode.isCompilerHighlightingAvailable());
+        errorHighlightingSection.setVisible(showScala2Setting || showScala3Setting);
 
         showTypeMismatchHintsCheckBox = CheckBox.create(message("scala.project.settings.form.show.type.mismatch.hints"));
         showNotFoundImplicitArgumentsCheckBox = CheckBox.create(message("scala.project.settings.form.show.hints.if.no.implicit.arguments.found"));

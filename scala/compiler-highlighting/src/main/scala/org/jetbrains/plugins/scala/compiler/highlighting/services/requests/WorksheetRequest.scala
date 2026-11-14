@@ -1,105 +1,41 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.requests
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.document.Document
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.compiler.highlighting.compilers.WorksheetHighlightingCompiler
-import org.jetbrains.plugins.scala.compiler.highlighting.core.FileCompilationScope
-import org.jetbrains.plugins.scala.compiler.highlighting.events.TriggerPhaseEvents.{CompilationRequestPhaseEvent, RequestId}
-import org.jetbrains.plugins.scala.compiler.highlighting.services.CompilerHighlightingService
 import org.jetbrains.plugins.scala.compiler.highlighting.services.util.CompilationUtils
-import org.jetbrains.plugins.scala.compiler.tracing.Tracing
-import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
-import org.jetbrains.plugins.scala.util.{CanonicalPath, DocumentVersion}
-
-import scala.collection.immutable
-import scala.util.control.NonFatal
 
 /**
- * @param isFirstTimeHighlighting whether the worksheet's module may not have been built yet, in which case an
- *                                incremental compilation of that module runs first (see [[execute]]). The worksheet
- *                                is compiled against the module's output, so without it the whole worksheet shows
- *                                up as red code. Unlike an ordinary source file, a worksheet cannot be compiled by
- *                                JPS at all, so the incremental is a prerequisite here rather than a substitute for
- *                                the single-file compilation.
- *
- *                                It is true whenever the worksheet's editor is opened or its tab re-selected,
- *                                because the document compiler availability it is derived from is withdrawn when
- *                                the tab is deselected.
+ * upstream: an incremental compilation of the worksheet's module runs first when the worksheet is highlighted for the
+ * first time, here the worksheet is compiled against the module output as it is (use Build to update it)
  */
 class WorksheetRequest(
   val file: ScalaFile,
   val virtualFile: VirtualFile,
   val document: Document,
-  val isFirstTimeHighlighting: Boolean,
-  val requestId: RequestId,
   protected val project: Project
-) extends BaseCompilationRequest(
-  project,
-  Map(virtualFile -> document),
-  requestId
-) {
+) extends CompilationRequest {
 
-  override def kind: CompilationKind = CompilationKind.Worksheet
-  
+  private val Log = Logger.getInstance(classOf[WorksheetRequest])
+
+  override def originFiles: Map[VirtualFile, Document] = Map(virtualFile -> document)
+
   override private[services] def execute(): Unit = {
-    if (Log.isDebugEnabled) {
-      Log.debug(s"[${project.getName}] worksheetCompilation:  (isFirstTimeHighlighting: $isFirstTimeHighlighting)")
-    }
     //Note, we don't need to invoke `findRepresentativeModuleForSharedSourceModuleOrSelf`
     //because it's already called for all worksheets in WorksheetSyntheticModuleService
     val module = file.module match {
       case Some(m) => m
       case None =>
-        Log.warn(s"[${project.getName}] can't find module for worksheet ${file.name}")
+        Log.warn(s"[${project.getName}] can't find module for worksheet ${file.getName}")
         return
     }
 
-    if (isFirstTimeHighlighting) {
-      //If we have just opened worksheet we need to invoke incremental compilation to ensure that worksheet module is compiled to avoid red code
-      //Otherwise if you open non-compiled project and open worksheet it will contain red code
-      val scope = FileCompilationScope(virtualFile, module, FileCompilationScope.sourceScopeOf(project, virtualFile), document, file)
-      val incrementalRequest = IncrementalRequest(
-        Map(virtualFile -> scope),
-        id,
-        project,
-        runDocumentCompiler = false,
-        closeRequest = true
-      )
-      CompilerHighlightingService(project).compile(incrementalRequest)
-    }
-
-    val versions = documentVersionsFor(originFiles)
-
-    CompilationUtils.prepareCompilation(project, id, true) {
-      CompilationUtils.performCompilation(project, id, versions, delayIndicator = true, refreshVfs = false) { client =>
-        val tracer = Tracing(project)
-        tracer.begin(
-          client.compilationId,
-          CompilationRequestPhaseEvent(CompilationKind.Worksheet, virtualFile.getPath, "", id, client.compilationId)
-        )
-        var msg = ""
-        try {
-          WorksheetHighlightingCompiler.compile(file, document, module, client)
-        } catch {
-          case NonFatal(t) =>
-            Log.warn(s"Worksheet compilation failed ${t.getMessage}")
-            msg = s"Compilation Failed: ${t.getMessage}"
-            throw t
-        }finally {
-          // If the compilation never started (e.g. it was cancelled, or the server failed), no
-          // CompilationFinished will arrive to end the span; anything still open here is stranded, so end it.
-          // On the normal path it was already handed off and finished, so this is a no-op.
-          tracer.mapAndEnd(client.compilationId)(e => Some(e.closed(msg)))
-        }
-      }
+    CompilationUtils.performCompilation(project, Set(virtualFile), reportedDocumentVersions) { client =>
+      WorksheetHighlightingCompiler.compile(file, document, module, client)
     }
   }
-
-  private def documentVersionsFor(files: Map[VirtualFile, Document]): SerializableMap[CanonicalPath, Long] =
-    documentVersions.map { case (_, DocumentVersion(path, version)) =>
-      path -> version
-    }.to(immutable.HashMap.mapFactory[CanonicalPath, Long])
 }

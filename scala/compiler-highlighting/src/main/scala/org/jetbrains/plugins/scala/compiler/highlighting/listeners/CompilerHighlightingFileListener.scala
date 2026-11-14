@@ -1,12 +1,11 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.listeners
 
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.{Project, ProjectManager}
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.AsyncFileListener
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import com.intellij.problems.WolfTheProblemSolver
-import com.intellij.util.concurrency.annotations.RequiresReadLock
+import consulo.annotation.component.ExtensionImpl
+import consulo.application.progress.ProgressManager
+import consulo.module.content.ProjectRootManager
+import consulo.project.{Project, ProjectManager}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.virtualFileSystem.event.*
 import org.jetbrains.plugins.scala.compiler.highlighting.services.BackgroundExecutorService.executeOnBackgroundThreadInNotDisposed
 import org.jetbrains.plugins.scala.compiler.highlighting.services.{CompilationLogicService, ExternalHighlightersService}
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
@@ -17,73 +16,55 @@ import scala.jdk.CollectionConverters.*
  * Reports to [[CompilationLogicService]] the source changes that do not go through an editor — a checkout, an
  * external tool, a deletion in the file manager — and clears the problems reported for deleted files.
  *
- * Changes are classified while the files are still valid, and applied once the VFS has caught up, because a
- * deleted file cannot be resolved afterwards and a created one cannot be resolved before.
+ * upstream: also classifies the changes (SourceChange, SourceRole) to keep the model of the JPS build, which is not
+ * ported: any such change in the source content invalidates the recorded diagnostics.
  */
-private final class CompilerHighlightingFileListener extends AsyncFileListener {
+@ExtensionImpl
+final class CompilerHighlightingFileListener extends AsyncFileListener {
 
-  @RequiresReadLock
   override def prepareChange(events: java.util.List[? <: VFileEvent]): AsyncFileListener.ChangeApplier = {
     val changesPerOpenProject = ProjectManager.getInstance().getOpenProjects.toSeq.flatMap { project =>
-      // The prepareChange method needs to quickly react to cancellation requests.
-      // Check cancellation before classifying the events for the next open project.
       ProgressManager.checkCanceled()
       val fileIndex = ProjectRootManager.getInstance(project).getFileIndex
-      val changes = events.asScala.iterator.flatMap { event =>
-        // Check cancellation before looking into the file indices of the open project.
+      val (changed, deleted) = events.asScala.iterator.foldLeft((false, Seq.empty[VirtualFile])) { case ((changed, deleted), event) =>
         ProgressManager.checkCanceled()
-        SourceChange.of(fileIndex, event)
-      }.toSeq
-      Option.when(changes.nonEmpty)(project -> changes)
+        event match {
+          case e: VFileContentChangeEvent if e.isFromSave => (changed, deleted)
+          case e: VFileCreateEvent => (changed || isInSourceContent(fileIndex, e.getParent), deleted)
+          case e: VFileDeleteEvent if isInSourceContent(fileIndex, e.getFile) => (true, deleted :+ e.getFile)
+          case e: VFileContentChangeEvent => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
+          case e: VFileMoveEvent => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
+          case e: VFilePropertyChangeEvent if e.isRename => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
+          case _ => (changed, deleted)
+        }
+      }
+      Option.when(changed)((project, deleted))
     }
 
     if (changesPerOpenProject.isEmpty) return null
 
     new AsyncFileListener.ChangeApplier {
-      override def afterVfsChange(): Unit = changesPerOpenProject.foreach { case (project, changes) =>
-        record(project, changes)
-        clearProblemsOfDeletedFiles(project, changes)
+      override def afterVfsChange(): Unit = changesPerOpenProject.foreach { case (project, deleted) =>
+        if (!project.isDisposed) {
+          CompilationLogicService(project).invalidateAll()
+          clearProblemsOfDeletedFiles(project, deleted)
+        }
       }
     }
   }
 
-  private def record(project: Project, changes: Seq[SourceChange]): Unit = {
-    val logic = CompilationLogicService(project)
+  private def isInSourceContent(fileIndex: consulo.module.content.ProjectFileIndex, file: VirtualFile): Boolean =
+    (file ne null) && fileIndex.isInSourceContent(file)
 
-    // Deletions/Relocations drop their Module mapping.
-    // Outdated (Kotlin/Twirl) files change the API, but we can't drain them cleanly.
-    // For all of these, strictly invalidate to guarantee correct JPS rebuilds.
-    // If memory becomes a problem we could also invalidate if the number
-    // of changes is greater than a threshold
-    val requiresInvalidation = changes.exists {
-      case _: SourceChange.Deleted | _: SourceChange.Relocated |
-           SourceChange.Restructured | SourceChange.Outdated => true
-      case _ => false
-    }
-
-    if (requiresInvalidation) {
-      logic.invalidateAll()
-      return
-    }
-    
-    logic.filesModified(changes.collect {
-      case SourceChange.Created(event) if event.getFile ne null => event.getFile
-      case SourceChange.Modified(file) => file
-    }.toSet)
-    
-  }
-
-  private def clearProblemsOfDeletedFiles(project: Project, changes: Seq[SourceChange]): Unit = {
-    val deleted = changes.collect { case SourceChange.Deleted(file) => file }
+  private def clearProblemsOfDeletedFiles(project: Project, deleted: Seq[VirtualFile]): Unit = {
     if (deleted.isEmpty) return
 
     executeOnBackgroundThreadInNotDisposed(project) {
       if (ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)) {
         // Remove errors generated by Compiler Based Highlighting that have previously been reported to the Wolf
         // for all removed files. This must be done on a background thread.
-        val wolf = WolfTheProblemSolver.getInstance(project)
-        val source = ExternalHighlightersService(project)
-        deleted.foreach(wolf.clearProblemsFromExternalSource(_, source))
+        val highlighters = ExternalHighlightersService(project)
+        deleted.foreach(highlighters.clearWolfProblems)
       }
     }
   }

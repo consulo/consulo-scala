@@ -1,18 +1,18 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.core
 
-import com.intellij.codeInsight.daemon.impl.{HighlightInfo, HighlightInfoType}
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.modcommand.ModCommandAction
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.{PsiElement, PsiFile}
-import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.intellij.xml.util.XmlStringUtil
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
+import consulo.language.editor.intention.IntentionAction
+import consulo.document.Document
+import consulo.application.progress.ProgressManager
+import consulo.project.Project
+import consulo.document.util.TextRange
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.psi.{PsiElement, PsiFile}
+import consulo.annotation.access.{RequiredReadAction => RequiresReadLock}
+import consulo.localize.LocalizeValue
+import consulo.util.lang.xml.XmlStringUtil
 import org.jetbrains.annotations.{Nls, Nullable}
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.annotator.element.ScTemplateDefinitionAnnotator
 import org.jetbrains.plugins.scala.annotator.quickfix.AddParametersQuickfix
 import org.jetbrains.plugins.scala.codeInspection.ScalaInspectionBundle
@@ -20,10 +20,7 @@ import org.jetbrains.plugins.scala.codeInspection.declarationRedundancy.ScalaOpt
 import org.jetbrains.plugins.scala.compiler.diagnostics.Action
 import org.jetbrains.plugins.scala.compiler.highlighting.core.ExternalHighlighting.RangeInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.core.{CompilerDiagnosticIntentionAction, CompilerMessages, ExternalHighlighting}
-import org.jetbrains.plugins.scala.compiler.highlighting.events.HighlightingPhaseEvents.HighlightingEvent.HighlightingPassId
-import org.jetbrains.plugins.scala.compiler.highlighting.events.HighlightingPhaseEvents.{FindUnresolvedReferenceEvent, RegisterQuickFixes}
 import org.jetbrains.plugins.scala.compiler.highlighting.services.ExternalHighlightersService.{ScalaCompilerPassId, TextRangeWithEndOfLine}
-import org.jetbrains.plugins.scala.compiler.tracing.Tracing
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList
@@ -47,23 +44,19 @@ private[highlighting] class HighlightInfoFactory(
   fixProvider: ExternalHighlightingFixProvider
 ) {
 
-  private val tracer = Tracing(project)
-
   @RequiresReadLock
   def calculateHighlightInfos(
     externalHighlights: Set[ExternalHighlighting],
     document: Document,
-    psiFile: PsiFile,
-    passId: HighlightingPassId,
+    psiFile: PsiFile
   ): Set[HighlightInfo] =
     externalHighlights.flatMap { highlighting =>
       ProgressManager.checkCanceled()
-      toHighlightInfo(highlighting, document, psiFile, passId)
+      toHighlightInfo(highlighting, document, psiFile)
     }
 
   @RequiresReadLock
-  private def toHighlightInfo(highlighting: ExternalHighlighting, document: Document, psiFile: PsiFile,
-                              passId: HighlightingPassId): Option[HighlightInfo] = {
+  private def toHighlightInfo(highlighting: ExternalHighlighting, document: Document, psiFile: PsiFile): Option[HighlightInfo] = {
     //NOTE: in case there is no location in the file, do not ignore/lose messages
     //instead report them in the beginning of the file
     val range = highlighting.rangeInfo.getOrElse {
@@ -74,89 +67,75 @@ private[highlighting] class HighlightInfoFactory(
 
     for {
       textRangeWithEndOfLine <- rangeCalculator.calculateRangeToHighlight(range, document, psiFile)
-    } yield {
-      val description = CompilerMessages.description(highlighting.message)
-      val TextRangeWithEndOfLine(highlightRange, endOfLine) = textRangeWithEndOfLine
+      info <- Option {
+        val description = CompilerMessages.description(highlighting.message)
+        val TextRangeWithEndOfLine(highlightRange, endOfLine) = textRangeWithEndOfLine
 
-      def standardBuilder =
-        highlightInfoBuilder(document, highlighting.highlightType, highlightRange, endOfLine, description, highlighting.diagnostics)
+        def standardBuilder =
+          highlightInfoBuilder(document, highlighting.highlightType, highlightRange, endOfLine, description, highlighting.diagnostics)
 
-      val highlightInfo =
-        if (CompilerMessages.isUnusedImport(description)) {
-          val leaf = psiFile.findElementAt(highlightRange.getStartOffset)
-          val unusedImportRange = unusedImportElementRange(leaf)
-          if (unusedImportRange != null) {
-            // modify highlighting info to mimic Scala 2 unused import highlighting in Scala 3
-            val infoType =
-              if (highlighting.highlightType == HighlightInfoType.ERROR) HighlightInfoType.ERROR
-              else HighlightInfoType.UNUSED_SYMBOL
+        val highlightInfo =
+          if (CompilerMessages.isUnusedImport(description)) {
+            val leaf = psiFile.findElementAt(highlightRange.getStartOffset)
+            val unusedImportRange = unusedImportElementRange(leaf)
+            if (unusedImportRange != null) {
+              // modify highlighting info to mimic Scala 2 unused import highlighting in Scala 3
+              val infoType =
+                if (highlighting.highlightType == HighlightInfoType.ERROR) HighlightInfoType.ERROR
+                else HighlightInfoType.RAW_UNUSED_SYMBOL
 
-            highlightInfoBuilder(document, infoType, unusedImportRange, endOfLine, ScalaInspectionBundle.message("unused.import.statement"), Nil)
-              .registerFix(new ScalaOptimizeImportsFix, null, null, unusedImportRange, null)
+              highlightInfoBuilder(document, infoType, unusedImportRange, endOfLine, ScalaInspectionBundle.message("unused.import.statement"), Nil)
+                .registerFix(new ScalaOptimizeImportsFix, null, LocalizeValue.empty(), unusedImportRange, null)
+            } else standardBuilder
+          } else if (highlighting.diagnostics.isEmpty && CompilerMessages.isNeedsToBeAbstract(description)) {
+            def builderWithNeedsToBeAbstractFixes(td: ScTemplateDefinition) = {
+              val fixes = ScTemplateDefinitionAnnotator.needsToBeAbstractFixes(td)
+              fixes.foldLeft(standardBuilder) { (builder, fix) =>
+                builder.registerFix(fix, null, LocalizeValue.empty(), highlightRange, null)
+              }
+            }
+
+            psiFile.findElementAt(highlightRange.getStartOffset) match {
+              // [class|object] <startOffset>Foo ...
+              case Parent(td: ScTemplateDefinition) => builderWithNeedsToBeAbstractFixes(td)
+              case Parent(ref: ScStableCodeReference) =>
+                ref.parentsInFile.findByType[ScTemplateDefinition] match {
+                  // [new|given] <startOffset>Foo ...
+                  case Some(td) => builderWithNeedsToBeAbstractFixes(td)
+                  case _ => standardBuilder
+                }
+              case _ => standardBuilder
+            }
           } else standardBuilder
-        } else if (highlighting.diagnostics.isEmpty && CompilerMessages.isNeedsToBeAbstract(description)) {
-          def builderWithNeedsToBeAbstractFixes(td: ScTemplateDefinition) = {
-            val fixes = ScTemplateDefinitionAnnotator.needsToBeAbstractFixes(td)
-            fixes.foldLeft(standardBuilder) {
-              case (builder, fix: ModCommandAction) =>
-                //noinspection ApiStatus
-                builder.registerFix(fix, null, null, highlightRange, null)
-              case (builder, fix: IntentionAction) =>
-                builder.registerFix(fix, null, null, highlightRange, null)
-              case (builder, _) => builder
+
+        {
+          // There are multiple errors that can occur which indicate a missing parameter,
+          // so we just always add the AddParametersQuickfix (the quickfix itself is pretty conservative when it will appear)
+          @tailrec
+          def findArgumentList(e: PsiElement): Option[ScArgumentExprList] = {
+            PsiTreeUtil.getParentOfType(e, classOf[ScArgumentExprList]) match {
+              case null => None
+              case args if args.getTextRange.contains(highlightRange) => Some(args)
+              case args => findArgumentList(args)
             }
           }
 
-          psiFile.findElementAt(highlightRange.getStartOffset) match {
-            // [class|object] <startOffset>Foo ...
-            case Parent(td: ScTemplateDefinition) => builderWithNeedsToBeAbstractFixes(td)
-            case Parent(ref: ScStableCodeReference) =>
-              ref.parentsInFile.findByType[ScTemplateDefinition] match {
-                // [new|given] <startOffset>Foo ...
-                case Some(td) => builderWithNeedsToBeAbstractFixes(td)
-                case _ => standardBuilder
-              }
-            case _ => standardBuilder
-          }
-        } else standardBuilder
+          val argList = findArgumentList(psiFile.findElementAt(highlightRange.getStartOffset))
 
-      {
-        // There are multiple errors that can occur which indicate a missing parameter,
-        // so we just always add the AddParametersQuickfix (the quickfix itself is pretty conservative when it will appear)
-        @tailrec
-        def findArgumentList(e: PsiElement): Option[ScArgumentExprList] = {
-          PsiTreeUtil.getParentOfType(e, classOf[ScArgumentExprList]) match {
-            case null => None
-            case args if args.getTextRange.contains(highlightRange) => Some(args)
-            case args => findArgumentList(args)
+          for (argList <- argList) {
+            val quickfix = new AddParametersQuickfix(argList.createSmartPointer)
+            highlightInfo.registerFix(quickfix, null, LocalizeValue.empty(), argList.getTextRange, null)
           }
         }
 
-        val argList = findArgumentList(psiFile.findElementAt(highlightRange.getStartOffset))
+        fixProvider.registerImportFixesFromMessage(highlighting.message, highlightRange, psiFile, highlightInfo)
 
-        val span = tracer.begin(RegisterQuickFixes(passId))
-        var fixes = Set.empty[String]
-        for (argList <- argList) {
-          val quickfix = new AddParametersQuickfix(argList.createSmartPointer)
-          highlightInfo.registerFix(quickfix, null, null, argList.getTextRange, null)
-          fixes = fixes + quickfix.getText
-        }
-        tracer.mapAndEnd(span) {
-          case RegisterQuickFixes(_,_) => Some(RegisterQuickFixes(passId, fixes))
-        }
+        fixProvider.findUnresolvedReferenceFixes(psiFile, highlightRange, highlighting.highlightType)
+          .foreach(highlightInfo.registerFix(_, null, LocalizeValue.empty(), highlightRange, null))
+
+        highlightInfo.create()
       }
-
-      fixProvider.registerImportFixesFromMessage(highlighting.message, highlightRange, psiFile, highlightInfo)
-
-      val span = tracer.begin(FindUnresolvedReferenceEvent(passId, psiFile.toString))
-      val fixes = fixProvider.findUnresolvedReferenceFixes(psiFile, highlightRange, highlighting.highlightType)
-      
-      fixes.foreach(highlightInfo.registerFix(_, null, null, highlightRange, null))
-      tracer.mapAndEnd(span){
-        case e: FindUnresolvedReferenceEvent => Some(e.copy(text = fixes.map(_.getText).mkString(",")) )
-      }
-      highlightInfo.create()
-    }
+    } yield info
   }
 
   private def highlightInfoBuilder(
@@ -169,8 +148,8 @@ private[highlighting] class HighlightInfoFactory(
   ): HighlightInfo.Builder = {
     val builder = HighlightInfo.newHighlightInfo(highlightType)
       .range(highlightRange)
-      .description(description)
-      .escapedToolTip(escapeHtmlWithNewLines(description))
+      .description(LocalizeValue.of(description))
+      .escapedToolTip(LocalizeValue.of(escapeHtmlWithNewLines(description)))
       .group(ScalaCompilerPassId)
 
     if (endOfLine) {
@@ -179,7 +158,7 @@ private[highlighting] class HighlightInfoFactory(
 
     diagnostics
       .map(CompilerDiagnosticIntentionAction.create(document, _))
-      .foreach(builder.registerFix(_, null, null, TextRange.create(highlightRange.getStartOffset, highlightRange.getEndOffset), null))
+      .foreach(builder.registerFix(_, null, LocalizeValue.empty(), TextRange.create(highlightRange.getStartOffset, highlightRange.getEndOffset), null))
 
     builder
   }
@@ -189,7 +168,7 @@ private[highlighting] class HighlightInfoFactory(
     unescapedTooltip
       .pipe(XmlStringUtil.escapeString)
       .pipe(_.replace("\n", "<br>"))
-      .pipe(XmlStringUtil.wrapInHtmlTag(_, "pre"))
+      .pipe(text => s"<pre>$text</pre>") // upstream: XmlStringUtil.wrapInHtmlTag(_, "pre")
       .pipe(XmlStringUtil.wrapInHtml)
   }
 

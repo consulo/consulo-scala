@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services.requests
 
-import com.intellij.codeInsight.lookup.LookupManager
-import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.openapi.editor.{Document, EditorFactory}
-import com.intellij.openapi.project.Project
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.document.Document
+import consulo.language.editor.completion.lookup.LookupManager
+import consulo.language.editor.template.TemplateManager
+import consulo.project.Project
 
 enum RequestState:
   case Ready, NotReady, Expired
-  
+
 object RequestState:
   /**
    * `Expired` when nothing can show the result, `NotReady` while the user is mid-gesture, `Ready`
@@ -23,8 +24,6 @@ object RequestState:
     else if editors.exists(usable(project, _)) then RequestState.Ready
     else RequestState.NotReady
 
-  private def usable(project: Project, editor: com.intellij.openapi.editor.Editor): Boolean =
+  private def usable(project: Project, editor: Editor): Boolean =
     LookupManager.getActiveLookup(editor) == null &&
       TemplateManager.getInstance(project).getActiveTemplate(editor) == null
-  
-

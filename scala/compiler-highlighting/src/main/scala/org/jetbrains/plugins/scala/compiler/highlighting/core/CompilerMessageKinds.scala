@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
 import org.apache.commons.lang3.Strings
-import org.jetbrains.jps.incremental.scala.MessageKind
+import org.jetbrains.jps.incremental.scala.shared.MessageKind
 
 private[highlighting] object CompilerMessageKinds {
   def highlightInfoType(kind: MessageKind, text: String, fatalWarningsFlag: Boolean, unusedImportsFlag: Boolean): HighlightInfoType = kind match {

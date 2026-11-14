@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.util
 
-import com.intellij.psi.PsiFile
+import consulo.language.psi.PsiFile
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 object PsiUtil:

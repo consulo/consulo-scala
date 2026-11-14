@@ -1,50 +1,40 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.listeners
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.eel.EelDescriptor
-import com.intellij.platform.eel.path.{EelPath, EelPathException}
-import com.intellij.platform.eel.provider.{EelNioBridgeServiceKt, EelProviderUtil}
-import com.intellij.psi.{PsiFile, PsiManager}
-import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import org.jetbrains.jps.incremental.scala.Client.{ClientMsg, PosInfo}
-import org.jetbrains.jps.incremental.scala.MessageKind
-import org.jetbrains.jps.incremental.scala.remote.SerializablePath
+import consulo.application.ReadAction
+import consulo.component.ProcessCanceledException
+import consulo.language.editor.rawHighlight.HighlightInfoType
+import consulo.language.psi.{PsiFile, PsiManager}
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import org.jetbrains.jps.incremental.scala.shared.Client.{ClientMsg, PosInfo}
+import org.jetbrains.jps.incremental.scala.shared.MessageKind
+import org.jetbrains.jps.incremental.scala.shared.remote.SerializablePath
 import org.jetbrains.plugins.scala.compiler.highlighting.core.ExternalHighlighting.RangeInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.core.{CompilerGeneratedState, CompilerGeneratedStateManager, CompilerMessageKinds, CompilerOptions, ExternalHighlighting, FileCompilerGeneratedState}
-import org.jetbrains.plugins.scala.compiler.highlighting.events.HighlightingPhaseEvents.{CompilationDurationEvent, CompilationProgressMark, ExternalBuildEvent}
-import org.jetbrains.plugins.scala.compiler.highlighting.events.TriggerPhaseEvents.{BuildManagerSessionPhaseEvent, CompilationRequestPhaseEvent}
 import org.jetbrains.plugins.scala.compiler.highlighting.services.BackgroundExecutorService.executeOnBackgroundThreadInNotDisposed
 import org.jetbrains.plugins.scala.compiler.highlighting.services.{ExternalHighlightersService, ProjectProgressService}
 import org.jetbrains.plugins.scala.compiler.highlighting.util.DocumentUtil
-import org.jetbrains.plugins.scala.compiler.highlighting.util.TracingUtil.endTrace
-import org.jetbrains.plugins.scala.compiler.tracing.Tracing
-import org.jetbrains.plugins.scala.compiler.{CompilationUnitId, CompilerEvent, CompilerEventListener}
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 import org.jetbrains.plugins.scala.project.{ModuleExt, ProjectPsiFileExt}
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
-import org.jetbrains.plugins.scala.util.CompilationId
+import org.jetbrains.plugins.scala.shared.compiler.CompilerEvent
+import org.jetbrains.plugins.scala.shared.util.CompilationId
 
 import java.nio.file.Path
-import java.util.UUID
 
-//noinspection ApiStatus,UnstableApiUsage
-private class UpdateCompilerGeneratedStateListener(project: Project) extends CompilerEventListener {
+/**
+ * upstream: a CompilerEventListener topic listener, here called by
+ * [[org.jetbrains.plugins.scala.compiler.highlighting.core.CompilerEventGeneratingClient]] directly. Paths are
+ * always local (upstream: Eel paths of remote environments).
+ */
+private[highlighting] class UpdateCompilerGeneratedStateListener(project: Project) {
   private final val CompilerPluginTypePrefix = "<type>" // CompilerPlugin.TypePrefix
 
   private final val CompilerPluginTypeSuffix = "</type>" // CompilerPlugin.TypeSuffix
 
-  private val eelDescriptor: EelDescriptor = EelProviderUtil.getEelDescriptor(project)
-
   private val Log: Logger = Logger.getInstance(classOf[UpdateCompilerGeneratedStateListener])
-
-  private val tracer = Tracing(project)
 
   /**
    * The text `file` was compiled from in `compilationId`.
@@ -52,37 +42,18 @@ private class UpdateCompilerGeneratedStateListener(project: Project) extends Com
   private def textStampOf(compilationId: CompilationId, file: VirtualFile): Long =
     compilationId.documentVersions.getOrElse(DocumentUtil.canonicalPath(file), file.getModificationStamp)
 
-  private def parseEelPath(source: SerializablePath): Option[Path] =
-    try {
-      val pathString = FileUtil.toSystemIndependentName(SerializablePath.unsafePathAsString(source))
-      val eel = EelPath.parse(pathString, eelDescriptor)
-      val nio = EelNioBridgeServiceKt.asNioPath(eel)
-      Some(nio)
-    } catch {
-      case _: EelPathException => None
-    }
+  private def findVirtualFile(source: SerializablePath): Option[VirtualFile] =
+    Path.of(SerializablePath.unsafePathAsString(source)).toVirtualFile
 
-  private def findVirtualFile(source: SerializablePath): Option[VirtualFile] = {
-    val fromEel = parseEelPath(source).flatMap(_.toVirtualFile)
-    fromEel.orElse {
-      // Parsing the source file path did not succeed using eel machinery.
-      // Fall back to treating the path as a local path. This is the case for scratch worksheets which
-      // are always created in the local filesystem.
-      val rawPath = Path.of(SerializablePath.unsafePathAsString(source))
-      rawPath.toVirtualFile
-    }
-  }
-
-  override def eventReceived(event: CompilerEvent): Unit = {
+  def eventReceived(event: CompilerEvent): Unit = {
     val oldState = CompilerGeneratedStateManager.get(project)
 
     event match {
-      case CompilerEvent.CompilationStarted(compilationId, compilationUnitId, buildReason, jpsSessionId) =>
-        traceCompilationStart(compilationId, compilationUnitId, buildReason, jpsSessionId)
+      case CompilerEvent.CompilationStarted(_, _, _, _) =>
         val newHighlightOnCompilationFinished = oldState.toHighlightingState.filesWithHighlightings
         val newState = oldState.copy(highlightOnCompilationFinished = newHighlightOnCompilationFinished)
         CompilerGeneratedStateManager.update(project, newState)
-      case CompilerEvent.MessageEmitted(compilationId, _, uuid, ClientMsg(MessageKind.Info, text, Some(source), _, Some(begin), Some(end), _)) if text.startsWith(CompilerPluginTypePrefix) =>
+      case CompilerEvent.MessageEmitted(compilationId, _, _, ClientMsg(MessageKind.Info, text, Some(source), _, Some(begin), Some(end), _)) if text.startsWith(CompilerPluginTypePrefix) =>
         findVirtualFile(source).foreach { virtualFile =>
           val tpe = text.substring(CompilerPluginTypePrefix.length, text.indexOf(CompilerPluginTypeSuffix).ensuring(_ != -1))
           val fileState = FileCompilerGeneratedState(compilationId, textStampOf(compilationId, virtualFile), Set.empty, Map(((begin, end), tpe)))
@@ -152,11 +123,9 @@ private class UpdateCompilerGeneratedStateListener(project: Project) extends Com
           )
           CompilerGeneratedStateManager.update(project, newState)
         }
-      case CompilerEvent.ProgressEmitted(compilationId, _, progress) =>
-        tracer.mark(compilationId, CompilationProgressMark(compilationId, progress))
+      case CompilerEvent.ProgressEmitted(_, _, progress) =>
         ProjectProgressService(project).setCompilationProgress(progress)
       case CompilerEvent.CompilationFinished(compilationId, _, sources) =>
-        traceCompilationFinished(compilationId)
         val vFiles = for {
           source <- sources
           virtualFile <- findVirtualFile(source)
@@ -182,53 +151,16 @@ private class UpdateCompilerGeneratedStateListener(project: Project) extends Com
 
         if (toHighlight.nonEmpty) {
           executeOnBackgroundThreadInNotDisposed(project) {
-            try {
-              ExternalHighlightersService(project).applyHighlightingState(toHighlight, compilationId)
-              tracer.endTrace(CompilationDurationEvent.key(compilationId), "Highlighting dispatched")
-            } catch {
+            try ExternalHighlightersService(project).applyHighlightingState(toHighlight, compilationId)
+            catch {
               // don't know what else we can do if compilation was cancelled at this stage
               // probably just don't show updated highlightings
               case _: ProcessCanceledException =>
-                // ignore
+              // ignore
             }
           }
-        } else {
-          tracer.endTrace(CompilationDurationEvent.key(compilationId), "No file to highlight")
         }
       case _ =>
-    }
-  }
-
-  private def traceCompilationFinished(compilationId: CompilationId): Unit = {
-    tracer.mapAndEnd(compilationId) {
-      // A compilation cancelled before it started still emits CompilationFinished (the JPS `finally`), so its
-      // request span was never handed off. It self-removes its own compilationId context key here.
-      case req: CompilationRequestPhaseEvent => Some(req.closed())
-      // duration / external build must not self-remove here.
-      case other => Some(other)
-    }
-  }
-
-  private def traceCompilationStart(compilationId: CompilationId, compilationUnitId: Option[CompilationUnitId], buildReason: Option[String], jpsSessionId: Option[UUID]): Unit = {
-    lazy val externalBuild = ExternalBuildEvent(
-      buildReason.getOrElse("unknown"),
-      compilationUnitId.map(_.moduleId).getOrElse("unknown"),
-      compilationId,
-      jpsSessionId,
-    )
-    tracer.handoff(compilationId, compilationId, externalBuild) { // with  externalBuild fallback
-      case CompilationRequestPhaseEvent(kind, file, reason, _, compilationId, _, closeOnEnd) =>
-        CompilationDurationEvent(kind, file, reason, compilationId, closeOnEnd)
-      case other => other
-    }
-    // Record this external build span on its open BuildManagerSession, so the session end can close
-    // any that were left open (a cancelled build may never emit CompilationFinished for its modules).
-    jpsSessionId.foreach { sid =>
-      tracer.map(sid) {
-        case session: BuildManagerSessionPhaseEvent =>
-          Some(session.copy(compilationIds = compilationId :: session.compilationIds))
-        case other => Some(other)
-      }
     }
   }
 
@@ -243,7 +175,8 @@ private class UpdateCompilerGeneratedStateListener(project: Project) extends Com
     ) match {
       case HIT.WrongRef => HighlightInfoType.WRONG_REF
       case HIT.Error => HighlightInfoType.ERROR
-      case HIT.UnusedSymbol => HighlightInfoType.UNUSED_SYMBOL
+      // upstream: HighlightInfoType.UNUSED_SYMBOL (severity of the unused declaration inspection)
+      case HIT.UnusedSymbol => HighlightInfoType.RAW_UNUSED_SYMBOL
       case HIT.Warning => HighlightInfoType.WARNING
       case HIT.WeakWarning => HighlightInfoType.WEAK_WARNING
       case HIT.Information => HighlightInfoType.INFORMATION
@@ -263,7 +196,6 @@ private class UpdateCompilerGeneratedStateListener(project: Project) extends Com
     optionsOpt.getOrElse(Seq.empty)
   }
 
-  @RequiresBackgroundThread
   private def findPsiFile(virtualFile: VirtualFile): Option[PsiFile] =
     ReadAction
       .nonBlocking[Option[PsiFile]](() => Option(PsiManager.getInstance(project).findFile(virtualFile)))

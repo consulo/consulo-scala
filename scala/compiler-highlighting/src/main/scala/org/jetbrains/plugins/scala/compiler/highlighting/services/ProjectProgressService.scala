@@ -1,8 +1,11 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+import consulo.application.progress.ProgressIndicator
+import consulo.project.Project
 
 import java.util.concurrent.atomic.AtomicReference
 
@@ -10,7 +13,9 @@ import java.util.concurrent.atomic.AtomicReference
  * Tracks the [[ProgressIndicator]] of the compilation currently in progress, if any, and how far that
  * compilation has got.
  */
-@Service(Array(Service.Level.PROJECT))
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
 final class ProjectProgressService:
 
   private val progressIndicator: AtomicReference[ProgressIndicator] = new AtomicReference()
@@ -44,4 +49,4 @@ object ProjectProgressService:
   private final val Finished: Double = 1.0
 
   def apply(project: Project): ProjectProgressService =
-    project.getService(classOf[ProjectProgressService])
+    project.getInstance(classOf[ProjectProgressService])

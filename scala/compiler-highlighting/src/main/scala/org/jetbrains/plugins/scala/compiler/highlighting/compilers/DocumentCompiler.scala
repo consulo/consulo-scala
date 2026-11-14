@@ -1,43 +1,48 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.compilers
 
-import com.intellij.compiler.server.BuildManager
-import com.intellij.openapi.compiler.CompilerPaths
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.NioFiles
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.eel.provider.EelProviderUtil
-import com.intellij.platform.eel.provider.utils.EelPathUtils
-import com.intellij.platform.eel.provider.utils.EelPathUtils.TransferTarget
-import org.jetbrains.jps.incremental.scala.remote.{CommandIds, SerializablePath, SourceScope}
-import org.jetbrains.jps.incremental.scala.{Client, DelegateClient}
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.compiler.CompilerPaths
+import consulo.container.boot.ContainerPathManager
+import consulo.document.Document
+import consulo.java.language.module.extension.JavaModuleExtension
+import consulo.language.util.ModuleUtilCore
+import consulo.module.Module
+import consulo.module.content.layer.OrderEnumerator
+import consulo.project.Project
+import consulo.util.io.FileUtil
+import consulo.virtualFileSystem.VirtualFile
+import jakarta.inject.{Inject, Singleton}
+import org.jetbrains.jps.incremental.scala.shared.remote.{SerializablePath, SourceScope}
+import org.jetbrains.jps.incremental.scala.shared.{Client, CompileEngine, DelegateClient}
 import org.jetbrains.plugins.scala.ScalaVersion
-import org.jetbrains.plugins.scala.compiler.EelCompilerUtils.asTargetLocalPathString
-import org.jetbrains.plugins.scala.compiler.data.{CompilerData, CompilerJarsFactory, DocumentCompilationArguments, DocumentCompilationData, IncrementalityType}
+import org.jetbrains.plugins.scala.api.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.compiler.data.*
 import org.jetbrains.plugins.scala.compiler.highlighting.core.CompilerOptions
-import org.jetbrains.plugins.scala.compiler.{CompilerManagerUtil, EelPathTranslator, RemoteServerConnectorBase, RemoteServerRunner}
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.PathExt
-import org.jetbrains.plugins.scala.project.{ModuleExt, ScalaLanguageLevel, VirtualFileExt}
+import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
+import org.jetbrains.plugins.scala.project.{ModuleExt, VirtualFileExt}
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 import org.jetbrains.plugins.scala.util.ScalaPluginJars
 
 import java.nio.file.{Files, Path}
 
-@Service(Array(Service.Level.PROJECT))
-private[highlighting] final class DocumentCompiler(project: Project) {
+/**
+ * upstream: sends the document to the Scala compile server (RemoteServerRunner), here it is compiled in the IDE
+ * process by the in-process compile engine ([[CompileEngine.compile]], see scala/compile-server LocalServer).
+ * The document is written to a temporary file in the working directory, as upstream does by default (the in-memory
+ * mode of the registry key `scala.compiler.highlighting.document.use.in.memory.file` is not ported).
+ */
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class DocumentCompiler @Inject()(project: Project) {
 
+  // upstream: <javac compiler working directory>/document-compiler
   private def workingDirectory(): Path = {
-    val compilerDir =
-      Option(CompilerManagerUtil.javacCompilerWorkingDir(project))
-        .getOrElse {
-          // This shouldn't happen, as the implementation of `CompilerManagerImpl#getJavacCompilerWorkingDir`
-          // does not return a nullable file, but just in case, this is the same directory.
-          BuildManager.getInstance().getProjectSystemDir(project)
-        }.resolve("document-compiler")
+    val compilerDir = ContainerPathManager.get.getSystemDir
+      .resolve("scala-document-compiler")
+      .resolve(project.getName.replaceAll("[^\\w.-]", "_") + "." + project.getLocationHash)
     if (!compilerDir.exists) {
       Files.createDirectories(compilerDir)
     }
@@ -51,27 +56,9 @@ private[highlighting] final class DocumentCompiler(project: Project) {
     virtualFile: VirtualFile,
     client: Client
   ): Unit = {
-    val useInMemoryFile = DocumentCompiler.useInMemoryFile
     val originalSourceFile = virtualFile.toPath
     val sourceContent = document.textWithConvertedSeparators(virtualFile)
-
-    if (useInMemoryFile) {
-      compileInMemoryFile(
-        sourcePath = originalSourceFile,
-        sourceContent = sourceContent,
-        module = module,
-        sourceScope = sourceScope,
-        client = client
-      )
-    } else {
-      compilePhysicalFile(
-        originalSourceFile = originalSourceFile,
-        content = sourceContent,
-        module = module,
-        sourceScope = sourceScope,
-        client = client
-      )
-    }
+    compilePhysicalFile(originalSourceFile, sourceContent, module, sourceScope, client)
   }
 
   private def compilePhysicalFile(originalSourceFile: Path,
@@ -80,49 +67,42 @@ private[highlighting] final class DocumentCompiler(project: Project) {
                                   sourceScope: SourceScope,
                                   client: Client): Unit = {
     val sourceName = originalSourceFile.getFileName.toString
-    val tempSourceFile = workingDirectory().resolve(sourceName)
+    val workingDir = workingDirectory()
+    val tempSourceFile = workingDir.resolve(sourceName)
     val connector =
       try {
         Files.writeString(tempSourceFile, content)
-        new PhysicalFileConnector(tempSourceFile, module, sourceScope)
+        new PhysicalFileConnector(tempSourceFile, workingDir, module, sourceScope)
       } catch {
         case t: Throwable =>
           // Remove the temporary source file if creating the connector failed.
-          NioFiles.deleteRecursively(tempSourceFile)
+          FileUtil.delete(tempSourceFile)
           throw t
       }
 
     try connector.compile(originalSourceFile, client)
     finally {
       if (connector.requiresCleanup) {
-        cleanWorkingDirectory()
+        cleanWorkingDirectory(workingDir)
       } else {
-        NioFiles.deleteRecursively(tempSourceFile)
+        FileUtil.delete(tempSourceFile)
       }
     }
   }
 
-  private def compileInMemoryFile(sourcePath: Path,
-                                  sourceContent: String,
-                                  module: Module,
-                                  sourceScope: SourceScope,
-                                  client: Client): Unit = {
-    val connector = new InMemoryFileConnector(sourcePath, sourceContent, module, sourceScope)
-    try connector.compile(client)
-    finally {
-      if (connector.requiresCleanup) {
-        cleanWorkingDirectory()
-      }
-    }
+  private def cleanWorkingDirectory(workingDir: Path): Unit = {
+    val files = workingDir.children()
+    files.foreach(FileUtil.delete)
   }
 
-  private def cleanWorkingDirectory(): Unit = {
-    val files = workingDirectory().children()
-    files.foreach(NioFiles.deleteRecursively)
-  }
+  /**
+   * upstream: PhysicalFileConnector + AbstractRemoteServerConnector (RemoteServerConnectorBase of
+   * compiler-integration), the arguments are built like for the worksheet compilation
+   * (worksheet RemoteServerConnector)
+   */
+  private final class PhysicalFileConnector(tempSourceFile: Path, outputDir: Path, module: Module, sourceScope: SourceScope) {
 
-  private final class PhysicalFileConnector(tempSourceFile: Path, module: Module, sourceScope: SourceScope)
-    extends AbstractRemoteServerConnector(Some(Seq(tempSourceFile)), module, sourceScope) {
+    var requiresCleanup: Boolean = false
 
     def compile(originalSourceFile: Path, client: Client): Unit = {
       val fixedClient = new DelegateClient(client) {
@@ -132,10 +112,10 @@ private[highlighting] final class DocumentCompiler(project: Project) {
            * Example: `bad option '-g:vars' was ignored`<br>
            * We do not want to loose such message.
            * We rely that they will be reported in the beginning of the file<br>
-           * see [[ExternalHighlightersService.toHighlightInfo]]
+           * see [[org.jetbrains.plugins.scala.compiler.highlighting.services.core.HighlightInfoFactory]]
            * (we assume that `from` and `to` are also empty for such files)
            */
-          val fixedSource = Some(SerializablePath(originalSourceFile, EelPathTranslator)) //msg.source.map(_ => originalSourceFile)
+          val fixedSource = Some(SerializablePath(originalSourceFile, pathTranslator))
           val fixedMsg = msg.copy(source = fixedSource)
           client.message(fixedMsg)
         }
@@ -145,60 +125,43 @@ private[highlighting] final class DocumentCompiler(project: Project) {
           client.compilationEnd(fixedSources)
         }
       }
-      new RemoteServerRunner(module.getProject)
-        .buildProcess(CommandIds.Compile, arguments.asStrings(EelPathTranslator), fixedClient)
-        .runSync()
+      val compilationData = this.compilationData
+      DocumentCompiler.engine.compile(DocumentCompiler.sbtData, compilerData, compilationData, fixedClient)
     }
-  }
 
-  private final class InMemoryFileConnector(sourcePath: Path, sourceContent: String, module: Module, sourceScope: SourceScope)
-    extends AbstractRemoteServerConnector(None, module, sourceScope) {
+    private def compilerSettings: ScalaCompilerSettings = ScalaCompilerSettings.forModule(module)
 
-    def compile(client: Client): Unit = {
-      val arguments = DocumentCompilationArguments(
-        sbtData = sbtData,
-        compilerData = CompilerData(
-          compilerJars = CompilerJarsFactory.fromFiles(compilerClasspath, module.customScalaCompilerBridgeJar, module.replClasspath.asPaths).toOption,
-          javaHome = Some(findJdk),
-          incrementalType = IncrementalityType.IDEA
-        ),
-        compilationData = DocumentCompilationData(
-          sourcePath = sourcePath,
-          sourceContent = sourceContent,
-          output = workingDirectory(),
-          classpath = runtimeClasspath,
-          scalacOptions = scalaParameters
+    private def compilerData: CompilerData =
+      CompilerData(
+        compilerJars = CompilerJarsFactory.fromFiles(module.scalaCompilerClasspath, module.customScalaCompilerBridgeJar, module.replClasspath.asPaths).toOption,
+        javaHome = javaHome,
+        incrementalType = IncrementalityType.IDEA
+      )
+
+    private def compilationData: CompilationData =
+      CompilationData(
+        sources = Seq(tempSourceFile),
+        classpath = runtimeClasspath,
+        output = outputDir,
+        scalaOptions = scalaParameters,
+        javaOptions = Seq.empty,
+        order = CompileOrder.valueOf(compilerSettings.compileOrder.name),
+        cacheFile = Path.of(""),
+        outputToCacheMap = Map.empty,
+        outputGroups = Seq(outputDir -> outputDir),
+        zincData = ZincData(
+          allSources = Seq.empty,
+          compilationStartDate = 0,
+          isCompile = false
         )
       )
 
-      new RemoteServerRunner(module.getProject)
-        .buildProcess(CommandIds.CompileDocument, DocumentCompilationArguments.serialize(arguments, EelPathTranslator), client)
-        .runSync()
-    }
-  }
-
-  private abstract class AbstractRemoteServerConnector(filesToCompile: Option[Seq[Path]], module: Module, sourceScope: SourceScope)
-    extends RemoteServerConnectorBase(module, filesToCompile, workingDirectory()) {
-
-    var requiresCleanup: Boolean = false
-
-    override protected def scalaParameters: Seq[String] = {
+    private def scalaParameters: Seq[String] = {
       var scalacOptions = CompilerOptions.scalacOptions(module)
       // The setting is per-project rather than per-module
       if (ScalaProjectSettings.getInstance(project).isUseCompilerTypes) {
-        val compilerPluginJar: Option[Path] = module.scalaLanguageLevel.flatMap {
-          case ScalaLanguageLevel.Scala_2_12 if module.scalaMinorVersion.exists(_ >= ScalaVersion.fromString("2.12.13").get) => Some(ScalaPluginJars.compilerPluginJar_2_12)
-          case ScalaLanguageLevel.Scala_2_13 if module.scalaMinorVersion.exists(_ >= ScalaVersion.fromString("2.13.1").get) => Some(ScalaPluginJars.compilerPluginJar_2_13)
-          case level if level >= ScalaLanguageLevel.Scala_3_3 => Some(ScalaPluginJars.compilerPluginJar_3_3)
-          case _ => None
-        }
-        compilerPluginJar.foreach { jar =>
-          val eelDescriptor = EelProviderUtil.getEelDescriptor(project)
-          val remoteJarPath = asTargetLocalPathString(
-            path = EelPathUtils.transferLocalContentToRemote(jar, new TransferTarget.Temporary(eelDescriptor)),
-            eelDescriptor
-          )
-          scalacOptions :++= Seq("-Xplugin:" + remoteJarPath, "-Xplugin-require:intellij-compiler-plugin")
+        DocumentCompiler.compilerPluginJar(module).foreach { jar =>
+          scalacOptions :++= Seq("-Xplugin:" + jar.toString, "-Xplugin-require:intellij-compiler-plugin")
           if (module.scalaLanguageLevel.contains(ScalaLanguageLevel.Scala_2_12)) {
             scalacOptions :+= "-Yrangepos"
           }
@@ -229,32 +192,55 @@ private[highlighting] final class DocumentCompiler(project: Project) {
       scalacOptions
     }
 
-    override protected def assemblyRuntimeClasspath(): Seq[Path] = {
-      val fromSuper = super.assemblyRuntimeClasspath()
+    // upstream: RemoteServerConnectorBase.runtimeClasspath + the module output of the source scope, without the
+    // compiler classpath and the runners, compiler-shared and scala-jps jars of the plugin
+    private def runtimeClasspath: Seq[Path] = {
+      val enumerator = OrderEnumerator.orderEntries(module).compileOnly().recursively()
+      val classesRoots = enumerator.getClassesRoots.toSeq.map(_.toPath).map(stripJarPathSuffix).map(Path.of(_))
       val forTestClasses = sourceScope match {
         case SourceScope.Production => false
         case SourceScope.Test => true
       }
-
-      val outputDir =
-        Option(CompilerPaths.getModuleOutputPath(module, forTestClasses))
-          .map(Path.of(_))
-      (fromSuper ++ outputDir).distinct
+      val outputDirs = (Seq(false) ++ Option.when(forTestClasses)(true))
+        .flatMap(forTests => Option(CompilerPaths.getModuleOutputPath(module, forTests)))
+        .map(Path.of(_))
+      (classesRoots ++ outputDirs).distinct :+ outputDir
     }
+
+    private def stripJarPathSuffix(path: Path): String =
+      path.toCanonicalPath.toString.stripSuffix("!").stripSuffix("!/")
+
+    // upstream: the JDK of the compile server
+    private def javaHome: Option[Path] =
+      Option(ModuleUtilCore.getSdk(module, classOf[JavaModuleExtension[?]]))
+        .flatMap(sdk => Option(sdk.getHomePath))
+        .map(Path.of(_))
   }
 }
 
-private[highlighting] object DocumentCompiler {
+object DocumentCompiler {
+
+  private def engine: CompileEngine = CompileEngine.fromJpsDirectory(ScalaPluginJars.jpsRoot)
+
+  // upstream: the compile server system directory
+  private lazy val sbtData: SbtData =
+    SbtData.from(ScalaPluginJars.jpsRoot, System.getProperty("java.class.version"), ContainerPathManager.get.getSystemDir.resolve("scala-compiler"))
+      .fold(message => throw new IllegalArgumentException(message), identity)
 
   /**
-   * When set, a document compilation sends the edited buffer to the compile server as an in-memory
-   * file (`CompileDocument`) instead of writing a temporary physical file. Read at the dispatch site
-   * too, to label the tracing span (`"Document (in-memory)"` vs `"Document"`).
+   * The compiler plugin which reports the types of the expressions ("Use types reported by the Scala compiler").
+   * upstream: packaged into lib/jps by the compiler-plugin modules, which are not ported (no jar - no compiler types)
    */
-  final val UseInMemoryFileRegistryKey = "scala.compiler.highlighting.document.use.in.memory.file"
-
-  def useInMemoryFile: Boolean = Registry.is(UseInMemoryFileRegistryKey)
+  def compilerPluginJar(module: Module): Option[Path] = {
+    val jar = module.scalaLanguageLevel.flatMap {
+      case ScalaLanguageLevel.Scala_2_12 if module.scalaMinorVersion.exists(_ >= ScalaVersion.fromString("2.12.13").get) => Some(ScalaPluginJars.compilerPluginJar_2_12)
+      case ScalaLanguageLevel.Scala_2_13 if module.scalaMinorVersion.exists(_ >= ScalaVersion.fromString("2.13.1").get) => Some(ScalaPluginJars.compilerPluginJar_2_13)
+      case level if level >= ScalaLanguageLevel.Scala_3_3 => Some(ScalaPluginJars.compilerPluginJar_3_3)
+      case _ => None
+    }
+    jar.filter(Files.exists(_))
+  }
 
   def get(project: Project): DocumentCompiler =
-    project.getService(classOf[DocumentCompiler])
+    project.getInstance(classOf[DocumentCompiler])
 }

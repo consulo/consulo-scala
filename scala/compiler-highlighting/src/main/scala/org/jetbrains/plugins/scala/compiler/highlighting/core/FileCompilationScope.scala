@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.TestSourcesFilter
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import org.jetbrains.jps.incremental.scala.remote.SourceScope
+import consulo.document.Document
+import consulo.module.Module
+import consulo.project.Project
+import consulo.project.content.TestSourcesFilter
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.PsiFile
+import org.jetbrains.jps.incremental.scala.shared.remote.SourceScope
 
 final case class FileCompilationScope(
   virtualFile: VirtualFile,

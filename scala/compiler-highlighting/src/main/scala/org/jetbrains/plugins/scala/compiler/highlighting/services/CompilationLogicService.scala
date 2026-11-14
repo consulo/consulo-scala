@@ -1,89 +1,62 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.plugins.scala.compiler.highlighting.services.core.{CompilationDecision, CompilationState, CompilationToken, ModuleKey}
-import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import jakarta.inject.Singleton
+import org.jetbrains.plugins.scala.compiler.highlighting.core.CompilerGeneratedStateManager
 
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.{AtomicLong, AtomicReference}
 
 /**
- * Owns what the plugin knows about the state of the build, and answers the one question the triggers ask:
- * what has to be compiled for a file.
+ * Answers the one question the triggers ask: whether the diagnostics recorded for a file still describe it, or it
+ * has to be compiled.
+ *
+ * upstream: owns a model of the JPS/BSP build (unbuilt files, built targets, failed and blocked targets) and decides
+ * between an incremental build of the unbuilt files and a document compilation. There is no build of our own in
+ * Consulo, every compilation is a document compilation against the module output, so only "recorded" is kept:
+ * the last compilation of the file happened after the last change of any source and the file text is the compiled one.
  */
-class CompilationLogicService(project: Project):
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class CompilationLogicService {
 
-  private val state = new AtomicReference(CompilationState.empty)
-  /**
-   * Records that `file`, no longer match what was built from it.
-   * A deletion, a move and a rename are modifications like any other.
-   */
+  /** Increments on every change which may change the diagnostics of any file */
+  private val changesEpoch = new AtomicLong(0L)
+
+  /** The epoch each file was last compiled at */
+  private val compiledAt = new AtomicReference(Map.empty[VirtualFile, Long])
+
+  /** Records that `file` no longer matches what was compiled from it. */
   def fileModified(file: VirtualFile): Unit = filesModified(Set(file))
-  /**
-   * Records that `files`, no longer match what was built from them.
-   * A deletion, a move and a rename are modifications like any other.
-   *
-   * Nothing is recorded while compiler-based highlighting is off.
-   */
+
+  /** Records that `files` no longer match what was compiled from them. */
   def filesModified(files: Set[VirtualFile]): Unit =
-    if (ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project) && files.nonEmpty)
-      update(_.modified(files))
+    if (files.nonEmpty) changesEpoch.incrementAndGet()
 
-  /**
-   * Records a change to a source the build compiles but no scope of ours can hold — a Kotlin source or
-   * a template that generates Scala. What the build produced from it is stale, and only a build can repair it.
-   */
-  def buildInputChanged(): Unit = invalidateAll()
+  /** Records that no recorded diagnostics can be relied upon, e.g. after a change of roots, libraries or SDK, or a build. */
+  def invalidateAll(): Unit = {
+    changesEpoch.incrementAndGet()
+    compiledAt.set(Map.empty)
+  }
 
-  /** Records that no target's output can be relied upon, e.g. after a change of roots, libraries or SDK. */
-  def invalidateAll(): Unit = update(_.invalidated)
+  /** Snapshots the state a compilation is about to run against */
+  def compilationStarted(): Long = changesEpoch.get()
 
-  /** Snapshots the state a compilation over `files` is about to run against.
-   *  The token should be later used to either call [[compilationSucceeded()]] or [[compilationFailed()]]
-   * */
-  def compilationStarted(files: Set[VirtualFile]): CompilationToken = state.get().tokenFor(files)
+  /** Records a compilation of `files` which started at `token` and was not interrupted */
+  def compilationFinished(token: Long, files: Set[VirtualFile]): Unit = {
+    compiledAt.updateAndGet(current => current.filter(_._1.isValid) ++ files.map(_ -> token))
+    ()
+  }
 
-  /**
-   * Records a compilation that the compiler reported no errors for, which built `targets`.
-   *
-   * A compilation that throws — a dead compile server, a cancellation — is neither this nor
-   * [[compilationFailed]]: it says nothing about whether the sources build.
-   *
-   * `covered` is the files the compiler reported compiling, which is not the same as the request's scope.
-   */
-  def compilationSucceeded(token: CompilationToken,
-                           targets: Set[ModuleKey],
-                           covered: Set[VirtualFile]): Unit =
-    update(_.succeeded(token, targets, covered))
+  /** Whether the diagnostics recorded for `file` still describe it, no compilation is needed to show them */
+  def isRecorded(project: Project, file: VirtualFile): Boolean =
+    compiledAt.get().get(file).contains(changesEpoch.get()) &&
+      CompilerGeneratedStateManager.get(project).toHighlightingState.describesCurrentText(file)
+}
 
-  /**
-   * Records that the compiler reported errors for the compilation dispatched at `token`, so its scope is not
-   * currently buildable.
-   *
-   * `covered` is the files the compiler reached before giving up, which is the part of the failure that is
-   * still informative: the rest of the scope was never looked at.
-   */
-  def compilationFailed(token: CompilationToken, targets: Set[ModuleKey], covered: Set[VirtualFile]): Unit =
-    update(_.failed(token, targets, covered))
-
-  /** What has to be done to obtain up-to-date diagnostics for `file`. */
-  def decide(file: VirtualFile): CompilationDecision = state.get().decide(ModuleKey.of(project, file), file)
-
-  /** Whether `file` is unbuilt */
-  def isModified(file: VirtualFile): Boolean = state.get().modifiedFiles.contains(file)
-
-  /**
-   * The state to decide a whole plan against.
-   *
-   * Read once per plan rather than once per file: two files can only both answer
-   * [[CompilationDecision.Document]] if they saw different states, since that answer requires the file to
-   * be the only unbuilt one anywhere.
-   */
-  private[highlighting] def snapshot: CompilationState = state.get()
-
-  private def update(transition: CompilationState => CompilationState): Unit = state.updateAndGet(transition(_))
-
-object CompilationLogicService :
+object CompilationLogicService {
   def apply(project: Project): CompilationLogicService =
-    project.getService(classOf[CompilationLogicService])
-
+    project.getInstance(classOf[CompilationLogicService])
+}

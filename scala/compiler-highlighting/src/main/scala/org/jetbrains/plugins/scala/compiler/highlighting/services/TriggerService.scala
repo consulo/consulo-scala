@@ -1,12 +1,14 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.annotation.component.{ComponentScope, ServiceAPI}
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.annotations.Nullable
 
 /**
  * Main entrypoint to handle any platform event
  */
+@ServiceAPI(ComponentScope.PROJECT)
 trait TriggerService:
   /**
    * Hands the file over once the events about it stop.
@@ -26,5 +28,4 @@ trait TriggerService:
   def bypass(@Nullable file: VirtualFile, reason: String): Unit
 
 object TriggerService:
-    def apply(project: Project): TriggerService = project.getService(classOf[TriggerService])
-  
+  def apply(project: Project): TriggerService = project.getInstance(classOf[TriggerService])

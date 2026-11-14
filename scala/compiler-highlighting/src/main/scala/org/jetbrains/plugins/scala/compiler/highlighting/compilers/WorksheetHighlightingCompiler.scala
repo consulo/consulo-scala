@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.compilers
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.module.Module
-import org.jetbrains.annotations.ApiStatus
-import org.jetbrains.jps.incremental.scala.Client
+import consulo.annotation.component.{ComponentScope, ExtensionAPI}
+import consulo.document.Document
+import consulo.module.Module
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.ExtensionPointDeclaration
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
-@ApiStatus.Internal
+// upstream: @ApiStatus.Internal
+@ExtensionAPI(ComponentScope.APPLICATION)
 trait WorksheetHighlightingCompiler {
 
   def compile(

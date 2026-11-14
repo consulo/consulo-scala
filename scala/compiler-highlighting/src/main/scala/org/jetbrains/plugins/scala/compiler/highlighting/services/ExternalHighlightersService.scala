@@ -1,38 +1,32 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.services
 
-import com.intellij.codeInsight.daemon.impl.{HighlightInfo, HighlightInfoType}
-import com.intellij.openapi.application.{ApplicationManager, ModalityState, ReadAction}
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.{Document, Editor, EditorFactory}
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiManager}
-import com.intellij.util.concurrency.annotations.{RequiresBackgroundThread, RequiresReadLock}
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import consulo.annotation.access.RequiredReadAction
+import consulo.annotation.component.{ComponentScope, ServiceAPI, ServiceImpl}
+import consulo.application.progress.ProgressManager
+import consulo.application.{Application, ReadAction}
+import consulo.codeEditor.{Editor, EditorFactory}
+import consulo.document.Document
+import consulo.document.util.TextRange
+import consulo.fileEditor.FileEditorManager
+import consulo.language.editor.rawHighlight.{HighlightInfo, HighlightInfoType}
+import consulo.language.psi.{PsiDocumentManager, PsiElement, PsiFile, PsiManager}
+import consulo.logging.Logger
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import jakarta.inject.{Inject, Singleton}
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.highlighting.core.CompilerGeneratedStateManager
-import org.jetbrains.plugins.scala.compiler.highlighting.events.HighlightingPhaseEvents.CompilationDurationEvent.HighlightingPhaseID
-import org.jetbrains.plugins.scala.compiler.highlighting.events.HighlightingPhaseEvents.{CompilationDurationEvent, HighlightingEvent}
-import org.jetbrains.plugins.scala.compiler.highlighting.listeners.ExternalHighlightingAppliedListener
 import org.jetbrains.plugins.scala.compiler.highlighting.services.core.{ExternalHighlightingFixProvider, ExternalHighlightingUpdater, HighlightInfoFactory, HighlightingRangeCalculator}
-import org.jetbrains.plugins.scala.compiler.highlighting.util.TracingUtil.endTrace
-import org.jetbrains.plugins.scala.compiler.tracing.Tracing
-import org.jetbrains.plugins.scala.compiler.tracing.core.events.BaseEvent
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.{ObjectExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScStableCodeReference
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScExpression
 import org.jetbrains.plugins.scala.lang.psi.impl.CompilerType
 import org.jetbrains.plugins.scala.settings.ScalaHighlightingMode
-import org.jetbrains.plugins.scala.util.{CanonicalPath, CompilationId}
+import org.jetbrains.plugins.scala.shared.util.{CanonicalPath, CompilationId}
 
 import java.util.concurrent.Callable
-import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.immutable
-import scala.util.control.NonFatal
 
 /**
  * Orchestrates the application of external compiler diagnostics to the workspace.
@@ -41,26 +35,19 @@ import scala.util.control.NonFatal
  * required to retrieve raw compiler data, transform it into IDE-compatible structures,
  * and render those structures onto the active interface safely.
  */
-@Service(Array(Service.Level.PROJECT))
-private[highlighting] final class ExternalHighlightersService(project: Project) {
-  self =>
+@Singleton
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+final class ExternalHighlightersService @Inject()(project: Project) {
 
-  import ExternalHighlightersService.{AppliedHighlightings, HighlightInfoData, HighlightingData}
+  import ExternalHighlightersService.{HighlightInfoData, HighlightingData}
 
   private val errorTypes: Set[HighlightInfoType] = Set(HighlightInfoType.ERROR, HighlightInfoType.WRONG_REF)
 
   private val rangeCalculator = new HighlightingRangeCalculator()
   private val fixProvider = new ExternalHighlightingFixProvider(project)
   private val highlightInfoFactory = new HighlightInfoFactory(project, rangeCalculator, fixProvider)
-  private val updater = new ExternalHighlightingUpdater(project, self)
-  private val tracer = Tracing(project)
-
-  private def notifyHighlightingApplied(virtualFiles: Set[VirtualFile]): Unit =
-    BackgroundExecutorService.executeOnBackgroundThreadInNotDisposed(project) {
-      project.getMessageBus
-        .syncPublisher(ExternalHighlightingAppliedListener.topic)
-        .highlightingApplied(virtualFiles)
-    }
+  private val updater = new ExternalHighlightingUpdater(project)
 
   /**
    * Applies the recorded diagnostics for `virtualFiles` to the editors showing them. The state is read when the work
@@ -72,8 +59,6 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
    */
   def applyHighlightingState(virtualFiles: Set[VirtualFile], compilationId: CompilationId): Unit = {
     if (project.isDisposed) return
-    val passId = HighlightingEvent.id()
-    val span = tracer.begin(HighlightingEvent(compilationId, passId))
 
     val readActionCallable: Callable[HighlightInfoData] = { () =>
       val state = CompilerGeneratedStateManager.get(project).toHighlightingState
@@ -89,18 +74,19 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
       val (current, stale) = shown.partition { case (_, _, virtualFile, _) => state.describesCurrentText(virtualFile) }
       val data = current.map { case (editor, document, virtualFile, psiFile) =>
         val externalHighlights = state.externalHighlightings(virtualFile)
-        val highlightInfos = highlightInfoFactory.calculateHighlightInfos(externalHighlights, document, psiFile, passId)
+        val highlightInfos = highlightInfoFactory.calculateHighlightInfos(externalHighlights, document, psiFile)
         HighlightingData(editor, document, psiFile, virtualFile, highlightInfos, document.getModificationStamp)
       }
 
       var elements = Vector.empty[PsiElement]
-      // Types only for the focused editor (could be extended to all open ones), and only on the compiled text: a
+      // Types only for the selected editor (could be extended to all open ones), and only on the compiled text: a
       // type goes to the expression with exactly the recorded range, which on other text is a different one.
-      Option(FileEditorManager.getInstance(project).getFocusedEditor)
-        .filter(editor => state.describesCurrentText(editor.getFile))
-        .foreach { editor =>
-          state.externalTypes(editor.getFile).foreach { case ((begin, end), tpe) =>
-            val psiFile = PsiManager.getInstance(project).findFile(editor.getFile)
+      Option(FileEditorManager.getInstance(project).getSelectedTextEditor)
+        .flatMap(editor => Option(editor.getVirtualFile))
+        .filter(state.describesCurrentText)
+        .foreach { file =>
+          state.externalTypes(file).foreach { case ((begin, end), tpe) =>
+            val psiFile = PsiManager.getInstance(project).findFile(file)
             val document = PsiDocumentManager.getInstance(project).getDocument(psiFile)
 
             def toOffset(pos: PosInfo): Int = document.getLineStartOffset(pos.line - 1) + pos.column - 1
@@ -123,52 +109,17 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
       HighlightInfoData(data, elements, stale.map { case (_, _, virtualFile, _) => virtualFile }.toSet)
     }
 
-    /**
-     * Closes `span` with the applied and stale files, at most once: an ended span silently drops a second `end`
-     * and its attributes. The promise callback runs before the `finishOnUiThread` action, so a "did the UI action
-     * run?" flag would still be false there and close the span early, with no files.
-     */
-    val endAction: AppliedHighlightings => Unit = {
-      val ended = new AtomicBoolean(false)
-
-      result =>
-        if (ended.compareAndSet(false, true)) {
-          tracer.mapAndEnd(span) {
-            case event: HighlightingEvent =>
-              Some(event.copy(files = result.applied.map(_.toString), stale = result.stale.map(_.toString)).closed())
-            case e => Some(e.closed())
-          }
-          if (isUnitTestMode) {
-            notifyHighlightingApplied(result.applied)
-          }
-        }
-    }
-
-    val promise = ReadAction
+    ReadAction
       .nonBlocking(readActionCallable)
       .inSmartMode(project)
       .expireWhen(() => project.isDisposed)
       .coalesceBy(compilationId)
-      .finishOnUiThread(ModalityState.nonModal(), { data =>
-        val result =
-          try updater.applyHighlightingInfo(data)
-          catch {
-            case NonFatal(t) =>
-              // Nothing reached the editors, but the span still has to be closed.
-              endAction(AppliedHighlightings.empty)
-              throw t
-          }
-        // Stale in the read action, plus those the updater found edited since.
-        endAction(result.copy(stale = result.stale ++ data.staleFiles))
+      .finishOnUiThread((_: Application) => Application.get().getNoneModalityState, (data: HighlightInfoData) => {
+        updater.applyHighlightingInfo(data)
+        ()
       })
       .submit(BackgroundExecutorService.instance(project).executor)
-
-    // A canceled or failed submission never reaches the UI action, so its span is closed here.
-    promise.onProcessed { _ =>
-      if (!promise.isSucceeded) {
-        endAction(AppliedHighlightings.empty)
-      }
-    }
+    ()
   }
 
   /**
@@ -181,20 +132,13 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
    * A file whose recorded results were computed from a text other than the one it has now is left as it is, as
    * [[applyHighlightingState]] does for every file, and files that have become invalid meanwhile are dropped.
    *
-   * A file with no recorded results renders as clean, which is also what the compiler records explicitly for
-   * a file it found no problems in.
-   *
    * @return how many recorded diagnostics the files had between them
    */
-  def renderRecordedDiagnostics(files: Set[VirtualFile], requestId: Any): Int =
+  def renderRecordedDiagnostics(files: Set[VirtualFile]): Int =
     if (files.isEmpty) 0
     else {
       val recorded = CompilerGeneratedStateManager.get(project).toHighlightingState
-      val mockCompilationId = ExternalHighlightersService.renderOf()
-      tracer.instant(BaseEvent("Getting recorded highlightings", parentKey = Some(requestId), 
-        key = Some(HighlightingPhaseID(mockCompilationId)), closeParent = true, closeOnEnd = false))
-      applyHighlightingState(files, mockCompilationId)
-      tracer.endTrace(CompilationDurationEvent.key(mockCompilationId), "Highlighting dispatched")
+      applyHighlightingState(files, ExternalHighlightersService.renderOf())
       files.toSeq.map(recorded.externalHighlightings(_).size).sum
     }
 
@@ -203,7 +147,6 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
    *
    * Runs on the calling thread so that successive compilations reach the Wolf in order.
    */
-  @RequiresBackgroundThread
   def updateWolf(): Unit = {
     val update: Callable[Unit] = { () =>
       val state = CompilerGeneratedStateManager.get(project).toHighlightingState
@@ -218,12 +161,16 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
   def eraseAllHighlightings(): Unit = {
     updater.eraseAllHighlightings()
   }
+
   def eraseHighlightings(editor: Editor): Unit = {
     updater.eraseEditorHighlightings(editor)
-    updater.clearWolfProblems(editor.getVirtualFile, this)
+    updater.clearWolfProblems(editor.getVirtualFile)
   }
 
-  @RequiresReadLock
+  def clearWolfProblems(file: VirtualFile): Unit =
+    updater.clearWolfProblems(file)
+
+  @RequiredReadAction
   private def filterFilesToHighlightBasedOnFileLevel(files: Set[VirtualFile]): Set[VirtualFile] = {
     val manager = PsiManager.getInstance(project)
     files.filter { vf =>
@@ -234,13 +181,9 @@ private[highlighting] final class ExternalHighlightersService(project: Project) 
       } else false
     }
   }
-
-  private def isUnitTestMode = {
-    ApplicationManager.getApplication.isUnitTestMode
-  }
 }
 
-private[highlighting] object ExternalHighlightersService {
+object ExternalHighlightersService {
   final val ScalaCompilerPassId = 979132998
 
   /**
@@ -276,7 +219,7 @@ private[highlighting] object ExternalHighlightersService {
   final val Log: Logger = Logger.getInstance(classOf[ExternalHighlightersService])
 
   def apply(project: Project): ExternalHighlightersService =
-    project.getService(classOf[ExternalHighlightersService])
+    project.getInstance(classOf[ExternalHighlightersService])
 
   final case class TextRangeWithEndOfLine(textRange: TextRange, endOfLine: Boolean)
 }

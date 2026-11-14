@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.worksheet.processor
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.module.Module
-import org.jetbrains.jps.incremental.scala.Client
+import consulo.annotation.component.ExtensionImpl
+import consulo.document.Document
+import consulo.module.Module
+import org.jetbrains.jps.incremental.scala.shared.Client
 import org.jetbrains.plugins.scala.compiler.highlighting.compilers.WorksheetHighlightingCompiler
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
-import scala.concurrent.duration.DurationInt
-
+@ExtensionImpl
 final class WorksheetHighlightingCompilerImpl
   extends WorksheetHighlightingCompiler {
 
@@ -23,10 +23,10 @@ final class WorksheetHighlightingCompilerImpl
       return
 
     val compiler = new WorksheetCompiler(module, psiFile)
+    // upstream: waits at most 60 seconds, the in-process compilation is synchronous
     compiler.compileOnlySync(
       document,
-      client,
-      waitAtMost = 60.seconds
+      client
     )
   }
 }

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
-import org.jetbrains.plugins.scala.util.CompilationId
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
+import org.jetbrains.plugins.scala.shared.util.CompilationId
 
 case class FileCompilerGeneratedState(compilationId: CompilationId,
                                       textStamp: Long,

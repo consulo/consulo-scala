@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType
-import org.jetbrains.jps.incremental.scala.Client.PosInfo
+import consulo.language.editor.rawHighlight.HighlightInfoType
+import org.jetbrains.jps.incremental.scala.shared.Client.PosInfo
 import org.jetbrains.plugins.scala.compiler.diagnostics.Action
 import org.jetbrains.plugins.scala.compiler.highlighting.core.ExternalHighlighting.RangeInfo
 

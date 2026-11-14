@@ -1,12 +1,13 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
-import com.intellij.openapi.editor.{Document, Editor, RangeMarker}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
-import com.intellij.psi.codeStyle.CodeStyleManager
+import consulo.codeEditor.Editor
+import consulo.document.util.TextRange
+import consulo.document.{Document, RangeMarker}
+import consulo.language.codeStyle.CodeStyleManager
+import consulo.language.editor.intention.SyntheticIntentionAction
+import consulo.language.psi.PsiFile
+import consulo.localize.LocalizeValue
+import consulo.project.Project
 import org.jetbrains.plugins.scala.compiler.diagnostics.Action
 import org.jetbrains.plugins.scala.editor.DocumentExt
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -14,10 +15,14 @@ import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 import scala.jdk.CollectionConverters.*
 
+// upstream: also generatePreview (no intention preview in Consulo)
 private final class CompilerDiagnosticIntentionAction private (
-  override val getText: String,
+  text: String,
   textEdits: Seq[(RangeMarker, String)]
-) extends IntentionAction {
+) extends SyntheticIntentionAction {
+
+  override def getText: LocalizeValue = LocalizeValue.of(text)
+
   override def isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean = {
     !project.isDisposed && editor.getDocument.isWritable && file.isWritable && file.is[ScalaFile] &&
       textEdits.forall(_._1.isValid)
@@ -28,20 +33,7 @@ private final class CompilerDiagnosticIntentionAction private (
     applyDiagnostic(project, file, document, textEdits)
   }
 
-  override def getFamilyName: String = getText
-
   override def startInWriteAction(): Boolean = true
-
-  override def generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo = {
-    val document = file.getFileDocument
-    val textEditCopies = textEdits.map { case (marker, text) =>
-      val markerCopy = document.createRangeMarker(marker.getStartOffset, marker.getEndOffset)
-      markerCopy.setGreedyToRight(true)
-      (markerCopy, text)
-    }
-    applyDiagnostic(project, file, document, textEditCopies)
-    IntentionPreviewInfo.DIFF
-  }
 
   private def applyDiagnostic(
     project: Project,
@@ -58,7 +50,7 @@ private final class CompilerDiagnosticIntentionAction private (
 
     document.commit(project)
     val ranges = edits.map { case (marker, _) => growLeftAndRight(marker.getTextRange, document) }.asJava
-    CodeStyleManager.getInstance(project).reformatText(file, ranges, false)
+    CodeStyleManager.getInstance(project).reformatText(file, ranges)
 
     edits.foreach { case (marker, _) => marker.dispose() }
   }
@@ -68,7 +60,7 @@ private final class CompilerDiagnosticIntentionAction private (
     val length = text.length()
 
     var startOffset = range.getStartOffset
-    while (startOffset >= 0 && !text.charAt(startOffset).isWhitespace) {
+    while (startOffset > 0 && !text.charAt(startOffset - 1).isWhitespace) {
       startOffset -= 1
     }
 

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.openapi.module.Module
+import consulo.module.Module
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerSettings
 

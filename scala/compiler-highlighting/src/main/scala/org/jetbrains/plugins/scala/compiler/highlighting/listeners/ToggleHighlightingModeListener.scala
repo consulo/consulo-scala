@@ -1,13 +1,13 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.listeners
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.{ModuleRootEvent, ModuleRootListener}
-import com.intellij.psi.PsiManager
-import com.intellij.psi.impl.source.resolve.ResolveCache
+import consulo.annotation.component.{ComponentScope, TopicImpl}
+import consulo.application.Application
+import consulo.language.editor.DaemonCodeAnalyzer
+import consulo.language.psi.PsiManager
+import consulo.module.content.layer.event.{ModuleRootEvent, ModuleRootListener}
+import consulo.project.{Project, ProjectManager}
+import jakarta.inject.Inject
 import org.jetbrains.plugins.scala.annotator.hints.AnnotatorHints
-import org.jetbrains.plugins.scala.compiler.CompileServerNotificationsService
 import org.jetbrains.plugins.scala.compiler.highlighting.services.BackgroundExecutorService.executeOnBackgroundThreadInNotDisposed
 import org.jetbrains.plugins.scala.compiler.highlighting.services.{CompilationLogicService, ExternalHighlightersService}
 import org.jetbrains.plugins.scala.compiler.highlighting.triggers.EditorTrigger
@@ -16,11 +16,11 @@ import org.jetbrains.plugins.scala.settings.{CompilerHighlightingListener, Scala
 
 /**
  * Ensures correct toggling between "standard" and "compiler-based" highlighting modes.
- * Toggling means that the value of 
+ * Toggling means that the value of
  * [[ScalaHighlightingMode.isShowErrorsFromCompilerEnabled]] was changed.
  */
-abstract class ToggleHighlightingModeListener(project: Project) {
-  protected def compileOrEraseHighlightings(triggerSource: String): Unit =
+private[highlighting] object ToggleHighlightingModeListener {
+  def compileOrEraseHighlightings(project: Project, triggerSource: String): Unit =
     invokeWhenSmart(project) {
       executeOnBackgroundThreadInNotDisposed(project) {
         if (ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)) {
@@ -28,41 +28,48 @@ abstract class ToggleHighlightingModeListener(project: Project) {
           CompilationLogicService(project).invalidateAll()
         } else {
           ExternalHighlightersService(project).eraseAllHighlightings()
+          CompilationLogicService(project).invalidateAll()
         }
-        // TODO: we should ensure that we do not do this if the project wasn't highlighted with compiler at all,
-        //  e.g. for Scala 2 projects where it's disabled by default
-        // Passing `ModalityState.nonModal()` is important here. The call to `forceStandardHighlighting` requires
-        // making changes to the PSI model, which must be done in a write-safe context.
-        // Per the documentation of `com.intellij.openapi.application.TransactionGuard`, `nonModal` is one of the
-        // write-safe contexts.
-        invokeLater(ModalityState.nonModal()) {
-          forceStandardHighlighting(project)
-          CompileServerNotificationsService.get(project).resetNotifications()
-          if (ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)) {
-            EditorTrigger.triggerOnSelectedEditor(project, triggerSource)
+        // upstream: also resets the compile server notifications
+        invokeLater(Application.get().getNoneModalityState) {
+          if (!project.isDisposed) {
+            forceStandardHighlighting(project)
+            if (ScalaHighlightingMode.isShowErrorsFromCompilerEnabled(project)) {
+              EditorTrigger.triggerOnSelectedEditor(project, triggerSource)
+            }
           }
         }
       }
     }
-  
+
+  // upstream: also clears the ResolveCache (dropped with the PSI caches in Consulo)
   private def forceStandardHighlighting(project: Project): Unit = inWriteAction {
-    ResolveCache.getInstance(project).clearCache(true)
+    PsiManager.getInstance(project).dropResolveCaches()
     PsiManager.getInstance(project).dropPsiCaches()
     DaemonCodeAnalyzer.getInstance(project).restart("Restart because highlighting was toggled")
   }
 }
 
-object ToggleHighlightingModeListener {
-  final class OnCompilerHighlightingChange(project: Project) extends ToggleHighlightingModeListener(project) with CompilerHighlightingListener {
-    override def compilerHighlightingScala2Changed(enabled: Boolean): Unit =
-      compileOrEraseHighlightings("highlighting toggled")
+// upstream: ToggleHighlightingModeListener.OnCompilerHighlightingChange, a project listener of an application topic
+@TopicImpl(ComponentScope.APPLICATION)
+final class ToggleHighlightingModeListenerOnCompilerHighlightingChange extends CompilerHighlightingListener {
+  override def compilerHighlightingScala2Changed(enabled: Boolean): Unit =
+    compileOrEraseHighlightings("highlighting toggled")
 
-    override def compilerHighlightingScala3Changed(enabled: Boolean): Unit =
-      compileOrEraseHighlightings("highlighting toggled")
-  }
+  override def compilerHighlightingScala3Changed(enabled: Boolean): Unit =
+    compileOrEraseHighlightings("highlighting toggled")
 
-  final class OnModuleRootChange(project: Project) extends ToggleHighlightingModeListener(project) with ModuleRootListener {
-    override def rootsChanged(event: ModuleRootEvent): Unit =
-      compileOrEraseHighlightings("module roots changed")
-  }
+  private def compileOrEraseHighlightings(triggerSource: String): Unit =
+    if (!Application.get().isUnitTestMode) {
+      ProjectManager.getInstance().getOpenProjects.foreach(ToggleHighlightingModeListener.compileOrEraseHighlightings(_, triggerSource))
+    }
+}
+
+// upstream: ToggleHighlightingModeListener.OnModuleRootChange and CompilerHighlightingModuleRootListener
+@TopicImpl(ComponentScope.PROJECT)
+final class ToggleHighlightingModeListenerOnModuleRootChange @Inject()(project: Project) extends ModuleRootListener {
+  override def rootsChanged(event: ModuleRootEvent): Unit =
+    if (!project.isDisposed && !Application.get().isUnitTestMode) {
+      ToggleHighlightingModeListener.compileOrEraseHighlightings(project, "module roots changed")
+    }
 }

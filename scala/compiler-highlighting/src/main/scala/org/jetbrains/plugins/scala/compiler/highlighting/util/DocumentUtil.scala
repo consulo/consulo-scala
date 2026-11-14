@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.util
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
+import consulo.document.Document
+import consulo.document.FileDocumentManager
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
 import org.jetbrains.plugins.scala.compiler.highlighting.services.requests.SerializableMap
-import org.jetbrains.plugins.scala.util.{CanonicalPath, DocumentVersion}
+import org.jetbrains.plugins.scala.shared.util.{CanonicalPath, DocumentVersion}
 
 import java.nio.file.Path
 import scala.collection.immutable

@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.compiler.highlighting.core
 
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.plugins.scala.compiler.highlighting.core.{FileCompilerGeneratedState, HighlightingState}
 
 /**

@@ -113,6 +113,7 @@ open module org.intellij.scala.worksheet {
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
     requires org.intellij.scala.repl;
+    requires org.intellij.scala.compiler.highlighting;
 
 
 
