@@ -4,13 +4,12 @@ package ui
 import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, ExpressionEvaluatorImpl, IdentityEvaluator}
 import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
-import com.intellij.java.debugger.engine.{DebuggerUtils, SuspendContext}
+import com.intellij.java.debugger.engine.DebuggerUtils
 import com.intellij.java.debugger.impl.engine.JVMNameUtil
 import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
 import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import com.intellij.java.debugger.impl.ui.tree.ValueDescriptor
 import consulo.execution.debug.ui.XDebuggerUIConstants
-import consulo.util.dataholder.Key
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator._
@@ -63,11 +62,10 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
 
   override protected def buildChildrenAsync(value: Value, builder: ChildrenBuilder, context: EvaluationContext): CompletableFuture[Unit] = {
     val ref = value.asInstanceOf[ObjectReference]
-    val startIndex = nextIndex(builder, context)
 
     for {
       strict <- onDebuggerManagerThread(context)(evaluateHasDefiniteSize(ref, context))
-      _ <- if (strict) renderStrictCollection(ref, builder, context, startIndex) else renderNonStrictCollection(ref, builder, context, startIndex)
+      _ <- if (strict) renderStrictCollection(ref, builder, context, 0) else renderNonStrictCollection(ref, builder, context, 0)
     } yield ()
   }
 
@@ -86,9 +84,8 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
         builder.addChildren(descs.asJava, true)
       else {
         builder.addChildren(descs.asJava, false)
-        // upstream: `tooManyChildren` takes a callback rendering the next part
-        setNextIndex(builder, context, index + vectorSize)
-        builder.tooManyChildren(remaining)
+        val runnable: Runnable = () => buildChildrenOrShowError(builder)(renderStrictCollection(ref, builder, context, index + vectorSize))
+        builder.tooManyChildren(remaining, runnable)
       }
     }
 
@@ -113,9 +110,8 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
         _ <- onDebuggerManagerThread(context) {
           val hasDefiniteSize = evaluateHasDefiniteSize(ref, context)
           if (!hasDefiniteSize && rendered) {
-            // upstream: `tooManyChildren` takes a callback rendering the next part
-            setNextIndex(builder, context, newIndex)
-            builder.tooManyChildren(-1)
+            val runnable: Runnable = () => buildChildrenOrShowError(builder)(renderNonStrictCollection(ref, builder, context, newIndex))
+            builder.tooManyChildren(-1, runnable)
           } else {
             builder.addChildren(List.empty.asJava, true)
           }
@@ -125,19 +121,6 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
 }
 
 private[debugger] object ScalaCollectionRenderer {
-  // upstream: `tooManyChildren` takes a callback rendering the next part; in Consulo the children are computed again,
-  // so the index of the next part is stored in the parent descriptor for the current suspend context
-  private val NextIndexKey: Key[(SuspendContext, Int)] = Key.create("scala.collection.renderer.next.index")
-
-  private def nextIndex(builder: ChildrenBuilder, context: EvaluationContext): Int =
-    builder.getParentDescriptor.getUserData(NextIndexKey) match {
-      case (suspendContext, index) if suspendContext eq context.getSuspendContext => index
-      case _ => 0
-    }
-
-  private def setNextIndex(builder: ChildrenBuilder, context: EvaluationContext, index: Int): Unit =
-    builder.getParentDescriptor.putUserData(NextIndexKey, (context.getSuspendContext, index))
-
   private def isView(ct: ClassType): Boolean =
     DebuggerUtils.instanceOf(ct, "scala.collection.View") ||
       DebuggerUtils.instanceOf(ct, "scala.collection.IterableView")

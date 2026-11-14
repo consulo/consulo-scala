@@ -96,18 +96,20 @@ class ScalaLineBreakpointType extends ScalaLineBreakpointTypeBase("scala-line", 
     val method = Option(SourcePosition.createFromLine(file, line).getElementAt)
       .flatMap(findContainingDefinition(_, lambdas))
 
+    val extraPriorityForLambdas = positionsOnLine.sizeCompare(lambdas) == 0
     for ((lambda, ordinal) <- lambdas.zipWithIndex) {
       val element = lambda match {
         case f: ScFunctionExpr => f.result.getOrElse(f)
         case e => e
       }
-      res.addLast(new LambdaScalaBreakpointVariant(XDebuggerUtil.getInstance.createPositionByElement(element), element, ordinal))
+      res.addLast(new LambdaScalaBreakpointVariant(XDebuggerUtil.getInstance.createPositionByElement(element), element, ordinal, extraPriorityForLambdas))
     }
     res.addFirst(new LineScalaBreakpointVariant(position, method.orNull))
     if (lambdas.nonEmpty) {
       res.addFirst(new JavaBreakpointVariant(position)) //adding all variants
     }
-    // last: the line variant must stay the default one
+    // Must stay last: on a plain gutter click the platform picks the first variant with the highest priority, and
+    // this variant ties with the line variant. The line variant must win.
     conditionalReturn.foreach { returnKeyword =>
       res.addLast(new ConditionalReturnScalaBreakpointVariant(position, returnKeyword))
     }
@@ -275,6 +277,9 @@ class ScalaLineBreakpointType extends ScalaLineBreakpointTypeBase("scala-line", 
       case _: ScalaFile => DebuggerBundle.message("breakpoint.location.line.in.containing.file")
       case _ => DebuggerBundle.message("breakpoint.location.line.in.containing.block")
     }
+
+    override def isLowPriority(firstLineElement: PsiElement): Boolean =
+      firstLineElement.elementType == ScalaTokenTypes.tDOT
   }
 
   // upstream: JavaLineBreakpointType.ConditionalReturnJavaBreakpointVariant (lambda ordinal NO_LAMBDA with the conditional return flag)
@@ -284,9 +289,15 @@ class ScalaLineBreakpointType extends ScalaLineBreakpointTypeBase("scala-line", 
     override def getIcon: Image = ExecutionDebugIconGroup.breakpointBreakpoint()
   }
 
-  // upstream: variant priorities are not supported by the Consulo platform
-  private final class LambdaScalaBreakpointVariant(position: XSourcePosition, @Nullable element: PsiElement, lambdaOrdinal: Int)
-    extends LambdaJavaBreakpointVariant(position, element, lambdaOrdinal)
+  private final class LambdaScalaBreakpointVariant(position: XSourcePosition, @Nullable element: PsiElement, lambdaOrdinal: Int, hasExtraPriority: Boolean)
+    extends LambdaJavaBreakpointVariant(position, element, lambdaOrdinal) {
+
+    override def getPriority(project: Project): Int = {
+      val priority = super.getPriority(project)
+      val extraPriorty = if (hasExtraPriority) 50 else 0
+      priority + extraPriorty
+    }
+  }
 }
 
 object ScalaLineBreakpointType {

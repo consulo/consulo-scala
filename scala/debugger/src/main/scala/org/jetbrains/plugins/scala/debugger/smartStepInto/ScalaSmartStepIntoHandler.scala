@@ -44,7 +44,7 @@ class ScalaSmartStepIntoHandler extends JvmSmartStepIntoHandler {
     throw new IllegalStateException("Should not be used")
   }
 
-  // upstream: Promise; "Step Into" of the Consulo platform does not ask for these targets yet
+  // upstream: Promise
   override def findStepIntoTargets(position: SourcePosition, session: DebuggerSession): CompletableFuture[java.util.List[SmartStepTarget]] = {
     if (ScalaDebuggerSettings.getInstance().ALWAYS_SMART_STEP_INTO) {
       findSmartStepTargetsAsync(position, session)
