@@ -35,7 +35,7 @@ class ScalaRuntimeRefRenderer extends ScalaClassRenderer {
   override def calcLabel(descriptor: ValueDescriptor, context: EvaluationContext, listener: DescriptorLabelListener): String =
     unwrapValue(descriptor.getValue).toString
 
-  override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+  override protected def doBuildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
     val unwrapped = unwrapValue(value)
     rendererFor(unwrapped).buildChildren(unwrapped, builder, context)
   }

@@ -17,6 +17,7 @@ import consulo.logging.Logger
 import consulo.project.Project
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
+import org.jetbrains.plugins.scala.debugger.ui.util.buildChildrenOrShowError
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 
 import java.util.Collections
@@ -52,8 +53,11 @@ class ScalaClassRenderer extends ClassRenderer {
 
   override def isApplicable(tpe: Type): Boolean = isApplicableFor(tpe)
 
-  // upstream: fields are collected asynchronously, consulo-java renderers are synchronous
-  override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+  final override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit =
+    buildChildrenOrShowError(builder)(doBuildChildren(value, builder, context))
+
+  // upstream: fields are collected asynchronously (buildChildrenAsync), consulo-java renderers are synchronous
+  protected def doBuildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
     val ref = value.asInstanceOf[ObjectReference]
     val project = context.getProject
     val toShow = ref.referenceType().allFields().asScala.filter(shouldDisplay(context, ref, _))

@@ -45,7 +45,7 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
     s"size = $size"
   }
 
-  override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+  override protected def doBuildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
     val ref = value.asInstanceOf[ObjectReference]
     val startIndex = nextIndex(builder, context)
     if (evaluateHasDefiniteSize(ref, context)) renderStrictCollection(ref, builder, context, startIndex)

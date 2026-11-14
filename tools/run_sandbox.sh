@@ -36,11 +36,12 @@ fetch_plugin com.intellij.properties
 fetch_plugin org.jetbrains.idea.maven
 fetch_plugin org.jetbrains.plugins.gradle
 
-# overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
-for module in java.language.api java.compiler.impl; do
-  local_jar=$(ls ~/.m2/repository/consulo/plugin/consulo.java-$module/3-SNAPSHOT/consulo.java-$module-3-SNAPSHOT.jar)
-  cp "$local_jar" "$DEPS/consulo.java/lib/consulo.java-$module-3-SNAPSHOT.jar"
-  python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
+# overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api,
+# debugger APIs in java-debugger-impl, the generate.tostring export of the plugin module consulo.java)
+for artifact in consulo.java-java.language.api consulo.java-java.compiler.impl consulo.java-java.debugger.impl consulo.java; do
+  local_jar=$(ls ~/.m2/repository/consulo/plugin/$artifact/3-SNAPSHOT/$artifact-3-SNAPSHOT.jar)
+  cp "$local_jar" "$DEPS/consulo.java/lib/$artifact-3-SNAPSHOT.jar"
+  python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "$artifact-3-SNAPSHOT.jar"
 done
 
 # overlay: consulo-gradle modules changed locally for the port (Scala compiler plugins in the tooling ScalaModel,
