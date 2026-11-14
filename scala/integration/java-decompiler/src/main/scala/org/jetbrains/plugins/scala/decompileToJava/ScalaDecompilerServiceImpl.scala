@@ -1,20 +1,27 @@
 package org.jetbrains.plugins.scala.decompileToJava
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.ide.highlighter.{JavaClassFileType, JavaFileType}
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
+import consulo.annotation.component.ComponentScope
+import consulo.annotation.component.ServiceAPI
+import consulo.annotation.component.ServiceImpl
+import jakarta.inject.Singleton
+
+import consulo.language.codeStyle.CodeStyle
+import com.intellij.java.language.impl.{JavaClassFileType, JavaFileType}
+import consulo.util.io.FileUtil
+import consulo.virtualFileSystem.VirtualFile
 import org.jetbrains.java.decompiler.IdeaLogger
 import org.jetbrains.java.decompiler.main.decompiler.BaseDecompiler
 import org.jetbrains.java.decompiler.main.extern.{IBytecodeProvider, IFernflowerPreferences, IResultSaver}
 import org.jetbrains.plugins.scala.extensions.inReadAction
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
 import java.util.jar.Manifest
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.MapHasAsJava
 import scala.util.{Failure, Success, Try}
 
+@Singleton
+@ServiceImpl
 private class ScalaDecompilerServiceImpl extends ScalaDecompilerService {
 
   import ScalaDecompilerServiceImpl._

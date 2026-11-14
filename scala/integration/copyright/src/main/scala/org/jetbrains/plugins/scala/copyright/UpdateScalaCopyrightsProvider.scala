@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.copyright
 
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{PsiComment, PsiFile, PsiWhiteSpace, SyntaxTraverser}
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.virtualFileSystem.fileType.FileType
+import consulo.module.Module
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.{PsiComment, PsiFile, PsiWhiteSpace, SyntaxTraverser}
 import com.intellij.util.containers.TreeTraversal
 import com.maddyhome.idea.copyright.CopyrightProfile
 import com.maddyhome.idea.copyright.psi.{UpdateCopyrightsProvider, UpdatePsiFileCopyright}
@@ -15,6 +17,7 @@ import org.jetbrains.plugins.scalaDirective.psi.api.{ScDirective, ScDirectiveTok
 
 import scala.jdk.CollectionConverters.{IterableHasAsScala, SeqHasAsJava}
 
+@ExtensionImpl
 final class UpdateScalaCopyrightsProvider extends UpdateCopyrightsProvider {
 
   override def createInstance(project: Project,

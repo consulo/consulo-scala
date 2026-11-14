@@ -1,13 +1,16 @@
 package org.jetbrains.plugins.scala
 package decompileToJava
 
+import consulo.annotation.component.ExtensionImpl
+
 import java.{util => ju}
 import com.intellij.codeInsight.AttachSourcesProvider
-import com.intellij.openapi.roots.LibraryOrderEntry
+import consulo.module.content.layer.orderEntry.LibraryOrderEntry
 import com.intellij.openapi.util.ActionCallback
-import com.intellij.psi.PsiFile
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import consulo.language.psi.PsiFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
+@ExtensionImpl
 class DecompileScalaToJavaActionProvider extends AttachSourcesProvider {
 
   import AttachSourcesProvider.AttachSourcesAction

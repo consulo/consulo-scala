@@ -1,16 +1,22 @@
 package org.jetbrains.plugins.scala.decompileToJava
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent}
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.navigation.OpenFileDescriptor
 import com.intellij.openapi.fileTypes.PlainTextFileType
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.LightVirtualFile
+import consulo.project.Project
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.file.light.LightVirtualFile
 import org.jetbrains.plugins.scala.extensions.{executeOnPooledThread, invokeLater}
 import org.jetbrains.plugins.scala.tasty.reader.{NameTable, NodePrinter, TreeReader}
 
 //NOTE: disabled inspection as it's an internal action
 //noinspection ScalaExtractStringToBundle
+@ActionImpl(id = "Scala.DecompileTastyRaw", parents = Array(new ActionParentRef(value = new ActionRef(id = "idea.java.decompiler.action.group"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileTasty"))))
 class ShowDecompiledTastyRawInternalAction extends AnAction("Show Tasty Raw Representation (Internal)") {
 
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT

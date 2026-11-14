@@ -1,8 +1,9 @@
 package org.jetbrains.plugins.scala.intelliLang.injection
 
-import com.intellij.lang.{ASTNode, Language}
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi._
+import consulo.language.ast.ASTNode
+import consulo.language.Language
+import consulo.document.util.TextRange
+import com.intellij.psi.ElementManipulators
 import org.intellij.plugins.intelliLang.inject.InjectorUtils.InjectionInfo
 import org.intellij.plugins.intelliLang.inject._
 import org.jetbrains.plugins.scala.extensions._

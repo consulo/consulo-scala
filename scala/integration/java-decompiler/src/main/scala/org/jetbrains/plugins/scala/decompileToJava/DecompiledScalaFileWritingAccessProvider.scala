@@ -1,11 +1,15 @@
 package org.jetbrains.plugins.scala
 package decompileToJava
 
+import consulo.annotation.component.ExtensionImpl
+
 import java.{util => ju}
 
 import com.intellij.openapi.vfs.ex.dummy.DummyFileSystem
-import com.intellij.openapi.vfs.{VirtualFile, WritingAccessProvider}
+import consulo.virtualFileSystem.VirtualFile
+import com.intellij.openapi.vfs.WritingAccessProvider
 
+@ExtensionImpl
 class DecompiledScalaFileWritingAccessProvider extends WritingAccessProvider {
 
   override def isPotentiallyWritable(file: VirtualFile): Boolean =

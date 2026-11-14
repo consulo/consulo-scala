@@ -1,11 +1,14 @@
 package org.jetbrains.plugins.scala.intelliLang.injection
 
-import com.intellij.psi.PsiLanguageInjectionHost
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.psi.PsiLanguageInjectionHost
 import org.intellij.plugins.intelliLang.inject.{AbstractLanguageInjectionSupport, TemporaryPlacesRegistry}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScExpression, ScInfixExpr}
 import org.jetbrains.plugins.scala.patterns.ScalaPatterns
 
+@ExtensionImpl
 final class ScalaLanguageInjectionSupport extends AbstractLanguageInjectionSupport {
   override def getId: String = ScalaLanguageInjectionSupport.Id
 

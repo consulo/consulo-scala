@@ -1,17 +1,19 @@
 package org.jetbrains.plugins.scala.decompileToJava
 
-import com.intellij.codeInsight.daemon.impl.analysis.{FileHighlightingSetting, HighlightLevelUtil}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.fileEditor.{FileDocumentManager, OpenFileDescriptor}
-import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager, Task}
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.io.FileUtil
+import consulo.language.editor.FileHighlightingSetting
+import consulo.language.editor.highlight.HighlightLevelUtil
+import consulo.application.ApplicationManager
+import consulo.document.FileDocumentManager
+import consulo.navigation.OpenFileDescriptor
+import consulo.application.progress.{ProgressIndicator, ProgressManager, Task}
+import consulo.project.Project
+import consulo.ui.ex.awt.Messages
+import consulo.util.io.FileUtil
 import com.intellij.openapi.vfs.ex.dummy.DummyFileSystem
-import com.intellij.openapi.vfs.{VirtualFile, VirtualFileManager}
-import com.intellij.psi.PsiManager
+import consulo.virtualFileSystem.{VirtualFile, VirtualFileManager}
+import consulo.language.psi.PsiManager
 import org.jetbrains.plugins.scala.extensions.inWriteAction
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 
 import scala.util.{Failure, Success}
 

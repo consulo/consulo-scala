@@ -1,10 +1,13 @@
 package org.jetbrains.plugins.scala.intelliLang.injection
 
-import com.intellij.lang.Language
+import consulo.annotation.component.ExtensionImpl
+
+import consulo.language.Language
 import com.intellij.lang.injection.{MultiHostInjector, MultiHostRegistrar}
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.Key
-import com.intellij.psi.*
+import consulo.application.ApplicationManager
+import consulo.util.dataholder.Key
+import com.intellij.java.language.psi.{PsiAnnotationOwner, PsiField, PsiMethod}
+import consulo.language.psi.{PsiElement, PsiReference}
 import org.apache.commons.lang3.StringUtils
 import org.intellij.plugins.intelliLang.Configuration
 
@@ -28,10 +31,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScPatter
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScInterpolatedPatternPrefix
 import org.jetbrains.plugins.scala.patterns.ScalaElementPatternImpl
 import org.jetbrains.plugins.scala.settings.*
+import org.jetbrains.plugins.scala.compilersettings.settings.*
 
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 
+@ExtensionImpl
 final class ScalaLanguageInjector extends MultiHostInjector {
 
   import ScalaLanguageInjector._

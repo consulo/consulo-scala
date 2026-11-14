@@ -66,6 +66,10 @@
         <module>scala/conversion</module>
         <module>scala/integration/scalastyle</module>
         <module>scala/scala-meta-impl</module>
+        <module>scala/integration/copyright</module>
+        <module>scala/integration/markdown</module>
+        <module>scala/integration/intellilang</module>
+        <module>scala/integration/java-decompiler</module>
         <module>plugin</module>
     </modules>
 

@@ -1,11 +1,21 @@
 package org.jetbrains.plugins.scala.decompileToJava
 
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.project.DumbService
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.project.DumbService
 import com.intellij.psi.impl.JavaPsiImplementationHelper
-import com.intellij.psi.util.{CachedValueProvider, CachedValuesManager, PsiModificationTracker, PsiTreeUtil, PsiUtilBase}
-import com.intellij.psi.{PsiClass, PsiElement}
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import consulo.application.util.{CachedValueProvider, CachedValuesManager}
+import consulo.language.psi.PsiModificationTracker
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.util.PsiUtilBase
+import com.intellij.java.language.psi.PsiClass
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinition
 
 /**
@@ -20,6 +30,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScTypeDefinitio
  * But [[ShowDecompiledClassAsJavaAction]] opens a decompiled `.class` file which has Java syntax.
  * The result is the same as if you invoke "Decompile to Java" action from editor notification when you open  `.class` file
  */
+@ActionImpl(id = "Scala.DecompileToJava", parents = Array(new ActionParentRef(value = new ActionRef(id = "idea.java.decompiler.action.group"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "ByteCodeDecompiler")), new ActionParentRef(value = new ActionRef(id = "RunContextPopupGroup"))))
 final class ShowDecompiledClassAsJavaAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.class.as.java")) {
 
   override def actionPerformed(event: AnActionEvent): Unit = {

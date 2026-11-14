@@ -1,9 +1,12 @@
 package org.jetbrains.plugins.scala.intelliLang.settings;
 
+import consulo.annotation.component.ExtensionImpl;
+
 import org.jetbrains.plugins.scala.settings.uiControls.DependencyAwareInjectionSettings;
 
 import javax.swing.*;
 
+@ExtensionImpl
 public class IntelliLangInjectionSettings extends DependencyAwareInjectionSettings {
   private final static String INJECTION_SETTINGS_NAME = "IntelliLangInjectionSettings";
 

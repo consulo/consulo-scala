@@ -68,6 +68,26 @@
         <!-- packaging takes only direct dependencies - all modules and runtime libraries must be listed here -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-java.decompiler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-intellilang</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-markdown</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.intellij.scala-copyright</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>org.intellij.scala-scala.meta.impl</artifactId>
             <version>${project.version}</version>
         </dependency>

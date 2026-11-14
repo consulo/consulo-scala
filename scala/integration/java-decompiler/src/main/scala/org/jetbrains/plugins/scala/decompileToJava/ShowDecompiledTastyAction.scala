@@ -1,11 +1,19 @@
 package org.jetbrains.plugins.scala.decompileToJava
 
-import com.intellij.ide.util.PsiNavigationSupport
-import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnAction, AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.fileTypes.{FileType, FileTypeRegistry}
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.util.{PsiTreeUtil, PsiUtilBase}
-import com.intellij.psi.{PsiClass, PsiClassOwner, PsiElement}
+import consulo.annotation.component.ActionImpl
+import consulo.annotation.component.ActionParentRef
+import consulo.annotation.component.ActionRef
+import consulo.annotation.component.ActionRefAnchor
+
+import consulo.language.psi.PsiNavigationSupport
+import consulo.ui.ex.action.{ActionUpdateThread, AnAction, AnActionEvent}
+import consulo.language.editor.CommonDataKeys
+import consulo.virtualFileSystem.fileType.{FileType, FileTypeRegistry}
+import consulo.virtualFileSystem.VirtualFile
+import consulo.language.psi.util.PsiTreeUtil
+import consulo.language.editor.util.PsiUtilBase
+import com.intellij.java.language.psi.{PsiClass, PsiClassOwner}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.decompileToJava.ShowDecompiledTastyAction.*
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.tasty.TastyFileType
@@ -19,6 +27,7 @@ import org.jetbrains.plugins.scala.tasty.TastyFileType
  * @see [[ShowDecompiledClassAsJavaAction]]
  * @see [[org.jetbrains.java.decompiler.ShowDecompiledClassAction]]
  */
+@ActionImpl(id = "Scala.DecompileTasty", parents = Array(new ActionParentRef(value = new ActionRef(id = "idea.java.decompiler.action.group"), anchor = ActionRefAnchor.AFTER, relatedToAction = new ActionRef(id = "Scala.DecompileToJava"))))
 class ShowDecompiledTastyAction extends AnAction(ScalaJavaDecompilerBundle.message("show.decompiled.tasty")) {
 
   override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT

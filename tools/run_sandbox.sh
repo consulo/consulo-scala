@@ -29,6 +29,7 @@ fetch_plugin() {
   done
 }
 fetch_plugin consulo.java
+fetch_plugin org.jetbrains.fernflower
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api)
 for module in java.language.api; do

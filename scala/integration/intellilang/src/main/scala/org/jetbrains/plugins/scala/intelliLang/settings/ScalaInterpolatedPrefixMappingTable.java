@@ -1,13 +1,12 @@
 package org.jetbrains.plugins.scala.intelliLang.settings;
 
-import com.intellij.lang.Language;
-import com.intellij.ui.IdeBorderFactory;
-import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.table.JBTable;
+import consulo.language.Language;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.ui.ex.awt.ToolbarDecorator;
+import consulo.ui.ex.awt.table.JBTable;
 import com.intellij.util.ListWithSelection;
 import com.intellij.util.ui.table.ComboBoxTableCellEditor;
 import org.intellij.plugins.intelliLang.inject.InjectedLanguage;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.intelliLang.IntellilangBundle;
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings;
 import org.jetbrains.plugins.scala.settings.uiControls.DependencyAwareInjectionSettings;
@@ -143,7 +142,7 @@ public class ScalaInterpolatedPrefixMappingTable extends JBTable implements Depe
   private static class MyTableModel extends AbstractTableModel {
     private final List<PrefixLanguagePair> data;
 
-    private MyTableModel(@NotNull List<PrefixLanguagePair> data) {
+    private MyTableModel(List<PrefixLanguagePair> data) {
       this.data = data;
     }
 

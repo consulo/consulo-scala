@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<idea-plugin>
+    <dependencies>
+        <module name="intellij.java.langInjection"/>
+        <module name="intellij.java.psi"/>
+        <module name="intellij.libraries.commons.lang3"/>
+        <module name="intellij.platform.core"/>
+        <module name="intellij.platform.ide"/>
+        <module name="intellij.platform.ide.impl"/>
+        <module name="intellij.platform.langInjection"/>
+        <module name="intellij.regexp"/>
+    </dependencies>
+
+    <extensions defaultExtensionNs="org.intellij.intelliLang">
+        <injectionConfig config="org/jetbrains/plugins/scala/intelliLang/injection/scalaInjections.xml"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!--<multiHostInjector implementation="org.jetbrains.plugins.scala.lang.scaladoc.injection.ScalaDocInnerCodeInjector"/>-->
+    </extensions>
+
+    <extensions defaultExtensionNs="org.intellij.scala">
+    </extensions>
+</idea-plugin>
