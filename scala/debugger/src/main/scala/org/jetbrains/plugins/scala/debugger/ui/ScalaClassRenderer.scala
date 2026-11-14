@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.debugger
 package ui
 
-import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.DebuggerContext
 import com.intellij.java.debugger.engine.DebuggerUtils
 import com.intellij.java.debugger.engine.evaluation.{EvaluateException, EvaluationContext}
+import com.intellij.java.debugger.impl.DebuggerUtilsAsync
 import com.intellij.java.debugger.impl.engine.evaluation.EvaluationContextImpl
 import com.intellij.java.debugger.impl.settings.NodeRendererSettings
 import com.intellij.java.debugger.impl.ui.impl.watch.FieldDescriptorImpl
@@ -17,14 +17,14 @@ import consulo.logging.Logger
 import consulo.project.Project
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
-import org.jetbrains.plugins.scala.debugger.ui.util.buildChildrenOrShowError
+import org.jetbrains.plugins.scala.debugger.ui.util._
 import org.jetbrains.plugins.scala.rt.util.ScalaBytecodeConstants
 
 import java.util.Collections
+import java.util.concurrent.CompletableFuture
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
-@ExtensionImpl(id = "scalaClassRenderer")
 class ScalaClassRenderer extends ClassRenderer {
 
   import ScalaClassRenderer._
@@ -51,25 +51,34 @@ class ScalaClassRenderer extends ClassRenderer {
     renderer.calcLabel(descriptor, context, labelListener)
   }
 
-  override def isApplicable(tpe: Type): Boolean = isApplicableFor(tpe)
-
   final override def buildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit =
-    buildChildrenOrShowError(builder)(doBuildChildren(value, builder, context))
+    buildChildrenOrShowError(builder)(buildChildrenAsync(value, builder, context))
 
-  // upstream: fields are collected asynchronously (buildChildrenAsync), consulo-java renderers are synchronous
-  protected def doBuildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+  /**
+   * Adds the children of `value` to `builder`. If they cannot be built, the returned future fails and [[buildChildren]]
+   * shows the error in the node, instead of leaving it at "Collecting data".
+   */
+  protected def buildChildrenAsync(value: Value, builder: ChildrenBuilder, context: EvaluationContext): CompletableFuture[Unit] = {
     val ref = value.asInstanceOf[ObjectReference]
     val project = context.getProject
-    val toShow = ref.referenceType().allFields().asScala.filter(shouldDisplay(context, ref, _))
-    val nodeManager = builder.getNodeManager
-    if (toShow.isEmpty) {
-      builder.setChildren(Collections.singletonList(nodeManager.createMessageNode(JavaDebuggerLocalize.messageNodeClassNoFieldsToDisplay())))
-    } else {
-      val nodes = toShow.map { field =>
-        nodeManager.createNode(fieldDescriptor(project, ref, field, context), context)
+
+    def buildFields(fields: Seq[Field]): CompletableFuture[Unit] = onDebuggerManagerThread(context) {
+      val toShow = fields.filter(shouldDisplay(context, ref, _))
+      val nodeManager = builder.getNodeManager
+      if (toShow.isEmpty) {
+        builder.setChildren(Collections.singletonList(nodeManager.createMessageNode(JavaDebuggerLocalize.messageNodeClassNoFieldsToDisplay())))
+      } else {
+        val nodes = toShow.map { field =>
+          nodeManager.createNode(fieldDescriptor(project, ref, field, context), context)
+        }
+        builder.setChildren(nodes.asJava)
       }
-      builder.setChildren(nodes.asJava)
     }
+
+    for {
+      fields <- DebuggerUtilsAsync.allFields(ref.referenceType())
+      _ <- buildFields(fields.asScala.toSeq)
+    } yield ()
   }
 
   override def getChildValueExpression(node: DebuggerTreeNode, context: DebuggerContext): PsiElement =

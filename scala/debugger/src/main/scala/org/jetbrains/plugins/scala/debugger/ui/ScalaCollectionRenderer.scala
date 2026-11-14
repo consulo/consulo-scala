@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.scala.debugger
 package ui
 
-import consulo.annotation.component.ExtensionImpl
 import com.intellij.java.debugger.engine.evaluation.EvaluationContext
 import com.intellij.java.debugger.impl.engine.evaluation.expression.{Evaluator, ExpressionEvaluatorImpl, IdentityEvaluator}
 import com.intellij.java.debugger.engine.evaluation.expression.ExpressionEvaluator
@@ -10,15 +9,17 @@ import com.intellij.java.debugger.impl.engine.JVMNameUtil
 import com.intellij.java.debugger.impl.ui.tree.render.{ChildrenBuilder, DescriptorLabelListener}
 import com.intellij.java.debugger.ui.tree.NodeDescriptor
 import com.intellij.java.debugger.impl.ui.tree.ValueDescriptor
+import consulo.execution.debug.ui.XDebuggerUIConstants
 import consulo.util.dataholder.Key
 import consulo.internal.com.sun.jdi._
 import org.jetbrains.plugins.scala.debugger.DebuggerBundle
 import org.jetbrains.plugins.scala.debugger.evaluation.evaluator._
 import org.jetbrains.plugins.scala.debugger.filters.ScalaDebuggerSettings
+import org.jetbrains.plugins.scala.debugger.ui.util._
 
+import java.util.concurrent.CompletableFuture
 import scala.jdk.CollectionConverters._
 
-@ExtensionImpl(id = "scalaCollectionRenderer", order = "before scalaClassRenderer")
 class ScalaCollectionRenderer extends ScalaClassRenderer {
 
   import ScalaCollectionRenderer._
@@ -34,62 +35,93 @@ class ScalaCollectionRenderer extends ScalaClassRenderer {
   override def isEnabled: Boolean =
     ScalaDebuggerSettings.getInstance().FRIENDLY_COLLECTION_DISPLAY_ENABLED
 
-  // upstream: the renderer API is asynchronous, consulo-java renderers are called on the debugger manager thread
-  override def isExpandable(value: Value, context: EvaluationContext, parentDescriptor: NodeDescriptor): Boolean =
-    evaluateNonEmpty(value.asInstanceOf[ObjectReference], context)
+  override def isExpandableAsync(value: Value, context: EvaluationContext, parentDescriptor: NodeDescriptor): CompletableFuture[java.lang.Boolean] = {
+    val ref = value.asInstanceOf[ObjectReference]
+    onDebuggerManagerThread(context)(evaluateNonEmpty(ref, context))
+  }
 
   override def calcLabel(descriptor: ValueDescriptor, context: EvaluationContext, listener: DescriptorLabelListener): String = {
     val ref = descriptor.getValue.asInstanceOf[ObjectReference]
-    val hasDefiniteSize = evaluateHasDefiniteSize(ref, context)
-    val size = if (hasDefiniteSize) evaluateSize(ref, context).toString else "?"
-    s"size = $size"
+
+    onDebuggerManagerThread(context) {
+      val hasDefiniteSize = evaluateHasDefiniteSize(ref, context)
+      val size = if (hasDefiniteSize) evaluateSize(ref, context).toString else "?"
+      s"size = $size"
+    }.attempt.flatTap {
+      case Left(t) =>
+        onDebuggerManagerThread(context) {
+          descriptor.setValueLabelFailed(evaluationExceptionFromThrowable(t))
+          listener.labelChanged()
+        }
+      case Right(label) =>
+        onDebuggerManagerThread(context) {
+          descriptor.setValueLabel(label)
+          listener.labelChanged()
+        }
+    }.rethrow.getNow(XDebuggerUIConstants.COLLECTING_DATA_MESSAGE.get())
   }
 
-  override protected def doBuildChildren(value: Value, builder: ChildrenBuilder, context: EvaluationContext): Unit = {
+  override protected def buildChildrenAsync(value: Value, builder: ChildrenBuilder, context: EvaluationContext): CompletableFuture[Unit] = {
     val ref = value.asInstanceOf[ObjectReference]
     val startIndex = nextIndex(builder, context)
-    if (evaluateHasDefiniteSize(ref, context)) renderStrictCollection(ref, builder, context, startIndex)
-    else renderNonStrictCollection(ref, builder, context, startIndex)
+
+    for {
+      strict <- onDebuggerManagerThread(context)(evaluateHasDefiniteSize(ref, context))
+      _ <- if (strict) renderStrictCollection(ref, builder, context, startIndex) else renderNonStrictCollection(ref, builder, context, startIndex)
+    } yield ()
   }
 
-  private def renderStrictCollection(ref: ObjectReference, builder: ChildrenBuilder, context: EvaluationContext, index: Int): Unit = {
-    val vector = evaluateVectorSlice(ref, index, 100, context)
-    val vectorSize = evaluateSize(vector, context)
-    val descs = (0 until vectorSize).map { i =>
-      val v = evaluateVectorApply(vector, i, context)
-      val desc = new CollectionElementDescriptor(context.getProject, i + index, v)
-      builder.getNodeManager.createNode(desc, context)
+  private def renderStrictCollection(ref: ObjectReference, builder: ChildrenBuilder, context: EvaluationContext, index: Int): CompletableFuture[Unit] =
+    onDebuggerManagerThread(context) {
+      val vector = evaluateVectorSlice(ref, index, 100, context)
+      val vectorSize = evaluateSize(vector, context)
+      val descs = (0 until vectorSize).map { i =>
+        val v = evaluateVectorApply(vector, i, context)
+        val desc = new CollectionElementDescriptor(context.getProject, i + index, v)
+        builder.getNodeManager.createNode(desc, context)
+      }
+      val size = evaluateSize(ref, context)
+      val remaining = math.max(size - vectorSize - index, 0)
+      if (remaining == 0)
+        builder.addChildren(descs.asJava, true)
+      else {
+        builder.addChildren(descs.asJava, false)
+        // upstream: `tooManyChildren` takes a callback rendering the next part
+        setNextIndex(builder, context, index + vectorSize)
+        builder.tooManyChildren(remaining)
+      }
     }
-    val size = evaluateSize(ref, context)
-    val remaining = math.max(size - vectorSize - index, 0)
-    if (remaining == 0)
-      builder.addChildren(descs.asJava, true)
-    else {
-      builder.addChildren(descs.asJava, false)
-      setNextIndex(builder, context, index + vectorSize)
-      builder.tooManyChildren(remaining)
-    }
-  }
 
-  private def renderNonStrictCollection(ref: ObjectReference, builder: ChildrenBuilder, context: EvaluationContext, index: Int): Unit = {
-    val newIndex = index + 10
-    val nodes = (index until newIndex).iterator.map { n =>
-      val vector = evaluateVectorSlice(ref, n, 1, context)
-      if (evaluateSize(vector, context) == 1) {
-        val desc = new CollectionElementDescriptor(context.getProject, n, evaluateVectorApply(vector, 0, context))
-        Some(builder.getNodeManager.createNode(desc, context))
-      } else None
-    }.takeWhile(_.isDefined).flatten.toList
+  private def renderNonStrictCollection(ref: ObjectReference, builder: ChildrenBuilder, context: EvaluationContext, index: Int): CompletableFuture[Unit] =
+    onDebuggerManagerThread(context) {
+      def renderNextElement(index: Int): CompletableFuture[Boolean] = onDebuggerManagerThread(context) {
+        val vector = evaluateVectorSlice(ref, index, 1, context)
+        val length = evaluateSize(vector, context)
+        if (length == 1) {
+          val desc = new CollectionElementDescriptor(context.getProject, index, evaluateVectorApply(vector, 0, context))
+          val node = builder.getNodeManager.createNode(desc, context)
+          builder.addChildren(List(node).asJava, false)
+        }
+        length == 1
+      }
 
-    val hasDefiniteSize = evaluateHasDefiniteSize(ref, context)
-    if (!hasDefiniteSize && nodes.size == newIndex - index) {
-      builder.addChildren(nodes.asJava, false)
-      setNextIndex(builder, context, newIndex)
-      builder.tooManyChildren(-1)
-    } else {
-      builder.addChildren(nodes.asJava, true)
-    }
-  }
+      val newIndex = index + 10
+      for {
+        rendered <- (index until newIndex)
+          .map(n => () => renderNextElement(n))
+          .foldLeft(CompletableFuture.completedFuture(true))((acc, fn) => acc.flatMap(more => if (more) fn() else CompletableFuture.completedFuture(false)))
+        _ <- onDebuggerManagerThread(context) {
+          val hasDefiniteSize = evaluateHasDefiniteSize(ref, context)
+          if (!hasDefiniteSize && rendered) {
+            // upstream: `tooManyChildren` takes a callback rendering the next part
+            setNextIndex(builder, context, newIndex)
+            builder.tooManyChildren(-1)
+          } else {
+            builder.addChildren(List.empty.asJava, true)
+          }
+        }
+      } yield ()
+    }.flatten
 }
 
 private[debugger] object ScalaCollectionRenderer {

@@ -37,8 +37,8 @@ fetch_plugin org.jetbrains.idea.maven
 fetch_plugin org.jetbrains.plugins.gradle
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api,
-# debugger APIs in java-debugger-impl, the generate.tostring export of the plugin module consulo.java)
-for artifact in consulo.java-java.language.api consulo.java-java.compiler.impl consulo.java-java.debugger.impl consulo.java; do
+# debugger APIs in java-debugger-api/impl (async renderers, CompoundRendererProvider), the generate.tostring export of the plugin module consulo.java)
+for artifact in consulo.java-java.language.api consulo.java-java.compiler.impl consulo.java-java.debugger.api consulo.java-java.debugger.impl consulo.java; do
   local_jar=$(ls ~/.m2/repository/consulo/plugin/$artifact/3-SNAPSHOT/$artifact-3-SNAPSHOT.jar)
   cp "$local_jar" "$DEPS/consulo.java/lib/$artifact-3-SNAPSHOT.jar"
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "$artifact-3-SNAPSHOT.jar"

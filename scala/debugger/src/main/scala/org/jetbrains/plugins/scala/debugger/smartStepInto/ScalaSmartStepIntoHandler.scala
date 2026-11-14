@@ -4,7 +4,10 @@ import consulo.annotation.component.ExtensionImpl
 
 import com.intellij.java.debugger.SourcePosition
 import com.intellij.java.debugger.impl.actions.{JvmSmartStepIntoHandler, MethodSmartStepTarget, SmartStepTarget}
-import com.intellij.java.debugger.impl.engine.MethodFilter
+import com.intellij.java.debugger.impl.PrioritizedTask.Priority
+import com.intellij.java.debugger.impl.{DebuggerSession, PrioritizedTask}
+import com.intellij.java.debugger.impl.engine.events.DebuggerContextCommandImpl
+import com.intellij.java.debugger.impl.engine.{MethodFilter, SuspendContextImpl}
 import consulo.application.ReadAction
 import consulo.document.FileDocumentManager
 import consulo.document.util.TextRange
@@ -28,16 +31,50 @@ import org.jetbrains.plugins.scala.statistics.ScalaDebuggerUsagesCollector
 import org.jetbrains.plugins.scala.util.AnonymousFunction
 
 import java.util.Collections
+import java.util.concurrent.CompletableFuture
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
+import scala.util.control.NonFatal
 
 @ExtensionImpl
 class ScalaSmartStepIntoHandler extends JvmSmartStepIntoHandler {
 
-  // upstream: async smart step into and the "always smart step into" setting are not supported by consulo-java
-  override def findSmartStepTargets(position: SourcePosition): java.util.List[SmartStepTarget] =
-    ReadAction.compute(() => doFindSmartStepTargets(position))
+  override def findSmartStepTargets(position: SourcePosition): java.util.List[SmartStepTarget] = {
+    throw new IllegalStateException("Should not be used")
+  }
+
+  // upstream: Promise; "Step Into" of the Consulo platform does not ask for these targets yet
+  override def findStepIntoTargets(position: SourcePosition, session: DebuggerSession): CompletableFuture[java.util.List[SmartStepTarget]] = {
+    if (ScalaDebuggerSettings.getInstance().ALWAYS_SMART_STEP_INTO) {
+      findSmartStepTargetsAsync(position, session)
+    }
+    else {
+      CompletableFuture.failedFuture(new UnsupportedOperationException())
+    }
+  }
+
+  override def findSmartStepTargetsAsync(position: SourcePosition, session: DebuggerSession): CompletableFuture[java.util.List[SmartStepTarget]] = {
+    val res = new CompletableFuture[java.util.List[SmartStepTarget]]()
+    val context = session.getContextManager.getContext
+    context.getDebugProcess.getManagerThread.schedule(new DebuggerContextCommandImpl(context) {
+      override def threadAction(suspendContext: SuspendContextImpl): Unit = {
+        try res.complete(ReadAction.compute(() => doFindSmartStepTargets(position)))
+        catch {
+          case t: Throwable =>
+            res.completeExceptionally(t)
+            if (!NonFatal(t)) throw t
+        }
+      }
+
+      override def commandCancelled(): Unit = {
+        res.cancel(false)
+      }
+
+      override def getPriority: PrioritizedTask.Priority = Priority.NORMAL
+    })
+    res
+  }
 
   @TestOnly
   private[smartStepInto] def findSmartStepTargetsInTests(position: SourcePosition): java.util.List[SmartStepTarget] =
