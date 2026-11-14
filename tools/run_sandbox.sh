@@ -39,7 +39,7 @@ for module in java.language.api java.compiler.impl; do
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "consulo.java-$module-3-SNAPSHOT.jar"
 done
 
-(cd "$REPO" && mvn -o -q install -pl plugin -am -DskipTests -Dmaven.build.cache.enabled=false)
+(cd "$REPO" && mvn -q install -pl plugin -am -DskipTests -Dmaven.build.cache.enabled=false)
 
 if ! pgrep -f "Xvfb :$DISPLAY_NUM" >/dev/null; then
   Xvfb ":$DISPLAY_NUM" -screen 0 1600x1000x24 >/dev/null 2>&1 &
