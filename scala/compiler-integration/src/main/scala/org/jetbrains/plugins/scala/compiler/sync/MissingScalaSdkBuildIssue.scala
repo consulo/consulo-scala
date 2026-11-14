@@ -1,20 +1,21 @@
 package org.jetbrains.plugins.scala.compiler.sync
 
-import com.intellij.build.issue.{BuildIssue, BuildIssueQuickFix}
-import com.intellij.openapi.project.Project
-import com.intellij.pom.Navigatable
-import org.jetbrains.plugins.scala.compiler.CompilerIntegrationBundle
+import consulo.build.ui.issue.{BuildIssue, BuildIssueQuickFix}
+import consulo.localize.LocalizeValue
+import consulo.navigation.Navigatable
+import consulo.project.Project
+import org.jetbrains.plugins.scala.integration.compiler.CompilerIntegrationBundle
 
 //noinspection ApiStatus,UnstableApiUsage
 private final class MissingScalaSdkBuildIssue(moduleNames: Seq[String], quickFix: Option[BuildIssueQuickFix]) extends BuildIssue {
-  override def getTitle: String = moduleNames match {
+  override def getTitle: LocalizeValue = LocalizeValue.of(moduleNames match {
     case Seq() => CompilerIntegrationBundle.message("missing.scala.sdk.build.issue.title.no.module")
     case modules =>
       val quoted = modules.map(quotedName).mkString(", ")
       CompilerIntegrationBundle.message("missing.scala.sdk.build.issue.title.modules", modules.length, quoted)
-  }
+  })
 
-  override def getDescription: String = {
+  override def getDescription: LocalizeValue = {
     val moduleDescription =
       if (moduleNames.isEmpty) CompilerIntegrationBundle.message("missing.scala.sdk.build.issue.description.no.module")
       else {
@@ -26,7 +27,7 @@ private final class MissingScalaSdkBuildIssue(moduleNames: Seq[String], quickFix
       case Some(fix) => CompilerIntegrationBundle.message("missing.scala.sdk.build.issue.description.sync.quick.fix", fix.getId)
       case None => CompilerIntegrationBundle.message("missing.scala.sdk.build.issue.description.check.project.structure")
     }
-    Seq(moduleDescription, misconfiguration, syncSuggestion).mkString("\n")
+    LocalizeValue.of(Seq(moduleDescription, misconfiguration, syncSuggestion).mkString("\n"))
   }
 
   override def getQuickFixes: java.util.List[BuildIssueQuickFix] = quickFix match {

@@ -1,27 +1,30 @@
 package org.jetbrains.plugins.scala.compiler.sync
 
-import com.intellij.build.events.MessageEvent
-import com.intellij.build.issue.BuildIssue
-import com.intellij.compiler.progress.BuildIssueContributor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.pom.Navigatable
-import org.jetbrains.plugins.scala.compiler.MissingScalaSdk
+import consulo.annotation.component.ExtensionImpl
+import consulo.build.ui.event.MessageEvent
+import consulo.build.ui.issue.BuildIssue
+import consulo.compiler.BuildIssueContributor
+import consulo.localize.LocalizeValue
+import consulo.navigation.Navigatable
+import consulo.project.Project
+import org.jetbrains.plugins.scala.shared.compiler.MissingScalaSdk
 
+import java.nio.file.Path
 import scala.jdk.CollectionConverters._
 
 //noinspection ApiStatus,UnstableApiUsage
-private final class MissingScalaSdkBuildIssueContributor extends BuildIssueContributor {
+@ExtensionImpl
+final class MissingScalaSdkBuildIssueContributor extends BuildIssueContributor {
   override def createBuildIssue(
     project: Project,
     moduleNames: java.util.Collection[String],
-    title: String,
-    message: String,
+    title: LocalizeValue,
+    message: LocalizeValue,
     kind: MessageEvent.Kind,
-    virtualFile: VirtualFile,
+    file: Path,
     navigatable: Navigatable
   ): BuildIssue = {
-    if (!isMissingScalaSdkMessage(message, kind)) return null
+    if (!isMissingScalaSdkMessage(message.get, kind)) return null
 
     val handlers = BuildToolProjectSyncHelper.projectSyncHandlers(project)
     val (externalSystemHandlers, customHandlers) = handlers.partitionMap {

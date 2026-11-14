@@ -1,17 +1,23 @@
 package org.jetbrains.plugins.scala.compiler.sync
 
-import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.actionSystem.{ActionUiKind, AnActionEvent, DataContext}
-import com.intellij.openapi.externalSystem.action.RefreshAllExternalProjectsAction
-import com.intellij.openapi.project.Project
-
-import scala.annotation.nowarn
+import consulo.dataContext.DataContext
+import consulo.project.Project
+import consulo.ui.ex.action.{ActionManager, AnActionEvent, AnActionWithSyncUpdate}
 
 private object ExternalSystemSyncAction extends SyncAction {
+  // RefreshAllExternalProjectsAction is an internal class, registered by id
+  private final val RefreshAllExternalProjectsActionId = "ExternalSystem.RefreshAllProjects"
+
   override def syncProject(project: Project, dataContext: DataContext): Unit = {
-    //noinspection ApiStatus,UnstableApiUsage
-    val refreshAction = new RefreshAllExternalProjectsAction()
-    val event = AnActionEvent.createEvent(refreshAction, dataContext, null, "", ActionUiKind.NONE, null)
-    ActionUtil.invokeAction(refreshAction, event, null): @nowarn("cat=deprecation")
+    val refreshAction = ActionManager.getInstance().getAction(RefreshAllExternalProjectsActionId)
+    if (refreshAction eq null) return
+    val event = AnActionEvent.createFromAnAction(refreshAction, null, "", dataContext)
+    refreshAction match {
+      case action: AnActionWithSyncUpdate => action.update(event)
+      case _ =>
+    }
+    if (event.getPresentation.isEnabled) {
+      refreshAction.actionPerformed(event)
+    }
   }
 }

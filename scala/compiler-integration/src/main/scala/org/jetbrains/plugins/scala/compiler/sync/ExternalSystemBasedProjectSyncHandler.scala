@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.compiler.sync
 
-import com.intellij.openapi.externalSystem.model.ProjectSystemId
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.project.Project
+import consulo.externalSystem.model.ProjectSystemId
+import consulo.externalSystem.util.ExternalSystemApiUtil
+import consulo.module.ModuleManager
+import consulo.project.Project
 
 abstract class ExternalSystemBasedProjectSyncHandler(projectSystemId: ProjectSystemId) extends BuildToolProjectSyncHelper {
   override def projectSyncHandler(project: Project): Option[ProjectSyncHandler] = {

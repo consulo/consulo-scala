@@ -15,6 +15,7 @@ import org.jetbrains.plugins.scala.compiler.data.IncrementalityType
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
+import org.jetbrains.plugins.scala.shared.compiler.MissingScalaSdk
 
 import java.nio.file.{Files, Path}
 import java.util.function.Consumer
@@ -57,7 +58,7 @@ final class ScalaCompiler @Inject()(project: Project) extends TranslatingCompile
 
     if (!inReadAction(modules.exists(_.hasScala))) {
       if (dirtyFiles.exists(_.getFileName.toString.endsWith(ScalaCompiler.ScalaExtension)))
-        context.newWarning(LocalizeValue.localizeTODO(s"No Scala SDK in module(s) ${modules.map(_.getName).mkString(", ")}, Scala files are skipped")).add()
+        ScalaCompiler.warnChunkHasNoScalaSdk(context, modules)
       return
     }
 
@@ -97,4 +98,14 @@ final class ScalaCompiler @Inject()(project: Project) extends TranslatingCompile
 object ScalaCompiler {
   private[consulo] val ScalaExtension = ".scala"
   private[consulo] val JavaExtension = ".java"
+
+  // This message doesn't need to be localised because it is not presented to the user.
+  // It is instead handled by MissingScalaSdkBuildIssueContributor.
+  private def warnChunkHasNoScalaSdk(context: CompileContext, modules: Seq[Module]): Unit = {
+    val presentableShortName = modules.head.getName + (if (modules.size > 1) s" and ${modules.size - 1} more" else "")
+    val message = MissingScalaSdk.skippedModuleMessage(presentableShortName)
+    context.newWarning(LocalizeValue.of(s"${MissingScalaSdk.MessagePrefix}: $message"))
+      .moduleNames(modules.map(_.getName).asJava)
+      .add()
+  }
 }

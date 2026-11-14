@@ -113,6 +113,7 @@ open module org.intellij.scala.gradle {
     requires org.intellij.scala.compiler.shared;
     requires org.intellij.scala.sbt.api;
     requires org.intellij.scala.sbt.impl;
+    requires org.intellij.scala.compiler.integration;
     requires org.jetbrains.plugins.gradle.api;
     requires org.jetbrains.plugins.gradle.tooling;
 
