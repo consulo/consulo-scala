@@ -1,0 +1,23 @@
+# Consulo platform modules changed for the port and not yet in a hub build (maven artifactId per line)
+consulo-language-editor-api
+consulo-version-control-system-impl
+consulo-ide-impl
+consulo-language-copyright-api
+consulo-language-copyright-impl
+consulo-ide-api
+consulo-execution-debug-api
+consulo-execution-debug-impl
+consulo-undo-redo-api
+consulo-code-editor-api
+consulo-code-editor-impl
+consulo-language-editor-impl
+consulo-language-editor-refactoring-api
+consulo-desktop-awt-ide-impl
+consulo-compiler-api
+consulo-compiler-impl
+consulo-external-system-impl
+consulo-execution-api
+consulo-execution-impl
+consulo-language-api
+consulo-language-editor-refactoring-impl
+consulo-base-icon-library

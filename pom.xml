@@ -85,6 +85,7 @@
         <module>scala/compiler-consulo</module>
         <module>sbt/sbt-impl</module>
         <module>scala/integration/properties</module>
+        <module>scala/compiler-highlighting</module>
         <module>scala/worksheet</module>
         <module>scala/test-integration/testing-support</module>
         <module>scala/integration/maven</module>
@@ -96,6 +97,7 @@
         <module>bsp/bsp-junit</module>
         <module>scala-cli</module>
         <module>scala/integration/devKit</module>
+        <module>scala/compiler-integration</module>
         <module>plugin</module>
     </modules>
 

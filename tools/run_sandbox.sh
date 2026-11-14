@@ -37,8 +37,8 @@ fetch_plugin org.jetbrains.idea.maven
 fetch_plugin org.jetbrains.plugins.gradle
 
 # overlay: consulo.java modules changed locally for the port and not yet published (JvmLanguage in java-language-api,
-# debugger APIs in java-debugger-api/impl (async renderers, CompoundRendererProvider), the generate.tostring export of the plugin module consulo.java)
-for artifact in consulo.java-java.language.api consulo.java-java.compiler.impl consulo.java-java.debugger.api consulo.java-java.debugger.impl consulo.java; do
+# debugger APIs in java-debugger-api/impl (async renderers, CompoundRendererProvider), the generate.tostring export of the plugin module consulo.java), console decoration (JavaConsoleDecorator) in java-execution-api/impl
+for artifact in consulo.java-java.language.api consulo.java-java.compiler.impl consulo.java-java.debugger.api consulo.java-java.debugger.impl consulo.java-java.execution.api consulo.java-java.execution.impl consulo.java; do
   local_jar=$(ls ~/.m2/repository/consulo/plugin/$artifact/3-SNAPSHOT/$artifact-3-SNAPSHOT.jar)
   cp "$local_jar" "$DEPS/consulo.java/lib/$artifact-3-SNAPSHOT.jar"
   python3 "$REPO/tools/reindex_plugin_jar.py" "$DEPS/consulo.java" "$artifact-3-SNAPSHOT.jar"
@@ -58,6 +58,9 @@ cp "$GRADLE_M2/org.jetbrains.plugins.gradle-tooling.extension.api/3-SNAPSHOT/org
 cp "$GRADLE_M2/org.jetbrains.plugins.gradle-tooling-extension.impl/3-SNAPSHOT/org.jetbrains.plugins.gradle-tooling-extension.impl-3-SNAPSHOT.jar" \
   "$DEPS/org.jetbrains.plugins.gradle/gradle-rt/gradle-ext-impl.jar"
 
+# bindings of deleted/renamed registered classes, which the incremental build would keep in target/
+python3 "$REPO/tools/clean_stale_bindings.py"
+
 # modules online; the plugin packaging offline - its dependency workspace would ask the hub for the platform build number
 # of the local platform jars (may be a local 9999 build), the dependencies are fetched above instead
 (cd "$REPO" && mvn -q install -pl '!plugin' -DskipTests -Dmaven.build.cache.enabled=false)
@@ -68,4 +71,8 @@ if ! pgrep -f "Xvfb :$DISPLAY_NUM" >/dev/null; then
   sleep 1
   DISPLAY=":$DISPLAY_NUM" openbox >/dev/null 2>&1 &
 fi
+# overlay: platform modules changed locally for the port (tools/platform_overlay.txt); applies to the platform builds
+# already downloaded into the sandbox (a new hub build is downloaded by the run below - run the script again then)
+python3 "$REPO/tools/overlay_platform.py" "$MODULE/sandbox"
+
 cd "$MODULE" && DISPLAY=":$DISPLAY_NUM" mvn consulo:run-desktop-awt-fork

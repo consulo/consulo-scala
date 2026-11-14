@@ -21,4 +21,6 @@ open module org.intellij.scala.plugin {
     requires transitive org.intellij.scala.text.analysis;
     requires transitive org.intellij.scala.bsp.impl;
     requires transitive org.intellij.scala.cli;
+    requires transitive org.intellij.scala.compiler.highlighting;
+    requires transitive org.intellij.scala.compiler.integration;
 }
