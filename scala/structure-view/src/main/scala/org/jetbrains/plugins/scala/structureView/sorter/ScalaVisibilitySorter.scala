@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView.sorter
 
-import com.intellij.ide.structureView.impl.java.VisibilitySorter
+import com.intellij.java.impl.ide.structureView.impl.java.VisibilitySorter
 import org.jetbrains.annotations.NonNls
 
 object ScalaVisibilitySorter extends VisibilitySorter {

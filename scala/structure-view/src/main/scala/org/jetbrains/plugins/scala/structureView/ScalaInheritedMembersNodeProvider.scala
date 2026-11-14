@@ -1,13 +1,14 @@
 package org.jetbrains.plugins.scala.structureView
 
-import consulo.application.AllIcons
-import com.intellij.ide.structureView.StructureViewBundle
-import com.intellij.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement}
-import com.intellij.ide.util.FileStructureNodeProvider
-import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, TreeElement}
+import consulo.fileEditor.localize.FileEditorLocalize
+import consulo.localize.LocalizeValue
+import consulo.platform.base.icon.PlatformIconGroup
+import com.intellij.java.impl.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement}
+import consulo.fileEditor.structureView.tree.FileStructureNodeProvider
+import consulo.fileEditor.structureView.tree.{ActionPresentation, ActionPresentationData, TreeElement}
 import com.intellij.java.language.JavaLanguage
 import consulo.ui.ex.action.Shortcut
-import com.intellij.openapi.keymap.KeymapManager
+import consulo.ui.ex.keymap.KeymapManager
 import consulo.application.dumb.IndexNotReadyException
 import com.intellij.java.language.psi.util.PsiUtil
 import consulo.language.psi.PsiElement
@@ -56,7 +57,7 @@ class ScalaInheritedMembersNodeProvider extends FileStructureNodeProvider[TreeEl
                     case _ =>
                   }
                   case field: PsiField if field.containingClass != clazz =>
-                    children.add(PsiFieldTreeElement(field, true))
+                    children.add(new PsiFieldTreeElement(field, true))
                   case _ =>
                 }
             }
@@ -86,12 +87,12 @@ class ScalaInheritedMembersNodeProvider extends FileStructureNodeProvider[TreeEl
     }
   }
 
-  override def getCheckBoxText: String = StructureViewBundle.message("file.structure.toggle.show.inherited")
+  override def getCheckBoxText: String = FileEditorLocalize.fileStructureToggleShowInherited().get
 
   override def getShortcut: Array[Shortcut] = KeymapManager.getInstance.getActiveKeymap.getShortcuts("FileStructurePopup")
 
   override def getPresentation: ActionPresentation = new ActionPresentationData(
-    StructureViewBundle.message("action.structureview.show.inherited"), null, AllIcons.Hierarchy.Supertypes)
+    FileEditorLocalize.actionStructureviewShowInherited(), LocalizeValue.empty(), PlatformIconGroup.hierarchySupertypes())
 
   override def getName: String = ScalaInheritedMembersNodeProvider.ID
 }

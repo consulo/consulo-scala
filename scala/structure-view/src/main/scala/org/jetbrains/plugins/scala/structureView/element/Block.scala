@@ -1,19 +1,19 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import consulo.language.psi.PsiElement
-import com.intellij.ui.{IconManager, PlatformIcons}
+import consulo.platform.base.icon.PlatformIconGroup
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ScBlock, ScBlockExpr}
 import org.jetbrains.plugins.scala.lang.psi.api.statements.*
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.*
 import org.jetbrains.plugins.scala.structureView.element.Block.childrenOf
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 private class Block(block: ScBlock) extends AbstractTreeElementDelegatingChildrenToPsi(block) {
-  override def getIcon(open: Boolean): Icon = IconManager.getInstance.getPlatformIcon(PlatformIcons.ClassInitializer)
+  override def getIcon: Image = PlatformIconGroup.nodesClassinitializer()
 
-  override def getPresentableText: String = ""
+  override def presentableText: String = ""
 
   override def children: Seq[PsiElement] = childrenOf(block)
 

@@ -1,11 +1,10 @@
 package org.jetbrains.plugins.scala.structureView // Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 
-import com.intellij.ide.structureView.impl.java.JavaStructureViewBundle
-import com.intellij.ide.util.FileStructureNodeProvider
-import com.intellij.ide.util.treeView.smartTree.{ActionPresentationData, TreeElement}
+import consulo.fileEditor.structureView.tree.FileStructureNodeProvider
+import consulo.fileEditor.structureView.tree.{ActionPresentationData, TreeElement}
 import consulo.ui.ex.action.Shortcut
-import com.intellij.openapi.util.PropertyOwner
-import com.intellij.ui.{IconManager, PlatformIcons}
+import consulo.java.analysis.codeInsight.JavaCodeInsightBundle
+import consulo.platform.base.icon.PlatformIconGroup
 import org.jetbrains.plugins.scala.extensions.PsiElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunctionDefinition, ScValueOrVariableDefinition}
@@ -19,22 +18,21 @@ import java.util.Collections
 import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
- * Created by analog with [[com.intellij.ide.structureView.impl.java.JavaAnonymousClassesNodeProvider]]
+ * Created by analog with [[com.intellij.java.impl.ide.structureView.impl.java.JavaAnonymousClassesNodeProvider]]
  */
 final class ScalaAnonymousClassesNodeProvider
-  extends FileStructureNodeProvider[ScalaAnonymousClassTreeElement]
-    with PropertyOwner {
+  extends FileStructureNodeProvider[ScalaAnonymousClassTreeElement] {
 
   override def getName: String = ScalaAnonymousClassesNodeProvider.ID
 
-  override def getCheckBoxText: String = JavaStructureViewBundle.message("file.structure.toggle.show.anonymous.classes")
+  override def getCheckBoxText: String = JavaCodeInsightBundle.message("file.structure.toggle.show.anonymous.classes")
 
   override def getPresentation: ActionPresentationData =
-    new ActionPresentationData(getCheckBoxText, null, IconManager.getInstance.getPlatformIcon(PlatformIcons.AnonymousClass))
+    new ActionPresentationData(getCheckBoxText, null, PlatformIconGroup.nodesAnonymousclass())
 
   override def getShortcut: Array[Shortcut] = Array()
 
-  override def getPropertyName: String = ScalaAnonymousClassesNodeProvider.SCALA_ANONYMOUS_PROPERTY_NAME
+  override def getSerializePropertyName: String = ScalaAnonymousClassesNodeProvider.SCALA_ANONYMOUS_PROPERTY_NAME
 
   override def provideNodes(node: TreeElement): util.Collection[ScalaAnonymousClassTreeElement] = {
     node match {

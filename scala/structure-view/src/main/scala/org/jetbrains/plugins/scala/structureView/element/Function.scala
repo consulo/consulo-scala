@@ -11,7 +11,7 @@ private class Function(function: ScFunction, inherited: Boolean)
 
   override def location: Option[String] = Option(function.containingClass).map(_.name)
 
-  override def getPresentableText: String = {
+  override def presentableText: String = {
     val presentation = renderFunctionFromStubs(function)
     withSimpleNames(presentation)
   }

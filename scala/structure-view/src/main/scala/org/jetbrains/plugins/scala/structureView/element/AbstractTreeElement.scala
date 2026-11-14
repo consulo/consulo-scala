@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.ide.util.treeView.smartTree.TreeElement
+import consulo.fileEditor.structureView.tree.TreeElement
 import consulo.navigation.ItemPresentation
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.util.HashBuilder.*

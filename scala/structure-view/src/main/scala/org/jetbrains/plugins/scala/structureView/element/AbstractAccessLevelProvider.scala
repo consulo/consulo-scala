@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.ide.structureView.impl.java.AccessLevelProvider
+import com.intellij.java.impl.ide.structureView.impl.java.AccessLevelProvider
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -15,7 +15,7 @@ trait AbstractAccessLevelProvider extends AccessLevelProvider { self: Element =>
 
   override def getAccessLevel: Int = getAccessLevel(self.element)
 
-  protected def getAccessLevel(element: PsiElement): Int = element match
+  protected def getAccessLevel(element: PsiElement): Int = element match {
     case modifierListOwner@ScModifierListOwner.accessModifier(modifier) =>
       if (modifier.isPrivate) {
         if (modifierListOwner.getContext.is[ScFile, ScPackaging])
@@ -26,6 +26,7 @@ trait AbstractAccessLevelProvider extends AccessLevelProvider { self: Element =>
       else PsiUtil.ACCESS_LEVEL_PUBLIC
     case _: ScModifierListOwner => PsiUtil.ACCESS_LEVEL_PUBLIC
     case _ => UnknownAccessLevel
+  }
 }
 
 object AbstractAccessLevelProvider {

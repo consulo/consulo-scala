@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.ide.structureView.StructureViewTreeElement
-import com.intellij.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement, PsiMethodTreeElement}
-import com.intellij.ide.util.treeView.smartTree.TreeElement
-import com.intellij.navigation.ColoredItemPresentation
+import consulo.fileEditor.structureView.StructureViewTreeElement
+import com.intellij.java.impl.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement, PsiMethodTreeElement}
+import consulo.fileEditor.structureView.tree.TreeElement
+import consulo.ui.ex.ColoredItemPresentation
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.extensions.ObjectExt
@@ -57,12 +57,13 @@ object Element {
   def apply(fileProvider: () => ScalaFile): Element = new File(fileProvider)
 
   object inheritedMember {
-    def unapply(element: TreeElement): Option[PsiMember] = element match
+    def unapply(element: TreeElement): Option[PsiMember] = element match {
       case e: ValOrVar               => Option.when(e.inherited)(e.parent)
       case e: Element if e.inherited => e.element.asOptionOf[PsiMember]
       case e: PsiFieldTreeElement    => Option.when(e.isInherited)(e.getField)
       case e: PsiMethodTreeElement   => Option.when(e.isInherited)(e.getMethod)
       case e: JavaClassTreeElement   => Option.when(e.isInherited)(e.getElement)
       case _                         => None
+    }
   }
 }

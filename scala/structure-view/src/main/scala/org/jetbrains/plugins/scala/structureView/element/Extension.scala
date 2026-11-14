@@ -10,7 +10,7 @@ final class Extension(extension: ScExtension)
   extends AbstractTreeElementDelegatingChildrenToPsi(extension)
     with InheritedLocationStringItemPresentation {
 
-  override def getPresentableText: String = {
+  override def presentableText: String = {
     val typeParameters = extension.typeParametersClause.fold("")(_.getTextByStub)
     val parametersText = FromStubsParameterRenderer.renderClauses(extension.allClauses)
     s"extension $typeParameters$parametersText"

@@ -1,11 +1,12 @@
 package org.jetbrains.plugins.scala.structureView
 
-import com.intellij.ide.structureView.impl.java.PsiMethodTreeElement
+import com.intellij.java.impl.ide.structureView.impl.java.PsiMethodTreeElement
 import com.intellij.java.language.psi.PsiMethod
+import consulo.localize.LocalizeValue
 
 private class PsiMethodTreeElementDecorator(method: PsiMethod, inherited: Boolean) extends PsiMethodTreeElement(method, inherited) {
-  override def getPresentableText: String =
-    PsiMethodTreeElementDecorator.asScalaType(super.getPresentableText)
+  override def getPresentableText: LocalizeValue =
+    LocalizeValue.of(PsiMethodTreeElementDecorator.asScalaType(super.getPresentableText.get))
 }
 
 private object PsiMethodTreeElementDecorator {

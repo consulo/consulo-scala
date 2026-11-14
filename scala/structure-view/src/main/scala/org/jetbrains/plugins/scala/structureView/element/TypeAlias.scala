@@ -12,7 +12,7 @@ private class TypeAlias(alias: ScTypeAlias, inherited: Boolean)
   override def location: Option[String] =
     Option(element.containingClass).map(_.name)
 
-  override def getPresentableText: String =
+  override def presentableText: String =
     getTypeAliasPresentableText(element)
 
   @Nls

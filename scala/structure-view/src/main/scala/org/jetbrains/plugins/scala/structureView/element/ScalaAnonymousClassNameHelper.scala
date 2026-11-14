@@ -3,7 +3,7 @@ package org.jetbrains.plugins.scala.structureView.element
 
 import consulo.util.dataholder.Key
 import consulo.application.util.{CachedValueProvider, CachedValuesManager}
-import com.intellij.psi.util.{ParameterizedCachedValue, ParameterizedCachedValueProvider}
+import consulo.application.util.{ParameterizedCachedValue, ParameterizedCachedValueProvider}
 import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition

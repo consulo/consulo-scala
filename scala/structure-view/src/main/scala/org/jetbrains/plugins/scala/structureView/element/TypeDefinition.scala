@@ -10,14 +10,14 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.*
 import org.jetbrains.plugins.scala.structureView.element.TypeDefinition.childrenOf
 import org.jetbrains.plugins.scala.util.ScalaElementPresentationUtil
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 class TypeDefinition(definition: ScTypeDefinition) extends AbstractTreeElementDelegatingChildrenToPsi(definition) {
 
-  override def getIcon(open: Boolean): Icon =
+  override def getIcon: Image =
     ScalaElementPresentationUtil.getTypeDefinitionIconWithKind(definition)
 
-  override def getPresentableText: String = {
+  override def presentableText: String = {
     val name = Option(definition.nameId).map(_.getText)
 
     val typeParameters = definition.typeParametersClause.map(_.typeParameters.map(_.name).mkString("[", ", ", "]"))

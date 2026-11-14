@@ -10,6 +10,6 @@ private class ValOrVarParameter(parameter: ScClassParameter, inherited: Boolean)
   override def location: Option[String] =
     Option(parameter.containingClass).map(_.name)
 
-  override def getPresentableText: String =
+  override def presentableText: String =
     withSimpleNames(parameter.name + parameter.paramType.map(t => ": " + t.getText).mkString)
 }

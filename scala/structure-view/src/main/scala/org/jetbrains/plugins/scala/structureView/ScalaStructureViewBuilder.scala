@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView
 
-import com.intellij.ide.structureView.{StructureViewModel, TreeBasedStructureViewBuilder}
+import consulo.fileEditor.structureView.{StructureViewModel, TreeBasedStructureViewBuilder}
 import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 

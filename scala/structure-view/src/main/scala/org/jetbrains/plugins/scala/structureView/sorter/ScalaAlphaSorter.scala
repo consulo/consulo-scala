@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.structureView.sorter
 
-import consulo.application.AllIcons
-import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, Sorter, SorterUtil}
-import com.intellij.openapi.editor.PlatformEditorBundle
+import consulo.fileEditor.structureView.tree.{ActionPresentation, ActionPresentationData, Sorter, SorterUtil}
+import consulo.fileEditor.localize.FileEditorLocalize
+import consulo.platform.base.icon.PlatformIconGroup
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.structureView.element.Test
 
@@ -21,15 +21,14 @@ object ScalaAlphaSorter extends Sorter() {
       case (_: Test, _: Test) => 0
       case (_, _: Test) => -1
       case (_: Test, _) => 1
-      case _ => SorterUtil.getStringPresentation(o1).compareToIgnoreCase(SorterUtil.getStringPresentation(o2))
+      case _ => SorterUtil.getStringPresentation(o1).get.compareToIgnoreCase(SorterUtil.getStringPresentation(o2).get)
     }
 
   override def getPresentation: ActionPresentation = {
-    val sortAlphabetically = PlatformEditorBundle.message("action.sort.alphabetically")
     new ActionPresentationData(
-      sortAlphabetically,
-      sortAlphabetically,
-      AllIcons.ObjectBrowser.Sorted
+      FileEditorLocalize.actionSortAlphabetically(),
+      FileEditorLocalize.actionSortAlphabetically(),
+      PlatformIconGroup.objectbrowserSorted()
     )
   }
 }

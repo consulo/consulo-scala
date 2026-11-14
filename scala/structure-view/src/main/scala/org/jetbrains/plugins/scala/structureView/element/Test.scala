@@ -1,12 +1,12 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.execution.testframework.PoolOfTestIcons.{IGNORED_ICON, NOT_RAN}
-import com.intellij.ide.util.treeView.smartTree.TreeElement
+import consulo.execution.test.PoolOfTestIcons.{IGNORED_ICON, NOT_RAN}
+import consulo.fileEditor.structureView.tree.TreeElement
 import consulo.language.psi.PsiElement
 import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.icons.Icons
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 // TODO move to the implemenation of testing support
 class Test(elem: PsiElement,
@@ -14,9 +14,9 @@ class Test(elem: PsiElement,
            myChildren: Array[TreeElement] = TreeElement.EMPTY_ARRAY,
            val testStatus: Int = Test.NormalStatusId) extends AbstractTreeElement(elem) {
 
-  override def getPresentableText: String = testName
+  override def presentableText: String = testName
 
-  override def getIcon(open: Boolean): Icon = testStatus match {
+  override def getIcon: Image = testStatus match {
     case Test.IgnoredStatusId => IGNORED_ICON
     case Test.PendingStatusId => NOT_RAN
     case _ => Icons.SCALA_TEST_NODE

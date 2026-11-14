@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.structureView
 
 import consulo.annotation.component.ExtensionImpl
 
-import com.intellij.ide.navigationToolbar.StructureAwareNavBarModelExtension
+import consulo.language.editor.ui.navigationBar.StructureAwareNavBarModelExtension
 import consulo.language.Language
 import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
@@ -14,16 +14,12 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.{ScGivenAlias, ScTypeDefinition, ScTypeDefinitionLike}
 import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.projectView.FileKind
-import org.jetbrains.plugins.scala.structureView.element.Element
+import org.jetbrains.plugins.scala.structureView.element.{AbstractItemPresentation, Element}
 
 @ExtensionImpl(order = "first")
 final class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE
-
-  // include Scala 3, Worksheet, etc.
-  override def isAcceptableLanguage(element: PsiElement): Boolean =
-    element != null && element.getLanguage.isKindOf(getLanguage)
 
   @Nullable
   override def adjustElement(psiElement: PsiElement): PsiElement = psiElement match {
@@ -64,7 +60,7 @@ final class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension
         case ga: ScGivenAlias     => getPresentableText_ForGivenAlias(ga)
         case ntd: ScNewTemplateDefinition if ntd.isAnonymous => getPresentableText_ForAnonymousClass(ntd)
         case n: ScNamedElement      => Option(n.name)
-        case _                      => Element.forPsiElement(element).map(_.getPresentableText)
+        case _                      => Element.forPsiElement(element).collect { case e: AbstractItemPresentation => e.presentableText }
       }
       resultText.orNull
     case _ =>

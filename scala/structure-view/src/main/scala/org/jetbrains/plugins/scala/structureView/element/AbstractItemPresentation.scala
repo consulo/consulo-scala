@@ -1,23 +1,30 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.navigation.ColoredItemPresentation
+import consulo.ui.ex.ColoredItemPresentation
 import consulo.codeEditor.CodeInsightColors
 import consulo.colorScheme.TextAttributesKey
 import consulo.application.dumb.IndexNotReadyException
 import consulo.component.util.Iconable
+import consulo.language.icon.IconDescriptorUpdaters
+import consulo.localize.LocalizeValue
+import consulo.ui.image.Image
 import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.extensions.PsiMemberExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScEnumCase
 
-import javax.swing.*
-
 // TODO make private (after decoupling Test)
 trait AbstractItemPresentation extends ColoredItemPresentation { self: Element =>
 
-  override def getPresentableText: String
+  // upstream: getPresentableText returns String, in Consulo it returns LocalizeValue
+  def presentableText: String
 
-  override def getIcon(open: Boolean): Icon =
-    element.getIcon(Iconable.ICON_FLAG_VISIBILITY)
+  override def getPresentableText: LocalizeValue = LocalizeValue.of(presentableText)
+
+  override def getIcon: Image =
+    IconDescriptorUpdaters.getIcon(element, Iconable.ICON_FLAG_VISIBILITY)
+
+  // upstream: ItemPresentation.getLocationString has a default implementation
+  override def getLocationString: String = null
 
   override def getTextAttributesKey: TextAttributesKey =
     if (inherited) CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES

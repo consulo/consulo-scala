@@ -1,7 +1,8 @@
 package org.jetbrains.plugins.scala.structureView
 
-import com.intellij.ide.structureView.{StructureViewModel, StructureViewTreeElement, TextEditorBasedStructureViewModel}
-import com.intellij.ide.util.treeView.smartTree.{Grouper, NodeProvider, Sorter, TreeElement}
+import consulo.fileEditor.structureView.{StructureViewModel, StructureViewTreeElement}
+import consulo.language.editor.structureView.TextEditorBasedStructureViewModel
+import consulo.fileEditor.structureView.tree.{Filter, Grouper, NodeProvider, Sorter, TreeElement}
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
@@ -88,16 +89,18 @@ class ScalaStructureViewModel(myRootElement: ScalaFile)
     case classParam: ScClassParameter =>
       isSuitable(classParam.containingClass)
     case (named: ScTypedDefinition) & (_: ScFieldId | _: ScBindingPattern) =>
-      named.nameContext match
+      named.nameContext match {
         case variable: ScValueOrVariable =>
           isSuitable(variable)
         case _ => false
+      }
     case function: ScFunction =>
-      function.getParent match
+      function.getParent match {
         case (_: ScBlockExpr) & Parent(_: ScFunction) => true
         case (_: ScExtensionBody) & Parent(ext: ScExtension) =>
           isSuitable(ext)
         case _ => isToplevelOrInsideSuitableTypeDef(function)
+      }
     case valOrVar: ScValueOrVariable =>
       isToplevelOrInsideSuitableTypeDef(valOrVar) ||
         isLocalValOrVarWithBlockBodyInsideValOrVar(valOrVar) ||
@@ -114,7 +117,7 @@ class ScalaStructureViewModel(myRootElement: ScalaFile)
 
   @tailrec
   private def isToplevelOrInsideSuitableTypeDef(member: ScMember): Boolean =
-    member.getParent match
+    member.getParent match {
       case _: ScalaFile | _: ScPackaging => true
       case (_: ScBlockExpr) & Parent(_: ScFunction) if member.is[ScTypeDefinition] => true
       case (_: ScBlockExpr) & Parent(v: ScValueOrVariable) if member.is[ScTypeDefinition] =>
@@ -122,6 +125,7 @@ class ScalaStructureViewModel(myRootElement: ScalaFile)
       case (_: ScTemplateBody) & Parent((_: ScExtendsBlock) & Parent(td: ScTypeDefinition)) =>
         isToplevelOrInsideSuitableTypeDef(td)
       case _ => false
+    }
 
   private def isLocalValOrVarWithBlockBodyInsideValOrVar(valueOrVariable: ScValueOrVariable): Boolean =
     valueOrVariable match {

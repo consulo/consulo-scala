@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import consulo.component.util.Iconable
+import consulo.language.icon.IconDescriptorUpdaters
 import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlockExpr
@@ -9,7 +10,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.toplevel.ScNamedElement
 import org.jetbrains.plugins.scala.lang.psi.types.TypePresentationContext
 import org.jetbrains.plugins.scala.structureView.element.AbstractItemPresentation.withSimpleNames
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 
 abstract class ValOrVar(element: ScNamedElement, private[structureView] val parent: ScValueOrVariable, inherited: Boolean)
   extends AbstractTreeElementDelegatingChildrenToPsi(element, inherited)
@@ -17,14 +18,14 @@ abstract class ValOrVar(element: ScNamedElement, private[structureView] val pare
 
   override def location: Option[String] = value.map(_.containingClass).map(_.name)
 
-  override def getPresentableText: String = {
+  override def presentableText: String = {
     implicit val tpc: TypePresentationContext = TypePresentationContext(element)
     val typeAnnotation = value.flatMap(_.typeElement.map(_.getText))
     withSimpleNames(element.name + typeAnnotation.map(": " + _).mkString)
   }
 
-  override def getIcon(open: Boolean): Icon =
-    value.map(_.getIcon(Iconable.ICON_FLAG_VISIBILITY)).orNull
+  override def getIcon: Image =
+    value.map(IconDescriptorUpdaters.getIcon(_, Iconable.ICON_FLAG_VISIBILITY)).orNull
 
   override def children: Seq[PsiElement] = {
     val definition = value match {

@@ -1,28 +1,28 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.navigation.LocationPresentation
+import consulo.navigation.LocationPresentation
 import consulo.language.psi.PsiElement
-import com.intellij.ui.{IconManager, PlatformIcons}
+import consulo.platform.base.icon.PlatformIconGroup
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.types.ScTypeExt
 
-import javax.swing.Icon
+import consulo.ui.image.Image
 import scala.compiletime.uninitialized
 
 /**
- * Created by analogy with [[com.intellij.ide.structureView.impl.java.JavaAnonymousClassTreeElement]]
+ * Created by analogy with [[com.intellij.java.impl.ide.structureView.impl.java.JavaAnonymousClassTreeElement]]
  */
 final class ScalaAnonymousClassTreeElement(definition: ScNewTemplateDefinition)
   extends AbstractTreeElementDelegatingChildrenToPsi(definition)
     with LocationPresentation {
 
-  override def getIcon(open: Boolean): Icon = IconManager.getInstance.getPlatformIcon(PlatformIcons.AnonymousClass)
+  override def getIcon: Image = PlatformIconGroup.nodesAnonymousclass()
 
   private var myName: String = uninitialized
   private var myBaseName: String = uninitialized
 
-  override def getPresentableText: String = {
+  override def presentableText: String = {
     if (myName == null) {
       myName = ScalaAnonymousClassNameHelper.getPresentationName(definition).orNull
     }
