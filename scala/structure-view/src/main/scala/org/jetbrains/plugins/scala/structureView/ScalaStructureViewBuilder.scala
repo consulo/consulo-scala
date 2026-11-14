@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView
 
 import com.intellij.ide.structureView.{StructureViewModel, TreeBasedStructureViewBuilder}
-import com.intellij.openapi.editor.Editor
+import consulo.codeEditor.Editor
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 class ScalaStructureViewBuilder(file: ScalaFile) extends TreeBasedStructureViewBuilder {

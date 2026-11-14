@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView.sorter
 
-import com.intellij.icons.AllIcons
+import consulo.application.AllIcons
 import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, Sorter, SorterUtil}
 import com.intellij.openapi.editor.PlatformEditorBundle
 import org.jetbrains.annotations.NonNls

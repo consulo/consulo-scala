@@ -1,16 +1,17 @@
 package org.jetbrains.plugins.scala.structureView
 
-import com.intellij.icons.AllIcons
+import consulo.application.AllIcons
 import com.intellij.ide.structureView.StructureViewBundle
 import com.intellij.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement}
 import com.intellij.ide.util.FileStructureNodeProvider
 import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, TreeElement}
-import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.actionSystem.Shortcut
+import com.intellij.java.language.JavaLanguage
+import consulo.ui.ex.action.Shortcut
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.psi.util.PsiUtil
-import com.intellij.psi.{PsiElement, PsiField, PsiMethod}
+import consulo.application.dumb.IndexNotReadyException
+import com.intellij.java.language.psi.util.PsiUtil
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.{PsiField, PsiMethod}
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScClassParameter
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScFunction, ScTypeAlias, ScValueOrVariable}

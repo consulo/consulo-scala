@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.navigation.ItemPresentation
-import com.intellij.util.ui.UIUtil
+import consulo.navigation.ItemPresentation
+import consulo.ui.ex.awt.UIUtil
 
 trait InheritedLocationStringItemPresentation extends ItemPresentation  { self: Element =>
 

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.openapi.util.Iconable
-import com.intellij.psi.PsiElement
+import consulo.component.util.Iconable
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{IteratorExt, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlockExpr
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScPatternDefinition, ScValue, ScValueOrVariable, ScVariable, ScVariableDefinition}

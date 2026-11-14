@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import com.intellij.navigation.LocationPresentation
-import com.intellij.psi.PsiElement
+import consulo.language.psi.PsiElement
 import com.intellij.ui.{IconManager, PlatformIcons}
 import org.jetbrains.plugins.scala.extensions.PsiNamedElementExt
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition

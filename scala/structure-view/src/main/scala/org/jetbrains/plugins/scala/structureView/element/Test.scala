@@ -2,8 +2,8 @@ package org.jetbrains.plugins.scala.structureView.element
 
 import com.intellij.execution.testframework.PoolOfTestIcons.{IGNORED_ICON, NOT_RAN}
 import com.intellij.ide.util.treeView.smartTree.TreeElement
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiUtil
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.icons.Icons
 
 import javax.swing.Icon

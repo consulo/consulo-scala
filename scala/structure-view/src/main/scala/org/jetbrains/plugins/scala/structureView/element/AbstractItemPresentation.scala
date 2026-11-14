@@ -1,10 +1,11 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import com.intellij.navigation.ColoredItemPresentation
-import com.intellij.openapi.editor.colors.{CodeInsightColors, TextAttributesKey}
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.openapi.util.Iconable
-import com.intellij.psi.PsiMember
+import consulo.codeEditor.CodeInsightColors
+import consulo.colorScheme.TextAttributesKey
+import consulo.application.dumb.IndexNotReadyException
+import consulo.component.util.Iconable
+import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.extensions.PsiMemberExt
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScEnumCase
 

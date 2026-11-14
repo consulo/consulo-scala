@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.structureView
 
 import com.intellij.ide.structureView.{StructureViewModel, StructureViewTreeElement, TextEditorBasedStructureViewModel}
-import com.intellij.ide.util.treeView.smartTree.*
-import com.intellij.psi.PsiElement
+import com.intellij.ide.util.treeView.smartTree.{Grouper, NodeProvider, Sorter, TreeElement}
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.extensions.{&, ObjectExt, Parent, PsiElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScFieldId

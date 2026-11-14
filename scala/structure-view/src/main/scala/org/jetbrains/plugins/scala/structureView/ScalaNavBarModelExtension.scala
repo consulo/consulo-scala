@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.scala.structureView
 
+import consulo.annotation.component.ExtensionImpl
+
 import com.intellij.ide.navigationToolbar.StructureAwareNavBarModelExtension
-import com.intellij.lang.Language
-import com.intellij.psi.PsiElement
+import consulo.language.Language
+import consulo.language.psi.PsiElement
 import org.jetbrains.annotations.Nullable
-import org.jetbrains.plugins.scala.ScalaLanguage
+import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.extensions.{PsiElementExt, PsiNamedElementExt}
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScNewTemplateDefinition
 import org.jetbrains.plugins.scala.lang.psi.api.statements.{ScExtension, ScFunction, ScValueOrVariable, ScValueOrVariableDefinition}
@@ -14,6 +16,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ScalaFile, ScalaPsiElement}
 import org.jetbrains.plugins.scala.projectView.FileKind
 import org.jetbrains.plugins.scala.structureView.element.Element
 
+@ExtensionImpl(order = "first")
 final class ScalaNavBarModelExtension extends StructureAwareNavBarModelExtension {
 
   override def getLanguage: Language = ScalaLanguage.INSTANCE

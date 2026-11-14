@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import org.jetbrains.annotations.Nls
-import org.jetbrains.plugins.scala.NlsString
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScTypeAlias
 import org.jetbrains.plugins.scala.structureView.ScalaStructureViewBundle
 

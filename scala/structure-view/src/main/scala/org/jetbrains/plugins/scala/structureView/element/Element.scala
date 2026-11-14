@@ -4,7 +4,8 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.java.{JavaClassTreeElement, PsiFieldTreeElement, PsiMethodTreeElement}
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ColoredItemPresentation
-import com.intellij.psi.{PsiElement, PsiMember}
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.PsiMember
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlockExpr

@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.structureView.grouper
 
-import com.intellij.icons.AllIcons
+import consulo.application.AllIcons
 import com.intellij.ide.structureView.impl.java.SuperTypeGroup
-import com.intellij.ide.util.treeView.AbstractTreeNode
+import consulo.project.ui.view.tree.AbstractTreeNode
 import com.intellij.ide.util.treeView.smartTree.{ActionPresentation, ActionPresentationData, Group, Grouper, TreeElement}
-import com.intellij.psi.PsiClass
+import com.intellij.java.language.psi.PsiClass
 import org.jetbrains.plugins.scala.extensions.PsiMemberExt
 import org.jetbrains.plugins.scala.structureView.ScalaStructureViewBundle
 import org.jetbrains.plugins.scala.structureView.element.Element

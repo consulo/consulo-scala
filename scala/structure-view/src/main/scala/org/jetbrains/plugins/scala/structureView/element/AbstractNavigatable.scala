@@ -1,6 +1,6 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.pom.Navigatable
+import consulo.navigation.Navigatable
 import org.jetbrains.plugins.scala.extensions.ObjectExt
 
 // TODO make private (after decoupling Test)

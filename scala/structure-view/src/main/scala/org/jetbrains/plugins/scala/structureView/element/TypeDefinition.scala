@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.psi.PsiElement
-import org.jetbrains.plugins.scala.NlsString
+import consulo.language.psi.PsiElement
+import org.jetbrains.plugins.scala.api.NlsString
 import org.jetbrains.plugins.scala.extensions.{IterableOnceExt, ObjectExt}
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScBlockExpr

@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView.element
 
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.PsiElement
+import consulo.colorScheme.TextAttributesKey
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScExtension
 
 // TODO: improve in SCL-19224

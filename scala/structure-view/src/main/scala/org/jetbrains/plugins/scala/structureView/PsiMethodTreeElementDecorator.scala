@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.scala.structureView
 
 import com.intellij.ide.structureView.impl.java.PsiMethodTreeElement
-import com.intellij.psi.PsiMethod
+import com.intellij.java.language.psi.PsiMethod
 
 private class PsiMethodTreeElementDecorator(method: PsiMethod, inherited: Boolean) extends PsiMethodTreeElement(method, inherited) {
   override def getPresentableText: String =

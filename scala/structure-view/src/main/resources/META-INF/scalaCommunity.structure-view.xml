@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<idea-plugin>
+    <dependencies>
+        <module name="intellij.java.frontback.psi"/>
+        <module name="intellij.java.psi"/>
+        <module name="intellij.java.structureView"/>
+        <module name="intellij.platform.analysis"/>
+        <module name="intellij.platform.core"/>
+        <module name="intellij.platform.editor.ui"/>
+        <module name="intellij.platform.execution.impl"/>
+        <module name="intellij.platform.ide"/>
+        <module name="intellij.platform.ide.impl"/>
+        <module name="intellij.platform.structureView"/>
+        <module name="intellij.platform.structureView.backend"/>
+        <module name="intellij.platform.util.ui"/>
+    </dependencies>
+
+    <extensionPoints>
+        <extensionPoint qualifiedName="org.intellij.scala.structureViewModelProvider"
+                        interface="org.jetbrains.plugins.scala.structureView.ScalaStructureViewModelProvider"
+                        dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.completion.command.provider
+                language="Scala"
+                implementationClass="com.intellij.platform.structureView.backend.completion.commands.ViewStructureCompletionCommandProvider"
+                order="last"/>
+ <!-- before Java -->
+    </extensions>
+</idea-plugin>

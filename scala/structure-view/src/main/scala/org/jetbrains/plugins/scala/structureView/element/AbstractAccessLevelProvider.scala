@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import com.intellij.ide.structureView.impl.java.AccessLevelProvider
-import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiUtil
+import consulo.language.psi.PsiElement
+import com.intellij.java.language.psi.util.PsiUtil
 import org.jetbrains.plugins.scala.extensions.ObjectExt
-import org.jetbrains.plugins.scala.lang.psi.api.ScFile
+import org.jetbrains.plugins.scala.api.lang.psi.api.ScFile
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.{ScModifierListOwner, ScPackaging}
 import org.jetbrains.plugins.scala.structureView.element.AbstractAccessLevelProvider.UnknownAccessLevel
 

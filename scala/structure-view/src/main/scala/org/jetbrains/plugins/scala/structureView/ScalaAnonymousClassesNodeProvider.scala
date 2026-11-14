@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.structureView // Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 
-import com.intellij.ide.structureView.impl.java.*
+import com.intellij.ide.structureView.impl.java.JavaStructureViewBundle
 import com.intellij.ide.util.FileStructureNodeProvider
 import com.intellij.ide.util.treeView.smartTree.{ActionPresentationData, TreeElement}
-import com.intellij.openapi.actionSystem.Shortcut
+import consulo.ui.ex.action.Shortcut
 import com.intellij.openapi.util.PropertyOwner
 import com.intellij.ui.{IconManager, PlatformIcons}
 import org.jetbrains.plugins.scala.extensions.PsiElementExt

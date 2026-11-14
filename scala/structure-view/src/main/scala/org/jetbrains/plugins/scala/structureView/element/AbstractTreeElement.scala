@@ -1,8 +1,8 @@
 package org.jetbrains.plugins.scala.structureView.element
 
 import com.intellij.ide.util.treeView.smartTree.TreeElement
-import com.intellij.navigation.ItemPresentation
-import com.intellij.psi.PsiElement
+import consulo.navigation.ItemPresentation
+import consulo.language.psi.PsiElement
 import org.jetbrains.plugins.scala.util.HashBuilder.*
 
 // TODO make private (after decoupling Test)
