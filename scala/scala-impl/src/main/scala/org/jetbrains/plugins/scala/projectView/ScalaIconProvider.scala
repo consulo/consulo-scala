@@ -10,8 +10,9 @@ import org.jetbrains.plugins.scala.api.ScalaLanguage
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 
 
-// upstream: com.intellij.ide.IconProvider, Consulo uses IconDescriptorUpdater
-@ExtensionImpl
+// upstream: com.intellij.ide.IconProvider, Consulo uses IconDescriptorUpdater;
+// after java: consulo.java's updater sets Java class icons for every PsiClass, Scala classes included
+@ExtensionImpl(order = "after java")
 final class ScalaIconProvider extends IconDescriptorUpdater {
 
   override def updateIcon(descriptor: IconDescriptor, element: PsiElement, flags: Int): Unit = element match {

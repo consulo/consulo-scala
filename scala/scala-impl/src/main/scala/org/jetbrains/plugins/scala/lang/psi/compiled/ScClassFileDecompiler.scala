@@ -18,7 +18,8 @@ import org.jetbrains.plugins.scala.lang.parser.{Scala3ParserDefinition, ScalaPar
 import org.jetbrains.plugins.scala.api.{Scala3Language, ScalaLanguage}
 import org.jetbrains.plugins.scala.tasty.TastyFileType
 
-@ExtensionImpl
+// the fernflower plugin's decompiler accepts every class file (upstream it is ordered last by its plugin)
+@ExtensionImpl(order = "before fernflower")
 final class ScClassFileDecompiler extends ClassFileDecompiler.Full {
 
   import ScClassFileDecompiler._
