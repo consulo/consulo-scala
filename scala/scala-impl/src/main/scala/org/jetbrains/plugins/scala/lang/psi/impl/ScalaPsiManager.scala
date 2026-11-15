@@ -557,9 +557,13 @@ class ScalaPsiManager @Inject()(val project: Project) extends Disposable {
           .toSet
     )
 
+  // the project caches (type system, reduction and substitutor caches) are created on demand: they must not be created
+  // (and registered as children of the project) while the project is being disposed
+  @volatile private var disposing = false
+
   private def clearCaches(): Unit = {
-    new ProjectContext(project).typeSystem.clearCache()
-    if (!project.isDisposed) {
+    if (!disposing && !project.isDisposed) {
+      new ProjectContext(project).typeSystem.clearCache()
       ScMatchType.clearReductionCache(project)
       ParameterizedType.substitutorCache(project).clear()
     }
@@ -722,6 +726,7 @@ class ScalaPsiManager @Inject()(val project: Project) extends Disposable {
   }
 
   override def dispose(): Unit = {
+    disposing = true
     clearAllCachesOnDispose()
   }
 
