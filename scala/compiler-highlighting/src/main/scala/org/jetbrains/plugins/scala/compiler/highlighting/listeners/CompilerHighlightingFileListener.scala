@@ -2,7 +2,7 @@ package org.jetbrains.plugins.scala.compiler.highlighting.listeners
 
 import consulo.annotation.component.ExtensionImpl
 import consulo.application.progress.ProgressManager
-import consulo.module.content.ProjectRootManager
+import consulo.util.io.FileUtil
 import consulo.project.{Project, ProjectManager}
 import consulo.virtualFileSystem.VirtualFile
 import consulo.virtualFileSystem.event.*
@@ -16,29 +16,34 @@ import scala.jdk.CollectionConverters.*
  * Reports to [[CompilationLogicService]] the source changes that do not go through an editor — a checkout, an
  * external tool, a deletion in the file manager — and clears the problems reported for deleted files.
  *
- * upstream: also classifies the changes (SourceChange, SourceRole) to keep the model of the JPS build, which is not
- * ported: any such change in the source content invalidates the recorded diagnostics.
+ * Any change of a Scala or Java source (or of a directory) in a project directory invalidates the recorded diagnostics.
  */
 @ExtensionImpl
 final class CompilerHighlightingFileListener extends AsyncFileListener {
 
   override def prepareChange(events: java.util.List[? <: VFileEvent]): AsyncFileListener.ChangeApplier = {
+    // the project file index is not used here: building the root index refreshes the content folders, which fires VFS
+    // events from inside this listener; a change of a source file (or a new directory) in a project directory is enough
     val changesPerOpenProject = ProjectManager.getInstance().getOpenProjects.toSeq.flatMap { project =>
       ProgressManager.checkCanceled()
-      val fileIndex = ProjectRootManager.getInstance(project).getFileIndex
-      val (changed, deleted) = events.asScala.iterator.foldLeft((false, Seq.empty[VirtualFile])) { case ((changed, deleted), event) =>
-        ProgressManager.checkCanceled()
-        event match {
-          case e: VFileContentChangeEvent if e.isFromSave => (changed, deleted)
-          case e: VFileCreateEvent => (changed || isInSourceContent(fileIndex, e.getParent), deleted)
-          case e: VFileDeleteEvent if isInSourceContent(fileIndex, e.getFile) => (true, deleted :+ e.getFile)
-          case e: VFileContentChangeEvent => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
-          case e: VFileMoveEvent => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
-          case e: VFilePropertyChangeEvent if e.isRename => (changed || isInSourceContent(fileIndex, e.getFile), deleted)
-          case _ => (changed, deleted)
+      Option(project.getBasePath).map(path => FileUtil.toSystemIndependentName(path) + "/").flatMap { projectPath =>
+        def inProject(path: String): Boolean = FileUtil.toSystemIndependentName(path).startsWith(projectPath)
+
+        val (changed, deleted) = events.asScala.iterator.foldLeft((false, Seq.empty[VirtualFile])) { case ((changed, deleted), event) =>
+          ProgressManager.checkCanceled()
+          event match {
+            case e: VFileContentChangeEvent if e.isFromSave => (changed, deleted)
+            case e: VFileCreateEvent => (changed || (inProject(e.getPath) && (e.isDirectory || isSourceName(e.getChildName))), deleted)
+            case e: VFileDeleteEvent if inProject(e.getPath) && isSource(e.getFile) => (true, deleted :+ e.getFile)
+            case e: VFileDeleteEvent => (changed || (inProject(e.getPath) && e.getFile.isDirectory), deleted)
+            case e: VFileContentChangeEvent => (changed || (inProject(e.getPath) && isSource(e.getFile)), deleted)
+            case e: VFileMoveEvent => (changed || ((inProject(e.getOldPath) || inProject(e.getNewPath)) && isSource(e.getFile)), deleted)
+            case e: VFilePropertyChangeEvent if e.isRename => (changed || (inProject(e.getPath) && isSource(e.getFile)), deleted)
+            case _ => (changed, deleted)
+          }
         }
+        Option.when(changed)((project, deleted))
       }
-      Option.when(changed)((project, deleted))
     }
 
     if (changesPerOpenProject.isEmpty) return null
@@ -53,8 +58,13 @@ final class CompilerHighlightingFileListener extends AsyncFileListener {
     }
   }
 
-  private def isInSourceContent(fileIndex: consulo.module.content.ProjectFileIndex, file: VirtualFile): Boolean =
-    (file ne null) && fileIndex.isInSourceContent(file)
+  private val SourceExtensions = Set("scala", "java", "sc")
+
+  private def isSourceName(name: String): Boolean =
+    SourceExtensions.contains(FileUtil.getExtension(name).toString)
+
+  private def isSource(file: VirtualFile): Boolean =
+    (file ne null) && (file.isDirectory || isSourceName(file.getName))
 
   private def clearProblemsOfDeletedFiles(project: Project, deleted: Seq[VirtualFile]): Unit = {
     if (deleted.isEmpty) return
