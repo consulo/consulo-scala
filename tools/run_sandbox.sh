@@ -75,4 +75,5 @@ fi
 # already downloaded into the sandbox (a new hub build is downloaded by the run below - run the script again then)
 python3 "$REPO/tools/overlay_platform.py" "$MODULE/sandbox"
 
-cd "$MODULE" && DISPLAY=":$DISPLAY_NUM" mvn consulo:run-desktop-awt-fork
+# DEBUG_PORT=<port> starts the IDE with a JDWP agent on that port (dev mode of maven-consulo-plugin)
+cd "$MODULE" && DISPLAY=":$DISPLAY_NUM" mvn consulo:run-desktop-awt-fork ${DEBUG_PORT:+-Dconsulo.run.fork.debug.port=$DEBUG_PORT}
