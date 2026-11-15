@@ -42,40 +42,34 @@ object ScalaSampleCode {
   }
 
   /**
-   * Writes the sample files into `sourceRoot` (into the directories of `packagePrefix`) and opens the main one when the
-   * project is opened.
+   * Writes the sample files into `sourceRoot` (into the directories of `packagePrefix`) when the project is initialized
+   * and opens the main one. The files are created through the VFS of the opened project, so the compiler sees them as new
+   * sources to compile; the text is generated now, while the module is created.
    */
   def addScalaSampleCode(project: Project,
                          sourceRoot: Path,
                          isScala3: Boolean,
                          useIndentationBasedSyntax: Boolean,
                          packagePrefix: Option[String],
-                         withOnboardingTips: Boolean): Seq[Path] = {
+                         withOnboardingTips: Boolean): Unit = {
     val manager = FileTemplateManager.getInstance(project)
     val variables = (onboardingTipsVariables(withOnboardingTips) ++ packagePrefix.map("PACKAGE_NAME" -> _)).asJava
 
     val directory = packagePrefix.fold(sourceRoot)(prefix => sourceRoot.resolve(prefix.replace('.', '/')))
     Files.createDirectories(directory)
 
-    val files = templatesAndFiles(isScala3, isScala3 && useIndentationBasedSyntax, withOnboardingTips).map { case Sample(templateName, fileName) =>
-      val file = directory.resolve(fileName)
-      Files.writeString(file, manager.getInternalTemplate(templateName).getText(variables))
-      file
+    val samples = templatesAndFiles(isScala3, isScala3 && useIndentationBasedSyntax, withOnboardingTips).map { case Sample(templateName, fileName) =>
+      (directory.resolve(fileName), manager.getInternalTemplate(templateName).getText(variables))
     }
-
-    openWhenProjectIsOpened(project, files.lastOption)
-    files
-  }
-
-  /**
-   * The file is found and its document is loaded in the background, the editor is opened in the UI thread.
-   */
-  private def openWhenProjectIsOpened(project: Project, file: Option[Path]): Unit =
-    file.foreach { path =>
+    if (samples.nonEmpty) {
       StartupManager.getInstance(project).runWhenProjectIsInitialized((() => {
         val uiAccess = project.getUIAccess
         Application.get().executeOnPooledThread((() => {
-          Option(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(path)).foreach { virtualFile =>
+          samples.foreach { case (file, text) => Files.writeString(file, text) }
+          val localFileSystem = LocalFileSystem.getInstance()
+          localFileSystem.refreshAndFindFileByNioFile(directory)
+          Option(localFileSystem.refreshAndFindFileByNioFile(samples.last._1)).foreach { virtualFile =>
+            // the document is loaded in the background, the editor is opened in the UI thread
             val document = Application.get().runReadAction((() => FileDocumentManager.getInstance.getDocument(virtualFile)): Supplier[Document])
             uiAccess.give((() => {
               if (!project.isDisposed && document != null) {
@@ -86,6 +80,7 @@ object ScalaSampleCode {
         }): Runnable)
       }): Runnable)
     }
+  }
 
   private def templatesAndFiles(isScala3: Boolean, useIndentationBasedSyntax: Boolean, withOnboardingTips: Boolean): Seq[Sample] = {
     val braces = if (useIndentationBasedSyntax) "" else "-braces"
