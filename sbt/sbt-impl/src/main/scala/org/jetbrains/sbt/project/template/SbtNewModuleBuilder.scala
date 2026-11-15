@@ -12,7 +12,7 @@ import consulo.module.creation.ui.UnifiedProjectOrModuleNameStep
 import consulo.project.startup.StartupManager
 import consulo.ui.ex.wizard.WizardStep
 import consulo.virtualFileSystem.LocalFileSystem
-import org.jetbrains.plugins.scala.project.template.DefaultModuleContentEntryFolders
+import org.jetbrains.plugins.scala.project.template.{DefaultModuleContentEntryFolders, IndentationSyntax, ScalaNewModuleGroup, ScalaSampleCode}
 import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.project.SbtOpenProjectProvider
 
@@ -21,17 +21,14 @@ import java.util.function.Consumer
 import scala.util.Using
 
 /**
- * Creates a new sbt project: generates `build.sbt`, `project/build.properties` and the source directories,
- * then links the directory as an sbt project, which is imported by the sbt external system.
+ * Creates a new sbt project: generates `build.sbt`, `project/build.properties`, the source directories and optionally
+ * the sample code, then links the directory as an sbt project, which is imported by the sbt external system.
  */
-// upstream: SbtModuleBuilder + IntelliJ new project wizard steps (SbtScalaNewProjectWizard); archived templates
-// (AbstractArchivedSbtProjectBuilder) are only a base class for other plugins and are not ported
 @ExtensionImpl(id = "sbt", order = "after jvm")
 final class SbtNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
-    val jvmGroup = context.addGroup("jvm", LocalizeValue.localizeTODO("Java Platform"))
-    jvmGroup.add(LocalizeValue.of(Sbt.Name), Sbt.Icon, new NewModuleBuilderProcessor[SbtNewModuleContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.of(Sbt.Name), Sbt.Icon, new NewModuleBuilderProcessor[SbtNewModuleContext] {
       override def createContext(isNewProject: Boolean): SbtNewModuleContext =
         new SbtNewModuleContext(isNewProject)
 
@@ -66,9 +63,22 @@ object SbtNewModuleBuilder {
     }
     folders.foreach(addContentFolders(contentEntry, _))
 
+    val project = model.getProject
+    val isScala3 = context.scalaVersion.startsWith("3.")
+    IndentationSyntax.setupUseIndentationBasedSyntaxInProject(project, isScala3 && context.useIndentationSyntax)
+    if (context.addSampleCode) {
+      ScalaSampleCode.addScalaSampleCode(
+        project = project,
+        sourceRoot = root.resolve("src/main/scala"),
+        isScala3 = isScala3,
+        useIndentationBasedSyntax = context.useIndentationSyntax,
+        packagePrefix = context.packagePrefix,
+        withOnboardingTips = true
+      )
+    }
+
     LocalFileSystem.getInstance().refreshAndFindFileByNioFile(root)
 
-    val project = model.getProject
     val externalProjectPath = root.toString
     StartupManager.getInstance(project).runWhenProjectIsInitialized { () =>
       ApplicationManager.getApplication.invokeLater { () =>

@@ -5,7 +5,7 @@ import consulo.project.Project
 import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 
 /**
- * Code style part of upstream `IndentationSyntaxStepLike` (IntelliJ new project wizard step, its UI is not ported).
+ * Code style part of [[IndentationSyntaxStepLike]]: the project code style uses the indentation based syntax.
  */
 object IndentationSyntax {
   final val IndentationSyntaxPropertyName = "scala.IndentationSyntaxStepLike.useIndentationSyntax"

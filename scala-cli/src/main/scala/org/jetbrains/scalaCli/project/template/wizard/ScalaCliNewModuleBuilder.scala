@@ -12,6 +12,7 @@ import consulo.project.startup.StartupManager
 import consulo.ui.ex.wizard.WizardStep
 import consulo.virtualFileSystem.LocalFileSystem
 import org.jetbrains.bsp.Icons
+import org.jetbrains.plugins.scala.project.template.{IndentationSyntax, ScalaNewModuleGroup, ScalaSampleCode}
 import org.jetbrains.bsp.project.importing.BspOpenProjectProvider
 import org.jetbrains.bsp.project.importing.BspSetupConfigStep.BspConfigSetupTask
 import org.jetbrains.bsp.settings.{BspProjectSettings, PreImportConfig}
@@ -23,18 +24,14 @@ import java.nio.file.{FileAlreadyExistsException, Files, Path}
 import java.util.function.Consumer
 
 /**
- * Creates a new Scala CLI project: generates `project.scala`, generates the BSP connection file with Scala CLI
+ * Creates a new Scala CLI project: generates `project.scala` and optionally the sample code, generates the BSP connection file with Scala CLI
  * (`scala-cli setup-ide .`) and links the directory as a BSP project.
  */
-// upstream: ScalaCliNewProjectWizard/ScalaCliNewProjectWizardStep (IntelliJ new project wizard, build system of the Scala
-// generator) + ScalaCliModuleBuilder (ModuleBuilderBase); the Scala versions are not downloaded, "add sample code" and
-// "use indentation based syntax" are not ported
 @ExtensionImpl(id = "scala-cli", order = "after sbt")
 final class ScalaCliNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
-    val jvmGroup = context.addGroup("jvm", LocalizeValue.localizeTODO("Java Platform"))
-    jvmGroup.add(LocalizeValue.of(ScalaCliBundle.message("scala.cli.project.system.readable.name")), Icons.BSP, new NewModuleBuilderProcessor[ScalaCliNewModuleContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.of(ScalaCliBundle.message("scala.cli.project.system.readable.name")), Icons.BSP, new NewModuleBuilderProcessor[ScalaCliNewModuleContext] {
       override def createContext(isNewProject: Boolean): ScalaCliNewModuleContext =
         new ScalaCliNewModuleContext(isNewProject)
 
@@ -61,9 +58,22 @@ object ScalaCliNewModuleBuilder {
       contentEntry.addFolder(s"${contentEntry.getUrl}/.bsp", ExcludedContentFolderTypeProvider.getInstance)
     }
 
+    val project = model.getProject
+    val isScala3 = context.scalaVersion.startsWith("3.")
+    IndentationSyntax.setupUseIndentationBasedSyntaxInProject(project, isScala3 && context.useIndentationSyntax)
+    if (context.addSampleCode) {
+      ScalaSampleCode.addScalaSampleCode(
+        project = project,
+        sourceRoot = root,
+        isScala3 = isScala3,
+        useIndentationBasedSyntax = context.useIndentationSyntax,
+        packagePrefix = None,
+        withOnboardingTips = false
+      )
+    }
+
     LocalFileSystem.getInstance().refreshAndFindFileByNioFile(root)
 
-    val project = model.getProject
     StartupManager.getInstance(project).runWhenProjectIsInitialized { () =>
       ApplicationManager.getApplication.invokeLater { () =>
         if (!project.isDisposed) {

@@ -1,247 +1,124 @@
-package org.jetbrains.sbt.project.template.wizard
+package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.ide.fileTemplates.FileTemplateManager
-import com.intellij.ide.projectWizard.ProjectWizardJdkIntent
-import com.intellij.ide.projectWizard.generators.JdkDownloadService
-import com.intellij.ide.util.projectWizard.ModuleBuilder
-import com.intellij.ide.wizard.{AbstractNewProjectWizardStep, NewProjectOnboardingTips, OnboardingTipsInstallationInfo}
-import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.client.ClientSystemInfo
-import com.intellij.openapi.keymap.KeymapTextContext
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.{VfsUtil, VirtualFile}
+import consulo.application.{Application, ApplicationPropertiesComponent}
+import consulo.document.{Document, FileDocumentManager}
+import consulo.fileEditor.FileEditorManager
+import consulo.fileTemplate.FileTemplateManager
+import consulo.localize.LocalizeValue
+import consulo.platform.Platform
+import consulo.project.Project
+import consulo.project.startup.StartupManager
+import consulo.ui.CheckBox
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.ui.ex.action.IdeActions
+import consulo.ui.ex.keymap.util.KeymapUtil
+import consulo.virtualFileSystem.LocalFileSystem
+import org.jetbrains.plugins.scala.ScalaBundle
 import org.jetbrains.plugins.scala.actions.ShowTypeInfoAction
-import org.jetbrains.plugins.scala.extensions.{CharSeqExt, inWriteAction}
-import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 
-import java.lang.{Integer => JInt}
-import kotlin.jvm.functions.Function1
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava}
+import java.nio.file.{Files, Path}
+import java.util.function.Supplier
+import scala.jdk.CollectionConverters.MapHasAsJava
 
-package object buildSystem {
-  private[buildSystem] def setProjectOrModuleSdk(
-    project: Project,
-    parentStep: AbstractNewProjectWizardStep,
-    builder: ModuleBuilder,
-    sdk: Option[Sdk]
-  ): Unit = {
-    val context = parentStep.getContext
-    if (context.isCreatingNewProject) {
-      // New project with a single module: set project JDK
-      context.setProjectJdk(sdk.orNull)
-    } else {
-      // New module in an existing project: set module JDK
-      val isSameSDK: Boolean = (for {
-        jdk1 <- Option(ProjectRootManager.getInstance(project).getProjectSdk)
-        jdk2 <- sdk
-      } yield jdk1.getName == jdk2.getName).contains(true)
-      builder.setModuleJdk(if (isSameSDK) null else sdk.orNull)
-    }
-  }
+/**
+ * "Add sample code" of the new project wizards: the sample files (with onboarding tips as plain text) generated from the
+ * internal file templates and opened in the editor when the project is opened.
+ */
+object ScalaSampleCode {
+  private final val AddSampleCodePropertyName = "NewProjectWizard.addSampleCodeState"
 
-  def getSdkFromJdkIntent(jdkIntent: Option[ProjectWizardJdkIntent]): Option[Sdk] =
-    for {
-      intent <- jdkIntent
-      sdk <- Option(intent.prepareJdk())
-    } yield sdk
-
-  def addScalaSampleCode(project: Project, path: String, isScala3: Boolean, packagePrefix: Option[String], withOnboardingTips: Boolean): Seq[VirtualFile] = {
-    val shouldRenderOnboardingTips: Boolean = Registry.is("doc.onboarding.tips.render")
-    val advancedTipsEnabled = Registry.is("scala.advanced.onboarding.tips")
-    val manager = FileTemplateManager.getInstance(project)
-    val variables = onboardingTipsVariables(
-      withOnboardingTips = withOnboardingTips,
-      shouldRenderOnboardingTips = shouldRenderOnboardingTips,
-      advancedTipsEnabled = advancedTipsEnabled,
-      packagePrefix = packagePrefix
-    ).asJava
-
-    val useIndentationBasedSyntax = isScala3 && ScalaCodeStyleSettings.getInstance(project).USE_SCALA3_INDENTATION_BASED_SYNTAX
-
-    val samples = templatesAndFiles(
-      isScala3 = isScala3,
-      useIndentationBasedSyntax = useIndentationBasedSyntax,
-      withOnboardingTips = withOnboardingTips,
-      shouldRenderOnboardingTips = shouldRenderOnboardingTips,
-      advancedTipsEnabled = advancedTipsEnabled
+  @RequiredUIAccess
+  def createCheckBox(): CheckBox =
+    CheckBox.create(
+      LocalizeValue.of(ScalaBundle.message("new.project.add.sample.code")),
+      ApplicationPropertiesComponent.getInstance.getBoolean(AddSampleCodePropertyName, false)
     )
-    val sourceAndFiles =
-      samples
-        .zipWithIndex // TODO: This is a hack to install onboarding tips in main.scala only; remove it when the platform allows for tips in multiple files
-        .map { case (Sample(templateName, fileName, breakpoint), index) =>
-          val sourceCode = manager.getInternalTemplate(templateName).getText(variables)
-          if (withOnboardingTips && index == samples.size - 1) installOnboardingTips(project, fileName, breakpoint)
-          (sourceCode, fileName)
-        }
 
-    inWriteAction {
-      val fileDirectory = createDirectoryIfMissing(path)
-      sourceAndFiles.map { case (sourceCode, fileName) =>
-        val file: VirtualFile = fileDirectory.findOrCreateChildData(this, fileName)
-        VfsUtil.saveText(file, sourceCode)
-        file
-      }
+  @RequiredUIAccess
+  def isSelected(checkBox: CheckBox): Boolean = {
+    val selected = checkBox.getValueOrError.booleanValue
+    ApplicationPropertiesComponent.getInstance.setValue(AddSampleCodePropertyName, selected, false)
+    selected
+  }
+
+  /**
+   * Writes the sample files into `sourceRoot` (into the directories of `packagePrefix`) and opens the main one when the
+   * project is opened.
+   */
+  def addScalaSampleCode(project: Project,
+                         sourceRoot: Path,
+                         isScala3: Boolean,
+                         useIndentationBasedSyntax: Boolean,
+                         packagePrefix: Option[String],
+                         withOnboardingTips: Boolean): Seq[Path] = {
+    val manager = FileTemplateManager.getInstance(project)
+    val variables = (onboardingTipsVariables(withOnboardingTips) ++ packagePrefix.map("PACKAGE_NAME" -> _)).asJava
+
+    val directory = packagePrefix.fold(sourceRoot)(prefix => sourceRoot.resolve(prefix.replace('.', '/')))
+    Files.createDirectories(directory)
+
+    val files = templatesAndFiles(isScala3, isScala3 && useIndentationBasedSyntax, withOnboardingTips).map { case Sample(templateName, fileName) =>
+      val file = directory.resolve(fileName)
+      Files.writeString(file, manager.getInternalTemplate(templateName).getText(variables))
+      file
     }
+
+    openWhenProjectIsOpened(project, files.lastOption)
+    files
   }
 
-  /** Schedules the download of the given SDK if it is not already in progress. */
-  def scheduleDownloadSdk(sdk: Sdk, project: Project): Unit = {
-    val service = project.getService(classOf[JdkDownloadService])
-    service.scheduleDownloadSdk(sdk)
-  }
+  /**
+   * The file is found and its document is loaded in the background, the editor is opened in the UI thread.
+   */
+  private def openWhenProjectIsOpened(project: Project, file: Option[Path]): Unit =
+    file.foreach { path =>
+      StartupManager.getInstance(project).runWhenProjectIsInitialized((() => {
+        val uiAccess = project.getUIAccess
+        Application.get().executeOnPooledThread((() => {
+          Option(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(path)).foreach { virtualFile =>
+            val document = Application.get().runReadAction((() => FileDocumentManager.getInstance.getDocument(virtualFile)): Supplier[Document])
+            uiAccess.give((() => {
+              if (!project.isDisposed && document != null) {
+                FileEditorManager.getInstance(project).openFile(virtualFile, true)
+              }
+            }): Runnable)
+          }
+        }): Runnable)
+      }): Runnable)
+    }
 
-  private def createDirectoryIfMissing(path: String): VirtualFile =
-    Option(VfsUtil.createDirectoryIfMissing(path))
-      .getOrElse(throw new IllegalStateException("Unable to create src directory"))
-
-  private def templatesAndFiles(isScala3: Boolean,
-                                useIndentationBasedSyntax: Boolean,
-                                withOnboardingTips: Boolean,
-                                shouldRenderOnboardingTips: Boolean,
-                                advancedTipsEnabled: Boolean): Seq[Sample] = {
+  private def templatesAndFiles(isScala3: Boolean, useIndentationBasedSyntax: Boolean, withOnboardingTips: Boolean): Seq[Sample] = {
     val braces = if (useIndentationBasedSyntax) "" else "-braces"
+    val tips = if (withOnboardingTips) "-tips" else ""
 
-    (isScala3, withOnboardingTips, shouldRenderOnboardingTips, advancedTipsEnabled) match {
-      case (true, true, true, true) =>
-        Seq(
-          Sample(s"scala3-xray-tips$braces-rendered.scala", "InlayHintsAndXRay.scala"),
-          Sample("scala3-collections-tips-rendered.scala", "collections.scala"),
-          Sample(s"scala3-main-tips$braces-rendered.scala", "main.scala", """println(s"i = $i")"""),
-        )
-      case (true, true, true, false) =>
-        Seq(
-          Sample(s"scala3-main-tips$braces-rendered.scala", "main.scala", """println(s"i = $i")"""),
-        )
-      case (true, true, false, true) =>
-        Seq(
-          Sample(s"scala3-xray-tips$braces.scala", "InlayHintsAndXRay.scala"),
-          Sample("scala3-collections-tips.scala", "collections.scala"),
-          Sample(s"scala3-main-tips$braces.scala", "main.scala", """println(s"i = $i")"""),
-        )
-      case (true, true, false, false) =>
-        Seq(
-          Sample(s"scala3-main-tips$braces.scala", "main.scala", """println(s"i = $i")"""),
-        )
-      case (true, false, _, _) =>
-        Seq(Sample(s"scala3-main$braces.scala", "main.scala", """println(s"i = $i")"""))
-      case (false, true, true, true) =>
-        Seq(
-          Sample("scala2-xray-tips-rendered.scala", "InlayHintsAndXRay.scala"),
-          Sample("scala2-collections-tips-rendered.scala", "Collections.scala"),
-          Sample("scala2-main-tips-rendered.scala","Main.scala", """println(s"i = $i")"""),
-        )
-      case (false, true, true, false) =>
-        Seq(
-          Sample("scala2-main-tips-rendered.scala","Main.scala", """println(s"i = $i")"""),
-        )
-      case (false, true, false, true) =>
-        Seq(
-          Sample("scala2-xray-tips.scala", "InlayHintsAndXRay.scala"),
-          Sample("scala2-collections-tips.scala", "Collections.scala"),
-          Sample("scala2-main-tips.scala", "Main.scala", """println(s"i = $i")"""),
-        )
-      case (false, true, false, false) =>
-        Seq(
-          Sample("scala2-main-tips.scala", "Main.scala", """println(s"i = $i")"""),
-        )
-      case (false, false, _, _) =>
-        Seq(Sample("scala2-main.scala", "Main.scala", """println(s"i = $i")"""))
-    }
+    if (isScala3) Seq(Sample(s"scala3-main$tips$braces", "main.scala"))
+    else Seq(Sample(s"scala2-main$tips", "Main.scala"))
   }
 
-  private def onboardingTipsVariables(withOnboardingTips: Boolean,
-                                      shouldRenderOnboardingTips: Boolean,
-                                      advancedTipsEnabled: Boolean,
-                                      packagePrefix: Option[String]): Map[String, String] = {
-    if (withOnboardingTips) {
-      if (shouldRenderOnboardingTips) renderedVariables else unrenderedVariables
-    } else Map.empty[String, String]
-  } ++ packagePrefix.map(prefix => Map("PACKAGE_NAME" -> prefix, "advancedTipsEnabled" -> advancedTipsEnabled.toString)).getOrElse(Map.empty)
+  private def onboardingTipsVariables(withOnboardingTips: Boolean): Map[String, String] =
+    if (withOnboardingTips) tipsVariables else Map.empty
 
-  private def installOnboardingTips(project: Project, fileName: String, breakpoint: Function1[? >: CharSequence, JInt]): Unit = {
-    val onboardingInfo = new OnboardingTipsInstallationInfo(fileName, breakpoint)
-    NewProjectOnboardingTips
-      .EP_NAME
-      .getExtensionList
-      .asScala
-      .foreach(_.installTips(project, onboardingInfo))
-  }
+  private def shortcut(actionId: String): String = KeymapUtil.getFirstKeyboardShortcutText(actionId)
 
-  private def shortcut(actionId: String) = s"""<shortcut actionId="$actionId"/>"""
-  private def raw(key: String) = s"""<shortcut raw="$key"/>"""
-  private def icon(allIconsId: String) = s"""<icon src="$allIconsId"/>"""
-
-  private lazy val renderedVariables =
+  private def tipsVariables: Map[String, String] = {
+    val isMac = Platform.current.os.isMac
     Map(
       // actions
       "ActionTypeInfo"            -> shortcut(ShowTypeInfoAction.ActionId),
-      "ActionImplicitHints"       -> shortcut("Scala.ShowImplicits"), // TODO: Put action ids in one place
+      "ActionImplicitHints"       -> shortcut("Scala.ShowImplicits"),
       "ActionSettings"            -> shortcut(IdeActions.ACTION_SHOW_SETTINGS),
       "ActionRun"                 -> shortcut(IdeActions.ACTION_DEFAULT_RUNNER),
       "ActionShowIntention"       -> shortcut(IdeActions.ACTION_SHOW_INTENTION_ACTIONS),
       "ActionDebug"               -> shortcut(IdeActions.ACTION_DEFAULT_DEBUGGER),
       "ActionSetBreakpoint"       -> shortcut(IdeActions.ACTION_TOGGLE_LINE_BREAKPOINT),
       "ActionSelectInProjectView" -> shortcut("SelectInProjectView"),
-      // icons
-      "IconEye"                   -> icon("AllIcons.General.InspectionsEye"),
-      "IconExecute"               -> icon("AllIcons.Actions.Execute"),
-      "IconBreakpoint"            -> icon("AllIcons.Debugger.Db_set_breakpoint"),
-      "IconLocate"                -> icon("AllIcons.General.Locate"),
-      // others
-      "META"                      -> raw("META"),
-      "CONTROL"                   -> raw("CONTROL"),
-      "COMMAND"                   -> raw(if (ClientSystemInfo.isMac) "META" else "CONTROL"),
-      "ProductName"               -> ApplicationNamesInfo.getInstance.getFullProductName
-    )
-
-  private lazy val tipsContext = new KeymapTextContext {
-    override def isSimplifiedMacShortcuts: Boolean = ClientSystemInfo.isMac
-  }
-
-  private lazy val unrenderedVariables =
-    Map(
-      // actions
-      "ActionTypeInfo"            -> tipsContext.getShortcutText(ShowTypeInfoAction.ActionId),
-      "ActionImplicitHints"       -> tipsContext.getShortcutText("Scala.ShowImplicits"),
-      "ActionSettings"            -> tipsContext.getShortcutText(IdeActions.ACTION_SHOW_SETTINGS),
-      "ActionRun"                 -> tipsContext.getShortcutText(IdeActions.ACTION_DEFAULT_RUNNER),
-      "ActionShowIntention"       -> tipsContext.getShortcutText(IdeActions.ACTION_SHOW_INTENTION_ACTIONS),
-      "ActionDebug"               -> tipsContext.getShortcutText(IdeActions.ACTION_DEFAULT_DEBUGGER),
-      "ActionSetBreakpoint"       -> tipsContext.getShortcutText(IdeActions.ACTION_TOGGLE_LINE_BREAKPOINT),
-      "ActionSelectInProjectView" -> tipsContext.getShortcutText("SelectInProjectView"),
       // others
       "META"                      -> "Meta",
       "CONTROL"                   -> "Control",
-      "COMMAND"                   -> (if (ClientSystemInfo.isMac) "Meta" else "Control"),
-      "ProductName"               -> ApplicationNamesInfo.getInstance.getFullProductName
+      "COMMAND"                   -> (if (isMac) "Meta" else "Control"),
+      "ProductName"               -> Application.get().getName.get
     )
-
-  final private case class Sample(templateName: String, fileName: String, breakpoint: Function1[? >: CharSequence, JInt])
-
-  private object Sample {
-    def apply(templateName: String, fileName: String, breakpointLine: String): Sample =
-      new Sample(templateName, fileName, createBreakpointSelector(breakpointLine))
-
-    def apply(templateName: String, fileName: String): Sample =
-      new Sample(templateName, fileName, createBreakpointSelector())
-
-    def apply(templateName: String, fileName: String, index: Int): Sample =
-      new Sample(templateName, fileName, createBreakpointSelector(index))
-
-    private def createBreakpointSelector(line: String): Function1[? >: CharSequence, JInt] =
-      str => {
-        val index = str.indexOf(line)
-        if (index >= 0) index else null
-      }
-
-    private def createBreakpointSelector(): Function1[? >: CharSequence, JInt] =
-      _ =>  null
-
-    private def createBreakpointSelector(index: Int): Function1[? >: CharSequence, JInt] =
-      _ => index
   }
+
+  private final case class Sample(templateName: String, fileName: String)
 }

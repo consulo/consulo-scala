@@ -1,65 +1,40 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.application.options.CodeStyle
-import com.intellij.ide.wizard.NewProjectWizardStep
-import com.intellij.openapi.observable.properties.{AtomicProperty, GraphProperty}
-import com.intellij.openapi.observable.util.BindUtil
-import com.intellij.openapi.project.Project
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager
-import com.intellij.ui.dsl.builder.ButtonKt.bindSelected
-import com.intellij.ui.dsl.builder.{AlignX, Panel, Row}
-import org.jetbrains.annotations.TestOnly
+import consulo.application.ApplicationPropertiesComponent
+import consulo.localize.LocalizeValue
+import consulo.ui.CheckBox
+import consulo.ui.annotation.RequiredUIAccess
 import org.jetbrains.plugins.scala.ScalaBundle
-import org.jetbrains.plugins.scala.lang.formatting.settings.ScalaCodeStyleSettings
 
-trait IndentationSyntaxStepLike { self: NewProjectWizardStep =>
+/**
+ * "Use significant indentation syntax" of a new Scala 3 project, shown only while a Scala 3 version is selected.
+ */
+trait IndentationSyntaxStepLike {
 
-  private val showIndentationSyntaxCheckBox: AtomicProperty[java.lang.Boolean] =
-    new AtomicProperty(java.lang.Boolean.FALSE)
+  private var indentationSyntaxCheckBox: CheckBox = scala.compiletime.uninitialized
 
-  final protected def setShowIndentationSyntaxCheckBox(show: Boolean): Unit = {
-    showIndentationSyntaxCheckBox.set(show)
+  @RequiredUIAccess
+  final protected def createIndentationSyntaxCheckBox(): CheckBox = {
+    indentationSyntaxCheckBox = CheckBox.create(
+      LocalizeValue.of(ScalaBundle.message("use.indentation.based.syntax.checkbox.label")),
+      ApplicationPropertiesComponent.getInstance.getBoolean(IndentationSyntax.IndentationSyntaxPropertyName, false)
+    )
+    indentationSyntaxCheckBox.setVisible(false)
+    indentationSyntaxCheckBox
   }
 
-  private val useIndentationBasedSyntaxProperty: GraphProperty[java.lang.Boolean] = {
-    val prop = getPropertyGraph.property(java.lang.Boolean.FALSE)
-    BindUtil.bindBooleanStorage(prop, IndentationSyntaxStepLike.IndentationSyntaxPropertyName)
-  }
+  @RequiredUIAccess
+  final protected def setShowIndentationSyntaxCheckBox(show: Boolean): Unit =
+    Option(indentationSyntaxCheckBox).foreach(_.setVisible(show))
 
-  @TestOnly
-  final protected[project] def setUseIndentationBasedSyntaxProperty(use: Boolean): Unit = {
-    useIndentationBasedSyntaxProperty.set(use)
-  }
-
-  final protected def setupIndentationSyntaxUI(panel: Panel): Unit = {
-    // Passing an empty string is a trick to indent the checkbox under the setting above.
-    //noinspection ScalaExtractStringToBundle
-    panel.row("", (row: Row) => {
-      val cell = row
-        .checkBox(ScalaBundle.message("use.indentation.based.syntax.checkbox.label"))
-        .align(AlignX.LEFT.INSTANCE)
-        .visibleIf(showIndentationSyntaxCheckBox)
-      bindSelected(cell, useIndentationBasedSyntaxProperty)
-      kotlin.Unit.INSTANCE
-    })
-  }
-
-  final protected def setupUseIndentationBasedSyntaxInProject(project: Project): Unit = {
-    val manager = CodeStyleSettingsManager.getInstance(project)
-    var mainProjectCodeStyle = manager.getMainProjectCodeStyle
-    if (mainProjectCodeStyle eq null) {
-      val settings = CodeStyle.getSettings(project)
-      mainProjectCodeStyle = manager.cloneSettings(settings)
+  /**
+   * Whether the project uses the indentation based syntax: the check box is shown and selected.
+   */
+  @RequiredUIAccess
+  final protected def useIndentationSyntax: Boolean =
+    Option(indentationSyntaxCheckBox).exists { checkBox =>
+      val selected = checkBox.getValueOrError.booleanValue
+      ApplicationPropertiesComponent.getInstance.setValue(IndentationSyntax.IndentationSyntaxPropertyName, selected, false)
+      checkBox.isVisible && selected
     }
-    val scalaCodeStyleSettings = mainProjectCodeStyle.getCustomSettings(classOf[ScalaCodeStyleSettings])
-    scalaCodeStyleSettings.USE_SCALA3_INDENTATION_BASED_SYNTAX = useIndentationSyntaxInProject
-    CodeStyle.setMainProjectSettings(project, mainProjectCodeStyle)
-  }
-
-  private def useIndentationSyntaxInProject: Boolean =
-    showIndentationSyntaxCheckBox.get() && useIndentationBasedSyntaxProperty.get()
-}
-
-object IndentationSyntaxStepLike {
-  final val IndentationSyntaxPropertyName = "scala.IndentationSyntaxStepLike.useIndentationSyntax"
 }

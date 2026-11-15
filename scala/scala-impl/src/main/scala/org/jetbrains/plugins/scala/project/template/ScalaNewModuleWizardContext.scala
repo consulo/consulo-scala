@@ -11,4 +11,12 @@ final class ScalaNewModuleWizardContext(isNewProject: Boolean) extends NewModule
 
   /** resolved when the Scala SDK is selected (compiler bridge and REPL classpath may be downloaded) */
   var scalaSdkProperties: Option[ScalaLibraryProperties] = None
+
+  var useIndentationSyntax: Boolean = false
+
+  var packagePrefix: Option[String] = None
+
+  var addSampleCode: Boolean = false
+
+  def isScala3: Boolean = scalaSdkProperties.exists(_.languageLevel.isScala3)
 }

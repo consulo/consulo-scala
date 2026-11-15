@@ -12,20 +12,21 @@ import org.jetbrains.plugins.scala.icons.Icons
 import org.jetbrains.plugins.scala.project.ScalaLibraryType
 import org.jetbrains.plugins.scala.project.extension.ScalaMutableModuleExtension
 
+import consulo.virtualFileSystem.LocalFileSystem
+
+import java.nio.file.Path
 import java.util.function.Consumer
 
 /**
- * Creates a plain Scala module: Java and Scala module extensions, the selected JDK and a module level Scala SDK library.
+ * Creates a plain Scala module: Java and Scala module extensions, the selected JDK, a module level Scala SDK library
+ * and optionally the sample code.
  */
-// upstream: ScalaModuleBuilder + IntelliJ new project wizard steps (ScalaSDKStepLike); "add framework support" is
-// covered by the Scala module extension
 @ExtensionImpl(id = "scala", order = "after jvm")
 final class ScalaNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
-    val jvmGroup = context.addGroup("jvm", LocalizeValue.localizeTODO("Java Platform"))
     //noinspection ScalaExtractStringToBundle
-    jvmGroup.add(LocalizeValue.localizeTODO("Scala"), Icons.SCALA_SDK, new NewModuleBuilderProcessor[ScalaNewModuleWizardContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.localizeTODO("Empty"), Icons.SCALA_SDK, new NewModuleBuilderProcessor[ScalaNewModuleWizardContext] {
       override def createContext(isNewProject: Boolean): ScalaNewModuleWizardContext =
         new ScalaNewModuleWizardContext(isNewProject)
 
@@ -69,5 +70,20 @@ object ScalaNewModuleBuilder {
     }
 
     contentEntry.addFolder(contentEntry.getUrl + "/src", ProductionContentFolderTypeProvider.getInstance)
+
+    val project = model.getProject
+    IndentationSyntax.setupUseIndentationBasedSyntaxInProject(project, context.isScala3 && context.useIndentationSyntax)
+    if (context.addSampleCode) {
+      val root = Path.of(contentEntry.getFile.getPath)
+      ScalaSampleCode.addScalaSampleCode(
+        project = project,
+        sourceRoot = root.resolve("src"),
+        isScala3 = context.isScala3,
+        useIndentationBasedSyntax = context.useIndentationSyntax,
+        packagePrefix = context.packagePrefix,
+        withOnboardingTips = true
+      )
+      LocalFileSystem.getInstance().refreshAndFindFileByNioFile(root)
+    }
   }
 }

@@ -1,44 +1,30 @@
 package org.jetbrains.plugins.scala.project.template
 
-import com.intellij.ui.components.JBTextField
-import com.intellij.ui.dsl.builder.{AlignX, TextFieldKt}
-import com.intellij.util.ui.UI
+import consulo.localize.LocalizeValue
+import consulo.ui.TextBox
+import consulo.ui.annotation.RequiredUIAccess
+import consulo.util.lang.StringUtil
 import org.jetbrains.plugins.scala.ScalaBundle
 
-import javax.swing.{JLabel, JPanel}
-import scala.annotation.nowarn
-
+/**
+ * The package of the sample code of a new project.
+ */
 trait PackagePrefixStepLike {
 
-  private val packagePrefixHelpText: String = ScalaBundle.message("package.prefix.help")
+  private var packagePrefixTextBox: TextBox = scala.compiletime.uninitialized
 
-  /**
-   * In NewProjectWizard we can't use `prefixPanel` created with  `UI.PanelFactory.panel.withTooltip`
-   * because it adds some strange indent to the left of the panel, which looks ugly.<br>
-   * I didn't find a nice way to fix this, so we set tooltip on a fielf when using NPW
-   */
-  protected val packagePrefixTextField: JBTextField = {
-    val tf = new JBTextField()
-    tf.getEmptyText.setText(ScalaBundle.message("package.prefix.example"))
-    tf.setToolTipText(packagePrefixHelpText)
-    tf.setColumns(TextFieldKt.COLUMNS_LARGE)
-    tf
+  protected def packagePrefixLabel: LocalizeValue =
+    LocalizeValue.of(ScalaBundle.message("package.prefix.label"))
+
+  @RequiredUIAccess
+  protected def createPackagePrefixTextBox(initial: Option[String]): TextBox = {
+    packagePrefixTextBox = TextBox.create(initial.orNull)
+    packagePrefixTextBox.setPlaceholder(LocalizeValue.of(ScalaBundle.message("package.prefix.example")))
+    packagePrefixTextBox.setVisibleLength(30)
+    packagePrefixTextBox
   }
 
-  protected val packagePrefixPanelWithTooltip: JPanel = UI.PanelFactory
-    .panel(packagePrefixTextField)
-    .withTooltip(packagePrefixHelpText)
-    .createPanel(): @nowarn("cat=deprecation")
-
-  protected val packagePrefixLabelText: String = ScalaBundle.message("package.prefix.label")
-
-  private val packagePrefixLabel: JLabel =
-    new JLabel(packagePrefixLabelText)
-
-  protected def setupPackagePrefixUI(panel: com.intellij.ui.dsl.builder.Panel): Unit = {
-    panel.row(packagePrefixLabel, (row: com.intellij.ui.dsl.builder.Row) => {
-      row.cell(packagePrefixTextField).align(AlignX.LEFT.INSTANCE)
-      kotlin.Unit.INSTANCE
-    })
-  }
+  @RequiredUIAccess
+  protected def packagePrefix: Option[String] =
+    Option(packagePrefixTextBox).map(box => StringUtil.notNullize(box.getValue).trim).filter(_.nonEmpty)
 }

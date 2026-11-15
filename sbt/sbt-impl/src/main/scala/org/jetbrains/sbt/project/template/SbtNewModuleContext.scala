@@ -9,4 +9,7 @@ class SbtNewModuleContext(isNewProject: Boolean) extends NewModuleWizardContextB
   var scalaVersion: String = ScalaVersion.Latest.Scala_2_13.minor
   var downloadScalaSdkSources: Boolean = true
   var downloadSbtSources: Boolean = false
+  var useIndentationSyntax: Boolean = false
+  var packagePrefix: Option[String] = None
+  var addSampleCode: Boolean = false
 }

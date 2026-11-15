@@ -1,77 +1,91 @@
 package org.jetbrains.sbt.project.template
 
-import consulo.application.Application
-import consulo.application.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager}
-import consulo.component.ProcessCanceledException
-import consulo.disposer.{Disposable, Disposer}
+import consulo.disposer.Disposable
 import consulo.localize.LocalizeValue
-import consulo.logging.Logger
 import consulo.ui.annotation.RequiredUIAccess
 import consulo.ui.ex.wizard.WizardStep
 import consulo.ui.layout.{HorizontalLayout, VerticalLayout}
 import consulo.ui.model.{FlatDataModel, MutableFlatDataModel}
 import consulo.ui.util.LabeledBuilder
 import consulo.ui.{CheckBox, ComboBox, Component, UIAccess}
-import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.project.Versions
+import org.jetbrains.plugins.scala.project.template.{PackagePrefixStepLike, ScalaSampleCode}
 import org.jetbrains.sbt.SbtBundle
 import org.jetbrains.sbt.api.SbtVersion
+import org.jetbrains.sbt.project.template.wizard.ScalaVersionStepLike
 
 import scala.jdk.CollectionConverters.*
-import scala.util.{Failure, Success, Try}
 
 /**
- * Selects the sbt and Scala versions of a new sbt project.
+ * Selects the sbt and Scala versions of a new sbt project, the package prefix and whether to add sample code.
+ * sbt versions older than 1.5 are not offered for Scala 3.
  */
-// upstream: SbtScalaNewProjectWizardStep (IntelliJ new project wizard, AsynchronousVersionsDownloading): the latest known
-// versions are offered first and replaced by the versions downloaded in the background; package prefix is not supported
-class SbtNewModuleSettingsStep(context: SbtNewModuleContext) extends WizardStep[SbtNewModuleContext] {
+class SbtNewModuleSettingsStep(context: SbtNewModuleContext)
+  extends WizardStep[SbtNewModuleContext]
+    with ScalaVersionStepLike
+    with PackagePrefixStepLike {
 
-  import SbtNewModuleSettingsStep.*
+  import ScalaVersionStepLike.isScala3VersionString
 
-  private var sbtVersionBox: ComboBox[SbtVersion] = _
-  private var scalaVersionBox: ComboBox[String] = _
-  private var downloadSbtSourcesBox: CheckBox = _
-  private var downloadScalaSourcesBox: CheckBox = _
+  private var sbtVersionBox: ComboBox[SbtVersion] = scala.compiletime.uninitialized
+  private var sbtVersions: MutableFlatDataModel[SbtVersion] = scala.compiletime.uninitialized
+  private var downloadSbtSourcesBox: CheckBox = scala.compiletime.uninitialized
+  private var addSampleCodeBox: CheckBox = scala.compiletime.uninitialized
 
-  private var updatingVersions = false
+  private var updatingSbtVersions = false
   private var sbtVersionManuallySelected = false
-  private var scalaVersionManuallySelected = false
+
+  private val defaultAvailableSbtVersions: Seq[SbtVersion] = Versions.SBT.allHardcodedVersions.map(SbtVersion(_))
+  private var availableSbtVersions: Seq[SbtVersion] = defaultAvailableSbtVersions
 
   @RequiredUIAccess
   override def getComponent(context: SbtNewModuleContext, uiDisposable: Disposable): Component = {
-    val sbtVersions = FlatDataModel.of(DefaultSbtVersions.asJava)
+    sbtVersions = FlatDataModel.of(defaultAvailableSbtVersions.asJava)
     sbtVersionBox = ComboBox.create(sbtVersions)
     sbtVersionBox.setTextRenderer(item => if (item == null) LocalizeValue.empty() else LocalizeValue.of(item.minor))
     sbtVersionBox.setValue(context.sbtVersion)
-    sbtVersionBox.addValueListener(_ => if (!updatingVersions) sbtVersionManuallySelected = true)
-
-    val scalaVersions = FlatDataModel.of(DefaultScalaVersions.asJava)
-    scalaVersionBox = ComboBox.create(scalaVersions)
-    scalaVersionBox.setValue(context.scalaVersion)
-    scalaVersionBox.addValueListener(_ => if (!updatingVersions) scalaVersionManuallySelected = true)
+    sbtVersionBox.addValueListener(_ => if (!updatingSbtVersions) sbtVersionManuallySelected = true)
 
     downloadSbtSourcesBox = CheckBox.create(label("sbt.module.step.download.sources"), context.downloadSbtSources)
     downloadSbtSourcesBox.setToolTipText(LocalizeValue.of(SbtBundle.message("sbt.download.sbt.sources")))
-    downloadScalaSourcesBox = CheckBox.create(label("sbt.module.step.download.sources"), context.downloadScalaSdkSources)
-    downloadScalaSourcesBox.setToolTipText(LocalizeValue.of(SbtBundle.message("sbt.download.scala.standard.library.sources")))
 
-    val uiAccess = UIAccess.current()
-    downloadVersions(uiAccess, uiDisposable, Versions.SBT.toString)(Versions.SBT.loadVersionsWithProgress(_).map(SbtVersion(_))) { versions =>
-      val selected = Option.when(sbtVersionManuallySelected)(sbtVersionBox.getValue)
-        .orElse(Versions.SBT.initiallySelectedVersion(versions.map(_.minor)).map(SbtVersion(_)))
-      replaceVersions(sbtVersionBox, sbtVersions, versions, selected)
+    val scalaVersionBox = createScalaVersionBox(context.scalaVersion, uiDisposable)
+    val downloadScalaSourcesBox = createDownloadScalaSourcesBox(context.downloadScalaSdkSources)
+
+    ScalaVersionStepLike.downloadVersions(UIAccess.current(), uiDisposable, Versions.SBT.toString)(Versions.SBT.loadVersionsWithProgress(_).map(SbtVersion(_))) { versions =>
+      availableSbtVersions = versions
+      updateSbtVersions()
     }
-    downloadVersions(uiAccess, uiDisposable, Versions.Scala.toString)(Versions.Scala.loadVersionsWithProgress(_).map(_.presentation)) { versions =>
-      val selected = Option.when(scalaVersionManuallySelected)(scalaVersionBox.getValue)
-        .orElse(Versions.Scala.initiallySelectedVersion(versions))
-      replaceVersions(scalaVersionBox, scalaVersions, versions, selected)
-    }
+
+    addSampleCodeBox = ScalaSampleCode.createCheckBox()
 
     val layout = VerticalLayout.create()
     layout.add(LabeledBuilder.sided(label("sbt.settings.sbt"), versionWithSources(sbtVersionBox, downloadSbtSourcesBox)))
     layout.add(LabeledBuilder.sided(label("sbt.settings.scala"), versionWithSources(scalaVersionBox, downloadScalaSourcesBox)))
+    layout.add(createIndentationSyntaxCheckBox())
+    layout.add(LabeledBuilder.sided(packagePrefixLabel, createPackagePrefixTextBox(context.packagePrefix)))
+    layout.add(addSampleCodeBox)
+    selectedScalaVersion.foreach(onScalaVersionChanged)
     layout
+  }
+
+  @RequiredUIAccess
+  override protected def onScalaVersionChanged(version: String): Unit =
+    if (sbtVersionBox != null) updateSbtVersions()
+
+  /**
+   * Ensures that sbt versions < 1.5 are not offered if a Scala 3 version is selected.
+   */
+  @RequiredUIAccess
+  private def updateSbtVersions(): Unit = {
+    val isScala3Selected = selectedScalaVersion.exists(isScala3VersionString)
+    val supported = if (isScala3Selected) Versions.SBT.sbtVersionsForScala3(availableSbtVersions) else availableSbtVersions
+    val selected = Option.when(sbtVersionManuallySelected)(sbtVersionBox.getValue)
+      .orElse(Versions.SBT.initiallySelectedVersion(supported.map(_.minor)).map(SbtVersion(_)))
+
+    updatingSbtVersions = true
+    try replaceVersions(sbtVersionBox, sbtVersions, supported, selected)
+    finally updatingSbtVersions = false
   }
 
   private def versionWithSources(versionBox: Component, downloadSourcesBox: CheckBox): Component = {
@@ -82,58 +96,13 @@ class SbtNewModuleSettingsStep(context: SbtNewModuleContext) extends WizardStep[
   }
 
   @RequiredUIAccess
-  private def replaceVersions[T](box: ComboBox[T], model: MutableFlatDataModel[T], versions: Seq[T], selected: Option[T]): Unit =
-    if (versions.nonEmpty) {
-      updatingVersions = true
-      try {
-        val previous = box.getValue
-        model.replaceAll(versions.asJava)
-        selected.orElse(Option(previous)).filter(versions.contains).orElse(versions.headOption).foreach(box.setValue)
-      } finally updatingVersions = false
-    }
-
-  private def label(key: String): LocalizeValue =
-    LocalizeValue.of(SbtBundle.message(key).replace("&", ""))
-
   override def onStepLeave(context: SbtNewModuleContext): Unit = {
     Option(sbtVersionBox).flatMap(box => Option(box.getValue)).foreach(context.sbtVersion = _)
-    Option(scalaVersionBox).flatMap(box => Option(box.getValue)).foreach(context.scalaVersion = _)
+    selectedScalaVersion.foreach(context.scalaVersion = _)
     Option(downloadSbtSourcesBox).foreach(box => context.downloadSbtSources = box.getValueOrError.booleanValue)
-    Option(downloadScalaSourcesBox).foreach(box => context.downloadScalaSdkSources = box.getValueOrError.booleanValue)
-  }
-}
-
-object SbtNewModuleSettingsStep {
-  private val Log = Logger.getInstance(classOf[SbtNewModuleSettingsStep])
-
-  private val DefaultSbtVersions: Seq[SbtVersion] = Seq(SbtVersion.Latest.Sbt_1, SbtVersion.Latest.Sbt_2).distinct
-
-  private val DefaultScalaVersions: Seq[String] = Seq(
-    ScalaVersion.Latest.Scala_2_13,
-    ScalaVersion.Latest.Scala_2_12,
-    ScalaVersion.Latest.Scala_3_LTS,
-    ScalaVersion.Latest.Scala_3_8
-  ).map(_.minor).distinct
-
-  // upstream: AsynchronousVersionsDownloading.downloadVersionsAsynchronously
-  private def downloadVersions[V](uiAccess: UIAccess, uiDisposable: Disposable, versionType: String)
-                                 (load: ProgressIndicator => Seq[V])
-                                 (onLoaded: Seq[V] => Unit): Unit = {
-    val indicator = new EmptyProgressIndicator
-    Disposer.register(uiDisposable, () => indicator.cancel())
-    Application.get().executeOnPooledThread((() => {
-      Try(ProgressManager.getInstance().runProcess(() => load(indicator).sorted(using versionOrdering[V]).reverse, indicator)) match {
-        case Success(versions) =>
-          uiAccess.give(() => if (!indicator.isCanceled) onLoaded(versions))
-        case Failure(_: ProcessCanceledException) =>
-        case Failure(exception) =>
-          Log.debug(s"Exception during downloading of $versionType versions", exception)
-      }
-    }): Runnable)
-  }
-
-  private def versionOrdering[V]: Ordering[V] = Ordering.by[V, org.jetbrains.plugins.scala.rt.project.Version] {
-    case version: SbtVersion => version.value
-    case version => org.jetbrains.plugins.scala.rt.project.Version(version.toString)
+    downloadScalaSources.foreach(context.downloadScalaSdkSources = _)
+    context.useIndentationSyntax = useIndentationSyntax
+    context.packagePrefix = packagePrefix
+    Option(addSampleCodeBox).foreach(box => context.addSampleCode = ScalaSampleCode.isSelected(box))
   }
 }
