@@ -27,7 +27,7 @@
 
     <!-- the plugin: plugin.xml and packaging of all modules (the plugin directory is named after this artifactId) -->
     <artifactId>org.intellij.scala</artifactId>
-    <packaging>jar</packaging>
+    <packaging>consulo-plugin</packaging>
 
     <build>
         <plugins>
