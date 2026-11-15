@@ -31,7 +31,7 @@ import java.util.function.Consumer
 final class ScalaCliNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
-    ScalaNewModuleGroup(context).add(LocalizeValue.of(ScalaCliBundle.message("scala.cli.project.system.readable.name")), Icons.BSP, new NewModuleBuilderProcessor[ScalaCliNewModuleContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.of(ScalaCliBundle.message("scala.cli.project.system.readable.name")), Icons.BSP, ScalaNewModuleGroup.ScalaCliWeight, new NewModuleBuilderProcessor[ScalaCliNewModuleContext] {
       override def createContext(isNewProject: Boolean): ScalaCliNewModuleContext =
         new ScalaCliNewModuleContext(isNewProject)
 

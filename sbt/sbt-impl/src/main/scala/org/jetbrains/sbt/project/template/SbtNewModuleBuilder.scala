@@ -28,7 +28,7 @@ import scala.util.Using
 final class SbtNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
-    ScalaNewModuleGroup(context).add(LocalizeValue.of(Sbt.Name), Sbt.Icon, new NewModuleBuilderProcessor[SbtNewModuleContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.of(Sbt.Name), Sbt.Icon, ScalaNewModuleGroup.SbtWeight, new NewModuleBuilderProcessor[SbtNewModuleContext] {
       override def createContext(isNewProject: Boolean): SbtNewModuleContext =
         new SbtNewModuleContext(isNewProject)
 

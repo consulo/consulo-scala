@@ -26,7 +26,7 @@ final class ScalaNewModuleBuilder extends NewModuleBuilder {
 
   override def setupContext(context: NewModuleContext): Unit = {
     //noinspection ScalaExtractStringToBundle
-    ScalaNewModuleGroup(context).add(LocalizeValue.localizeTODO("Empty"), Icons.SCALA_SDK, new NewModuleBuilderProcessor[ScalaNewModuleWizardContext] {
+    ScalaNewModuleGroup(context).add(LocalizeValue.localizeTODO("Empty"), Icons.SCALA_SDK, ScalaNewModuleGroup.EmptyWeight, new NewModuleBuilderProcessor[ScalaNewModuleWizardContext] {
       override def createContext(isNewProject: Boolean): ScalaNewModuleWizardContext =
         new ScalaNewModuleWizardContext(isNewProject)
 
