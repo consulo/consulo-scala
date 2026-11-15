@@ -71,8 +71,9 @@ class BspSelectTargetDialog(
   override def createCenterPanel(): JComponent = null
 
   override def createNorthPanel(): JComponent = {
-    val selectedIndex = selected.map(targetIds.indexOf(_)).getOrElse(-1)
-    if (selectedIndex >= 0) combo.setValueByIndex(selectedIndex)
+    // the first target is selected when there is no previous choice, like the first item of a Swing combo box
+    val selectedIndex = selected.map(targetIds.indexOf(_)).filter(_ >= 0).getOrElse(0)
+    if (targetIds.nonEmpty) combo.setValueByIndex(selectedIndex)
     val comboComponent = TargetAWT.to(combo)
     val width = Toolkit.getDefaultToolkit.getScreenSize.width / 4
     comboComponent.setMinimumSize(new Dimension(width, comboComponent.getPreferredSize.height))
