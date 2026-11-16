@@ -19,7 +19,7 @@ import java.util.function.{Function, Supplier}
 import org.jetbrains.bsp.*
 import org.jetbrains.bsp.project.BspExternalSystemManager.DetectExternalProjectFiles
 import org.jetbrains.bsp.project.importing.BspProjectResolver
-import org.jetbrains.bsp.protocol.BspConnectionConfig
+import org.jetbrains.bsp.impl.protocol.BspConnectionConfig
 import org.jetbrains.bsp.settings.*
 import org.jetbrains.plugins.scala.extensions.PathExt
 import org.jetbrains.sbt.project.ExternalSystemAutoImportAwareCompat

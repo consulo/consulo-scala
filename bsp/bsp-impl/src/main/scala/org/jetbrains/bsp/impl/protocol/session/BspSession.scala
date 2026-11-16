@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import ch.epfl.scala.bsp4j
 import ch.epfl.scala.bsp4j.{BuildServerCapabilities, InitializeBuildResult}
@@ -10,11 +10,11 @@ import consulo.application.util.SystemInfo
 import consulo.application.util.concurrent.AppExecutorUtil
 import org.eclipse.lsp4j.jsonrpc.{Launcher, ResponseErrorException}
 import org.jetbrains.bsp.*
-import org.jetbrains.bsp.protocol.BspJob
-import org.jetbrains.bsp.protocol.BspNotifications.*
-import org.jetbrains.bsp.protocol.session.BspSession.*
-import org.jetbrains.bsp.protocol.session.GenericConnector.RemoteProcessPid
-import org.jetbrains.bsp.protocol.session.jobs.BspSessionJob
+import org.jetbrains.bsp.impl.protocol.BspJob
+import org.jetbrains.bsp.impl.protocol.BspNotifications.*
+import org.jetbrains.bsp.impl.protocol.session.BspSession.*
+import org.jetbrains.bsp.impl.protocol.session.GenericConnector.RemoteProcessPid
+import org.jetbrains.bsp.impl.protocol.session.jobs.BspSessionJob
 import org.jetbrains.plugins.scala.extensions.PathExt
 
 import java.io.{InputStream, OutputStream, PrintWriter, Writer}
@@ -302,7 +302,7 @@ class BspSession private(bspPID: Long,
       // The sbt BSP server spawns a separate sbt process which needs to be manually shut down. #SCL-19315
       // These remaining child processes are manually terminated after the server has been stopped.
       // #descendants method is not available in the remote context, and it's unnecessary there to kill the child sbt process.
-      // See org.jetbrains.bsp.protocol.session.GenericConnector.prepareBspSession for explanation.
+      // See org.jetbrains.bsp.impl.protocol.session.GenericConnector.prepareBspSession for explanation.
       val descendants =
         if (bspPID != RemoteProcessPid) ProcessHandle.of(bspPID).stream().flatMap(_.descendants()).toList
         else java.util.List.of()

@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol.session;
+package org.jetbrains.bsp.impl.protocol.session;
 
 import java.util.concurrent.CompletableFuture;
 

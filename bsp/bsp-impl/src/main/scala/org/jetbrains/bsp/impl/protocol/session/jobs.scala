@@ -1,11 +1,11 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import consulo.component.ProcessCanceledException
 import org.jetbrains.annotations.Nls
-import org.jetbrains.bsp.protocol.BspJob
-import org.jetbrains.bsp.protocol.BspNotifications.BspNotification
-import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, BspSessionTask, BuildServerInfo, NotificationAggregator, ProcessLogger}
-import org.jetbrains.bsp.protocol.session.jobs.BspSessionJob
+import org.jetbrains.bsp.impl.protocol.BspJob
+import org.jetbrains.bsp.impl.protocol.BspNotifications.BspNotification
+import org.jetbrains.bsp.impl.protocol.session.BspSession.{BspServer, BspSessionTask, BuildServerInfo, NotificationAggregator, ProcessLogger}
+import org.jetbrains.bsp.impl.protocol.session.jobs.BspSessionJob
 import org.jetbrains.bsp.{BspError, BspTaskCancelled}
 
 import java.util.concurrent.CompletableFuture

@@ -11,7 +11,7 @@ import org.jetbrains.bsp.project.importing.experimental.GenerateBspConfig.{Conne
 import org.jetbrains.bsp.project.importing.preimport.BloopPreImporter
 import org.jetbrains.bsp.project.importing.setup.NoConfigSetup
 import org.jetbrains.bsp.project.importing.{BspSetupConfigStep, BspSetupConfigStepUi, bspConfigSteps}
-import org.jetbrains.bsp.protocol.BspConnectionConfig
+import org.jetbrains.bsp.impl.protocol.BspConnectionConfig
 import org.jetbrains.bsp.settings.BspProjectSettings
 import org.jetbrains.bsp.settings.BspProjectSettings.{AutoConfig, BspConfigFile}
 import org.jetbrains.bsp.settings.PreImportConfig

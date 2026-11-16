@@ -1,11 +1,11 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import bloop.rifle.{BloopRifleConfig, BloopRifleLogger, BloopThreads}
 import consulo.container.boot.ContainerPathManager
 import consulo.application.progress.ProgressIndicator
 import consulo.content.bundle.Sdk
-import org.jetbrains.bsp.protocol.session.BspServerConnector.BspCapabilities
-import org.jetbrains.bsp.protocol.session.BspSession.Builder
+import org.jetbrains.bsp.impl.protocol.session.BspServerConnector.BspCapabilities
+import org.jetbrains.bsp.impl.protocol.session.BspSession.Builder
 import org.jetbrains.bsp.{BspBundle, BspError}
 import org.jetbrains.plugins.scala.build.BuildReporter
 

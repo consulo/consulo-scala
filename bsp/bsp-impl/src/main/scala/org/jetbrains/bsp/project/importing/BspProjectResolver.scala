@@ -17,9 +17,9 @@ import org.jetbrains.bsp.project.importing.BspProjectResolver._
 import org.jetbrains.bsp.project.importing.BspResolverDescriptors._
 import org.jetbrains.bsp.project.importing.BspResolverLogic._
 import org.jetbrains.bsp.project.importing.preimport.{BloopPreImporter, PreImporter}
-import org.jetbrains.bsp.protocol.session.Bsp4JJobFailure
-import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, BuildServerInfo, NotificationAggregator}
-import org.jetbrains.bsp.protocol.{BspCommunication, BspConnectionConfig, BspJob, BspNotifications}
+import org.jetbrains.bsp.impl.protocol.session.Bsp4JJobFailure
+import org.jetbrains.bsp.impl.protocol.session.BspSession.{BspServer, BuildServerInfo, NotificationAggregator}
+import org.jetbrains.bsp.impl.protocol.{BspCommunication, BspConnectionConfig, BspJob, BspNotifications}
 import org.jetbrains.bsp.settings.{BspExecutionSettings, BspProjectSettings, PreImportConfig}
 import org.jetbrains.bsp.{BspBundle, BspErrorMessage, BspJdkUtil, BspNoJdkConfiguredError, BspTaskCancelled, BspUtil}
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId

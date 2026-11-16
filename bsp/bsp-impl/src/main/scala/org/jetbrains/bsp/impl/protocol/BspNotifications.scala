@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 
 /** Notifications adapter for bsp4j */

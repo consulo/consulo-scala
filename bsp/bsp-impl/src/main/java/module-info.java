@@ -133,8 +133,8 @@ open module org.intellij.scala.bsp.impl {
     exports org.jetbrains.bsp.project.importing.setup;
     exports org.jetbrains.bsp.project.test;
     exports org.jetbrains.bsp.project.test.environment;
-    exports org.jetbrains.bsp.protocol;
-    exports org.jetbrains.bsp.protocol.session;
+    exports org.jetbrains.bsp.impl.protocol;
+    exports org.jetbrains.bsp.impl.protocol.session;
     exports org.jetbrains.bsp.settings;
     exports org.jetbrains.plugins.scala.bsp.build;
     exports org.jetbrains.plugins.scala.bsp.compiler;

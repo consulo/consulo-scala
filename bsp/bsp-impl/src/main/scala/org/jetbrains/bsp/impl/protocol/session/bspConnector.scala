@@ -1,10 +1,10 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import ch.epfl.scala.bsp4j.{BspConnectionDetails, BuildClientCapabilities, InitializeBuildParams}
 import com.google.gson.{JsonArray, JsonObject}
 import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.BspError
-import org.jetbrains.bsp.protocol.session.BspSession.Builder
+import org.jetbrains.bsp.impl.protocol.session.BspSession.Builder
 import org.jetbrains.plugins.scala.build.BuildReporter
 import org.jetbrains.plugins.scala.components.ScalaPluginVersionVerifier
 

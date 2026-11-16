@@ -6,8 +6,8 @@ import consulo.module.ModuleManager
 import consulo.application.progress.{ProgressIndicator, Task}
 import consulo.project.Project
 import org.jetbrains.bsp.data.BspMetadata
-import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, BuildServerInfo}
-import org.jetbrains.bsp.protocol.{BspCommunication, BspJob}
+import org.jetbrains.bsp.impl.protocol.session.BspSession.{BspServer, BuildServerInfo}
+import org.jetbrains.bsp.impl.protocol.{BspCommunication, BspJob}
 import org.jetbrains.bsp.{BspBundle, BspErrorMessage}
 import org.jetbrains.plugins.scala.build.BuildToolWindowReporter.CancelBuildAction
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildReporter, BuildToolWindowReporter}

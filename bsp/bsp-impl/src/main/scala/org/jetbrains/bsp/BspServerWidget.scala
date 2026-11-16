@@ -14,7 +14,7 @@ import consulo.ui.event.{ClickEvent, ComponentEventListener}
 import consulo.ui.ex.RelativePoint
 import consulo.ui.ex.awtUnsafe.TargetAWT
 import consulo.ui.image.Image
-import org.jetbrains.bsp.protocol.{BspCommunication, BspCommunicationService}
+import org.jetbrains.bsp.impl.protocol.{BspCommunication, BspCommunicationService}
 import org.jetbrains.bsp.settings.BspProjectSettings.BspServerConfig
 
 import java.awt.Point

@@ -1,13 +1,13 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import ch.epfl.scala.bsp4j.BspConnectionDetails
 import consulo.process.cmd.GeneralCommandLine
 import consulo.application.progress.ProgressIndicator
 import consulo.application.util.SystemInfo
 import org.jetbrains.bsp.project.importing.setup.SbtOverBspVmOptions
-import org.jetbrains.bsp.protocol.session.BspServerConnector.{BspCapabilities, ProcessBsp}
-import org.jetbrains.bsp.protocol.session.BspSession.Builder
-import org.jetbrains.bsp.protocol.session.GenericConnector.RemoteProcessPid
+import org.jetbrains.bsp.impl.protocol.session.BspServerConnector.{BspCapabilities, ProcessBsp}
+import org.jetbrains.bsp.impl.protocol.session.BspSession.Builder
+import org.jetbrains.bsp.impl.protocol.session.GenericConnector.RemoteProcessPid
 import org.jetbrains.bsp.{BspBundle, BspError, BspErrorMessage, BspSessionCreationError}
 import org.jetbrains.plugins.scala.DependencyManagerBase.Resolver
 import org.jetbrains.plugins.scala.build.BuildReporter

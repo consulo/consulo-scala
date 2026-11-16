@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 import consulo.platform.Platform
 import consulo.application.progress.ProgressIndicator
@@ -7,7 +7,7 @@ import org.jetbrains.bsp.project.importing.bspConfigSteps
 import org.jetbrains.bsp.project.importing.bspConfigSteps.{ConfigSetup, ScalaCliSetup}
 import org.jetbrains.bsp.project.importing.experimental.GenerateBspConfig
 import org.jetbrains.bsp.project.importing.setup.{BspConfigSetup, NoConfigSetup}
-import org.jetbrains.bsp.protocol.BspCommunication.SessionContext
+import org.jetbrains.bsp.impl.protocol.BspCommunication.SessionContext
 import org.jetbrains.bsp.settings.BspProjectSettings
 import org.jetbrains.plugins.scala.build.BuildReporter
 

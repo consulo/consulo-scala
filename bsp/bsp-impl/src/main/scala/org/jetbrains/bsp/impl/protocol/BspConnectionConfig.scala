@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 import ch.epfl.scala.bsp4j.BspConnectionDetails
 import com.google.gson.Gson

@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 import consulo.platform.Platform
 import org.jetbrains.sbt.platform
@@ -16,13 +16,13 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.bsp.*
 import org.jetbrains.bsp.project.BspExternalSystemManager
 import org.jetbrains.bsp.project.importing.BspProjectOpenProcessor.isScalaCliOrMill
-import org.jetbrains.bsp.protocol.BspCommunication.*
-import org.jetbrains.bsp.protocol.BspConfigRegeneration.RegenerationReason
-import org.jetbrains.bsp.protocol.BspNotifications.BspNotification
-import org.jetbrains.bsp.protocol.session.*
-import org.jetbrains.bsp.protocol.session.BspServerConnector.*
-import org.jetbrains.bsp.protocol.session.BspSession.*
-import org.jetbrains.bsp.protocol.session.jobs.BspSessionJob
+import org.jetbrains.bsp.impl.protocol.BspCommunication.*
+import org.jetbrains.bsp.impl.protocol.BspConfigRegeneration.RegenerationReason
+import org.jetbrains.bsp.impl.protocol.BspNotifications.BspNotification
+import org.jetbrains.bsp.impl.protocol.session.*
+import org.jetbrains.bsp.impl.protocol.session.BspServerConnector.*
+import org.jetbrains.bsp.impl.protocol.session.BspSession.*
+import org.jetbrains.bsp.impl.protocol.session.jobs.BspSessionJob
 import org.jetbrains.bsp.settings.BspProjectSettings.BspServerConfig
 import org.jetbrains.bsp.settings.{BspExecutionSettings, BspProjectSettings}
 import org.jetbrains.plugins.scala.build.BuildReporter

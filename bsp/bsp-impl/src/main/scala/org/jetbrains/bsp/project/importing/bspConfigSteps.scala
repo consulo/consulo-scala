@@ -19,7 +19,7 @@ import consulo.virtualFileSystem.LocalFileSystem
 import org.jetbrains.bsp.project.importing.BspSetupConfigStep.BspConfigSetupTask
 import org.jetbrains.bsp.project.importing.bspConfigSteps.*
 import org.jetbrains.bsp.project.importing.setup.{BspConfigSetup, BspSetupProvider, NoConfigSetup, SbtConfigSetup}
-import org.jetbrains.bsp.protocol.BspConnectionConfig
+import org.jetbrains.bsp.impl.protocol.BspConnectionConfig
 import org.jetbrains.bsp.settings.BspProjectSettings
 import org.jetbrains.bsp.settings.BspProjectSettings.*
 import org.jetbrains.bsp.settings.PreImportConfig

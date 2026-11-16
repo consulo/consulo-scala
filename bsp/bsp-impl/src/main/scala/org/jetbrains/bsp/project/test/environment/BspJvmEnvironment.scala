@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.bsp.BspBundle
 import org.jetbrains.bsp.BspUtil._
 import org.jetbrains.bsp.data.BspMetadata
-import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, BspSessionTask, BuildServerInfo}
-import org.jetbrains.bsp.protocol.{BspCommunication, BspJob}
+import org.jetbrains.bsp.impl.protocol.session.BspSession.{BspServer, BspSessionTask, BuildServerInfo}
+import org.jetbrains.bsp.impl.protocol.{BspCommunication, BspJob}
 import org.jetbrains.plugins.scala.build.BuildToolWindowReporter.CancelBuildAction
 import org.jetbrains.plugins.scala.build.{BuildMessages, BuildToolWindowReporter}
 import org.jetbrains.plugins.scala.extensions.invokeAndWait

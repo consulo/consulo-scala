@@ -48,7 +48,7 @@ class BspProjectSettings extends ExternalProjectSettings {
   /**
    * Hash of the BSP connection files under the .bsp directory
    *
-   * @see [[org.jetbrains.bsp.protocol.BspConnectionConfig.workspaceBspConfigsHash]]
+   * @see [[org.jetbrains.bsp.impl.protocol.BspConnectionConfig.workspaceBspConfigsHash]]
    */
   @BeanProperty
   @Nullable

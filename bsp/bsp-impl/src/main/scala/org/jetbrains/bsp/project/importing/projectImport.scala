@@ -13,7 +13,7 @@ import jakarta.inject.Inject
 import org.jetbrains.bsp.*
 import org.jetbrains.bsp.project.importing.bspConfigSteps.*
 import org.jetbrains.bsp.project.importing.setup.BspSetupProvider
-import org.jetbrains.bsp.protocol.BspConnectionConfig
+import org.jetbrains.bsp.impl.protocol.BspConnectionConfig
 import org.jetbrains.bsp.settings.*
 import org.jetbrains.bsp.settings.BspProjectSettings.*
 import org.jetbrains.bsp.settings.PreImportConfig.*

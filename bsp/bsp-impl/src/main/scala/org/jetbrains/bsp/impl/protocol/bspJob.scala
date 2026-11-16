@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 import consulo.application.progress.ProgressIndicator
 import org.jetbrains.bsp.{BspError, BspTaskCancelled}

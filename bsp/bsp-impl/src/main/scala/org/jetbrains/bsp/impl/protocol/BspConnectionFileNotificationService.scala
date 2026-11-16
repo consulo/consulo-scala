@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.protocol
+package org.jetbrains.bsp.impl.protocol
 
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI
@@ -14,7 +14,7 @@ import consulo.project.Project
 import org.jetbrains.bsp.project.BspExternalSystemConfigurable
 import org.jetbrains.bsp.{BSP, BspBundle}
 import org.jetbrains.bsp.project.importing.experimental.GenerateBspConfig
-import org.jetbrains.bsp.protocol.BspConfigRegeneration.RegenerationReason
+import org.jetbrains.bsp.impl.protocol.BspConfigRegeneration.RegenerationReason
 import org.jetbrains.plugins.scala.settings.ShowSettingsUtilImplExt
 
 import java.nio.file.Path

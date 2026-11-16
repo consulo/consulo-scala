@@ -11,7 +11,7 @@ import consulo.logging.Logger
 import consulo.module.Module
 import consulo.ui.UIAccess
 import consulo.ui.image.Image
-import org.jetbrains.bsp.protocol.BspCommunication
+import org.jetbrains.bsp.impl.protocol.BspCommunication
 import org.jetbrains.bsp.{BspBundle, Icons}
 
 import java.util.concurrent.CompletableFuture

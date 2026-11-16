@@ -12,8 +12,8 @@ import consulo.project.Project
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import org.jetbrains.bsp.BspUtil.*
 import org.jetbrains.bsp.project.BspTask.BspTarget
-import org.jetbrains.bsp.protocol.session.BspSession.{BspServer, NotificationAggregator, ProcessLogger}
-import org.jetbrains.bsp.protocol.{BspCommunication, BspJob, BspNotifications}
+import org.jetbrains.bsp.impl.protocol.session.BspSession.{BspServer, NotificationAggregator, ProcessLogger}
+import org.jetbrains.bsp.impl.protocol.{BspCommunication, BspJob, BspNotifications}
 import org.jetbrains.bsp.{BSP, BspBundle}
 import org.jetbrains.jps.incremental.scala.tracing.BuildReason.*
 import org.jetbrains.plugins.scala.build.BuildMessages.EventId

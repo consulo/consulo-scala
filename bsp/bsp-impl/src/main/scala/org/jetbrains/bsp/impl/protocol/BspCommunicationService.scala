@@ -1,5 +1,5 @@
 package org.jetbrains.bsp
-package protocol
+package impl.protocol
 
 import consulo.annotation.component.ComponentScope
 import consulo.annotation.component.ServiceAPI

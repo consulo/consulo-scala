@@ -1,11 +1,11 @@
-package org.jetbrains.bsp.protocol.session
+package org.jetbrains.bsp.impl.protocol.session
 
 import bloop.rifle.{BloopRifleConfig, BloopThreads, BloopVersion, BspConnection}
 import consulo.content.bundle.Sdk
 import org.jetbrains.bsp.BspJdkUtil
 import org.jetbrains.bsp.buildinfo.BuildInfo
-import org.jetbrains.bsp.protocol.session.BspServerConnector.BspCapabilities
-import org.jetbrains.bsp.protocol.session.BspSession.Builder
+import org.jetbrains.bsp.impl.protocol.session.BspServerConnector.BspCapabilities
+import org.jetbrains.bsp.impl.protocol.session.BspSession.Builder
 import org.jetbrains.plugins.scala.DependencyManager
 import org.jetbrains.plugins.scala.DependencyManagerBase.RichStr
 import org.jetbrains.plugins.scala.extensions.PathExt
