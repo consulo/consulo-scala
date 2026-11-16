@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.scala
 package testingSupport.test
 
+import org.jetbrains.plugins.scala.runner.ScalaRunConfigurationProducerSuppressor
 import consulo.execution.action.{ConfigurationContext, ConfigurationFromContext}
 import consulo.execution.action.RunConfigurationProducer
 import consulo.execution.configuration.ConfigurationFactory
@@ -51,6 +52,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
     context: ConfigurationContext,
     sourceElement: SimpleReference[PsiElement]
   ): Boolean = {
+    if (ScalaRunConfigurationProducerSuppressor.isSuppressed(this, context.getProject)) return false
     Log.traceSafe(
       s"setupConfigurationFromContext start:" +
         s" ${Option(sourceElement.get()).map(el => {el.toString + ", " + el.getText}).orNull}"
@@ -209,6 +211,7 @@ abstract class AbstractTestConfigurationProducer[T <: AbstractTestRunConfigurati
   }
 
   override final def isConfigurationFromContext(configuration: T, context: ConfigurationContext): Boolean = {
+    if (ScalaRunConfigurationProducerSuppressor.isSuppressed(this, context.getProject)) return false
     val location = context.getLocation
     if (location == null)
       configuration.testConfigurationData match {

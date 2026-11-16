@@ -51,6 +51,7 @@ abstract class BaseScalaApplicationConfigurationProducer[T <: ApplicationConfigu
       .orNull
 
   override def isConfigurationFromContext(configuration: T, context: ConfigurationContext): Boolean = {
+    if (ScalaRunConfigurationProducerSuppressor.isSuppressed(this, context.getProject)) return false
     val location = context.getLocation
     if (location == null) return false
     val element = context.getPsiLocation
@@ -86,6 +87,7 @@ abstract class BaseScalaApplicationConfigurationProducer[T <: ApplicationConfigu
     context: ConfigurationContext,
     sourceElementRef: SimpleReference[PsiElement]
   ): Boolean = {
+    if (ScalaRunConfigurationProducerSuppressor.isSuppressed(this, context.getProject)) return false
     val location = context.getLocation
     if (location == null) return false
     val element: PsiElement = location.getPsiElement
