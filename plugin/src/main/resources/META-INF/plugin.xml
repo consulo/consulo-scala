@@ -28,6 +28,7 @@
     <depends optional="true">com.intellij.properties</depends>
     <depends optional="true">org.jetbrains.idea.maven</depends>
     <depends optional="true">org.jetbrains.plugins.gradle</depends>
+    <depends optional="true">consulo.bazel</depends>
     <depends optional="true">com.intellij.junit</depends>
     <depends optional="true">consulo.devkit</depends>
 

@@ -1,9 +1,9 @@
 package org.jetbrains.plugins.scala.bazel
 
-import com.intellij.execution.PsiLocation
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import consulo.execution.action.PsiLocation
+import consulo.language.impl.psi.LeafPsiElement
+import consulo.language.psi.PsiElement
+import consulo.language.psi.util.PsiTreeUtil
 import org.jetbrains.plugins.scala.extensions.{&, Parent}
 import org.jetbrains.plugins.scala.lang.lexer.ScalaTokenTypes
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScLiteral
@@ -17,9 +17,8 @@ import org.jetbrains.plugins.scala.testingSupport.test.specs2.{Specs2BazelTestFi
  * Utilities inside contain logic for running entire test classes and individual tests from ScalaTest and ZIO-test via Bazel.
  *
  * @see [[org.jetbrains.plugins.scala.testingSupport.test.ui.ScalaTestRunLineMarkerProvider]] for the rest of Scala test frameworks handling
- * @note This class intentionally does not extend [[org.jetbrains.bazel.ui.gutters.BazelRunLineMarkerContributor]]
- *       to keep a single implementation in [[BazelScalaRunLineMarkerContributor]] because this is the implied way by Bazel plugin.<br>
- *       Still, it's convenient to keep all test-related logic in a separate place.
+ * @note The gutter actions are created by [[BazelScalaRunConfigurationProducer]], this object only keeps the test-related
+ *       logic in a separate place.
  */
 private object BazelScalaTestRunLineMarkerLogic {
   private val TestArg = "-t"
@@ -53,7 +52,7 @@ private object BazelScalaTestRunLineMarkerLogic {
     }
 
   private def isSpecs2TestClass(clazz: ScTypeDefinition): Boolean =
-    Specs2TestFramework().isTestClass(clazz, canBePotential = false)
+    Specs2TestFramework().isTestClass(clazz)
 
   private def getTestClass(psiElement: PsiElement): Option[ScDerivesClauseOwner] = {
     val parentClassOfObject = PsiTreeUtil.getParentOfType(psiElement, classOf[ScClass], classOf[ScObject])

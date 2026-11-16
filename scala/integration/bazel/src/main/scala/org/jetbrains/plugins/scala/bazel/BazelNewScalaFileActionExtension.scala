@@ -1,13 +1,15 @@
 package org.jetbrains.plugins.scala.bazel
 
-import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import org.jetbrains.bazel.config.ProjectKt
+import consulo.annotation.component.ExtensionImpl
+import consulo.dataContext.DataContext
+import consulo.project.Project
 import org.jetbrains.plugins.scala.actions.NewScalaFileActionExtension
 
-class BazelNewScalaFileActionExtension extends NewScalaFileActionExtension {
+@ExtensionImpl
+final class BazelNewScalaFileActionExtension extends NewScalaFileActionExtension {
   override def isAvailable(dataContext: DataContext): Boolean = {
-    val project = CommonDataKeys.PROJECT.getData(dataContext)
+    val project = dataContext.getData(Project.KEY)
     if (project == null) return false
-    ProjectKt.isBazelProject(project)
+    org.jetbrains.bazel.config.project.isBazelProject(project)
   }
 }

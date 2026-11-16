@@ -90,6 +90,7 @@
         <module>scala/test-integration/testing-support</module>
         <module>scala/integration/maven</module>
         <module>scala/integration/gradle</module>
+        <module>scala/integration/bazel</module>
         <module>scala/integration/textAnalysis</module>
         <module>scala/test-integration/testing-support-munit</module>
         <module>scala/integration/i18n</module>

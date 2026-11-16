@@ -1,61 +1,52 @@
 package org.jetbrains.plugins.scala.bazel
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.platform.workspace.jps.entities.ModuleEntity
-import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.url.VirtualFileUrl
-import org.jetbrains.bazel.config.ProjectKt
+import consulo.annotation.component.ExtensionImpl
+import consulo.application.WriteAction
+import consulo.module.content.ModuleRootManager
+import consulo.module.{Module, ModuleManager}
+import consulo.project.Project
 import org.jetbrains.bazel.sync.ProjectPostSyncHook
-import org.jetbrains.bazel.workspacemodel.entities.{BazelProjectEntitySource, ScalaAddendumEntityKt}
+import org.jetbrains.bazel.workspacemodel.entities.ScalaAddendumEntity
 import org.jetbrains.plugins.scala.compiler.data.CompileOrder
-import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
-import org.jetbrains.plugins.scala.project.{ModuleEntityExt, ReplClasspath}
+import org.jetbrains.plugins.scala.project.ModuleExt
+import org.jetbrains.plugins.scala.project.extension.ScalaMutableModuleExtension
 
-import java.nio.file.Path
-import kotlin.coroutines.Continuation
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IteratorHasAsScala}
+import java.util.concurrent.CompletableFuture
+import scala.jdk.CollectionConverters.*
 
-class BazelScalaModuleConfiguratorPostSyncHook extends ProjectPostSyncHook {
+/**
+ * Enables Scala in the modules of Bazel Scala targets and applies their scalac options. The Scala SDK library of the
+ * modules is set up during the sync by [[BazelScalaSdkExtension]].
+ */
+@ExtensionImpl
+final class BazelScalaModuleConfiguratorPostSyncHook extends ProjectPostSyncHook {
 
-  override def isEnabled(project: Project): Boolean = ProjectKt.isBazelProject(project)
+  override def isEnabled(project: Project): Boolean = org.jetbrains.bazel.config.project.isBazelProject(project)
 
-  override def onPostSync(projectPostSyncHookEnvironment: ProjectPostSyncHook.ProjectPostSyncHookEnvironment, continuation: Continuation[? >: kotlin.Unit]): AnyRef = {
-    val project = projectPostSyncHookEnvironment.getProject
-    val scalaModuleEntities =
-      WorkspaceModel
-        .getInstance(project)
-        .getCurrentSnapshot
-        .entities(classOf[ModuleEntity])
-        .iterator()
-        .asScala
-        .filter { moduleEntity => ScalaAddendumEntityKt.getScalaAddendumEntity(moduleEntity) != null }
+  override def onPostSync(environment: ProjectPostSyncHook.ProjectPostSyncHookEnvironment): CompletableFuture[Void] = {
+    val project = environment.project
+    val scalaModules = ModuleManager.getInstance(project).getModules.toSeq.flatMap { module =>
+      Option(ScalaAddendumEntity.getScalaAddendumEntity(module)).map(module -> _)
+    }
+    if (scalaModules.isEmpty) return CompletableFuture.completedFuture(null)
 
-    WorkspaceModel.getInstance(project).update("Update Scala modules for Bazel project",
-      (storage: MutableEntityStorage) => {
-        scalaModuleEntities.foreach { entity =>
-          val scalaAddendumEntity = ScalaAddendumEntityKt.getScalaAddendumEntity(entity)
-          ScalaSdkUtils.configureScalaSdk(
-            module = entity,
-            compilerVersion = scalaAddendumEntity.getCompilerVersion,
-            scalacClasspath = scalaAddendumEntity.getSdkClasspaths.asScala
-              .map(virtualFileUrl => virtualFileUrlToPath(virtualFileUrl))
-              .collect { case Some(path) => path }
-              .toSeq,
-            scaladocExtraClasspath = Nil,
-            compilerBridgeBinaryJar = None,
-            replClasspath = ReplClasspath.Bundled,
-            sdkPrefix = "Bazel",
-            storage = storage,
-            entitySource = BazelProjectEntitySource.INSTANCE,
-          )
-          entity.configureScalaCompilerSettingsFrom(project, "bazel", scalaAddendumEntity.getScalacOptions.asScala.toSeq, CompileOrder.Mixed)
-        }
-        kotlin.Unit.INSTANCE
-      }, continuation)
+    project.getUIAccess.giveAsync((() => {
+      WriteAction.run[RuntimeException] { () =>
+        scalaModules.foreach { case (module, _) => enableScala(module) }
+      }
+      scalaModules.foreach { case (module, scalaAddendum) =>
+        module.configureScalaCompilerSettingsFrom("bazel", scalaAddendum.scalacOptions.asScala.toSeq, project, CompileOrder.Mixed)
+      }
+    }): Runnable).thenApply(_ => null)
   }
 
-  private def virtualFileUrlToPath(virtualFileUrl: VirtualFileUrl): Option[Path] =
-    Option(VirtualFileManager.getInstance().findFileByUrl(virtualFileUrl.getUrl)).map(_.toNioPath)
+  private def enableScala(module: Module): Unit = {
+    val model = ModuleRootManager.getInstance(module).getModifiableModel
+    val scalaExtension = model.getExtensionWithoutCheck(classOf[ScalaMutableModuleExtension])
+    if (scalaExtension != null && !scalaExtension.isEnabled) {
+      scalaExtension.setEnabled(true)
+      model.commit()
+    }
+    else model.dispose()
+  }
 }

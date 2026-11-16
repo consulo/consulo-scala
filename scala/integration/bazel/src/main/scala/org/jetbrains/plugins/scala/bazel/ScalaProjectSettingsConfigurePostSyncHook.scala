@@ -1,31 +1,28 @@
 package org.jetbrains.plugins.scala.bazel
 
-import com.intellij.openapi.project.Project
-import com.intellij.util.JavaCoroutines
-import org.jetbrains.bazel.config.ProjectKt
+import consulo.annotation.component.ExtensionImpl
+import consulo.project.Project
 import org.jetbrains.bazel.sync.ProjectPostSyncHook
 import org.jetbrains.plugins.scala.compiler.data.IncrementalityType
 import org.jetbrains.plugins.scala.project.settings.ScalaCompilerConfiguration
 import org.jetbrains.plugins.scala.settings.ScalaProjectSettings
 
-import kotlin.coroutines.Continuation
+import java.util.concurrent.CompletableFuture
 
-class ScalaProjectSettingsConfigurePostSyncHook extends ProjectPostSyncHook {
+@ExtensionImpl
+final class ScalaProjectSettingsConfigurePostSyncHook extends ProjectPostSyncHook {
 
-  override def isEnabled(project: Project): Boolean = ProjectKt.isBazelProject(project)
+  override def isEnabled(project: Project): Boolean = org.jetbrains.bazel.config.project.isBazelProject(project)
 
-  override def onPostSync(projectPostSyncHookEnvironment: ProjectPostSyncHook.ProjectPostSyncHookEnvironment, continuation: Continuation[? >: kotlin.Unit]): AnyRef = {
-    val project = projectPostSyncHookEnvironment.getProject
-    //noinspection ApiStatus,UnstableApiUsage
-    JavaCoroutines.suspendJava[kotlin.Unit](cont => {
-      // compiler highlighting does not work with Bazel projects as the JPS build is not automatically run each sync
-      val scalaProjectSettings = ScalaProjectSettings.in(project)
-      scalaProjectSettings.setCompilerHighlightingScala2(false)
-      scalaProjectSettings.setCompilerHighlightingScala3(false)
-      // Bazel projects have issues when compiling with Zinc, hence this enforcement.
-      // SCL-23923 Customers' project failed to locally build with Zinc
-      ScalaCompilerConfiguration.instanceIn(project).incrementalityType = IncrementalityType.IDEA
-      cont.resume(kotlin.Unit.INSTANCE)
-    }, continuation)
+  override def onPostSync(environment: ProjectPostSyncHook.ProjectPostSyncHookEnvironment): CompletableFuture[Void] = {
+    val project = environment.project
+    // compiler highlighting does not work with Bazel projects as the build is not automatically run each sync
+    val scalaProjectSettings = ScalaProjectSettings.getInstance(project)
+    scalaProjectSettings.setCompilerHighlightingScala2(false)
+    scalaProjectSettings.setCompilerHighlightingScala3(false)
+    // Bazel projects have issues when compiling with Zinc, hence this enforcement.
+    // SCL-23923 Customers' project failed to locally build with Zinc
+    ScalaCompilerConfiguration.instanceIn(project).incrementalityType = IncrementalityType.IDEA
+    CompletableFuture.completedFuture(null)
   }
 }

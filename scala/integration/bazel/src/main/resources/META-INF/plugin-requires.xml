@@ -1,0 +1,5 @@
+<consulo-plugin-requires>
+    <plugins>
+        <plugin>consulo.bazel</plugin>
+    </plugins>
+</consulo-plugin-requires>
